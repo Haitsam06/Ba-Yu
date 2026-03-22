@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6a06b003ef5b5849266192ad86a19ebc",
+    "content-hash": "a78dbcedcc1cde3824249d18fee58945",
     "packages": [
         {
             "name": "brick/math",
@@ -1128,16 +1128,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v12.55.0",
+            "version": "v12.55.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "6917962a55ac91598e8c5e2ebd25e27aed121b5e"
+                "reference": "6d9185a248d101b07eecaf8fd60b18129545fd33"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/6917962a55ac91598e8c5e2ebd25e27aed121b5e",
-                "reference": "6917962a55ac91598e8c5e2ebd25e27aed121b5e",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/6d9185a248d101b07eecaf8fd60b18129545fd33",
+                "reference": "6d9185a248d101b07eecaf8fd60b18129545fd33",
                 "shasum": ""
             },
             "require": {
@@ -1346,7 +1346,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2026-03-17T14:19:00+00:00"
+            "time": "2026-03-18T14:28:59+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -1599,16 +1599,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "2.8.1",
+            "version": "2.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "84b1ca48347efdbe775426f108622a42735a6579"
+                "reference": "59fb075d2101740c337c7216e3f32b36c204218b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/84b1ca48347efdbe775426f108622a42735a6579",
-                "reference": "84b1ca48347efdbe775426f108622a42735a6579",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/59fb075d2101740c337c7216e3f32b36c204218b",
+                "reference": "59fb075d2101740c337c7216e3f32b36c204218b",
                 "shasum": ""
             },
             "require": {
@@ -1702,7 +1702,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-05T21:37:03+00:00"
+            "time": "2026-03-19T13:16:38+00:00"
         },
         {
             "name": "league/config",
@@ -2158,26 +2158,26 @@
         },
         {
             "name": "mongodb/laravel-mongodb",
-            "version": "5.6.0",
+            "version": "5.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mongodb/laravel-mongodb",
-                "reference": "0828c481e166793fc359226b9de1eb836082aa45"
+                "reference": "0071a45e79741f316f9b8e3a0372c8881ba5f81f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mongodb/laravel-mongodb/zipball/0828c481e166793fc359226b9de1eb836082aa45",
-                "reference": "0828c481e166793fc359226b9de1eb836082aa45",
+                "url": "https://api.github.com/repos/mongodb/laravel-mongodb/zipball/0071a45e79741f316f9b8e3a0372c8881ba5f81f",
+                "reference": "0071a45e79741f316f9b8e3a0372c8881ba5f81f",
                 "shasum": ""
             },
             "require": {
                 "composer-runtime-api": "^2.0.0",
                 "ext-mongodb": "^1.21|^2",
-                "illuminate/cache": "^10.36|^11|^12",
-                "illuminate/container": "^10.0|^11|^12",
-                "illuminate/database": "^10.30|^11|^12",
-                "illuminate/events": "^10.0|^11|^12",
-                "illuminate/support": "^10.0|^11|^12",
+                "illuminate/cache": "^10.36|^11|^12|^13.0",
+                "illuminate/container": "^10.0|^11|^12|^13.0",
+                "illuminate/database": "^10.30|^11|^12|^13.0",
+                "illuminate/events": "^10.0|^11|^12|^13.0",
+                "illuminate/support": "^10.0|^11|^12|^13.0",
                 "mongodb/mongodb": "^1.21|^2",
                 "php": "^8.1"
             },
@@ -2188,15 +2188,15 @@
                 "jenssegers/mongodb": "self.version"
             },
             "require-dev": {
-                "doctrine/coding-standard": "12.0.x-dev",
+                "doctrine/coding-standard": "^12.0",
                 "laravel/scout": "^10.3",
                 "league/flysystem-gridfs": "^3.28",
                 "league/flysystem-read-only": "^3.0",
                 "mockery/mockery": "^1.4.4",
-                "orchestra/testbench": "^8.0|^9.0|^10.0",
-                "phpstan/phpstan": "^1.10",
-                "phpunit/phpunit": "^10.3|^11.5.3",
-                "rector/rector": "^1.2",
+                "orchestra/testbench": "^8.0|^9.0|^10.0|^11.0",
+                "phpstan/phpstan": "^1.10|^2.1",
+                "phpunit/phpunit": "^10.3|^11.5.3|^12.5.12",
+                "rector/rector": "^1.2|^2.3",
                 "spatie/laravel-query-builder": "^5.6|^6"
             },
             "suggest": {
@@ -2261,7 +2261,7 @@
                 "issues": "https://www.mongodb.com/support",
                 "security": "https://www.mongodb.com/security"
             },
-            "time": "2026-02-12T13:07:48+00:00"
+            "time": "2026-03-20T12:20:25+00:00"
         },
         {
             "name": "mongodb/mongodb",
