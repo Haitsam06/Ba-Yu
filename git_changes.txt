@@ -1,0 +1,594 @@
+commit 4ff02df1a510ba167245fa4bbc6a6dd20cd1ef55
+Author: Varmintzy <radenmasgalih@apps.ipb.ac.id>
+Date:   Sun Mar 22 19:07:22 2026 +0700
+
+    backend login register
+
+diff --git a/app/Http/Controllers/AuthController.php b/app/Http/Controllers/AuthController.php
+new file mode 100644
+index 0000000..834d4e0
+--- /dev/null
++++ b/app/Http/Controllers/AuthController.php
+@@ -0,0 +1,75 @@
++<?php
++
++namespace App\Http\Controllers;
++
++use App\Models\User;
++use Illuminate\Http\Request;
++use Illuminate\Support\Facades\Hash;
++use Illuminate\Support\Facades\Validator;
++
++class AuthController extends Controller
++{
++    // Fungsi Register
++    public function register(Request $request)
++    {
++        $validator = Validator::make($request->all(), [
++            'name' => 'required|string|max:255',
++            'email' => 'required|string|email|max:255|unique:users',
++            'password' => 'required|string|min:6',
++            'jenjang_pendidikan' => 'required|string',
++        ]);
++
++        if ($validator->fails()) {
++            return response()->json($validator->errors(), 400);
++        }
++
++        // Simpen data ke MongoDB
++        $user = User::create([
++            'name' => $request->name,
++            'email' => $request->email,
++            'password' => Hash::make($request->password),
++            'jenjang_pendidikan' => $request->jenjang_pendidikan,
++        ]);
++
++        $token = $user->createToken('auth_token')->plainTextToken;
++
++        return response()->json([
++            'message' => 'Register berhasil!',
++            'data' => $user,
++            'access_token' => $token,
++            'token_type' => 'Bearer',
++        ], 201);
++    }
++
++    // Fungsi Login
++    public function login(Request $request)
++    {
++        $request->validate([
++            'email' => 'required|email',
++            'password' => 'required',
++        ]);
++
++        $user = User::where('email', $request->email)->first();
++
++        if (!$user || !Hash::check($request->password, $user->password)) {
++            return response()->json([
++                'message' => 'wkwkwk salah kocak, hama lu '
++            ], 401);
++        }
++
++        $token = $user->createToken('auth_token')->plainTextToken;
++
++        return response()->json([
++            'message' => 'Login sukses!',
++            'access_token' => $token,
++            'token_type' => 'Bearer',
++            'user' => [
++                'id' => $user->_id,
++                'name' => $user->name,
++                'email' => $user->email,
++                'role' => $user->role, 
++                'jenjang_pendidikan' => $user->jenjang_pendidikan, // <-- Balikin datanya pas login biar frontend tau
++            ]
++        ]);
++    }
++}
+\ No newline at end of file
+diff --git a/app/Models/PersonalAccessToken.php b/app/Models/PersonalAccessToken.php
+new file mode 100644
+index 0000000..4ab75a1
+--- /dev/null
++++ b/app/Models/PersonalAccessToken.php
+@@ -0,0 +1,23 @@
++<?php
++
++namespace App\Models;
++
++// Kita ambil "blueprint" asli dari Sanctum tapi pake sistem MongoDB
++use Laravel\Sanctum\PersonalAccessToken as SanctumPersonalAccessToken;
++use MongoDB\Laravel\Eloquent\DocumentModel;
++
++class PersonalAccessToken extends SanctumPersonalAccessToken
++{
++    use DocumentModel;
++
++    protected $connection = 'mongodb';
++    protected $collection = 'personal_access_tokens';
++
++    protected $fillable = [
++        'name',
++        'token',
++        'abilities',
++        'expires_at',
++        'last_used_at',
++    ];
++}
+\ No newline at end of file
+diff --git a/app/Models/User.php b/app/Models/User.php
+index 749c7b7..02c6b4b 100644
+--- a/app/Models/User.php
++++ b/app/Models/User.php
+@@ -2,47 +2,28 @@
+ 
+ namespace App\Models;
+ 
+-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+-use Illuminate\Database\Eloquent\Factories\HasFactory;
+-use Illuminate\Foundation\Auth\User as Authenticatable;
++use MongoDB\Laravel\Auth\User as Authenticatable; 
+ use Illuminate\Notifications\Notifiable;
++use Laravel\Sanctum\HasApiTokens; 
+ 
+ class User extends Authenticatable
+ {
+-    /** @use HasFactory<\Database\Factories\UserFactory> */
+-    use HasFactory, Notifiable;
++    use HasApiTokens, Notifiable;
+ 
+-    /**
+-     * The attributes that are mass assignable.
+-     *
+-     * @var list<string>
+-     */
+     protected $fillable = [
+         'name',
+         'email',
+         'password',
++        'role', 
++        'jenjang_pendidikan',
++    ];
++
++    protected $attributes = [
++        'role' => 'user', 
+     ];
+ 
+-    /**
+-     * The attributes that should be hidden for serialization.
+-     *
+-     * @var list<string>
+-     */
+     protected $hidden = [
+         'password',
+         'remember_token',
+     ];
+-
+-    /**
+-     * Get the attributes that should be cast.
+-     *
+-     * @return array<string, string>
+-     */
+-    protected function casts(): array
+-    {
+-        return [
+-            'email_verified_at' => 'datetime',
+-            'password' => 'hashed',
+-        ];
+-    }
+-}
++}
+\ No newline at end of file
+diff --git a/app/Providers/AppServiceProvider.php b/app/Providers/AppServiceProvider.php
+index 96e9f6c..60e6125 100644
+--- a/app/Providers/AppServiceProvider.php
++++ b/app/Providers/AppServiceProvider.php
+@@ -21,5 +21,6 @@ public function register(): void
+     public function boot(): void
+     {
+         Vite::prefetch(concurrency: 3);
++        \Laravel\Sanctum\Sanctum::usePersonalAccessTokenModel(\App\Models\PersonalAccessToken::class);
+     }
+ }
+diff --git a/bootstrap/app.php b/bootstrap/app.php
+index 5c02a59..0e21cf2 100644
+--- a/bootstrap/app.php
++++ b/bootstrap/app.php
+@@ -7,6 +7,7 @@
+ return Application::configure(basePath: dirname(__DIR__))
+     ->withRouting(
+         web: __DIR__.'/../routes/web.php',
++        api: __DIR__.'/../routes/api.php',
+         commands: __DIR__.'/../routes/console.php',
+         health: '/up',
+     )
+diff --git a/composer.json b/composer.json
+index baca0ac..bf863d3 100644
+--- a/composer.json
++++ b/composer.json
+@@ -3,7 +3,10 @@
+     "name": "laravel/laravel",
+     "type": "project",
+     "description": "The skeleton application for the Laravel framework.",
+-    "keywords": ["laravel", "framework"],
++    "keywords": [
++        "laravel",
++        "framework"
++    ],
+     "license": "MIT",
+     "require": {
+         "php": "^8.2",
+@@ -11,7 +14,7 @@
+         "laravel/framework": "^12.0",
+         "laravel/sanctum": "^4.0",
+         "laravel/tinker": "^2.10.1",
+-        "mongodb/laravel-mongodb": "^5.6",
++        "mongodb/laravel-mongodb": "^5.7",
+         "tightenco/ziggy": "^2.0"
+     },
+     "require-dev": {
+diff --git a/composer.lock b/composer.lock
+index 4630e59..367c0d6 100644
+--- a/composer.lock
++++ b/composer.lock
+@@ -4,7 +4,7 @@
+         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+         "This file is @generated automatically"
+     ],
+-    "content-hash": "6a06b003ef5b5849266192ad86a19ebc",
++    "content-hash": "a78dbcedcc1cde3824249d18fee58945",
+     "packages": [
+         {
+             "name": "brick/math",
+@@ -1128,16 +1128,16 @@
+         },
+         {
+             "name": "laravel/framework",
+-            "version": "v12.55.0",
++            "version": "v12.55.1",
+             "source": {
+                 "type": "git",
+                 "url": "https://github.com/laravel/framework.git",
+-                "reference": "6917962a55ac91598e8c5e2ebd25e27aed121b5e"
++                "reference": "6d9185a248d101b07eecaf8fd60b18129545fd33"
+             },
+             "dist": {
+                 "type": "zip",
+-                "url": "https://api.github.com/repos/laravel/framework/zipball/6917962a55ac91598e8c5e2ebd25e27aed121b5e",
+-                "reference": "6917962a55ac91598e8c5e2ebd25e27aed121b5e",
++                "url": "https://api.github.com/repos/laravel/framework/zipball/6d9185a248d101b07eecaf8fd60b18129545fd33",
++                "reference": "6d9185a248d101b07eecaf8fd60b18129545fd33",
+                 "shasum": ""
+             },
+             "require": {
+@@ -1346,7 +1346,7 @@
+                 "issues": "https://github.com/laravel/framework/issues",
+                 "source": "https://github.com/laravel/framework"
+             },
+-            "time": "2026-03-17T14:19:00+00:00"
++            "time": "2026-03-18T14:28:59+00:00"
+         },
+         {
+             "name": "laravel/prompts",
+@@ -1599,16 +1599,16 @@
+         },
+         {
+             "name": "league/commonmark",
+-            "version": "2.8.1",
++            "version": "2.8.2",
+             "source": {
+                 "type": "git",
+                 "url": "https://github.com/thephpleague/commonmark.git",
+-                "reference": "84b1ca48347efdbe775426f108622a42735a6579"
++                "reference": "59fb075d2101740c337c7216e3f32b36c204218b"
+             },
+             "dist": {
+                 "type": "zip",
+-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/84b1ca48347efdbe775426f108622a42735a6579",
+-                "reference": "84b1ca48347efdbe775426f108622a42735a6579",
++                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/59fb075d2101740c337c7216e3f32b36c204218b",
++                "reference": "59fb075d2101740c337c7216e3f32b36c204218b",
+                 "shasum": ""
+             },
+             "require": {
+@@ -1702,7 +1702,7 @@
+                     "type": "tidelift"
+                 }
+             ],
+-            "time": "2026-03-05T21:37:03+00:00"
++            "time": "2026-03-19T13:16:38+00:00"
+         },
+         {
+             "name": "league/config",
+@@ -2158,26 +2158,26 @@
+         },
+         {
+             "name": "mongodb/laravel-mongodb",
+-            "version": "5.6.0",
++            "version": "5.7.0",
+             "source": {
+                 "type": "git",
+                 "url": "https://github.com/mongodb/laravel-mongodb",
+-                "reference": "0828c481e166793fc359226b9de1eb836082aa45"
++                "reference": "0071a45e79741f316f9b8e3a0372c8881ba5f81f"
+             },
+             "dist": {
+                 "type": "zip",
+-                "url": "https://api.github.com/repos/mongodb/laravel-mongodb/zipball/0828c481e166793fc359226b9de1eb836082aa45",
+-                "reference": "0828c481e166793fc359226b9de1eb836082aa45",
++                "url": "https://api.github.com/repos/mongodb/laravel-mongodb/zipball/0071a45e79741f316f9b8e3a0372c8881ba5f81f",
++                "reference": "0071a45e79741f316f9b8e3a0372c8881ba5f81f",
+                 "shasum": ""
+             },
+             "require": {
+                 "composer-runtime-api": "^2.0.0",
+                 "ext-mongodb": "^1.21|^2",
+-                "illuminate/cache": "^10.36|^11|^12",
+-                "illuminate/container": "^10.0|^11|^12",
+-                "illuminate/database": "^10.30|^11|^12",
+-                "illuminate/events": "^10.0|^11|^12",
+-                "illuminate/support": "^10.0|^11|^12",
++                "illuminate/cache": "^10.36|^11|^12|^13.0",
++                "illuminate/container": "^10.0|^11|^12|^13.0",
++                "illuminate/database": "^10.30|^11|^12|^13.0",
++                "illuminate/events": "^10.0|^11|^12|^13.0",
++                "illuminate/support": "^10.0|^11|^12|^13.0",
+                 "mongodb/mongodb": "^1.21|^2",
+                 "php": "^8.1"
+             },
+@@ -2188,15 +2188,15 @@
+                 "jenssegers/mongodb": "self.version"
+             },
+             "require-dev": {
+-                "doctrine/coding-standard": "12.0.x-dev",
++                "doctrine/coding-standard": "^12.0",
+                 "laravel/scout": "^10.3",
+                 "league/flysystem-gridfs": "^3.28",
+                 "league/flysystem-read-only": "^3.0",
+                 "mockery/mockery": "^1.4.4",
+-                "orchestra/testbench": "^8.0|^9.0|^10.0",
+-                "phpstan/phpstan": "^1.10",
+-                "phpunit/phpunit": "^10.3|^11.5.3",
+-                "rector/rector": "^1.2",
++                "orchestra/testbench": "^8.0|^9.0|^10.0|^11.0",
++                "phpstan/phpstan": "^1.10|^2.1",
++                "phpunit/phpunit": "^10.3|^11.5.3|^12.5.12",
++                "rector/rector": "^1.2|^2.3",
+                 "spatie/laravel-query-builder": "^5.6|^6"
+             },
+             "suggest": {
+@@ -2261,7 +2261,7 @@
+                 "issues": "https://www.mongodb.com/support",
+                 "security": "https://www.mongodb.com/security"
+             },
+-            "time": "2026-02-12T13:07:48+00:00"
++            "time": "2026-03-20T12:20:25+00:00"
+         },
+         {
+             "name": "mongodb/mongodb",
+diff --git a/config/sanctum.php b/config/sanctum.php
+new file mode 100644
+index 0000000..44527d6
+--- /dev/null
++++ b/config/sanctum.php
+@@ -0,0 +1,84 @@
++<?php
++
++use Laravel\Sanctum\Sanctum;
++
++return [
++
++    /*
++    |--------------------------------------------------------------------------
++    | Stateful Domains
++    |--------------------------------------------------------------------------
++    |
++    | Requests from the following domains / hosts will receive stateful API
++    | authentication cookies. Typically, these should include your local
++    | and production domains which access your API via a frontend SPA.
++    |
++    */
++
++    'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
++        '%s%s',
++        'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
++        Sanctum::currentApplicationUrlWithPort(),
++        // Sanctum::currentRequestHost(),
++    ))),
++
++    /*
++    |--------------------------------------------------------------------------
++    | Sanctum Guards
++    |--------------------------------------------------------------------------
++    |
++    | This array contains the authentication guards that will be checked when
++    | Sanctum is trying to authenticate a request. If none of these guards
++    | are able to authenticate the request, Sanctum will use the bearer
++    | token that's present on an incoming request for authentication.
++    |
++    */
++
++    'guard' => ['web'],
++
++    /*
++    |--------------------------------------------------------------------------
++    | Expiration Minutes
++    |--------------------------------------------------------------------------
++    |
++    | This value controls the number of minutes until an issued token will be
++    | considered expired. This will override any values set in the token's
++    | "expires_at" attribute, but first-party sessions are not affected.
++    |
++    */
++
++    'expiration' => null,
++
++    /*
++    |--------------------------------------------------------------------------
++    | Token Prefix
++    |--------------------------------------------------------------------------
++    |
++    | Sanctum can prefix new tokens in order to take advantage of numerous
++    | security scanning initiatives maintained by open source platforms
++    | that notify developers if they commit tokens into repositories.
++    |
++    | See: https://docs.github.com/en/code-security/secret-scanning/about-secret-scanning
++    |
++    */
++
++    'token_prefix' => env('SANCTUM_TOKEN_PREFIX', ''),
++
++    /*
++    |--------------------------------------------------------------------------
++    | Sanctum Middleware
++    |--------------------------------------------------------------------------
++    |
++    | When authenticating your first-party SPA with Sanctum you may need to
++    | customize some of the middleware Sanctum uses while processing the
++    | request. You may change the middleware listed below as required.
++    |
++    */
++
++    'middleware' => [
++        'authenticate_session' => Laravel\Sanctum\Http\Middleware\AuthenticateSession::class,
++        'encrypt_cookies' => Illuminate\Cookie\Middleware\EncryptCookies::class,
++        'validate_csrf_token' => Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
++    ],
++
++];
+diff --git a/database/migrations/2026_03_22_100757_create_personal_access_tokens_table.php b/database/migrations/2026_03_22_100757_create_personal_access_tokens_table.php
+new file mode 100644
+index 0000000..40ff706
+--- /dev/null
++++ b/database/migrations/2026_03_22_100757_create_personal_access_tokens_table.php
+@@ -0,0 +1,33 @@
++<?php
++
++use Illuminate\Database\Migrations\Migration;
++use Illuminate\Database\Schema\Blueprint;
++use Illuminate\Support\Facades\Schema;
++
++return new class extends Migration
++{
++    /**
++     * Run the migrations.
++     */
++    public function up(): void
++    {
++        Schema::create('personal_access_tokens', function (Blueprint $table) {
++            $table->id();
++            $table->morphs('tokenable');
++            $table->text('name');
++            $table->string('token', 64)->unique();
++            $table->text('abilities')->nullable();
++            $table->timestamp('last_used_at')->nullable();
++            $table->timestamp('expires_at')->nullable()->index();
++            $table->timestamps();
++        });
++    }
++
++    /**
++     * Reverse the migrations.
++     */
++    public function down(): void
++    {
++        Schema::dropIfExists('personal_access_tokens');
++    }
++};
+diff --git a/package-lock.json b/package-lock.json
+index a87bba3..b565fd8 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -112,7 +112,6 @@
+             "integrity": "sha512-CGOfOJqWjg2qW/Mb6zNsDm+u5vFQ8DxXfbM09z69p5Z6+mE1ikP2jUXw+j42Pf1XTYED2Rni5f95npYeuwMDQA==",
+             "dev": true,
+             "license": "MIT",
+-            "peer": true,
+             "dependencies": {
+                 "@babel/code-frame": "^7.29.0",
+                 "@babel/generator": "^7.29.0",
+@@ -3837,7 +3836,6 @@
+             "integrity": "sha512-BH7YwL6rA93ReqeQS1c4bsPpcfOmJasG+Fkr6Y59q83f9M1WcBRHR2vM+P9eOisYRcN3ujQoiZY8uk5W+1WL8w==",
+             "devOptional": true,
+             "license": "MIT",
+-            "peer": true,
+             "dependencies": {
+                 "undici-types": "~6.21.0"
+             }
+@@ -3868,7 +3866,6 @@
+             "resolved": "https://registry.npmjs.org/@types/react/-/react-18.3.28.tgz",
+             "integrity": "sha512-z9VXpC7MWrhfWipitjNdgCauoMLRdIILQsAEV+ZesIzBq/oUlxk0m3ApZuMFCXdnS4U7KrI+l3WRUEGQ8K1QKw==",
+             "license": "MIT",
+-            "peer": true,
+             "dependencies": {
+                 "@types/prop-types": "*",
+                 "csstype": "^3.2.2"
+@@ -4054,7 +4051,6 @@
+                 }
+             ],
+             "license": "MIT",
+-            "peer": true,
+             "dependencies": {
+                 "baseline-browser-mapping": "^2.9.0",
+                 "caniuse-lite": "^1.0.30001759",
+@@ -5896,7 +5892,6 @@
+             "integrity": "sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==",
+             "dev": true,
+             "license": "MIT",
+-            "peer": true,
+             "engines": {
+                 "node": ">=12"
+             },
+@@ -5924,7 +5919,6 @@
+                 }
+             ],
+             "license": "MIT",
+-            "peer": true,
+             "dependencies": {
+                 "nanoid": "^3.3.11",
+                 "picocolors": "^1.1.1",
+@@ -6014,7 +6008,6 @@
+             "resolved": "https://registry.npmjs.org/react/-/react-18.3.1.tgz",
+             "integrity": "sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==",
+             "license": "MIT",
+-            "peer": true,
+             "dependencies": {
+                 "loose-envify": "^1.1.0"
+             },
+@@ -6080,7 +6073,6 @@
+             "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-18.3.1.tgz",
+             "integrity": "sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==",
+             "license": "MIT",
+-            "peer": true,
+             "dependencies": {
+                 "loose-envify": "^1.1.0",
+                 "scheduler": "^0.23.2"
+@@ -6987,7 +6979,6 @@
+             "integrity": "sha512-cZn6NDFE7wdTpINgs++ZJ4N49W2vRp8LCKrn3Ob1kYNtOo21vfDoaV5GzBfLU4MovSAB8uNRm4jgzVQZ+mBzPQ==",
+             "dev": true,
+             "license": "MIT",
+-            "peer": true,
+             "dependencies": {
+                 "esbuild": "^0.25.0",
+                 "fdir": "^6.4.4",
+diff --git a/routes/api.php b/routes/api.php
+new file mode 100644
+index 0000000..fc6bb9c
+--- /dev/null
++++ b/routes/api.php
+@@ -0,0 +1,14 @@
++<?php
++
++use Illuminate\Http\Request;
++use Illuminate\Support\Facades\Route;
++use App\Http\Controllers\AuthController;
++
++// Pintu buat Register & Login
++Route::post('/v1/register', [AuthController::class, 'register']);
++Route::post('/v1/login', [AuthController::class, 'login']);
++
++// Rute buat ambil data user yang lagi login (butuh token)
++Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
++    return $request->user();
++});
+\ No newline at end of file

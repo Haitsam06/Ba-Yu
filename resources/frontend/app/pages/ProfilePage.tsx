@@ -1,21 +1,27 @@
 import { useState } from 'react';
 import { MobileLayout } from '../components/MobileLayout';
-import { Settings, Edit, FileText, Bookmark, Eye, Heart, Users, Shield, BarChart3, Clock, CheckCircle, ChevronRight, Activity, Calendar } from 'lucide-react';
+import { Settings, Edit, FileText, Bookmark, Eye, Heart, Users, Shield, BarChart3, Clock, CheckCircle, ChevronRight, Activity, Calendar, Sparkles } from 'lucide-react';
 import { mockUsers, mockNotes } from '../data/mockData';
 import { Link } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
+import { ApplyPakarModal } from '../components/ApplyPakarModal';
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<'catatan' | 'bookmarks' | 'aktivitas'>('catatan');
+  const [applyModalOpen, setApplyModalOpen] = useState(false);
   const { user } = useAuth();
   
-  // Use auth user if available, fallback to mock user
-  const currentUser = user?.role === 'pakar' 
-    ? { ...mockUsers[0], name: user.name, avatar: user.avatar, role: 'pakar' }
-    : user?.role === 'admin'
-    ? { ...mockUsers[0], name: user.name, avatar: user.avatar, role: 'admin' }
-    : { ...mockUsers[0], name: user?.name || mockUsers[0].name, avatar: user?.avatar || mockUsers[0].avatar };
+  // Use auth user if available, fallback to mock user for stats
+  const currentUser = {
+      ...mockUsers[0],
+      id: user?.id || user?._id || mockUsers[0].id,
+      name: user?.name || mockUsers[0].name,
+      avatar: user?.avatar || mockUsers[0].avatar,
+      role: user?.role || 'siswa',
+      jenjang: user?.jenjang_pendidikan || 'SMA'
+  };
     
+  // Find notes based on matched ID
   const userNotes = mockNotes.filter(note => note.authorId === currentUser.id);
 
   return (
@@ -85,6 +91,17 @@ export default function ProfilePage() {
                   </div>
                </div>
             </div>
+
+            {/* Application Banner */}
+            {user?.role !== 'pakar' && user?.role !== 'admin' && (
+              <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-6 shadow-md shadow-indigo-500/20 text-center relative overflow-hidden">
+                 <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-xl translate-x-8 -translate-y-8 pointer-events-none"></div>
+                 <Sparkles className="w-8 h-8 text-yellow-300 mx-auto mb-3" />
+                 <h3 className="font-['Lexend_Deca'] font-bold text-white text-lg mb-2">Punya sertifikat/gelar?</h3>
+                 <p className="font-['Manrope'] text-white/90 text-sm mb-4">Ayo bagikan ilmu berharga sebagai Pakar Pendidikan resmi di Ba-Yu.</p>
+                 <button onClick={() => setApplyModalOpen(true)} className="bg-white text-indigo-600 font-['Lexend_Deca'] font-bold text-sm px-5 py-2.5 rounded-xl hover:shadow-lg transition-all w-full">Daftar Sertifikasi</button>
+              </div>
+            )}
 
             {/* Performance/Engagement Stats */}
             <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
@@ -275,6 +292,8 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+      
+      <ApplyPakarModal isOpen={applyModalOpen} onClose={() => setApplyModalOpen(false)} />
     </MobileLayout>
   );
 }

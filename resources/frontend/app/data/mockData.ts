@@ -42,6 +42,16 @@ export interface Comment {
   createdAt: string;
 }
 
+export interface CertificationRequest {
+  id: string;
+  userId: string;
+  name: string;
+  email: string;
+  documentUrl: string;
+  status: 'pending' | 'approved' | 'rejected';
+  submittedAt: string;
+}
+
 export const mockUsers: User[] = [
   {
     id: '1',
@@ -408,3 +418,24 @@ export const mataPelajaran = [
 export const getUserById = (id: string) => mockUsers.find(u => u.id === id);
 export const getNoteById = (id: string) => mockNotes.find(n => n.id === id);
 export const getCommentsByNoteId = (noteId: string) => mockComments.filter(c => c.noteId === noteId);
+
+export let mockCertifications: CertificationRequest[] = [
+  {
+    id: 'cert-1',
+    userId: '1',
+    name: 'Siti Nurhaliza',
+    email: 'siti@example.com',
+    documentUrl: 'Sertifikat_Juara_Matematika_Siti.pdf',
+    status: 'pending',
+    submittedAt: '2026-03-23'
+  },
+  {
+    id: 'cert-2',
+    userId: '4',
+    name: 'Dewi Lestari',
+    email: 'dewi@example.com',
+    documentUrl: 'Sertifikat_Olimpiade_Inggris_Dewi.jpg',
+    status: 'approved',
+    submittedAt: '2026-03-15'
+  }
+];

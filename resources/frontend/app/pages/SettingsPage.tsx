@@ -5,9 +5,11 @@ import { mockUsers } from '../data/mockData';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function SettingsPage() {
-  const currentUser = mockUsers[0];
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  
+  // Safe fallback if user state isn't populated yet
+  if (!user) return null;
 
   const handleLogout = () => {
     logout();
@@ -32,16 +34,16 @@ export default function SettingsPage() {
           <div className="bg-gradient-to-br from-primary to-secondary rounded-3xl p-5 mb-6 shadow-lg">
             <div className="flex items-center gap-4">
               <img
-                src={currentUser.avatar}
-                alt={currentUser.name}
-                className="w-16 h-16 rounded-2xl border-2 border-white/50 object-cover shadow-xl"
+                src={user.avatar || 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100'}
+                alt={user.name}
+                className="w-16 h-16 rounded-2xl border-2 border-white/50 object-cover shadow-xl bg-white/20"
               />
               <div className="flex-1">
                 <h2 className="font-['Lexend_Deca'] font-bold text-white text-lg mb-1">
-                  {currentUser.name}
+                  {user.name}
                 </h2>
                 <p className="font-['Manrope'] text-white/90 text-sm">
-                  {currentUser.email}
+                  {user.email}
                 </p>
               </div>
               <Link

@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router';
 import { RootLayout } from './components/RootLayout';
-import Onboarding from './pages/Onboarding';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { LandingPage } from './pages/landing-page';
 import Login from './pages/Login';
 import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
@@ -21,51 +22,57 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Onboarding />,
+        element: <LandingPage />,
       },
       {
         path: 'login',
         element: <Login />,
       },
       {
-        path: 'home',
-        element: <HomePage />,
-      },
-      {
         path: 'explore',
         element: <ExplorePage />,
-      },
-      {
-        path: 'upload',
-        element: <UploadPage />,
       },
       {
         path: 'note/:id',
         element: <NoteDetailPage />,
       },
       {
-        path: 'notifications',
-        element: <NotificationsPage />,
-      },
-      {
-        path: 'profile',
-        element: <ProfilePage />,
-      },
-      {
-        path: 'settings',
-        element: <SettingsPage />,
-      },
-      {
-        path: 'edit-profile',
-        element: <EditProfilePage />,
-      },
-      {
-        path: 'pakar',
-        element: <PakarDashboard />,
-      },
-      {
-        path: 'admin',
-        element: <AdminDashboard />,
+        // Protected Wrapper
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: 'home',
+            element: <HomePage />,
+          },
+          {
+            path: 'upload',
+            element: <UploadPage />,
+          },
+          {
+            path: 'notifications',
+            element: <NotificationsPage />,
+          },
+          {
+            path: 'profile',
+            element: <ProfilePage />,
+          },
+          {
+            path: 'settings',
+            element: <SettingsPage />,
+          },
+          {
+            path: 'edit-profile',
+            element: <EditProfilePage />,
+          },
+          {
+            path: 'pakar',
+            element: <PakarDashboard />,
+          },
+          {
+            path: 'admin',
+            element: <AdminDashboard />,
+          },
+        ]
       },
       {
         path: '*',

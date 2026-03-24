@@ -6,11 +6,6 @@ import { useAuth } from '../contexts/AuthContext';
 
 export default function HomePage() {
   const { user } = useAuth();
-  const currentUser = user?.role === 'pakar' 
-    ? { ...mockUsers[0], name: user.name, avatar: user.avatar }
-    : user?.role === 'admin'
-    ? { ...mockUsers[0], name: user.name, avatar: user.avatar }
-    : mockUsers[0];
   const recentNotes = mockNotes.slice(0, 6);
   const displayedSubjects = mataPelajaran.slice(0, 5); // 5 subjects for better grid
 
@@ -23,14 +18,14 @@ export default function HomePage() {
           <div>
             <h1 className="text-2xl font-['Lexend_Deca'] font-bold text-foreground">Dashboard</h1>
             <p className="text-muted-foreground font-['Manrope'] text-sm mt-1">
-              Selamat datang kembali, {currentUser.name.split(' ')[0]}!
+              Selamat datang kembali, {user?.name?.split(' ')[0] || 'Pengguna'}!
             </p>
           </div>
           
           <div className="hidden md:flex items-center gap-3">
              <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2">
                 <span className="text-sm font-['Manrope'] font-semibold text-primary">Status:</span>
-                <span className="text-sm font-['Manrope'] text-foreground capitalize">{currentUser.jenjang}</span>
+                <span className="text-sm font-['Manrope'] text-foreground uppercase">{user?.role === 'pakar' || user?.role === 'admin' ? user?.role : (user?.jenjang_pendidikan || 'Siswa')}</span>
              </div>
           </div>
         </div>

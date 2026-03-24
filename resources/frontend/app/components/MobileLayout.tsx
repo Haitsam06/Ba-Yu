@@ -9,6 +9,7 @@ interface MobileLayoutProps {
 
 export function MobileLayout({ children, showBottomNav = true }: MobileLayoutProps) {
   const [isMobile, setIsMobile] = useState(false);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
   useEffect(() => {
     const handleResize = () => {
@@ -23,8 +24,8 @@ export function MobileLayout({ children, showBottomNav = true }: MobileLayoutPro
     <div className="min-h-screen bg-[#FAFAFA] flex flex-col md:flex-row w-full overflow-hidden">
       
       {/* DESKTOP SIDEBAR (Hidden on mobile) */}
-      <div className="hidden md:block w-64 flex-shrink-0 z-50">
-         <SideNav />
+      <div className={`hidden md:block flex-shrink-0 z-50 transition-[width] duration-300 ease-out ${isSidebarExpanded ? 'w-72' : 'w-24'}`}>
+         <SideNav isExpanded={isSidebarExpanded} setIsExpanded={setIsSidebarExpanded} />
       </div>
 
       {/* MOBILE TOP BAR (Hidden on desktop) - Keeps the brand visible */}
