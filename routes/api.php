@@ -3,12 +3,16 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SertifikasiController;
 
-// Pintu buat Register & Login
 Route::post('/v1/register', [AuthController::class, 'register']);
 Route::post('/v1/login', [AuthController::class, 'login']);
 
-// Rute buat ambil data user yang lagi login (butuh token)
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sanctum')->group(function () {
+    
+    Route::post('/v1/sertifikasi', [SertifikasiController::class, 'ajukan']);
+
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 });
