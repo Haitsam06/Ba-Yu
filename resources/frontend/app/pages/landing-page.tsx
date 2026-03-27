@@ -1,25 +1,62 @@
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { Navbar } from '../components/navbar';
 import { Footer } from '../components/footer';
 import { ScrollToTop } from '../components/scroll-to-top';
 import { Button } from '../components/ui/button';
-import { BookOpen, Filter, Share2, ArrowRight, Users, FileText, Star, CheckCircle, Zap, TrendingUp, CheckCircle2, Flame, Trophy, Shield, Sparkles, Type, Image as ImageIcon, Bold, Italic, Underline, Heading1, List } from 'lucide-react';
-import { motion } from 'motion/react';
-import { FeatureCarousel } from '../components/feature-carousel';
-import { useState } from 'react';
+import { BookOpen, Shield, CheckCircle, Zap, Star, Sparkles, Type, ImageIcon, Bold, Italic, Underline, Heading1, List, ArrowRight } from 'lucide-react';
 import { AuthModal } from '../components/auth-modal';
+import { FeatureCarousel } from '../components/feature-carousel';
 
 export function LandingPage() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const openAuthModal = (tab: 'login' | 'register') => {
     setAuthTab(tab);
     setShowAuthModal(true);
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+        setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.classList.remove('opacity-0', 'translate-y-12');
+                }
+            });
+        },
+        { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    );
+    // Add slightly delayed stagger classes
+    document.querySelectorAll('.reveal').forEach((el, index) => {
+      observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  const glassClass = 'bg-white/60 backdrop-blur-lg border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)]';
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="font-sans text-gray-800 bg-white min-h-screen overflow-x-hidden selection:bg-primary/20 scroll-smooth">
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            .reveal { transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1); }
+          `,
+        }}
+      />
+      
       <Navbar />
       <ScrollToTop />
       <AuthModal 
@@ -28,673 +65,265 @@ export function LandingPage() {
         defaultTab={authTab}
       />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-16 md:pt-20 pb-16 md:pb-28 min-h-[80vh] md:min-h-[85vh] flex items-center">
-        {/* Clean Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-white to-secondary -z-10" />
-        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-purple-50/30 to-transparent -z-10" />
-        
-        {/* Subtle Animated Orbs */}
-        <motion.div
-          animate={{ 
-            scale: [1, 1.1, 1],
-            x: [0, 30, 0],
-            y: [0, -20, 0]
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-20 right-[10%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-gradient-to-br from-primary/10 to-purple-200/20 rounded-full blur-3xl -z-10"
-        />
-        <motion.div
-          animate={{ 
-            scale: [1, 1.15, 1],
-            x: [0, -20, 0],
-            y: [0, 30, 0]
-          }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-10 left-[8%] w-[280px] md:w-[450px] h-[280px] md:h-[450px] bg-gradient-to-tr from-accent/15 to-blue-100/20 rounded-full blur-3xl -z-10"
-        />
+      {/* HERO SECTION */}
+      <section id="beranda" className="pt-32 pb-20 lg:pt-48 lg:pb-32 relative bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-50/50 via-white to-white overflow-hidden min-h-[90vh] flex items-center">
+        {/* LIGHT RADIAL GRADIENTS */}
+        <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-[radial-gradient(circle,rgba(79,70,229,0.06)_0%,transparent_70%)] rounded-full z-0 pointer-events-none"></div>
+        <div className="absolute bottom-10 left-0 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(192,38,211,0.04)_0%,transparent_70%)] rounded-full z-0 pointer-events-none"></div>
 
-        <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
-            {/* Left Content */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-              className="space-y-6 md:space-y-8 text-center lg:text-left"
-            >
-              {/* Badge */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 400 }}
-                className="inline-flex items-center gap-2 md:gap-2.5 bg-gradient-to-r from-primary/10 to-purple-500/10 backdrop-blur-sm rounded-full px-4 md:px-5 py-2 md:py-2.5 shadow-sm text-sm md:text-base transition-all duration-300"
-                style={{ borderWidth: '1px', borderStyle: 'solid', borderColor: 'rgba(93, 92, 230, 0.2)' }}
-                whileHover={{ scale: 1.03 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(93, 92, 230, 0.4)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(93, 92, 230, 0.2)';
-                }}
-              >
-                <motion.div
-                  animate={{ rotate: [0, 10, 0, -10, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <Zap className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary" />
-                </motion.div>
-                <span className="text-xs md:text-sm font-semibold text-primary">Platform Belajar Terpercaya di Indonesia</span>
-              </motion.div>
-
-              {/* Heading */}
-              <div className="space-y-3 md:space-y-4">
-                <motion.h1 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-[1.1] tracking-tight"
-                >
-                  Belajar Lebih{' '}
-                  <span className="bg-gradient-to-r from-primary via-purple-600 to-primary bg-clip-text text-transparent">
-                    Cerdas
-                  </span>
-                  <br />
-                  Lebih{' '}
-                  <span className="bg-gradient-to-r from-accent via-amber-500 to-accent bg-clip-text text-transparent">
-                    Terstruktur
-                  </span>
-                </motion.h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8 items-center">
                 
-                <motion.p 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  className="text-base md:text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-xl mx-auto lg:mx-0"
-                >
-                  Platform manajemen catatan belajar yang membantu pelajar Indonesia mengorganisir, berbagi, dan mendiskusikan materi pembelajaran dengan lebih efektif.
-                </motion.p>
-              </div>
+                {/* HERO TEXT */}
+                <div className="reveal opacity-0 translate-y-8 text-center lg:text-left mt-10 md:mt-0 lg:col-span-6 xl:col-span-5">
+                    <div className="inline-flex items-center gap-2 py-2 px-4 rounded-full bg-indigo-50/80 border border-indigo-100/80 shadow-sm mb-8 lg:mb-10">
+                        <span className="flex h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                        <span className="text-primary text-[13px] font-bold tracking-wide uppercase">
+                            Platform Belajar #1 di Indonesia
+                        </span>
+                    </div>
 
-              {/* Key Features Pills */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="flex flex-wrap gap-2 md:gap-3 justify-center lg:justify-start"
-              >
-                {[
-                  { icon: CheckCircle, text: 'Gratis Selamanya', color: 'from-green-50 to-emerald-50', textColor: 'text-green-700', iconColor: 'text-green-600' },
-                  { icon: BookOpen, text: 'Upload Unlimited', color: 'from-blue-50 to-cyan-50', textColor: 'text-blue-700', iconColor: 'text-blue-600' },
-                  { icon: Users, text: 'Validasi Pakar', color: 'from-purple-50 to-pink-50', textColor: 'text-purple-700', iconColor: 'text-purple-600' }
-                ].map((item, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.6 + index * 0.1, type: "spring" }}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    className={`flex items-center gap-1.5 md:gap-2 bg-gradient-to-br ${item.color} border border-gray-200/50 rounded-full px-3 md:px-4 py-2 md:py-2.5 shadow-sm cursor-pointer`}
-                  >
-                    <item.icon className={`w-3.5 h-3.5 md:w-4 md:h-4 ${item.iconColor}`} />
-                    <span className={`text-xs md:text-sm font-semibold ${item.textColor}`}>{item.text}</span>
-                  </motion.div>
-                ))}
-              </motion.div>
+                    <h1 className="text-[2.75rem] sm:text-6xl lg:text-[4rem] xl:text-[4.5rem] font-extrabold text-gray-900 tracking-tight leading-[1.05] mb-8">
+                        Belajar Lebih <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo-800">Cerdas</span> <br className="hidden xl:block" />
+                        Lebih <span className="text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-600 to-pink-600">Terstruktur</span>
+                    </h1>
 
-              {/* CTA Buttons */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-                className="flex flex-wrap gap-4"
-              >
-                <motion.div
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Button 
-                    size="lg" 
-                    onClick={() => openAuthModal('register')}
-                    className="bg-primary hover:bg-primary/90 h-14 px-8 rounded-xl shadow-lg shadow-primary/25 font-bold text-base group"
-                  >
-                    Mulai Gratis
-                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </motion.div>
-                <a href="#features">
-                  <motion.div
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="h-14 px-8 rounded-xl border-2 hover:border-primary hover:bg-primary/5 font-semibold text-base"
-                    >
-                      Lihat Fitur
-                    </Button>
-                  </motion.div>
-                </a>
-              </motion.div>
+                    <p className="text-lg sm:text-xl text-gray-600 mb-12 leading-relaxed font-medium max-w-2xl mx-auto lg:mx-0">
+                        Platform manajemen catatan belajar yang membantu pelajar mengorganisir, berbagi, dan mendiskusikan materi pembelajaran secara efektif dan kolaboratif.
+                    </p>
 
-              {/* Social Proof */}
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-                className="flex items-center gap-5 pt-6 border-t border-border/50"
-              >
-                <div className="flex -space-x-3">
-                  {[
-                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
-                    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
-                    'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150',
-                    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150'
-                  ].map((src, i) => (
-                    <motion.img
-                      key={i}
-                      src={src}
-                      alt=""
-                      className="w-12 h-12 rounded-full border-3 border-white shadow-md"
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.9 + i * 0.1, type: "spring" }}
-                      whileHover={{ scale: 1.15, zIndex: 10, y: -2 }}
-                    />
-                  ))}
+                    <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 mb-4">
+                        <button
+                            onClick={() => openAuthModal('register')}
+                            className="bg-primary text-white px-9 py-4 rounded-full font-bold text-lg transition-all shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1 transform duration-300 flex items-center justify-center gap-2 group"
+                        >
+                            Mulai Sekarang <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                        <a
+                            href="#features"
+                            className={`${glassClass} px-9 py-4 rounded-full font-bold text-lg text-gray-700 hover:bg-white hover:border-gray-300 transition-all transform duration-300 hover:-translate-y-0.5 flex items-center justify-center`}
+                        >
+                            Panduan Fitur
+                        </a>
+                    </div>
                 </div>
-                <div>
-                  <div className="flex items-center gap-1 mb-1">
-                    {[...Array(5)].map((_, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 1 + i * 0.08 }}
-                      >
-                        <Star className="w-4 h-4 fill-accent text-accent" />
-                      </motion.div>
-                    ))}
-                  </div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Dipercaya oleh <span className="font-bold text-foreground">5,000+</span> pelajar
-                  </p>
+
+                {/* HERO MOCKUP (QLC STYLE FRAME) */}
+                <div className="reveal opacity-0 translate-y-12 relative lg:col-span-6 xl:col-span-7" style={{ transitionDelay: '0.15s' }}>
+                    {/* Rotated background frame */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 to-white rounded-[3rem] border border-indigo-100/50 transform rotate-3 z-0 shadow-lg scale-[0.98] mx-auto transition-transform duration-1000 ease-in-out hover:rotate-6"></div>
+
+                    {/* Main Image Frame (No Blur) */}
+                    <div className="relative z-10 p-2 sm:p-3 bg-white/40 rounded-[3rem] border border-white shadow-xl aspect-square sm:aspect-[4/3] lg:aspect-square overflow-hidden group flex items-center justify-center backdrop-blur-sm">
+                        <div className="w-full h-full relative rounded-[2.5rem] overflow-hidden shadow-2xl border-[6px] border-white/80 group-hover:scale-[1.03] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">
+                            <img
+                                src="https://images.unsplash.com/photo-1707836868495-3307d371aba4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200"
+                                alt="Ba-Yu App Mockup"
+                                className="w-full h-full object-cover object-top"
+                            />
+                            {/* Inner glass reflection */}
+                            <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none rounded-[2.5rem]"></div>
+                        </div>
+                    </div>
+
+                    {/* Floating Badge (Pakar) */}
+                    <div className={`${glassClass} absolute -bottom-6 -left-6 p-4 rounded-2xl shadow-lg z-20 flex items-center gap-3 border border-white/80 transition-transform duration-300 hover:-translate-y-2`}>
+                        <div className="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-white">
+                            <Shield className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-bold text-gray-900">Validasi</p>
+                            <p className="text-xs text-gray-600">Pakar Pendidikan</p>
+                        </div>
+                    </div>
+                    
+                    {/* Floating Badge (Gratis) */}
+                    <div className={`${glassClass} absolute top-10 -right-6 p-4 rounded-2xl shadow-lg z-20 flex items-center gap-3 border border-white/80 transition-transform duration-300 hover:-translate-y-2 hidden md:flex`}>
+                        <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white">
+                            <CheckCircle className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-bold text-gray-900">100% Gratis</p>
+                            <p className="text-xs text-gray-600">Tanpa Biaya Langganan</p>
+                        </div>
+                    </div>
                 </div>
-              </motion.div>
-            </motion.div>
-
-            {/* Right - Mockup & Cards */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="relative flex justify-center lg:justify-end"
-            >
-              {/* Main Device Mockup */}
-              <motion.div 
-                className="relative z-10 w-full max-w-lg"
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-gray-100 bg-gray-100">
-                  <motion.img
-                    src="https://images.unsplash.com/photo-1707836868495-3307d371aba4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2JpbGUlMjBwaG9uZSUyMGFwcCUyMG1vY2t1cCUyMHNjcmVlbnxlbnwxfHx8fDE3NzE1NTYzMzZ8MA&ixlib=rb-4.1.0&q=80&w=600"
-                    alt="Ba-Yu App"
-                    className="rounded-[2rem] w-full h-auto object-contain"
-                    initial={{ scale: 0.95 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.5, type: "spring" }}
-                  />
-                  {/* Subtle overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
-                </div>
-              </motion.div>
-
-              {/* Floating Stats Card - Top Left */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 }}
-              >
-                <motion.div
-                  animate={{ y: [-10, 10, -10] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                  whileHover={{ scale: 1.05, y: 0 }}
-                  className="absolute top-8 -left-6 lg:left-0 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-5 border border-gray-100 z-20 cursor-pointer"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-lg">
-                      <BookOpen className="w-7 h-7 text-white" />
-                    </div>
-                    <div>
-                      <div className="text-2xl font-black text-foreground">Unlimited</div>
-                      <div className="text-sm font-medium text-muted-foreground">Upload Catatan</div>
-                    </div>
-                  </div>
-                </motion.div>
-              </motion.div>
-
-              {/* Floating Stats Card - Bottom Right */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.1 }}
-              >
-                <motion.div
-                  animate={{ y: [10, -10, 10] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  whileHover={{ scale: 1.05, y: 0 }}
-                  className="absolute bottom-8 -right-6 lg:right-0 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-5 border border-gray-100 z-20 cursor-pointer"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent to-amber-500 flex items-center justify-center shadow-lg">
-                      <Shield className="w-7 h-7 text-white" />
-                    </div>
-                    <div>
-                      <div className="text-2xl font-black text-foreground">Pakar</div>
-                      <div className="text-sm font-medium text-muted-foreground">Validasi Terpercaya</div>
-                    </div>
-                  </div>
-                </motion.div>
-              </motion.div>
-
-              {/* Success Badge - Top Right */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.3, type: "spring" }}
-              >
-                <motion.div
-                  animate={{ rotate: [-3, 3, -3] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  whileHover={{ scale: 1.1, rotate: 0 }}
-                  className="absolute top-1/4 -right-4 lg:-right-8 bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-xl shadow-2xl p-3 z-20 cursor-pointer"
-                >
-                  <div className="text-center">
-                    <CheckCircle className="w-6 h-6 mx-auto mb-1" />
-                    <div className="text-xs font-black uppercase">Gratis</div>
-                  </div>
-                </motion.div>
-              </motion.div>
-
-              {/* Rating Badge - Middle Left */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.5, type: "spring" }}
-              >
-                <motion.div
-                  animate={{ y: [-5, 5, -5] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                  whileHover={{ scale: 1.1 }}
-                  className="absolute top-1/2 -left-4 lg:-left-8 bg-gradient-to-br from-amber-400 to-orange-500 text-white rounded-xl shadow-2xl p-3 z-20 cursor-pointer"
-                >
-                  <div className="text-center">
-                    <Star className="w-6 h-6 mx-auto mb-1 fill-white" />
-                    <div className="text-xs font-black">4.9/5</div>
-                  </div>
-                </motion.div>
-              </motion.div>
-            </motion.div>
-          </div>
+            </div>
         </div>
       </section>
 
-      {/* Stats Strip */}
-      <section className="bg-primary text-white py-6 md:py-8">
-        <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 text-center">
-            {[
-              { value: '100%', label: 'Gratis Selamanya' },
-              { value: '24/7', label: 'Akses Tanpa Batas' },
-              { value: 'Unlimited', label: 'Upload Catatan' },
-              { value: 'Pakar', label: 'Validasi Terpercaya' }
-            ].map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
-                className="cursor-pointer"
-              >
-                <div className="text-2xl md:text-3xl font-bold mb-1">{stat.value}</div>
-                <div className="text-primary-foreground/80 text-xs md:text-sm">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
+      {/* WHY BA-YU (TENTANG) */}
+      <section id="tentang" className="py-24 relative bg-[#FDFBF7] border-t border-b border-[#F0ECE1] overflow-hidden">
+        {/* Soft Accent Gradients */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(79,70,229,0.03)_0%,transparent_70%)] rounded-full -translate-y-1/2 translate-x-1/3"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="bg-white/80 backdrop-blur-3xl rounded-[3rem] p-10 md:p-16 lg:p-20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white transition-shadow duration-500 hover:shadow-[0_8px_40px_rgb(0,0,0,0.08)]">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center">
+                    
+                    {/* Graphic Side */}
+                    <div className="relative group lg:order-2">
+                        <div className="absolute inset-0 bg-primary/10 rounded-[2.5rem] transform -translate-x-4 translate-y-4 group-hover:-translate-x-3 group-hover:translate-y-3 transition-transform duration-500 ease-out"></div>
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop" alt="Belajar Bersama" className="relative z-10 w-full h-auto rounded-[2.5rem] shadow-xl border-4 border-white object-cover aspect-[4/3]" />
+                    </div>
+
+                    {/* Text Side */}
+                    <div className="reveal opacity-0 translate-y-12 lg:order-1" style={{ transitionDelay: '0.15s' }}>
+                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-8 text-gray-900 leading-[1.15] tracking-tight">
+                            Bukan Sekadar <br/>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-fuchsia-600">Aplikasi Catatan.</span>
+                        </h2>
+
+                        <p className="text-gray-600 text-[1.125rem] leading-[1.8] mb-10 text-justify">
+                            Sistem pendidikan konvensional seringkali membuat catatan belajar terbuang sia-sia setelah ujian selesai. <strong className="text-gray-900">Ba-Yu</strong> hadir untuk merombak kebiasaan tersebut, menjadi ekosistem digital untuk merapikan, membagikan, dan mendiskusikan pemikiran Anda secara komprehensif bersama ribuan pelajar lainnya.
+                        </p>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm flex gap-4 items-start hover:border-primary/20 hover:shadow-md transition-all">
+                                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mt-1">
+                                    <BookOpen className="w-6 h-6 text-primary" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900 mb-1">Upload Tanpa Batas</h3>
+                                    <p className="text-sm text-gray-500 leading-relaxed">Simpan semua materi format apapun tanpa takut storage penuh.</p>
+                                </div>
+                            </div>
+
+                            <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm flex gap-4 items-start hover:border-fuchsia-600/20 hover:shadow-md transition-all">
+                                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-fuchsia-600/10 flex items-center justify-center mt-1">
+                                    <Zap className="w-6 h-6 text-fuchsia-600" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900 mb-1">Akses Sekejap Mata</h3>
+                                    <p className="text-sm text-gray-500 leading-relaxed">Cross-platform yang bisa diakses mulus di HP maupun Laptop.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-12 md:py-20">
-        <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="text-center mb-12 md:mb-16">
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="inline-flex items-center gap-2 bg-secondary rounded-full px-4 py-2 mb-4"
-            >
-              <Star className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-primary">Fitur Unggulan</span>
-            </motion.div>
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4"
-            >
-              Fitur yang Membantu{' '}
-              <span className="bg-gradient-to-r from-primary to-[#7B68EE] bg-clip-text text-transparent">
-                Belajarmu
-              </span>
-            </motion.h2>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-sm md:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-4"
-            >
-              Semua yang kamu butuhkan untuk membuat catatan belajar lebih efektif dan terorganisir
-            </motion.p>
-          </div>
-
-          {/* Feature Carousel */}
-          <FeatureCarousel />
+      {/* FEATURE CAROUSEL (Wrapped in Premium Container) */}
+      <section className="py-24 bg-gradient-to-b from-[#f8fafc] to-[#ffffff]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16 reveal opacity-0 translate-y-8">
+                <span className="text-fuchsia-600 font-bold text-sm tracking-widest uppercase mb-2 block">Fitur Unggulan</span>
+                <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">Fitur yang Membantu Belajarmu</h2>
+                <p className="text-gray-600 text-lg max-w-2xl mx-auto">Semua yang kamu butuhkan untuk membuat catatan belajar lebih efektif dan terorganisir.</p>
+            </div>
+            
+            <div className="reveal opacity-0 translate-y-8" style={{ transitionDelay: '0.2s' }}>
+                {/* Re-use the existing feature carousel inside our aesthetic spacing */}
+                <FeatureCarousel />
+            </div>
         </div>
       </section>
 
-      {/* Showcase Section */}
-      <section className="py-12 md:py-20 bg-gradient-to-br from-secondary/50 via-white to-accent/5">
-        <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="text-center lg:text-left"
-            >
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
-                <Sparkles className="w-4 h-4 text-primary" />
-                <span className="text-sm font-semibold text-primary">Editor Notion-Style</span>
-              </div>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-6">
-                Buat Catatan Kayak di{' '}
-                <span className="bg-gradient-to-r from-primary to-[#7B68EE] bg-clip-text text-transparent">
-                  Notion, Tapi Lebih Mudah!
+      {/* EDITOR SHOWCASE (BENTO GRID STYLE) */}
+      <section className="py-24 bg-primary relative overflow-hidden">
+        {/* Soft Organic Gradients for Ba-Yu Aesthetic */}
+        <div className="absolute top-0 left-0 w-[800px] h-[800px] bg-[radial-gradient(circle,rgba(255,255,255,0.15)_0%,transparent_60%)] rounded-full z-0 pointer-events-none -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(192,38,211,0.25)_0%,transparent_60%)] rounded-full z-0 pointer-events-none translate-x-1/3 translate-y-1/3"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                
+                {/* Left Text Box */}
+                <div className="reveal opacity-0 translate-y-12 lg:col-span-5 rounded-[3rem] p-10 md:p-14 bg-white/10 border border-white/20 backdrop-blur-md text-white shadow-2xl relative overflow-hidden h-full flex flex-col justify-center">
+                    <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-8 border border-white/30 text-white shadow-inner">
+                        <Sparkles className="w-8 h-8 text-white" />
+                    </div>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-8 tracking-tight leading-[1.15]">
+                        Editor Cerdas. <br/> <span className="text-white/80 font-light">Tanpa Coding.</span>
+                    </h2>
+                    <p className="text-lg leading-relaxed font-light text-white/90 mb-10">
+                        Hasilkan ringkasan dan dokumen cantik dalam hitungan detik. WYSIWYG Editor Ba-Yu memastikan gaya visualmu presisi dengan sangat mudah.
+                    </p>
+                    
+                    <ul className="space-y-5">
+                        <li className="flex items-center gap-4 text-white">
+                            <span className="w-8 h-8 rounded-full bg-white/20 border border-white/30 flex items-center justify-center"><CheckCircle className="w-4 h-4 text-white" /></span> 
+                            <span className="font-medium text-[1.1rem]">Format Visual Sekali Klik</span>
+                        </li>
+                        <li className="flex items-center gap-4 text-white">
+                            <span className="w-8 h-8 rounded-full bg-white/20 border border-white/30 flex items-center justify-center"><CheckCircle className="w-4 h-4 text-white" /></span> 
+                            <span className="font-medium text-[1.1rem]">Upload Gambar & Referensi Bebas</span>
+                        </li>
+                        <li className="flex items-center gap-4 text-white">
+                            <span className="w-8 h-8 rounded-full bg-white/20 border border-white/30 flex items-center justify-center"><CheckCircle className="w-4 h-4 text-white" /></span> 
+                            <span className="font-medium text-[1.1rem]">Bikin Header & List Sekejap</span>
+                        </li>
+                    </ul>
+                </div>
+
+                {/* Right Interactive Box (The Mockup) */}
+                <div className="reveal opacity-0 translate-y-12 lg:col-span-7" style={{ transitionDelay: '0.2s' }}>
+                    <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-indigo-900/40 border-4 border-white overflow-hidden group hover:-translate-y-2 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">
+                        {/* Editor Toolbar Header */}
+                        <div className="bg-gray-50 border-b border-gray-100 p-4 flex gap-3 px-6 overflow-x-auto no-scrollbar">
+                            {[Bold, Italic, Underline, Heading1, List, ImageIcon].map((Icon, i) => (
+                                <div key={i} className="w-10 h-10 shrink-0 rounded-xl bg-white border border-gray-200 flex items-center justify-center cursor-pointer shadow-sm hover:bg-primary hover:text-white hover:border-primary transition-colors duration-300 text-gray-500">
+                                    <Icon className="w-4 h-4" />
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Editor Body Simulator */}
+                        <div className="p-8 sm:p-10 space-y-8 bg-white min-h-[350px] sm:min-h-[400px]">
+                            {/* Title Skeleton */}
+                            <div className="h-10 w-3/4 bg-gray-100 rounded-xl group-hover:bg-primary/10 transition-colors duration-700"></div>
+                            
+                            {/* Paragraph Skeleton */}
+                            <div className="space-y-4">
+                                <div className="h-3 w-full bg-gray-100 rounded-full group-hover:bg-gray-200 transition-colors duration-700 delay-100"></div>
+                                <div className="h-3 w-[95%] bg-gray-100 rounded-full group-hover:bg-gray-200 transition-colors duration-700 delay-150"></div>
+                                <div className="h-3 w-[85%] bg-gray-100 rounded-full group-hover:bg-gray-200 transition-colors duration-700 delay-200"></div>
+                            </div>
+                            
+                            {/* Image Attachment Box */}
+                            <div className="h-40 bg-indigo-50/50 rounded-2xl border-2 border-dashed border-indigo-200 flex flex-col items-center justify-center cursor-pointer hover:bg-indigo-50 hover:border-primary/50 transition-colors duration-300">
+                                <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-indigo-100 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-500 delay-100">
+                                    <ImageIcon className="w-6 h-6 text-primary" />
+                                </div>
+                                <p className="text-sm font-semibold text-primary">Upload Thumbnail</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+      </section>
+
+      {/* FINAL CTA (SIMPLE & CLEAN) */}
+      <section className="py-24 bg-white relative overflow-hidden text-center">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 relative z-10">
+            <div className="reveal opacity-0 translate-y-12">
+                <span className="inline-block py-2.5 px-6 rounded-full bg-primary/10 border border-primary/20 shadow-sm text-primary text-sm font-bold tracking-wider mb-6">
+                    🚀 GABUNG SEKARANG
                 </span>
-              </h2>
-              <p className="text-sm md:text-base lg:text-lg text-muted-foreground mb-6 md:mb-8">
-                WYSIWYG editor yang super intuitif - tinggal klik toolbar dan langsung keliatan hasilnya. Format text, insert gambar, semua dalam 1 tempat! ✨
-              </p>
-              <div className="space-y-3 md:space-y-4">
-                {[
-                  { 
-                    icon: Type, 
-                    title: 'Format Visual Langsung', 
-                    desc: 'Klik Bold langsung bold, klik Heading langsung gede. No coding!',
-                    color: '#5D5CE6'
-                  },
-                  { 
-                    icon: ImageIcon, 
-                    title: 'Insert Gambar Bebas', 
-                    desc: 'Upload foto di mana aja dalam catatan - mix text & gambar sebebasnya',
-                    color: '#FFD166'
-                  },
-                  { 
-                    icon: Zap, 
-                    title: 'Toolbar Lengkap', 
-                    desc: 'Headings, Lists, Highlight, Link, Code - semua ada & gampang dipakai',
-                    color: '#8B5CF6'
-                  }
-                ].map((item, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.15 }}
-                    whileHover={{ x: 8, scale: 1.02 }}
-                    className="flex items-start gap-3 p-3 md:p-4 rounded-xl hover:bg-white/80 transition-all cursor-pointer group"
-                  >
-                    <div 
-                      className="w-9 h-9 md:w-10 md:h-10 rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform"
-                      style={{ backgroundColor: `${item.color}15` }}
-                    >
-                      <item.icon className="w-4 h-4 md:w-5 md:h-5" style={{ color: item.color }} />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold mb-1 text-sm md:text-base text-gray-900 group-hover:text-primary transition-colors">{item.title}</h4>
-                      <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
+                
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-8">
+                    Siap Mulai Belajar <br/>Lebih Efektif?
+                </h2>
+                
+                <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+                    Ribuan pelajar sudah merevolusi cara mereka mencatat dan berbagi pengetahuan. Daftar tanpa biaya kartu kredit.
+                </p>
 
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="relative mt-8 lg:mt-0"
-            >
-              {/* Interactive Editor Preview */}
-              <motion.div 
-                className="bg-white rounded-2xl md:rounded-3xl shadow-2xl border border-gray-200 overflow-hidden"
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                {/* Toolbar */}
-                <div className="bg-gray-50 border-b border-gray-200 p-2 md:p-3 flex gap-1.5 md:gap-2">
-                  {[Bold, Italic, Underline, Heading1, List, ImageIcon].map((Icon, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ scale: 0, opacity: 0 }}
-                      whileInView={{ scale: 1, opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.3 + i * 0.1, type: "spring" }}
-                      whileHover={{ scale: 1.15 }}
-                      className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center cursor-pointer shadow-sm hover:bg-[#5D5CE6] hover:border-[#5D5CE6] transition-colors group"
-                    >
-                      <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-600 group-hover:text-white transition-colors" />
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Editor Content */}
-                <div className="p-4 md:p-6 space-y-2 md:space-y-3">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: '85%' }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.8, duration: 0.6 }}
-                    className="h-5 md:h-6 bg-gradient-to-r from-primary to-primary/60 rounded font-bold"
-                  />
-                  <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: '100%' }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 1, duration: 0.6 }}
-                    className="h-2.5 md:h-3 bg-gray-200 rounded"
-                  />
-                  <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: '95%' }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 1.1, duration: 0.6 }}
-                    className="h-2.5 md:h-3 bg-gray-200 rounded"
-                  />
-                  
-                  {/* Image placeholder */}
-                  <motion.div 
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 1.3, type: "spring" }}
-                    whileHover={{ scale: 1.05 }}
-                    className="h-20 md:h-24 bg-gradient-to-br from-accent/30 via-accent/20 to-accent/10 rounded-xl border-2 border-dashed border-accent/40 flex items-center justify-center cursor-pointer group"
-                  >
-                    <div className="text-center">
-                      <ImageIcon className="w-6 h-6 md:w-8 md:h-8 text-accent mx-auto mb-1 group-hover:scale-110 transition-transform" />
-                      <span className="text-xs text-amber-700 font-medium">Klik untuk upload foto</span>
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: '78%' }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 1.5, duration: 0.6 }}
-                    className="h-2.5 md:h-3 bg-gray-200 rounded"
-                  />
-                  <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: '60%' }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 1.6, duration: 0.6 }}
-                    className="h-2.5 md:h-3 bg-accent/60 rounded"
-                  />
-                </div>
-              </motion.div>
-
-              {/* Floating badges - Hidden on mobile */}
-              <motion.div 
-                initial={{ scale: 0, rotate: -15, y: 20 }}
-                whileInView={{ scale: 1, rotate: -5, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 1.8, type: "spring", stiffness: 200 }}
-                whileHover={{ scale: 1.1, rotate: 0 }}
-                className="hidden md:block absolute -top-4 -left-4 bg-primary rounded-2xl shadow-2xl p-3 border-2 border-white cursor-pointer"
-              >
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-white" />
-                  <span className="font-bold text-white text-sm">WYSIWYG</span>
-                </div>
-              </motion.div>
-
-              <motion.div 
-                initial={{ scale: 0, rotate: 10, y: 20 }}
-                whileInView={{ scale: 1, rotate: 5, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 2, type: "spring", stiffness: 200 }}
-                whileHover={{ scale: 1.1, rotate: 0 }}
-                className="hidden md:block absolute -bottom-6 -right-6 bg-accent rounded-2xl shadow-2xl p-4 border-2 border-white cursor-pointer"
-              >
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-6 h-6 text-amber-700" />
-                  <span className="font-bold text-amber-900">Easy Peasy! 🎉</span>
-                </div>
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section - Simple & Clean */}
-      <section className="py-16 md:py-20 lg:py-32 relative overflow-hidden">
-        {/* Clean Soft Gradient Background - Konsisten dengan Hero */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-[#7B68EE] to-secondary" />
-        <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-transparent to-transparent" />
-        
-        {/* Subtle Animated Orbs - Soft & Clean */}
-        <motion.div
-          animate={{ 
-            scale: [1, 1.1, 1],
-            opacity: [0.15, 0.25, 0.15]
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-20 left-[10%] w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-white/20 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{ 
-            scale: [1, 1.15, 1],
-            opacity: [0.1, 0.2, 0.1]
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute bottom-10 right-[15%] w-[350px] md:w-[450px] h-[350px] md:h-[450px] bg-accent/15 rounded-full blur-3xl"
-        />
-
-        {/* Main Content */}
-        <div className="max-w-4xl mx-auto px-4 md:px-6 relative z-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="space-y-6 md:space-y-8"
-          >
-            {/* Avatar Badge - Simple */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2, type: "spring" }}
-              className="inline-flex items-center gap-2 md:gap-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 md:px-5 py-2.5 md:py-3"
-            >
-              <div className="flex -space-x-2">
-                {[
-                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
-                  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
-                  'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150'
-                ].map((src, i) => (
-                  <motion.img
-                    key={i}
-                    src={src}
-                    alt=""
-                    className="w-7 h-7 md:w-8 md:h-8 rounded-full border-2 border-white/50"
-                    initial={{ opacity: 0, scale: 0 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.3 + i * 0.1, type: "spring" }}
-                  />
-                ))}
-              </div>
-              <span className="text-xs md:text-sm font-semibold text-white">Bergabung dengan 12,500+ pelajar</span>
-            </motion.div>
-
-            {/* Heading - Simple & Clean */}
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-              className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white leading-tight px-4"
-            >
-              Siap Mulai Belajar<br />
-              Lebih Efektif?
-            </motion.h2>
-
-            {/* CTA Button - Simple */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5 }}
-            >
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Button 
-                  size="lg" 
+                <button 
                   onClick={() => openAuthModal('register')}
-                  className="bg-white hover:bg-white/90 text-primary font-bold text-base md:text-lg px-8 md:px-12 py-6 md:py-7 rounded-xl shadow-xl hover:shadow-2xl transition-all"
+                  className="bg-primary hover:bg-primary/90 text-white font-bold text-lg px-12 py-5 rounded-2xl shadow-xl hover:shadow-2xl hover:shadow-primary/30 transition-all hover:-translate-y-1"
                 >
-                  Mulai Gratis Sekarang
-                </Button>
-              </motion.div>
-            </motion.div>
-          </motion.div>
+                  Daftar Lewat Email Gratis
+                </button>
+            </div>
         </div>
       </section>
 
       <Footer />
     </div>
   );
-}
+}
