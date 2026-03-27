@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MobileLayout } from '../components/MobileLayout';
 import { useAuth } from '../contexts/AuthContext';
 import { 
   Users, FileText, AlertCircle, CheckCircle, XCircle, Eye, 
   Search, Filter, Trash2, Flag, BarChart3, ShieldCheck, DownloadCloud, Server, Activity, ArrowUpRight, Check
 } from 'lucide-react';
-import { mockNotes, mockUsers, getUserById, mataPelajaran, mockCertifications } from '../data/mockData';
+import { mockNotes, mockUsers, getUserById, mataPelajaran } from '../data/mockData';
 import { Link } from 'react-router';
+import axios from 'axios';
 
 type TabType = 'catatan' | 'laporan' | 'users' | 'sertifikasi';
 
@@ -15,7 +16,24 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>('sertifikasi');
   const [searchQuery, setSearchQuery] = useState('');
   
-  const [pendingCerts, setPendingCerts] = useState(mockCertifications.filter(c => c.status === 'pending'));
+  const [pendingCerts, setPendingCerts] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchPendingCertifications();
+  }, [activeTab]);
+
+  const fetchPendingCertifications = async () => {
+    if (user?.role !== 'admin') return;
+    try {
+      const token = localStorage.getItem('bayu-token');
+      const res = await axios.get('/api/v1/sertifikasi/pending', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPendingCerts(res.data.data);
+    } catch (e) {
+      console.error("Failed to fetch pending requests", e);
+    }
+  };
 
   // Mock reports
   const mockReports = [
@@ -58,11 +76,18 @@ export default function AdminDashboard() {
     alert(`Laporan ${action === 'approve' ? 'disetujui' : 'ditolak'}!`);
   };
 
-  const handleVerifyCert = (id: string, action: 'approve' | 'reject') => {
-    setPendingCerts(prev => prev.filter(c => c.id !== id));
-    const cert = mockCertifications.find(c => c.id === id);
-    if (cert) cert.status = action === 'approve' ? 'approved' : 'rejected';
-    alert(`Pengajuan Pakar ${action === 'approve' ? 'diterima' : 'ditolak'}. Pengguna akan diubah rolenya.`);
+  const handleVerifyCert = async (id: string, action: 'approve' | 'reject') => {
+    try {
+      const token = localStorage.getItem('bayu-token');
+      await axios.put(`/api/v1/sertifikasi/${id}/verifikasi`, { status: action === 'approve' ? 'approved' : 'rejected' }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      setPendingCerts(prev => prev.filter(c => c.id !== id));
+      alert(`Pengajuan Pakar ${action === 'approve' ? 'diterima' : 'ditolak'}.`);
+    } catch (e: any) {
+      alert(e.response?.data?.message || 'Gagal mengubah status verifikasi');
+    }
   };
 
   return (
@@ -219,19 +244,23 @@ export default function AdminDashboard() {
                                          <FileText className="w-6 h-6" />
                                       </div>
                                       <div>
-                                          <h4 className="font-['Lexend_Deca'] font-bold text-gray-900">{cert.name}</h4>
-                                          <p className="font-['Manrope'] text-sm text-gray-500">{cert.email}</p>
+                                          <h4 className="font-['Lexend_Deca'] font-bold text-gray-900">
+                                              User ID: {cert.user_id}
+                                          </h4>
+                                          <p className="font-['Manrope'] text-sm text-gray-500">
+                                              Bidang: {cert.bidang_keahlian}
+                                          </p>
                                       </div>
                                   </div>
-                                  <span className="text-[10px] font-['Lexend_Deca'] font-bold bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg border border-yellow-200">
-                                      PENDING
+                                  <span className="text-[10px] font-['Lexend_Deca'] font-bold bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg border border-yellow-200 uppercase">
+                                      {cert.status}
                                   </span>
                               </div>
                               
                               <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 mb-5 relative z-10">
                                  <div className="text-[11px] font-['Lexend_Deca'] font-bold text-gray-400 tracking-wider mb-2">DOKUMEN LAMPIRAN</div>
-                                 <a href="#" className="flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700 hover:underline font-semibold transition-colors bg-white px-3 py-2 rounded-xl border border-indigo-50 shadow-sm">
-                                    <Eye className="w-4 h-4 text-indigo-400" /> {cert.documentUrl}
+                                 <a href={`http://localhost:8000/storage/${cert.file_sertifikat}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700 hover:underline font-semibold transition-colors bg-white px-3 py-2 rounded-xl border border-indigo-50 shadow-sm truncate">
+                                    <Eye className="w-4 h-4 text-indigo-400 shrink-0" /> Dokumen Bukti
                                  </a>
                               </div>
                               

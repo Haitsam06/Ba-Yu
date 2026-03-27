@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, UploadCloud, FileText, CheckCircle2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAuth } from '../contexts/AuthContext';
-import { mockCertifications } from '../data/mockData';
+import axios from 'axios';
 
 interface ApplyPakarModalProps {
   isOpen: boolean;
@@ -14,6 +14,7 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
   
   const [formData, setFormData] = useState({
     name: user?.name || '',
@@ -21,21 +22,28 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
     keahlian: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!file) {
+      alert("Harap unggah dokumen bukti (PDF/JPG) terlebih dahulu!");
+      return;
+    }
+
     setIsSubmitting(true);
     
-    // Simulate network delay
-    setTimeout(() => {
-      // Mock push to the exported array
-      mockCertifications.push({
-        id: `cert-${Date.now()}`,
-        userId: user?.id || user?._id || 'unknown',
-        name: formData.name,
-        email: formData.email,
-        documentUrl: `Sertifikat_${formData.keahlian.replace(/\s+/g, '_')}.pdf`,
-        status: 'pending',
-        submittedAt: new Date().toISOString().split('T')[0]
+    const token = localStorage.getItem('bayu-token');
+    
+    const dataToSend = new FormData();
+    dataToSend.append('bidang_keahlian', formData.keahlian);
+    dataToSend.append('file_sertifikat', file);
+    
+    try {
+      await axios.post('/api/v1/sertifikasi', dataToSend, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
       });
       
       setIsSubmitting(false);
@@ -45,7 +53,16 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
         setIsSuccess(false);
         onClose();
       }, 2000);
-    }, 1500);
+    } catch (error: any) {
+      setIsSubmitting(false);
+      alert(error.response?.data?.message || 'Gagal mengirim pengajuan. Pastikan file maksimal 5MB.');
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,6 +162,8 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
                       <div className="mt-1 border-2 border-dashed border-gray-300 rounded-xl px-6 pt-5 pb-6 flex justify-center hover:border-primary transition-colors hover:bg-primary/5 cursor-pointer relative">
                         <input
                            type="file"
+                           accept=".pdf,.jpg,.jpeg"
+                           onChange={handleFileChange}
                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                            required
                            disabled={isSubmitting}
@@ -153,7 +172,7 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
                           <UploadCloud className="mx-auto h-10 w-10 text-gray-400" />
                           <div className="flex text-sm text-gray-600 justify-center">
                             <span className="relative rounded-md font-medium text-primary hover:text-primary/80 focus-within:outline-none">
-                              Pilih File PDF/JPG
+                              {file ? file.name : 'Pilih File PDF/JPG'}
                             </span>
                           </div>
                           <p className="text-xs text-gray-500">Maks. ukuran 5MB</p>
