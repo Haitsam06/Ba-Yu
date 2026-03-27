@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Sertifikasi;
+use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
 
 class SertifikasiController extends Controller
@@ -77,6 +78,20 @@ class SertifikasiController extends Controller
 
         $sertifikasi->update([
             'status' => $request->status
+        ]);
+
+        $title = $request->status === 'approved' ? 'Sertifikasi Diterima!' : 'Sertifikasi Ditolak';
+
+        $message = $request->status === 'approved' 
+            ? 'Selamat! Pengajuan sertifikasi pakarmu untuk bidang ' . $sertifikasi->bidang_keahlian . ' telah disetujui Admin.' 
+            : 'Mohon maaf, pengajuan sertifikasi pakarmu untuk bidang ' . $sertifikasi->bidang_keahlian . ' belum dapat disetujui saat ini.';
+
+        Notification::create([
+            'user_id' => $sertifikasi->user_id,
+            'title'   => $title,
+            'message' => $message,
+            'type'    => 'sertifikasi',
+            'is_read' => false,
         ]);
 
         return response()->json([
