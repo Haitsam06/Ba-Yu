@@ -38,4 +38,50 @@ class SertifikasiController extends Controller
             'data' => $sertifikasi
         ], 201);
     }
+
+// FUNGSI 1: Buat Admin ngeliat daftar antrean yang masih "pending"
+    public function getPending()
+    {
+        // --- GEMBOK ADMIN ---
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Akses Ditolak kasian dah aowkaokawok'], 403);
+        }
+        // --------------------
+
+        $pengajuan = Sertifikasi::where('status', 'pending')->get();
+
+        return response()->json([
+            'message' => 'Berhasil mengambil daftar antrean',
+            'data' => $pengajuan
+        ], 200);
+    }
+
+    // FUNGSI 2: Buat Admin "Ketok Palu" (Terima/Tolak)
+    public function verifikasi(Request $request, $id)
+    {
+        // --- GEMBOK ADMIN ---
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Cuma Admin yang bisa ketok palu der!'], 403);
+        }
+        // --------------------
+
+        $request->validate([
+            'status' => 'required|in:approved,rejected'
+        ]);
+
+        $sertifikasi = Sertifikasi::find($id);
+
+        if (!$sertifikasi) {
+            return response()->json(['message' => 'Data pengajuan tidak ditemukan'], 404);
+        }
+
+        $sertifikasi->update([
+            'status' => $request->status
+        ]);
+
+        return response()->json([
+            'message' => 'Status berhasil diubah jadi ' . $request->status . '!',
+            'data' => $sertifikasi
+        ], 200);
+    }
 }

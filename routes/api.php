@@ -11,6 +11,8 @@ Route::post('/v1/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     
     Route::post('/v1/sertifikasi', [SertifikasiController::class, 'ajukan']);
+    Route::get('/v1/sertifikasi/pending', [SertifikasiController::class, 'getPending']);
+    Route::put('/v1/sertifikasi/{id}/verifikasi', [SertifikasiController::class, 'verifikasi']);
 
     Route::get('/user', function (Request $request) {
         return $request->user();
