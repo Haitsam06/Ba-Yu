@@ -4,7 +4,7 @@ import { Navbar } from '../components/navbar';
 import { Footer } from '../components/footer';
 import { ScrollToTop } from '../components/scroll-to-top';
 import { Button } from '../components/ui/button';
-import { BookOpen, Shield, CheckCircle, Zap, Star, Sparkles, Type, ImageIcon, Bold, Italic, Underline, Heading1, List, ArrowRight } from 'lucide-react';
+import { BookOpen, Shield, CheckCircle, Zap, Star, Sparkles, Type, ImageIcon, Bold, Italic, Underline, Heading1, List, ArrowRight, Calculator, Globe2, FlaskConical, Languages, Code2, Rocket } from 'lucide-react';
 import { AuthModal } from '../components/auth-modal';
 import { FeatureCarousel } from '../components/feature-carousel';
 
@@ -79,17 +79,17 @@ export function LandingPage() {
                     <div className="inline-flex items-center gap-2 py-2 px-4 rounded-full bg-indigo-50/80 border border-indigo-100/80 shadow-sm mb-8 lg:mb-10">
                         <span className="flex h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
                         <span className="text-primary text-[13px] font-bold tracking-wide uppercase">
-                            Platform Belajar #1 di Indonesia
+                            Platform Berbagi Catatan Belajar
                         </span>
                     </div>
 
                     <h1 className="text-[2.75rem] sm:text-6xl lg:text-[4rem] xl:text-[4.5rem] font-extrabold text-gray-900 tracking-tight leading-[1.05] mb-8">
-                        Belajar Lebih <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo-800">Cerdas</span> <br className="hidden xl:block" />
-                        Lebih <span className="text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-600 to-pink-600">Terstruktur</span>
+                        Belajar Lebih <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo-800">Mudah</span> <br className="hidden xl:block" />
+                        dengan Catatan <span className="text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-600 to-pink-600">Terstruktur</span>
                     </h1>
 
                     <p className="text-lg sm:text-xl text-gray-600 mb-12 leading-relaxed font-medium max-w-2xl mx-auto lg:mx-0">
-                        Platform manajemen catatan belajar yang membantu pelajar mengorganisir, berbagi, dan mendiskusikan materi pembelajaran secara efektif dan kolaboratif.
+                        Simpan, bagikan, dan temukan ratusan referensi belajar dari pelajar lainnya. Semuanya terorganisir rapi secara komprehensif untuk membantumu belajar lebih efektif.
                     </p>
 
                     <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 mb-4">
@@ -170,12 +170,12 @@ export function LandingPage() {
                     {/* Text Side */}
                     <div className="reveal opacity-0 translate-y-12 lg:order-1" style={{ transitionDelay: '0.15s' }}>
                         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-8 text-gray-900 leading-[1.15] tracking-tight">
-                            Bukan Sekadar <br/>
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-fuchsia-600">Aplikasi Catatan.</span>
+                            Ruang Kolaborasi <br/>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-fuchsia-600">Bagi Pelajar.</span>
                         </h2>
 
                         <p className="text-gray-600 text-[1.125rem] leading-[1.8] mb-10 text-justify">
-                            Sistem pendidikan konvensional seringkali membuat catatan belajar terbuang sia-sia setelah ujian selesai. <strong className="text-gray-900">Ba-Yu</strong> hadir untuk merombak kebiasaan tersebut, menjadi ekosistem digital untuk merapikan, membagikan, dan mendiskusikan pemikiran Anda secara komprehensif bersama ribuan pelajar lainnya.
+                            Jangan biarkan catatan belajarmu menumpuk sia-sia di laci meja. Di <strong className="text-gray-900">Ba-Yu</strong>, kamu bisa membagikan ilmu yang kamu miliki, sekaligus menemukan referensi catatan terbaik dari ribuan pelajar lainnya yang selaras dengan kurikulummu.
                         </p>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -194,8 +194,8 @@ export function LandingPage() {
                                     <Zap className="w-6 h-6 text-fuchsia-600" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-gray-900 mb-1">Akses Sekejap Mata</h3>
-                                    <p className="text-sm text-gray-500 leading-relaxed">Cross-platform yang bisa diakses mulus di HP maupun Laptop.</p>
+                                    <h3 className="text-lg font-bold text-gray-900 mb-1">Akses Kapan Saja</h3>
+                                    <p className="text-sm text-gray-500 leading-relaxed">Tersedia fleksibel dan bisa kamu buka dengan lancar dari HP maupun Laptop.</p>
                                 </div>
                             </div>
                         </div>
@@ -221,6 +221,35 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* EXPLORE KATEGORI */}
+      <section className="py-24 bg-white relative border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16 reveal opacity-0 translate-y-8">
+                <span className="text-primary font-bold text-sm tracking-widest uppercase mb-2 block">Eksplorasi</span>
+                <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">Beragam Kategori Populer</h2>
+                <p className="text-gray-600 text-lg max-w-2xl mx-auto">Temukan ribuan referensi catatan sesuai dengan materi pelajaranmu.</p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 reveal opacity-0 translate-y-8" style={{ transitionDelay: '0.15s' }}>
+                {[
+                    { name: 'Matematika', icon: Calculator, color: 'text-blue-600', bg: 'bg-blue-50', hover: 'hover:border-blue-200 hover:shadow-blue-100' },
+                    { name: 'Sains & IPA', icon: FlaskConical, color: 'text-green-600', bg: 'bg-green-50', hover: 'hover:border-green-200 hover:shadow-green-100' },
+                    { name: 'Bahasa Inggis', icon: Languages, color: 'text-fuchsia-600', bg: 'bg-fuchsia-50', hover: 'hover:border-fuchsia-200 hover:shadow-fuchsia-100' },
+                    { name: 'Sosial & IPS', icon: Globe2, color: 'text-amber-600', bg: 'bg-amber-50', hover: 'hover:border-amber-200 hover:shadow-amber-100' },
+                    { name: 'Pemrograman', icon: Code2, color: 'text-indigo-600', bg: 'bg-indigo-50', hover: 'hover:border-indigo-200 hover:shadow-indigo-100' },
+                    { name: 'Lainnya', icon: Rocket, color: 'text-pink-600', bg: 'bg-pink-50', hover: 'hover:border-pink-200 hover:shadow-pink-100' },
+                ].map((cat, i) => (
+                    <Link key={i} to="/explore" className={`flex flex-col items-center p-6 rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md ${cat.hover} group`}>
+                        <div className={`w-14 h-14 rounded-full ${cat.bg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                            <cat.icon className={`w-6 h-6 ${cat.color}`} />
+                        </div>
+                        <h3 className="font-bold text-gray-800 text-sm text-center">{cat.name}</h3>
+                    </Link>
+                ))}
+            </div>
+        </div>
+      </section>
+
       {/* EDITOR SHOWCASE (BENTO GRID STYLE) */}
       <section className="py-24 bg-primary relative overflow-hidden">
         {/* Soft Organic Gradients for Ba-Yu Aesthetic */}
@@ -236,24 +265,24 @@ export function LandingPage() {
                         <Sparkles className="w-8 h-8 text-white" />
                     </div>
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-8 tracking-tight leading-[1.15]">
-                        Editor Cerdas. <br/> <span className="text-white/80 font-light">Tanpa Coding.</span>
+                        Buat Catatan Rapi. <br/> <span className="text-white/80 font-light">Sangat Mudah.</span>
                     </h2>
                     <p className="text-lg leading-relaxed font-light text-white/90 mb-10">
-                        Hasilkan ringkasan dan dokumen cantik dalam hitungan detik. WYSIWYG Editor Ba-Yu memastikan gaya visualmu presisi dengan sangat mudah.
+                        Gak perlu pusing mikirin format desain. Editor simpel Ba-Yu membantumu merapikan catatan seketika agar enak dibaca oleh siapa pun.
                     </p>
                     
                     <ul className="space-y-5">
                         <li className="flex items-center gap-4 text-white">
                             <span className="w-8 h-8 rounded-full bg-white/20 border border-white/30 flex items-center justify-center"><CheckCircle className="w-4 h-4 text-white" /></span> 
-                            <span className="font-medium text-[1.1rem]">Format Visual Sekali Klik</span>
+                            <span className="font-medium text-[1.1rem]">Ubah Gaya Tulisan Sekali Klik</span>
                         </li>
                         <li className="flex items-center gap-4 text-white">
                             <span className="w-8 h-8 rounded-full bg-white/20 border border-white/30 flex items-center justify-center"><CheckCircle className="w-4 h-4 text-white" /></span> 
-                            <span className="font-medium text-[1.1rem]">Upload Gambar & Referensi Bebas</span>
+                            <span className="font-medium text-[1.1rem]">Upload Gambar & Diagram Pendukung</span>
                         </li>
                         <li className="flex items-center gap-4 text-white">
                             <span className="w-8 h-8 rounded-full bg-white/20 border border-white/30 flex items-center justify-center"><CheckCircle className="w-4 h-4 text-white" /></span> 
-                            <span className="font-medium text-[1.1rem]">Bikin Header & List Sekejap</span>
+                            <span className="font-medium text-[1.1rem]">Buat Daftar & Header dengan Cepat</span>
                         </li>
                     </ul>
                 </div>
@@ -306,11 +335,11 @@ export function LandingPage() {
                 </span>
                 
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-8">
-                    Siap Mulai Belajar <br/>Lebih Efektif?
+                    Mulai Bagikan <br/>Catatan Terbaikmu!
                 </h2>
                 
                 <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-                    Ribuan pelajar sudah merevolusi cara mereka mencatat dan berbagi pengetahuan. Daftar tanpa biaya kartu kredit.
+                    Bergabunglah bersama komunitas yang sudah mendigitalkan cara belajar mereka. Semuanya gratis dan mudah diakses.
                 </p>
 
                 <button 

@@ -60,14 +60,14 @@ export function Navbar({ variant = 'default' }: NavbarProps) {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8 lg:gap-10">
-            <a
-              href="#beranda"
+            <Link
+              to="/"
               className="text-gray-600 hover:text-primary transition-colors font-semibold text-[15px] hover:-translate-y-0.5 transform duration-200"
             >
               Beranda
-            </a>
+            </Link>
             <a
-              href="#features"
+              href="#tentang"
               className="text-gray-600 hover:text-primary transition-colors font-semibold text-[15px] hover:-translate-y-0.5 transform duration-200"
             >
               Tentang

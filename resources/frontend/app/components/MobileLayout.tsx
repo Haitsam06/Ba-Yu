@@ -43,8 +43,8 @@ export function MobileLayout({ children, showBottomNav = true }: MobileLayoutPro
       */}
       <div className={`relative flex-1 w-full bg-[#FAFAFA] h-[calc(100vh-64px)] md:h-screen overflow-y-auto transition-all duration-300 ${isMobile && showBottomNav ? 'pb-20' : 'pb-8'}`}>
         
-        {/* Dynamic Inner Container: Keeps contents horizontally constrained on giant screens (e.g. max-w-7xl) for readability, but fully fluid otherwise */}
-        <div className="mx-auto w-full max-w-7xl">
+        {/* Dynamic Inner Container */}
+        <div className="mx-auto w-full max-w-7xl px-4 md:px-8 lg:px-10">
            <div className="bg-[#FAFAFA] md:bg-transparent min-h-full rounded-none">
               {children}
            </div>

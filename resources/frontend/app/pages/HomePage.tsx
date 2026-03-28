@@ -1,163 +1,144 @@
 import { MobileLayout } from '../components/MobileLayout';
-import { Eye, Heart, Check, Sparkles, FileText, ArrowRight } from 'lucide-react';
-import { mockNotes, mockUsers, getUserById, mataPelajaran } from '../data/mockData';
-import { Link } from 'react-router';
+import { Eye, Heart, Check, ArrowRight, Search } from 'lucide-react';
+import { mockNotes, getUserById, mataPelajaran } from '../data/mockData';
+import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
+import { useState } from 'react';
 
 export default function HomePage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const recentNotes = mockNotes.slice(0, 6);
-  const displayedSubjects = mataPelajaran.slice(0, 5); // 5 subjects for better grid
+  const trendingNotes = mockNotes.slice(1, 6);
+  const displayedSubjects = mataPelajaran.slice(0, 5);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/explore?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   return (
     <MobileLayout>
       <div className="pb-8">
         
-        {/* Desktop Header / Title */}
-        <div className="px-6 md:px-0 pt-7 md:pt-2 pb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-['Lexend_Deca'] font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground font-['Manrope'] text-sm mt-1">
-              Selamat datang kembali, {user?.name?.split(' ')[0] || 'Pengguna'}!
-            </p>
-          </div>
-          
-          <div className="hidden md:flex items-center gap-3">
-             <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2">
-                <span className="text-sm font-['Manrope'] font-semibold text-primary">Status:</span>
-                <span className="text-sm font-['Manrope'] text-foreground uppercase">{user?.role === 'pakar' || user?.role === 'admin' ? user?.role : (user?.jenjang_pendidikan || 'Siswa')}</span>
-             </div>
-          </div>
+        {/* Header */}
+        <div className="px-6 md:px-0 pt-6 md:pt-2 pb-2">
+          <h1 className="text-2xl font-['Lexend_Deca'] font-bold text-gray-900">
+            Halo, {user?.name?.split(' ')[0] || 'Pengguna'}
+          </h1>
+          <p className="text-gray-500 font-['Manrope'] text-sm mt-1">
+            Mau belajar apa hari ini?
+          </p>
         </div>
 
         <div className="px-6 md:px-0">
-          {/* Hero Banner - Widescreen Dashboard Style */}
-          <div className="bg-gradient-to-r from-primary to-secondary rounded-3xl p-8 md:p-10 mb-8 relative overflow-hidden shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-2xl pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-white/10 rounded-full -ml-10 -mb-10 blur-xl pointer-events-none"></div>
-            
-            <div className="relative z-10 max-w-xl">
-              <h2 className="text-white font-['Lexend_Deca'] font-bold text-2xl md:text-3xl mb-3 leading-tight">
-                Tingkatkan Belajarmu dengan Catatan Terbaik!
-              </h2>
-              <p className="text-white/90 font-['Manrope'] text-sm md:text-base mb-6 leading-relaxed">
-                Jelajahi ribuan catatan tervalidasi dari siswa berprestasi. Bagikan catatanmu sendiri dan rasakan manfaat belajar bersama komunitas.
-              </p>
-              
-              <div className="flex items-center gap-4">
-                <Link
-                  to="/upload"
-                  className="bg-white text-primary px-6 py-3 rounded-xl font-['Lexend_Deca'] font-semibold text-sm shadow-md hover:bg-gray-50 hover:shadow-lg transition-all"
-                >
-                  Mulai Bagikan Catatan
-                </Link>
-                <Link
-                  to="/explore"
-                  className="bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-xl font-['Lexend_Deca'] font-semibold text-sm border border-white/30 hover:bg-white/30 transition-all hidden md:block"
-                >
-                  Eksplorasi
-                </Link>
-              </div>
-            </div>
 
-            <div className="relative z-10 flex items-center gap-4 bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 self-start md:self-center">
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-inner">
-                    <FileText className="w-8 h-8 text-primary" />
-                </div>
-                <div>
-                   <p className="font-['Manrope'] text-white/80 text-xs mb-1">Total Catatan</p>
-                   <p className="font-['Lexend_Deca'] font-bold text-3xl text-white">1,248</p>
-                </div>
+          {/* Search */}
+          <form onSubmit={handleSearch} className="mt-4 mb-8">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari catatan atau materi..."
+                className="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-12 pr-4 py-3.5 text-sm font-['Manrope'] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
+              />
             </div>
-          </div>
+          </form>
 
-          {/* Quick Subject Grid - Desktop friendly (5 cols) */}
+          {/* Kategori */}
           <div className="mb-10">
-            <div className="flex items-center justify-between mb-5">
-              <h3 className="font-['Lexend_Deca'] font-bold text-xl text-foreground">
-                Kategori Pelajaran
-              </h3>
-              <Link to="/explore" className="text-primary font-['Manrope'] font-semibold text-sm flex items-center gap-1 hover:gap-2 transition-all">
-                Lihat Semua <ArrowRight className="w-4 h-4" />
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900">
+                Kategori
+              </h2>
+              <Link to="/explore" className="text-primary font-['Manrope'] font-semibold text-sm flex items-center gap-1 hover:gap-1.5 transition-all">
+                Semua <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               {displayedSubjects.map((subject) => (
                 <Link
                   key={subject.id}
                   to={`/explore?subject=${subject.id}`}
-                  className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-lg hover:border-primary/30 transition-all flex flex-col items-center text-center group"
+                  className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-md hover:border-gray-200 transition-all flex flex-col items-center text-center group"
                 >
                   <div
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mb-3 group-hover:scale-110 transition-transform"
-                    style={{ backgroundColor: `${subject.color}15` }}
+                    className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-3 group-hover:scale-105 transition-transform"
+                    style={{ backgroundColor: `${subject.color}12` }}
                   >
                     {subject.icon}
                   </div>
-                  <h4 className="font-['Lexend_Deca'] font-bold text-foreground text-sm mb-1">
+                  <h4 className="font-['Lexend_Deca'] font-semibold text-gray-800 text-sm">
                     {subject.name}
                   </h4>
-                  <p className="text-xs font-['Manrope'] text-muted-foreground">
-                    {Math.floor(Math.random() * 100) + 20} materi
-                  </p>
                 </Link>
               ))}
             </div>
           </div>
 
+          {/* Content Grid */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-             {/* Left Column: Recent Notes */}
+             
+             {/* Catatan Terbaru */}
              <div className="xl:col-span-2">
-                <div className="flex items-center justify-between mb-5">
-                  <h3 className="font-['Lexend_Deca'] font-bold text-xl text-foreground flex items-center gap-2">
-                    Catatan Terbaru <span className="bg-primary/10 text-primary text-xs px-2.5 py-1 rounded-full">{recentNotes.length} BARU</span>
-                  </h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900">
+                    Terbaru
+                  </h2>
+                  <Link to="/explore" className="text-primary font-['Manrope'] font-semibold text-sm flex items-center gap-1 hover:gap-1.5 transition-all">
+                    Lihat semua <ArrowRight className="w-4 h-4" />
+                  </Link>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {recentNotes.slice(0, 6).map((note) => {
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {recentNotes.map((note) => {
                     const author = getUserById(note.authorId);
                     return (
                       <Link
                         key={note.id}
                         to={`/note/${note.id}`}
-                        className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all group flex flex-col h-full"
+                        className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all group flex flex-col"
                       >
-                        <div className="relative h-40 bg-gray-100 overflow-hidden">
+                        <div className="relative h-36 bg-gray-100 overflow-hidden">
                           <img
                             src={note.thumbnail}
                             alt={note.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
                           />
                           {note.isValidated && (
-                            <div className="absolute top-3 left-3 bg-green-500/90 backdrop-blur text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm">
-                              <Check className="w-3 h-3" /> Tervalidasi
+                            <div className="absolute top-2.5 left-2.5 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
+                              <Check className="w-3 h-3" /> Verified
                             </div>
                           )}
                         </div>
 
                         <div className="p-4 flex flex-col flex-1">
-                          <span className="inline-block text-[10px] font-['Manrope'] font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-lg mb-3 self-start">
+                          <span className="text-[11px] font-['Manrope'] font-semibold text-primary mb-2">
                             {note.mataPelajaran}
                           </span>
                           
-                          <h4 className="font-['Lexend_Deca'] font-bold text-foreground text-base mb-3 line-clamp-2 leading-snug flex-1">
+                          <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 text-sm mb-3 line-clamp-2 leading-snug flex-1">
                             {note.title}
                           </h4>
 
-                          <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
+                          <div className="flex items-center justify-between pt-3 border-t border-gray-50">
                             <div className="flex items-center gap-2">
-                               <img src={author?.avatar} alt={author?.name} className="w-6 h-6 rounded-full object-cover" />
-                               <span className="text-xs font-['Manrope'] text-muted-foreground truncate w-20">{author?.name}</span>
+                               <img src={author?.avatar} alt={author?.name} className="w-5 h-5 rounded-full object-cover" />
+                               <span className="text-xs font-['Manrope'] text-gray-500 truncate max-w-[80px]">{author?.name}</span>
                             </div>
-                            <div className="flex items-center gap-3 text-muted-foreground text-xs font-medium">
-                              <div className="flex items-center gap-1 group-hover:text-primary transition-colors">
+                            <div className="flex items-center gap-2.5 text-xs text-gray-400">
+                              <span className="flex items-center gap-1">
                                 <Eye className="w-3.5 h-3.5" /> {note.views}
-                              </div>
-                              <div className="flex items-center gap-1 group-hover:text-red-500 transition-colors">
+                              </span>
+                              <span className="flex items-center gap-1">
                                 <Heart className="w-3.5 h-3.5" /> {note.likes}
-                              </div>
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -167,52 +148,48 @@ export default function HomePage() {
                 </div>
              </div>
 
-             {/* Right Column: Trending/Popular */}
+             {/* Populer */}
              <div className="xl:col-span-1">
-                <div className="flex items-center gap-2 mb-5">
-                  <h3 className="font-['Lexend_Deca'] font-bold text-xl text-foreground">
-                    Populer Minggu Ini
-                  </h3>
-                  <Sparkles className="w-5 h-5 text-accent" />
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900">
+                    Populer
+                  </h2>
                 </div>
 
-                <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex flex-col gap-5">
-                  {recentNotes.slice(2, 6).map((note, index) => {
-                    const subject = mataPelajaran.find(m => m.name === note.mataPelajaran);
+                <div className="bg-white rounded-2xl border border-gray-100 divide-y divide-gray-50">
+                  {trendingNotes.map((note, index) => {
                     return (
                       <Link
                         key={note.id}
                         to={`/note/${note.id}`}
-                        className="flex items-start gap-4 group"
+                        className="flex items-start gap-3.5 p-4 hover:bg-gray-50 transition-colors group"
                       >
-                        <div className="font-['Lexend_Deca'] font-bold text-2xl text-gray-200 mt-1 w-6 text-center group-hover:text-primary transition-colors">
-                            {index + 1}
-                        </div>
-                        <div
-                          className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform"
-                          style={{ backgroundColor: `${subject?.color}20` }}
-                        >
-                          <span className="text-xl">{subject?.icon}</span>
-                        </div>
+                        <span className={`font-['Lexend_Deca'] font-bold text-lg mt-0.5 w-6 text-center shrink-0 ${
+                          index === 0 ? 'text-amber-500' : index === 1 ? 'text-gray-400' : index === 2 ? 'text-orange-400' : 'text-gray-300'
+                        }`}>
+                          {index + 1}
+                        </span>
 
-                        <div className="flex-1 min-w-0 border-b border-gray-50 pb-4 group-last:border-0 group-last:pb-0">
-                          <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm mb-1.5 line-clamp-2 group-hover:text-primary transition-colors">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 text-sm leading-snug mb-1.5 line-clamp-2 group-hover:text-primary transition-colors">
                             {note.title}
                           </h4>
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground font-medium">
-                            <span className="text-primary bg-primary/5 px-2 py-0.5 rounded-md">{note.mataPelajaran}</span>
-                            <div className="flex items-center gap-1">
-                              <Heart className="w-3 h-3 text-red-400" /> {note.likes}
-                            </div>
+                          <div className="flex items-center gap-3 text-xs text-gray-400 font-['Manrope']">
+                            <span className="text-primary font-semibold">{note.mataPelajaran}</span>
+                            <span className="flex items-center gap-1">
+                              <Heart className="w-3 h-3" /> {note.likes}
+                            </span>
                           </div>
                         </div>
                       </Link>
                     );
                   })}
                   
-                  <Link to="/explore" className="w-full mt-2 py-3 bg-gray-50 hover:bg-primary/5 hover:text-primary text-muted-foreground font-['Lexend_Deca'] font-semibold text-sm rounded-xl transition-all text-center border border-gray-100">
-                     Lihat Trending Lainnya
-                  </Link>
+                  <div className="p-3">
+                     <Link to="/explore" className="block w-full py-3 text-gray-500 hover:text-primary font-['Manrope'] font-semibold text-sm rounded-xl transition-colors text-center hover:bg-gray-50">
+                        Lihat lebih banyak
+                     </Link>
+                  </div>
                 </div>
              </div>
           </div>

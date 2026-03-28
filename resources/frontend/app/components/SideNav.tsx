@@ -38,7 +38,6 @@ export function SideNav({ isExpanded, setIsExpanded }: SideNavProps) {
     { path: '/explore', icon: Search, label: 'Eksplorasi' },
     { path: '/bookmarks', icon: Bookmark, label: 'Tersimpan' },
     { path: '/notifications', icon: Bell, label: 'Notifikasi' },
-    { path: '/profile', icon: User, label: 'Profil Saya' },
   ];
 
   if (user?.role === 'pakar') {
@@ -153,42 +152,55 @@ export function SideNav({ isExpanded, setIsExpanded }: SideNavProps) {
         )}
       </div>
 
-      {/* User Mini Profile */}
-      <div className="p-4 border-t border-gray-50 mt-auto shrink-0">
-          <div className="relative group">
-             <Link 
-                to="/settings" 
-                className={`flex items-center rounded-2xl transition-all duration-200 hover:bg-gray-50 outline-none focus-visible:ring-2 focus-visible:ring-primary/20 ${
-                  isExpanded ? 'p-2 gap-3 border border-transparent hover:border-gray-100' : 'justify-center w-12 h-12 mx-auto border border-transparent hover:border-gray-100'
-                }`}
-             >
-                <img
-                  src={user?.avatar || "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop"}
-                  alt="Profile"
-                  className="w-10 h-10 rounded-[12px] object-cover border border-gray-200 shrink-0 group-hover:border-primary/30 transition-colors"
-                />
-                {isExpanded && (
-                  <>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-['Lexend_Deca'] font-semibold text-sm text-gray-900 truncate">{user?.name || "Pengguna"}</p>
-                      <p className="font-['Manrope'] text-xs text-gray-500 truncate capitalize">{user?.role || "Siswa"}</p>
-                    </div>
-                    <Settings className="w-4 h-4 text-gray-400 group-hover:text-primary group-hover:rotate-45 transition-all duration-300 shrink-0" />
-                  </>
-                )}
-             </Link>
-             
-             {!isExpanded && (
-                <div className="absolute left-[calc(100%+12px)] top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs font-['Lexend_Deca'] font-medium py-2 px-3 rounded-xl opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 pointer-events-none whitespace-nowrap z-[100] shadow-lg origin-left flex items-center gap-2">
-                  <div className="flex flex-col">
-                     <span>{user?.name || "Pengaturan"}</span>
-                     <span className="text-[10px] text-gray-400 capitalize">{user?.role}</span>
-                  </div>
-                  <Settings className="w-3 h-3 text-gray-400 ml-1" />
-                  <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-gray-800 rotate-45 rounded-sm"></div>
+      {/* User Mini Profile & Settings */}
+      <div className={`p-4 border-t border-gray-50 mt-auto shrink-0 flex ${isExpanded ? 'flex-row items-center justify-between gap-1' : 'flex-col items-center gap-3'}`}>
+          {/* Profile Link */}
+          <Link 
+            to="/profile" 
+            className={`flex items-center rounded-2xl transition-all duration-200 hover:bg-gray-50 outline-none focus-visible:ring-2 focus-visible:ring-primary/20 group relative ${
+              isExpanded ? 'p-2 flex-1 min-w-0 gap-3 border border-transparent hover:border-gray-100' : 'justify-center w-12 h-12 border border-transparent hover:border-gray-100'
+            }`}
+          >
+            <img
+              src={user?.avatar || "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop"}
+              alt="Profile"
+              className="w-10 h-10 rounded-[12px] object-cover border border-gray-200 shrink-0 group-hover:border-primary/30 transition-colors"
+            />
+            {isExpanded && (
+                <div className="flex-1 min-w-0 pr-1">
+                  <p className="font-['Lexend_Deca'] font-semibold text-sm text-gray-900 truncate">{user?.name || "Pengguna"}</p>
+                  <p className="font-['Manrope'] text-xs text-gray-500 truncate capitalize">{user?.role || "Siswa"}</p>
                 </div>
-              )}
-          </div>
+            )}
+            
+            {!isExpanded && (
+               <div className="absolute left-[calc(100%+12px)] top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs font-['Lexend_Deca'] font-medium py-2 px-3 rounded-xl opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 pointer-events-none whitespace-nowrap z-[100] shadow-lg origin-left flex items-center gap-2">
+                 <div className="flex flex-col">
+                    <span>{user?.name || "Profil Saya"}</span>
+                    <span className="text-[10px] text-gray-400 capitalize">{user?.role || "Siswa"}</span>
+                 </div>
+                 <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-gray-800 rotate-45 rounded-sm"></div>
+               </div>
+            )}
+          </Link>
+
+          {/* Settings Link */}
+          <Link
+            to="/settings"
+            className={`flex items-center justify-center text-gray-400 hover:text-primary transition-all duration-200 rounded-xl hover:bg-gray-100 group relative ${
+              isExpanded ? 'w-10 h-10 shrink-0' : 'w-10 h-10'
+            }`}
+            aria-label="Pengaturan"
+          >
+            <Settings className="w-5 h-5 group-hover:rotate-45 transition-transform duration-300" />
+            
+            {!isExpanded && (
+               <div className="absolute left-[calc(100%+12px)] top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs font-['Lexend_Deca'] font-medium py-2 px-3 rounded-xl opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 pointer-events-none whitespace-nowrap z-[100] shadow-lg origin-left">
+                 Pengaturan
+                 <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-gray-800 rotate-45 rounded-sm"></div>
+               </div>
+            )}
+          </Link>
       </div>
     </aside>
   );

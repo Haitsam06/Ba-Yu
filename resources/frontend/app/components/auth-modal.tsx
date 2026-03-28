@@ -1,7 +1,5 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, Mail, Lock, User, Eye, EyeOff, BookOpen, Sparkles, GraduationCap } from 'lucide-react';
-import { Button } from './ui/button';
+import { useState, useEffect, useRef } from 'react';
+import { X, Mail, Lock, User, Eye, EyeOff, BookOpen, ArrowRight, GraduationCap, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -16,16 +14,32 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const backdropRef = useRef<HTMLDivElement>(null);
   
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    jenjang: 'SMA', // Default jenjang
+    jenjang: 'SMA',
   });
   
   const navigate = useNavigate();
   const { login, register } = useAuth();
+
+  // Animate in/out
+  useEffect(() => {
+    if (isOpen) {
+      requestAnimationFrame(() => setIsVisible(true));
+    } else {
+      setIsVisible(false);
+    }
+  }, [isOpen]);
+
+  // Sync defaultTab 
+  useEffect(() => {
+    setActiveTab(defaultTab);
+  }, [defaultTab]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,302 +75,260 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
     }));
   };
 
+  if (!isOpen) return null;
+
+  const inputClass = "w-full pl-12 pr-4 py-3.5 text-[15px] bg-gray-50/80 border-2 border-gray-100 rounded-2xl focus:border-primary focus:bg-white focus:outline-none focus:shadow-[0_0_0_4px_rgba(79,70,229,0.08)] transition-all duration-300 placeholder:text-gray-400 font-medium";
+  const labelClass = "block text-[13px] font-extrabold text-gray-600 mb-2.5 tracking-wide uppercase";
+  const iconClass = "absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 transition-colors duration-200";
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+    <>
+      {/* Backdrop */}
+      <div
+        ref={backdropRef}
+        onClick={onClose}
+        style={{ transition: 'opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}
+        className={`fixed inset-0 bg-black/40 backdrop-blur-md z-50 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+      />
+
+      {/* Modal Container */}
+      <div className="fixed inset-0 flex items-center justify-center z-50 p-4" onClick={onClose}>
+        <div
+          onClick={(e) => e.stopPropagation()}
+          style={{ transition: 'opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)' }}
+          className={`bg-white rounded-[2rem] shadow-[0_25px_60px_-12px_rgba(0,0,0,0.2)] w-full max-w-[440px] overflow-hidden relative ${
+            isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
+          }`}
+        >
+          {/* Close Button */}
+          <button
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
-          />
+            className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm hover:bg-gray-100 flex items-center justify-center transition-all z-50 group border border-gray-100 shadow-sm"
+          >
+            <X className="w-4 h-4 text-gray-500 group-hover:rotate-90 transition-transform duration-300" />
+          </button>
 
-          {/* Modal */}
-          <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              transition={{ type: 'spring', duration: 0.5 }}
-              className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative"
-              onClick={(e) => e.stopPropagation()}
+          {/* Header — Clean Minimal */}
+          <div className="px-8 pt-10 pb-3 text-center relative overflow-hidden">
+            {/* Subtle background orbs */}
+            <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-fuchsia-500/5 rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+            
+            <div 
+              style={{ transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease' }}
+              className={`inline-flex items-center justify-center w-16 h-16 bg-primary rounded-[1.25rem] shadow-lg shadow-primary/25 mb-5 ${isVisible ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`}
             >
-              {/* Close Button */}
-              <button
-                onClick={onClose}
-                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors z-50 group"
-              >
-                <X className="w-5 h-5 text-gray-600 group-hover:rotate-90 transition-transform" />
-              </button>
-
-              {/* Header with Gradient */}
-              <div className="relative bg-gradient-to-br from-primary via-purple-600 to-primary p-8 pb-16">
-                <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-20 translate-x-20 blur-2xl" />
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-accent/20 rounded-full translate-y-16 -translate-x-16 blur-2xl" />
-
-                <div className="relative z-10 text-center">
-                  <motion.div
-                    initial={{ scale: 0, rotate: -180 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ type: 'spring', delay: 0.2 }}
-                    className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-3"
-                  >
-                    <BookOpen className="w-7 h-7 text-white" />
-                  </motion.div>
-                  <motion.h2
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="text-xl font-bold text-white mb-1"
-                  >
-                    Selamat Datang di Ba-Yu
-                  </motion.h2>
-                  <motion.p
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="text-white/90 text-xs"
-                  >
-                    Platform belajar terpercaya Indonesia
-                  </motion.p>
-                </div>
-              </div>
-
-              {/* Tabs */}
-              <div className="relative -mt-10 px-8">
-                <div className="bg-white rounded-2xl shadow-xl p-1.5 flex gap-1 border border-gray-100">
-                  <button
-                    onClick={() => { setActiveTab('login'); setErrorMsg(null); }}
-                    className="relative flex-1 py-2.5 rounded-xl font-semibold text-sm transition-all"
-                  >
-                    {activeTab === 'login' && (
-                      <motion.div
-                        layoutId="activeTab"
-                        className="absolute inset-0 bg-primary rounded-xl"
-                        transition={{ type: 'spring', duration: 0.5 }}
-                      />
-                    )}
-                    <span className={`relative z-10 ${activeTab === 'login' ? 'text-white' : 'text-gray-600'}`}>
-                      Masuk
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => { setActiveTab('register'); setErrorMsg(null); }}
-                    className="relative flex-1 py-2.5 rounded-xl font-semibold text-sm transition-all"
-                  >
-                    {activeTab === 'register' && (
-                      <motion.div
-                        layoutId="activeTab"
-                        className="absolute inset-0 bg-primary rounded-xl"
-                        transition={{ type: 'spring', duration: 0.5 }}
-                      />
-                    )}
-                    <span className={`relative z-10 ${activeTab === 'register' ? 'text-white' : 'text-gray-600'}`}>
-                      Daftar
-                    </span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Form */}
-              <div className="p-8 pt-6 pb-6 max-h-[60vh] overflow-y-auto">
-                {errorMsg && (
-                   <motion.div 
-                     initial={{ opacity: 0, y: -10 }} 
-                     animate={{ opacity: 1, y: 0 }} 
-                     className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm font-medium text-center"
-                   >
-                     {errorMsg}
-                   </motion.div>
-                )}
-                
-                <AnimatePresence mode="wait">
-                  <motion.form
-                    key={activeTab}
-                    initial={{ opacity: 0, x: activeTab === 'login' ? -20 : 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: activeTab === 'login' ? 20 : -20 }}
-                    transition={{ duration: 0.3 }}
-                    onSubmit={handleSubmit}
-                    className="space-y-4"
-                  >
-                    {/* Name field - only for register */}
-                    {activeTab === 'register' && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                      >
-                        <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                          Nama Lengkap
-                        </label>
-                        <div className="relative">
-                          <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                          <input
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            placeholder="Masukkan nama lengkap"
-                            className="w-full pl-11 pr-4 py-2.5 text-sm bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-primary focus:bg-white focus:outline-none transition-all"
-                            required
-                          />
-                        </div>
-                      </motion.div>
-                    )}
-
-                    {/* Email */}
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                        Email
-                      </label>
-                      <div className="relative">
-                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <input
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleChange}
-                          placeholder="nama@email.com"
-                          className="w-full pl-11 pr-4 py-2.5 text-sm bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-primary focus:bg-white focus:outline-none transition-all"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    {/* Password */}
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                        Password
-                      </label>
-                      <div className="relative">
-                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          name="password"
-                          value={formData.password}
-                          onChange={handleChange}
-                          placeholder="••••••••"
-                          className="w-full pl-11 pr-11 py-2.5 text-sm bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-primary focus:bg-white focus:outline-none transition-all"
-                          required
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                        >
-                          {showPassword ? (
-                            <EyeOff className="w-4 h-4" />
-                          ) : (
-                            <Eye className="w-4 h-4" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Jenjang field - only for register */}
-                    {activeTab === 'register' && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                      >
-                        <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                          Jenjang Pendidikan
-                        </label>
-                        <div className="relative">
-                          <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                          <select
-                            name="jenjang"
-                            value={formData.jenjang}
-                            onChange={handleChange}
-                            className="w-full pl-11 pr-4 py-2.5 text-sm bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-primary focus:bg-white focus:outline-none transition-all appearance-none cursor-pointer"
-                            required
-                          >
-                            <option value="SD">SD (Sekolah Dasar)</option>
-                            <option value="SMP">SMP (Sekolah Menengah Pertama)</option>
-                            <option value="SMA">SMA (Sekolah Menengah Atas)</option>
-                            <option value="Kuliah">Kuliah (Perguruan Tinggi)</option>
-                          </select>
-                        </div>
-                      </motion.div>
-                    )}
-
-                    {/* Remember me / Forgot password */}
-                    {activeTab === 'login' && (
-                      <div className="flex items-center justify-between text-xs pt-2">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            className="w-3.5 h-3.5 rounded border-gray-300 text-primary focus:ring-primary"
-                          />
-                          <span className="text-gray-600">Ingat saya</span>
-                        </label>
-                        <button
-                          type="button"
-                          className="text-primary font-semibold hover:underline"
-                        >
-                          Lupa password?
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Submit Button */}
-                    <div className="pt-2">
-                      <Button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full bg-primary hover:bg-primary/90 h-11 rounded-xl font-bold text-sm shadow-lg shadow-primary/25 disabled:bg-gray-400 disabled:shadow-none transition-all group"
-                      >
-                        {isSubmitting ? (
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        ) : (
-                          <>
-                            {activeTab === 'login' ? 'Masuk' : 'Daftar Sekarang'}
-                            <Sparkles className="ml-2 w-4 h-4 group-hover:rotate-12 transition-transform" />
-                          </>
-                        )}
-                      </Button>
-                    </div>
-
-                    {/* Terms - only for register */}
-                    {activeTab === 'register' && (
-                      <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="text-[11px] text-gray-500 text-center leading-relaxed"
-                      >
-                        Dengan mendaftar, kamu menyetujui {' '}
-                        <button type="button" className="text-primary font-semibold hover:underline">
-                          Syarat & Ketentuan
-                        </button>
-                      </motion.p>
-                    )}
-                  </motion.form>
-                </AnimatePresence>
-
-                {/* Additional Info */}
-                <div className="mt-6 pt-6 border-t border-gray-100 text-center">
-                  <p className="text-sm text-gray-600">
-                    {activeTab === 'login' ? 'Belum punya akun? ' : 'Sudah punya akun? '}
-                    <button
-                      type="button"
-                      onClick={() => { setActiveTab(activeTab === 'login' ? 'register' : 'login'); setErrorMsg(null); }}
-                      className="text-primary font-bold hover:underline ml-1"
-                    >
-                      {activeTab === 'login' ? 'Daftar Sekarang' : 'Masuk'}
-                    </button>
-                  </p>
-                </div>
-
-              </div>
-            </motion.div>
+              <BookOpen className="w-8 h-8 text-white" />
+            </div>
+            
+            <h2 
+              style={{ transition: 'opacity 0.5s ease 0.1s, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s' }}
+              className={`text-2xl font-extrabold text-gray-900 tracking-tight mb-1.5 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+            >
+              {activeTab === 'login' ? 'Selamat Datang!' : 'Buat Akun Baru'}
+            </h2>
+            <p 
+              style={{ transition: 'opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s' }}
+              className={`text-gray-400 text-[13px] font-semibold tracking-wide ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+            >
+              {activeTab === 'login' 
+                ? 'Masuk ke akun Ba-Yu kamu' 
+                : 'Bergabung bersama ribuan pelajar Indonesia'}
+            </p>
           </div>
-        </>
-      )}
-    </AnimatePresence>
+
+          {/* Tab Switcher — Pill Style */}
+          <div className="px-8 pt-4 pb-2">
+            <div className="relative bg-gray-100/80 rounded-2xl p-1 flex">
+              {/* Sliding Indicator */}
+              <div
+                style={{ transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-[14px] shadow-md ${
+                  activeTab === 'register' ? 'translate-x-[calc(100%+8px)]' : 'translate-x-0'
+                }`}
+              />
+              <button
+                onClick={() => { setActiveTab('login'); setErrorMsg(null); }}
+                className={`relative z-10 flex-1 py-3 rounded-[14px] font-bold text-sm transition-colors duration-300 ${
+                  activeTab === 'login' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Masuk
+              </button>
+              <button
+                onClick={() => { setActiveTab('register'); setErrorMsg(null); }}
+                className={`relative z-10 flex-1 py-3 rounded-[14px] font-bold text-sm transition-colors duration-300 ${
+                  activeTab === 'register' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Daftar
+              </button>
+            </div>
+          </div>
+
+          {/* Form Area */}
+          <div className="px-8 pt-5 pb-8 max-h-[58vh] overflow-y-auto">
+            {/* Error Message */}
+            {errorMsg && (
+              <div className="mb-5 p-3.5 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-sm font-semibold text-center flex items-center justify-center gap-2">
+                <span className="w-5 h-5 bg-red-100 rounded-full flex items-center justify-center shrink-0 text-red-500 text-xs">!</span>
+                {errorMsg}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Name — Register Only */}
+              <div
+                style={{ transition: 'max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, margin 0.3s ease' }}
+                className={`overflow-hidden ${activeTab === 'register' ? 'max-h-[120px] opacity-100' : 'max-h-0 opacity-0 !mb-0'}`}
+              >
+                <label className={labelClass}>Nama Lengkap</label>
+                <div className="relative group">
+                  <User className={`${iconClass} group-focus-within:text-primary`} />
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Nama kamu"
+                    className={inputClass}
+                    required={activeTab === 'register'}
+                  />
+                </div>
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className={labelClass}>Alamat Email</label>
+                <div className="relative group">
+                  <Mail className={`${iconClass} group-focus-within:text-primary`} />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="kamu@email.com"
+                    className={inputClass}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div>
+                <label className={labelClass}>Kata Sandi</label>
+                <div className="relative group">
+                  <Lock className={`${iconClass} group-focus-within:text-primary`} />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Min. 8 karakter"
+                    className={`${inputClass} !pr-12`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors p-1"
+                  >
+                    {showPassword ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Jenjang — Register Only */}
+              <div
+                style={{ transition: 'max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, margin 0.3s ease' }}
+                className={`overflow-hidden ${activeTab === 'register' ? 'max-h-[120px] opacity-100' : 'max-h-0 opacity-0 !mb-0'}`}
+              >
+                <label className={labelClass}>Jenjang Pendidikan</label>
+                <div className="relative group">
+                  <GraduationCap className={`${iconClass} group-focus-within:text-primary`} />
+                  <select
+                    name="jenjang"
+                    value={formData.jenjang}
+                    onChange={handleChange}
+                    className={`${inputClass} appearance-none cursor-pointer`}
+                    required={activeTab === 'register'}
+                  >
+                    <option value="SD">SD (Sekolah Dasar)</option>
+                    <option value="SMP">SMP (Sekolah Menengah Pertama)</option>
+                    <option value="SMA">SMA (Sekolah Menengah Atas)</option>
+                    <option value="Kuliah">Kuliah (Perguruan Tinggi)</option>
+                  </select>
+                  {/* Custom dropdown arrow */}
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Login Extras */}
+              {activeTab === 'login' && (
+                <div className="flex items-center justify-between text-sm pt-1">
+                  <label className="flex items-center gap-2.5 cursor-pointer group">
+                    <input
+                      type="checkbox" 
+                      className="w-4 h-4 rounded-md border-2 border-gray-200 text-primary focus:ring-primary/30 focus:ring-offset-0 cursor-pointer"
+                    />
+                    <span className="text-gray-500 group-hover:text-gray-700 transition-colors font-medium">Ingat saya</span>
+                  </label>
+                  <button type="button" className="text-primary font-bold hover:underline underline-offset-2 text-sm">
+                    Lupa sandi?
+                  </button>
+                </div>
+              )}
+
+              {/* Submit CTA */}
+              <div className="pt-3">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-primary hover:bg-indigo-700 disabled:bg-gray-300 text-white h-[52px] rounded-2xl font-bold text-[15px] shadow-xl shadow-primary/20 hover:shadow-primary/30 disabled:shadow-none transition-all duration-300 flex items-center justify-center gap-2 group hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  {isSubmitting ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <>
+                      {activeTab === 'login' ? 'Masuk ke Akun' : 'Buat Akun Gratis'}
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Terms (Register) */}
+              {activeTab === 'register' && (
+                <p className="text-[12px] text-gray-400 text-center leading-relaxed pt-1">
+                  Dengan mendaftar, kamu setuju dengan{' '}
+                  <button type="button" className="text-primary font-semibold hover:underline underline-offset-2">
+                    Syarat & Ketentuan
+                  </button>
+                  {' '}Ba-Yu.
+                </p>
+              )}
+            </form>
+
+            {/* Footer Switch */}
+            <div className="mt-6 pt-5 border-t border-gray-100 text-center">
+              <p className="text-sm text-gray-500 font-medium">
+                {activeTab === 'login' ? 'Belum punya akun?' : 'Sudah punya akun?'}
+                <button
+                  type="button"
+                  onClick={() => { setActiveTab(activeTab === 'login' ? 'register' : 'login'); setErrorMsg(null); }}
+                  className="text-primary font-bold hover:underline underline-offset-2 ml-1.5"
+                >
+                  {activeTab === 'login' ? 'Daftar Gratis' : 'Masuk'}
+                </button>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
