@@ -1,267 +1,193 @@
 import { MobileLayout } from '../components/MobileLayout';
-import { Bell, Check, Heart, MessageCircle, UserPlus, Shield } from 'lucide-react';
+import { Bell, Check, Shield, AlertCircle, Loader2, CheckCheck } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
 
 interface Notification {
-  id: string;
-  type: 'validation' | 'comment' | 'follower' | 'report';
+  _id: string;
+  user_id: string;
   title: string;
   message: string;
-  time: string;
-  isRead: boolean;
-  avatar?: string;
+  type: string;
+  is_read: boolean;
+  created_at: string;
+  updated_at: string;
 }
-
-const mockNotifications: Notification[] = [
-  {
-    id: '1',
-    type: 'validation',
-    title: 'Catatan Divalidasi',
-    message: 'Catatanmu "Rumus Trigonometri Lengkap" telah divalidasi oleh Dr. Ahmad Hidayat dengan rating 5 bintang!',
-    time: '2 jam yang lalu',
-    isRead: false,
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop'
-  },
-  {
-    id: '2',
-    type: 'comment',
-    title: 'Komentar Baru',
-    message: 'Dewi Lestari mengomentari catatan "Peta Konsep Sistem Pencernaan Manusia"',
-    time: '5 jam yang lalu',
-    isRead: false,
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop'
-  },
-  {
-    id: '3',
-    type: 'follower',
-    title: 'Pengikut Baru',
-    message: 'Budi Santoso mulai mengikuti kamu',
-    time: '1 hari yang lalu',
-    isRead: true,
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop'
-  },
-  {
-    id: '4',
-    type: 'comment',
-    title: 'Komentar Baru',
-    message: 'Ahmad Fauzi mengomentari catatan "Algoritma Sorting - Bubble Sort & Quick Sort"',
-    time: '1 hari yang lalu',
-    isRead: true,
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop'
-  },
-  {
-    id: '5',
-    type: 'validation',
-    title: 'Catatan Sedang Direview',
-    message: 'Catatanmu "Sistem Persamaan Linear" sedang dalam proses validasi oleh pakar',
-    time: '2 hari yang lalu',
-    isRead: true
-  }
-];
 
 const getNotificationIcon = (type: string) => {
   switch (type) {
-    case 'validation':
-      return <Check className="w-5 h-5 text-green-600" />;
-    case 'comment':
-      return <MessageCircle className="w-5 h-5 text-blue-600" />;
-    case 'follower':
-      return <UserPlus className="w-5 h-5 text-purple-600" />;
-    case 'report':
-      return <Shield className="w-5 h-5 text-red-600" />;
+    case 'sertifikasi':
+      return <Shield className="w-5 h-5 text-primary" />;
     default:
-      return <Bell className="w-5 h-5 text-gray-600" />;
+      return <Bell className="w-5 h-5 text-gray-500" />;
   }
 };
 
-const getNotificationBgColor = (type: string) => {
+const getNotificationBg = (type: string) => {
   switch (type) {
-    case 'validation':
-      return 'bg-green-100';
-    case 'comment':
-      return 'bg-blue-100';
-    case 'follower':
-      return 'bg-purple-100';
-    case 'report':
-      return 'bg-red-100';
+    case 'sertifikasi':
+      return 'bg-primary/10';
     default:
       return 'bg-gray-100';
   }
 };
 
-export default function NotificationsPage() {
-  const unreadCount = mockNotifications.filter(n => !n.isRead).length;
+function timeAgo(dateStr: string) {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffMs = now.getTime() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return 'Baru saja';
+  if (diffMin < 60) return `${diffMin} menit lalu`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr} jam lalu`;
+  const diffDay = Math.floor(diffHr / 24);
+  if (diffDay === 1) return 'Kemarin';
+  if (diffDay < 30) return `${diffDay} hari lalu`;
+  return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+}
 
-  const groupedNotifications = {
-    today: mockNotifications.filter(n => n.time.includes('jam')),
-    yesterday: mockNotifications.filter(n => n.time.includes('1 hari')),
-    older: mockNotifications.filter(n => n.time.includes('2 hari'))
+export default function NotificationsPage() {
+  const { user } = useAuth();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const fetchNotifications = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('bayu-token');
+      const res = await axios.get('/api/v1/notifikasi', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setNotifications(res.data.data || []);
+    } catch (err: any) {
+      console.error('Gagal fetch notifikasi:', err);
+      setError('Gagal memuat notifikasi. Periksa koneksi Anda.');
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const unreadCount = notifications.filter(n => !n.is_read).length;
 
   return (
     <MobileLayout>
       <div className="min-h-screen pb-4 bg-white">
-        {/* Header - Consistent with HomePage */}
-        <div className="px-6 pt-7 pb-6">
-          <h1 className="text-foreground font-['Lexend_Deca'] font-bold text-2xl mb-1">
-            Notifikasi
-          </h1>
-          <p className="text-muted-foreground font-['Manrope'] text-sm">
-            {unreadCount} notifikasi belum dibaca
-          </p>
+        {/* Header */}
+        <div className="px-6 pt-7 pb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-gray-900 font-['Lexend_Deca'] font-bold text-2xl mb-1">
+              Notifikasi
+            </h1>
+            <p className="text-gray-500 font-['Manrope'] text-sm">
+              {isLoading ? 'Memuat...' : unreadCount > 0 ? `${unreadCount} belum dibaca` : 'Semua sudah dibaca'}
+            </p>
+          </div>
+          {unreadCount > 0 && (
+            <button className="flex items-center gap-1.5 text-primary text-sm font-semibold hover:bg-primary/5 px-3 py-1.5 rounded-xl transition-colors">
+              <CheckCheck className="w-4 h-4" />
+              Tandai semua
+            </button>
+          )}
         </div>
 
         <div className="px-6">
-          {/* Today */}
-          {groupedNotifications.today.length > 0 && (
-            <div className="mb-6">
-              <h3 className="font-['Lexend_Deca'] font-semibold text-sm text-muted-foreground mb-3">
-                Hari Ini
-              </h3>
-              <div className="space-y-3">
-                {groupedNotifications.today.map((notif) => (
-                  <div
-                    key={notif.id}
-                    className={`bg-white rounded-2xl p-4 border transition-all ${
-                      !notif.isRead
-                        ? 'border-primary/30 shadow-sm'
-                        : 'border-gray-100'
-                    }`}
-                  >
-                    <div className="flex gap-3">
-                      {/* Icon or Avatar */}
-                      {notif.avatar ? (
-                        <img
-                          src={notif.avatar}
-                          alt="Avatar"
-                          className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
-                        />
-                      ) : (
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${getNotificationBgColor(notif.type)}`}>
-                          {getNotificationIcon(notif.type)}
-                        </div>
-                      )}
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <Loader2 className="w-8 h-8 text-primary animate-spin" />
+              <p className="text-gray-500 font-['Manrope'] text-sm">Memuat notifikasi...</p>
+            </div>
+          )}
 
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2 mb-1">
-                          <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm">
-                            {notif.title}
-                          </h4>
-                          {!notif.isRead && (
-                            <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-1"></div>
+          {/* Error State */}
+          {!isLoading && error && (
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center">
+                <AlertCircle className="w-8 h-8 text-red-400" />
+              </div>
+              <p className="text-gray-600 font-['Manrope'] text-sm text-center">{error}</p>
+              <button
+                onClick={fetchNotifications}
+                className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-indigo-700 transition-colors"
+              >
+                Coba Lagi
+              </button>
+            </div>
+          )}
+
+          {/* Notification List */}
+          {!isLoading && !error && notifications.length > 0 && (
+            <div className="space-y-3">
+              {notifications.map((notif, index) => (
+                <div
+                  key={notif._id}
+                  className={`rounded-2xl p-4 border transition-all duration-300 hover:shadow-sm cursor-pointer group ${
+                    !notif.is_read
+                      ? 'bg-primary/[0.03] border-primary/20 shadow-sm'
+                      : 'bg-white border-gray-100 hover:border-gray-200'
+                  }`}
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <div className="flex gap-4">
+                    {/* Icon */}
+                    <div className={`w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center ${getNotificationBg(notif.type)} transition-colors group-hover:scale-105 duration-300`}>
+                      {getNotificationIcon(notif.type)}
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1.5">
+                        <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 text-sm leading-snug">
+                          {notif.title}
+                        </h4>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-[11px] text-gray-400 font-['Manrope'] whitespace-nowrap">
+                            {timeAgo(notif.created_at)}
+                          </span>
+                          {!notif.is_read && (
+                            <div className="w-2.5 h-2.5 bg-primary rounded-full animate-pulse shrink-0"></div>
                           )}
                         </div>
-                        <p className="font-['Manrope'] text-sm text-foreground mb-2 leading-relaxed">
-                          {notif.message}
-                        </p>
-                        <p className="font-['Manrope'] text-xs text-muted-foreground">
-                          {notif.time}
-                        </p>
+                      </div>
+                      <p className="font-['Manrope'] text-sm text-gray-600 leading-relaxed line-clamp-2">
+                        {notif.message}
+                      </p>
+
+                      {/* Type Badge */}
+                      <div className="mt-3">
+                        <span className={`inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg ${
+                          notif.type === 'sertifikasi' ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-500'
+                        }`}>
+                          {notif.type === 'sertifikasi' && <Shield className="w-3 h-3" />}
+                          {notif.type}
+                        </span>
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Yesterday */}
-          {groupedNotifications.yesterday.length > 0 && (
-            <div className="mb-6">
-              <h3 className="font-['Lexend_Deca'] font-semibold text-sm text-muted-foreground mb-3">
-                Kemarin
-              </h3>
-              <div className="space-y-3">
-                {groupedNotifications.yesterday.map((notif) => (
-                  <div
-                    key={notif.id}
-                    className="bg-white rounded-2xl p-4 border border-gray-100"
-                  >
-                    <div className="flex gap-3">
-                      {notif.avatar ? (
-                        <img
-                          src={notif.avatar}
-                          alt="Avatar"
-                          className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
-                        />
-                      ) : (
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${getNotificationBgColor(notif.type)}`}>
-                          {getNotificationIcon(notif.type)}
-                        </div>
-                      )}
-
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm mb-1">
-                          {notif.title}
-                        </h4>
-                        <p className="font-['Manrope'] text-sm text-foreground mb-2 leading-relaxed">
-                          {notif.message}
-                        </p>
-                        <p className="font-['Manrope'] text-xs text-muted-foreground">
-                          {notif.time}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Older */}
-          {groupedNotifications.older.length > 0 && (
-            <div className="mb-6">
-              <h3 className="font-['Lexend_Deca'] font-semibold text-sm text-muted-foreground mb-3">
-                Lebih Lama
-              </h3>
-              <div className="space-y-3">
-                {groupedNotifications.older.map((notif) => (
-                  <div
-                    key={notif.id}
-                    className="bg-white rounded-2xl p-4 border border-gray-100"
-                  >
-                    <div className="flex gap-3">
-                      {notif.avatar ? (
-                        <img
-                          src={notif.avatar}
-                          alt="Avatar"
-                          className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
-                        />
-                      ) : (
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${getNotificationBgColor(notif.type)}`}>
-                          {getNotificationIcon(notif.type)}
-                        </div>
-                      )}
-
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm mb-1">
-                          {notif.title}
-                        </h4>
-                        <p className="font-['Manrope'] text-sm text-foreground mb-2 leading-relaxed">
-                          {notif.message}
-                        </p>
-                        <p className="font-['Manrope'] text-xs text-muted-foreground">
-                          {notif.time}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           )}
 
           {/* Empty State */}
-          {mockNotifications.length === 0 && (
-            <div className="text-center py-16">
-              <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Bell className="w-10 h-10 text-gray-400" />
+          {!isLoading && !error && notifications.length === 0 && (
+            <div className="text-center py-20">
+              <div className="w-20 h-20 bg-gray-50 rounded-[1.5rem] flex items-center justify-center mx-auto mb-5 border border-gray-100">
+                <Bell className="w-9 h-9 text-gray-300" />
               </div>
-              <h3 className="font-['Lexend_Deca'] font-semibold text-foreground mb-2">
-                Belum Ada Notifikasi
+              <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-lg mb-2">
+                Kotak Masuk Kosong
               </h3>
-              <p className="font-['Manrope'] text-sm text-muted-foreground">
-                Notifikasi akan muncul di sini
+              <p className="font-['Manrope'] text-sm text-gray-500 max-w-xs mx-auto leading-relaxed">
+                Belum ada notifikasi untuk kamu. Notifikasi akan muncul saat ada update tentang sertifikasi atau aktivitas lainnya.
               </p>
             </div>
           )}

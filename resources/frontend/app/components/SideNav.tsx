@@ -1,6 +1,8 @@
 import { Home, Search, Plus, Bell, User, LayoutDashboard, Bookmark, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 interface SideNavProps {
   isExpanded: boolean;
@@ -10,6 +12,24 @@ interface SideNavProps {
 export function SideNav({ isExpanded, setIsExpanded }: SideNavProps) {
   const location = useLocation();
   const { user } = useAuth();
+  const [unreadNotifCount, setUnreadNotifCount] = useState(0);
+
+  useEffect(() => {
+    const fetchUnread = async () => {
+      try {
+        const token = localStorage.getItem('bayu-token');
+        if (!token) return;
+        const res = await axios.get('/api/v1/notifikasi', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = res.data.data || [];
+        setUnreadNotifCount(data.filter((n: any) => !n.is_read).length);
+      } catch { /* silent */ }
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 30000); // poll every 30s
+    return () => clearInterval(interval);
+  }, []);
   
   const isActive = (path: string) => location.pathname === path;
 
@@ -82,6 +102,12 @@ export function SideNav({ isExpanded, setIsExpanded }: SideNavProps) {
                   <item.icon className={`w-5 h-5 transition-transform duration-200 ${
                     active ? 'fill-primary/20 scale-110' : 'group-hover:text-primary group-hover:scale-110'
                   }`} />
+                  {/* Notification Badge */}
+                  {item.path === '/notifications' && unreadNotifCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 shadow-sm animate-bounce">
+                      {unreadNotifCount > 9 ? '9+' : unreadNotifCount}
+                    </span>
+                  )}
                 </div>
                 
                 {isExpanded && (
