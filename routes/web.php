@@ -27,7 +27,7 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/storage/sertifikat/{filename}', function ($filename) {
     $path1 = storage_path('app/sertifikat/' . $filename);
-    
+
     $path2 = storage_path('app/public/sertifikat/' . $filename);
 
     if (File::exists($path1)) {
@@ -43,4 +43,4 @@ Route::get('/app/{any?}', function () {
     return view('frontend');
 })->where('any', '.*');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
