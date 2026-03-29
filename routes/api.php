@@ -11,6 +11,7 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserController;
 
 Route::post('/v1/register', [AuthController::class, 'register']);
 Route::post('/v1/login', [AuthController::class, 'login']);
@@ -28,6 +29,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/v1/posts/{id}', [PostController::class, 'show']);
     Route::delete('/v1/posts/{id}', [PostController::class, 'destroy']);
 
+    // Verify
+    Route::put('/v1/posts/{id}/verify', [PostController::class, 'verify']);
+
     // Comments
     Route::post('/v1/posts/{postId}/comments', [CommentController::class, 'store']);
     Route::delete('/v1/comments/{id}', [CommentController::class, 'destroy']);
@@ -39,6 +43,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/v1/posts/{postId}/report', [ReportController::class, 'store']);
     Route::get('/v1/reports', [ReportController::class, 'index']); // Admin only
     Route::put('/v1/reports/{id}', [ReportController::class, 'update']); // Admin only
+
+    // Users
+    Route::get('/v1/users', [UserController::class, 'index']);
 
     // Categories & Topics
     Route::get('/v1/categories', [CategoryController::class, 'index']);

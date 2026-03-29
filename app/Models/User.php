@@ -11,7 +11,8 @@ class User extends Authenticatable
     use HasApiTokens, Notifiable;
 
     protected $connection = 'mongodb';
-    protected $collection = 'users';
+    protected $collection = 'user';
+    protected $table = 'user';
 
     protected $fillable = [
         'name',
@@ -77,9 +78,10 @@ class User extends Authenticatable
             'expires_at' => $expiresAt,
         ]);
 
-        return new class($token, $token->getKey().'|'.$plainTextToken) {
+        return new class ($token, $token->getKey() . '|' . $plainTextToken) {
             public $accessToken, $plainTextToken;
-            public function __construct($token, $plainText) {
+            public function __construct($token, $plainText)
+            {
                 $this->accessToken = $token;
                 $this->plainTextToken = $plainText;
             }

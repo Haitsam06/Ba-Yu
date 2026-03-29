@@ -8,6 +8,7 @@ class Post extends Model
 {
     protected $connection = 'mongodb';
     protected $table = 'post';
+    protected $collection = 'post';
 
     protected $fillable = [
         'user_id',
@@ -15,8 +16,12 @@ class Post extends Model
         'category_id',
         'title',
         'content',
+        'mapel',
+        'jenjang',
+        'kelas',
+        'semester',
+        'tags',
         'visibility',
-        'images',
         'likes_count',
         'comments_count',
     ];
@@ -28,9 +33,9 @@ class Post extends Model
     ];
 
     protected $casts = [
-        'images' => 'array',
         'likes_count' => 'integer',
         'comments_count' => 'integer',
+        'tags' => 'array',
     ];
 
     // Relationships

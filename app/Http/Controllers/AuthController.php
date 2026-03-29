@@ -14,7 +14,7 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:App\Models\User,email',
             'password' => 'required|string|min:6',
             'jenjang_pendidikan' => 'required|string',
         ]);
@@ -67,7 +67,7 @@ class AuthController extends Controller
                 'id' => $user->_id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'role' => $user->role, 
+                'role' => $user->role,
                 'jenjang_pendidikan' => $user->jenjang_pendidikan, // <-- Balikin datanya pas login biar frontend tau
             ]
         ]);

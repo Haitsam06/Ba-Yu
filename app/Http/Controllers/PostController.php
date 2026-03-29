@@ -8,12 +8,16 @@ use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::with(['user', 'topic', 'category', 'comments', 'likes'])
-                     ->where('visibility', 'public')
-                     ->orderBy('created_at', 'desc')
-                     ->get();
+        $query = Post::with(['user', 'topic', 'category', 'comments', 'likes'])->where('visibility', 'public');
+
+        if ($request->has('is_verified')) {
+            $isVerified = filter_var($request->query('is_verified'), FILTER_VALIDATE_BOOLEAN);
+            $query->where('is_verified', $isVerified);
+        }
+
+        $posts = $query->orderBy('created_at', 'desc')->get();
 
         return response()->json([
             'message' => 'Berhasil mengambil daftar post',
@@ -24,26 +28,34 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'topic_id' => 'required',
-            'category_id' => 'required',
             'title' => 'required|string|max:255',
             'content' => 'required|string',
+            'mapel' => 'nullable|string',
+            'jenjang' => 'nullable|string',
+            'kelas' => 'nullable|string',
+            'semester' => 'nullable|string',
+            'tags' => 'nullable|array',
+            'topic_id' => 'nullable|string',
+            'category_id' => 'nullable|string',
             'visibility' => 'in:public,private',
-            'images' => 'nullable|array'
         ]);
 
         $post = Post::create([
             'user_id' => Auth::id(),
-            'topic_id' => $request->topic_id,
-            'category_id' => $request->category_id,
             'title' => $request->title,
             'content' => $request->content,
+            'mapel' => $request->mapel,
+            'jenjang' => $request->jenjang,
+            'kelas' => $request->kelas,
+            'semester' => $request->semester,
+            'tags' => $request->tags ?? [],
+            'topic_id' => $request->topic_id,
+            'category_id' => $request->category_id,
             'visibility' => $request->visibility ?? 'public',
-            'images' => $request->images ?? [],
         ]);
 
         return response()->json([
-            'message' => 'Post berhasil dibuat',
+            'message' => 'Catatan berhasil masuk ke awan',
             'data' => $post
         ], 201);
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Report;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -55,7 +56,7 @@ class ReportController extends Controller
         }
 
         $request->validate([
-            'status' => 'required|in:pending,resolved,rejected',
+            'action' => 'required|in:abaikan,takedown,banned',
             'admin_note' => 'nullable|string'
         ]);
 
@@ -64,13 +65,32 @@ class ReportController extends Controller
             return response()->json(['message' => 'Report tidak ditemukan'], 404);
         }
 
-        $report->update([
-            'status' => $request->status,
-            'admin_note' => $request->admin_note
-        ]);
+        $action = $request->action;
+        $pesan = '';
+
+        if ($action === 'abaikan') {
+            $report->update(['status' => 'rejected', 'admin_note' => $request->admin_note]);
+            $pesan = 'Laporan aman, berhasil diabaikan. 🛡️';
+
+        } elseif ($action === 'takedown') {
+            Post::where('id', $report->post_id)->delete();
+            
+            $report->update(['status' => 'resolved', 'admin_note' => $request->admin_note]);
+            $pesan = 'BAM! Catatan ngawur berhasil di-Take Down! 💥';
+
+        } elseif ($action === 'banned') {
+            $post = Post::find($report->post_id);
+            if ($post) {
+                User::where('id', $post->user_id)->update(['role' => 'banned']);
+                $post->delete();
+            }
+            
+            $report->update(['status' => 'resolved', 'admin_note' => $request->admin_note]);
+            $pesan = 'MAMPUS! User toxic berhasil di-Banned permanen! 🔨';
+        }
 
         return response()->json([
-            'message' => 'Status report berhasil diupdate',
+            'message' => $pesan,
             'data' => $report
         ], 200);
     }
