@@ -643,13 +643,13 @@ export default function UploadPage() {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Judul Catatan..."
             className="w-full text-[40px] md:text-[48px] font-['Lexend_Deca'] font-extrabold text-gray-900 placeholder:text-gray-100 focus:outline-none mt-12 mb-2 leading-[1.1] tracking-[-0.03em] transition-all"
-            maxLength={100}
+            maxLength={200}
           />
           <div className="flex items-center gap-3 mb-8">
             <div className="h-1 w-12 bg-primary/20 rounded-full overflow-hidden">
-               <div className="h-full bg-primary transition-all duration-300" style={{ width: `${(title.length / 100) * 100}%` }}></div>
+               <div className="h-full bg-primary transition-all duration-300" style={{ width: `${(title.length / 200) * 100}%` }}></div>
             </div>
-            <p className="text-[11px] font-['Lexend_Deca'] font-bold text-gray-300 uppercase tracking-widest">{title.length}/100 Karakter</p>
+            <p className="text-[11px] font-['Lexend_Deca'] font-bold text-gray-300 uppercase tracking-widest">{title.length}/200 Karakter</p>
           </div>
 
           {/* Editor */}
