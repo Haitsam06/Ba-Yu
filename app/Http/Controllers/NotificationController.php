@@ -19,4 +19,33 @@ class NotificationController extends Controller
             'data'    => $notifikasi
         ], 200);
     }
+
+    public function markAsRead($id)
+    {
+        $notifikasi = Notification::where('_id', $id)->first();
+        if (!$notifikasi) {
+            $notifikasi = Notification::where('id', $id)->first();
+        }
+
+        if (!$notifikasi) {
+            return response()->json(['message' => 'Notifikasi tidak ditemukan'], 404);
+        }
+
+        if ($notifikasi->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $notifikasi->update(['is_read' => true]);
+
+        return response()->json(['message' => 'Berhasil ditandai sudah dibaca'], 200);
+    }
+
+    public function markAllAsRead()
+    {
+        Notification::where('user_id', Auth::id())
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return response()->json(['message' => 'Semua berhasil ditandai sudah dibaca'], 200);
+    }
 }

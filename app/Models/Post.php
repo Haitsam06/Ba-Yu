@@ -22,12 +22,14 @@ class Post extends Model
         'semester',
         'tags',
         'visibility',
+        'is_verified',
         'likes_count',
         'comments_count',
     ];
 
     protected $attributes = [
         'visibility' => 'public',
+        'is_verified' => false,
         'likes_count' => 0,
         'comments_count' => 0,
     ];
@@ -36,6 +38,7 @@ class Post extends Model
         'likes_count' => 'integer',
         'comments_count' => 'integer',
         'tags' => 'array',
+        'is_verified' => 'boolean',
     ];
 
     // Relationships

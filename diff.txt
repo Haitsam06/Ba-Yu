@@ -1,0 +1,282 @@
+commit e0f030453b990c6eb44c7fa359baba7a0a1dc85d
+Author: Varmintzy <radenmasgalih@apps.ipb.ac.id>
+Date:   Sun Mar 29 20:17:49 2026 +0700
+
+    dashboard admin,pakar, verifikasi catatan oleh pakar
+
+diff --git a/app/Http/Controllers/AuthController.php b/app/Http/Controllers/AuthController.php
+index 834d4e0..2fb223f 100644
+--- a/app/Http/Controllers/AuthController.php
++++ b/app/Http/Controllers/AuthController.php
+@@ -14,7 +14,7 @@ public function register(Request $request)
+     {
+         $validator = Validator::make($request->all(), [
+             'name' => 'required|string|max:255',
+-            'email' => 'required|string|email|max:255|unique:users',
++            'email' => 'required|string|email|max:255|unique:App\Models\User,email',
+             'password' => 'required|string|min:6',
+             'jenjang_pendidikan' => 'required|string',
+         ]);
+@@ -67,7 +67,7 @@ public function login(Request $request)
+                 'id' => $user->_id,
+                 'name' => $user->name,
+                 'email' => $user->email,
+-                'role' => $user->role, 
++                'role' => $user->role,
+                 'jenjang_pendidikan' => $user->jenjang_pendidikan, // <-- Balikin datanya pas login biar frontend tau
+             ]
+         ]);
+diff --git a/app/Http/Controllers/PostController.php b/app/Http/Controllers/PostController.php
+index 52a1680..129e621 100644
+--- a/app/Http/Controllers/PostController.php
++++ b/app/Http/Controllers/PostController.php
+@@ -8,12 +8,16 @@
+ 
+ class PostController extends Controller
+ {
+-    public function index()
++    public function index(Request $request)
+     {
+-        $posts = Post::with(['user', 'topic', 'category', 'comments', 'likes'])
+-                     ->where('visibility', 'public')
+-                     ->orderBy('created_at', 'desc')
+-                     ->get();
++        $query = Post::with(['user', 'topic', 'category', 'comments', 'likes'])->where('visibility', 'public');
++
++        if ($request->has('is_verified')) {
++            $isVerified = filter_var($request->query('is_verified'), FILTER_VALIDATE_BOOLEAN);
++            $query->where('is_verified', $isVerified);
++        }
++
++        $posts = $query->orderBy('created_at', 'desc')->get();
+ 
+         return response()->json([
+             'message' => 'Berhasil mengambil daftar post',
+@@ -24,26 +28,34 @@ public function index()
+     public function store(Request $request)
+     {
+         $request->validate([
+-            'topic_id' => 'required',
+-            'category_id' => 'required',
+             'title' => 'required|string|max:255',
+             'content' => 'required|string',
++            'mapel' => 'nullable|string',
++            'jenjang' => 'nullable|string',
++            'kelas' => 'nullable|string',
++            'semester' => 'nullable|string',
++            'tags' => 'nullable|array',
++            'topic_id' => 'nullable|string',
++            'category_id' => 'nullable|string',
+             'visibility' => 'in:public,private',
+-            'images' => 'nullable|array'
+         ]);
+ 
+         $post = Post::create([
+             'user_id' => Auth::id(),
+-            'topic_id' => $request->topic_id,
+-            'category_id' => $request->category_id,
+             'title' => $request->title,
+             'content' => $request->content,
++            'mapel' => $request->mapel,
++            'jenjang' => $request->jenjang,
++            'kelas' => $request->kelas,
++            'semester' => $request->semester,
++            'tags' => $request->tags ?? [],
++            'topic_id' => $request->topic_id,
++            'category_id' => $request->category_id,
+             'visibility' => $request->visibility ?? 'public',
+-            'images' => $request->images ?? [],
+         ]);
+ 
+         return response()->json([
+-            'message' => 'Post berhasil dibuat',
++            'message' => 'Catatan berhasil masuk ke awan',
+             'data' => $post
+         ], 201);
+     }
+diff --git a/app/Http/Controllers/ReportController.php b/app/Http/Controllers/ReportController.php
+index 3f4d59b..8e68bf1 100644
+--- a/app/Http/Controllers/ReportController.php
++++ b/app/Http/Controllers/ReportController.php
+@@ -4,6 +4,7 @@
+ 
+ use App\Models\Report;
+ use App\Models\Post;
++use App\Models\User;
+ use Illuminate\Http\Request;
+ use Illuminate\Support\Facades\Auth;
+ 
+@@ -55,7 +56,7 @@ public function update(Request $request, $id)
+         }
+ 
+         $request->validate([
+-            'status' => 'required|in:pending,resolved,rejected',
++            'action' => 'required|in:abaikan,takedown,banned',
+             'admin_note' => 'nullable|string'
+         ]);
+ 
+@@ -64,13 +65,32 @@ public function update(Request $request, $id)
+             return response()->json(['message' => 'Report tidak ditemukan'], 404);
+         }
+ 
+-        $report->update([
+-            'status' => $request->status,
+-            'admin_note' => $request->admin_note
+-        ]);
++        $action = $request->action;
++        $pesan = '';
++
++        if ($action === 'abaikan') {
++            $report->update(['status' => 'rejected', 'admin_note' => $request->admin_note]);
++            $pesan = 'Laporan aman, berhasil diabaikan. 🛡️';
++
++        } elseif ($action === 'takedown') {
++            Post::where('id', $report->post_id)->delete();
++            
++            $report->update(['status' => 'resolved', 'admin_note' => $request->admin_note]);
++            $pesan = 'BAM! Catatan ngawur berhasil di-Take Down! 💥';
++
++        } elseif ($action === 'banned') {
++            $post = Post::find($report->post_id);
++            if ($post) {
++                User::where('id', $post->user_id)->update(['role' => 'banned']);
++                $post->delete();
++            }
++            
++            $report->update(['status' => 'resolved', 'admin_note' => $request->admin_note]);
++            $pesan = 'MAMPUS! User toxic berhasil di-Banned permanen! 🔨';
++        }
+ 
+         return response()->json([
+-            'message' => 'Status report berhasil diupdate',
++            'message' => $pesan,
+             'data' => $report
+         ], 200);
+     }
+diff --git a/app/Http/Controllers/UserController.php b/app/Http/Controllers/UserController.php
+new file mode 100644
+index 0000000..5525fa4
+--- /dev/null
++++ b/app/Http/Controllers/UserController.php
+@@ -0,0 +1,24 @@
++<?php
++
++namespace App\Http\Controllers;
++
++use App\Models\User;
++use Illuminate\Http\Request;
++use Illuminate\Support\Facades\Auth;
++
++class UserController extends Controller
++{
++    public function index()
++    {
++        if (Auth::user()->role !== 'admin') {
++            return response()->json(['message' => 'Hanya Admin yang punya akses!'], 403);
++        }
++
++        $users = User::orderBy('created_at', 'desc')->get();
++
++        return response()->json([
++            'message' => 'Berhasil mengambil daftar seluruh pengguna',
++            'data' => $users
++        ], 200);
++    }
++}
+\ No newline at end of file
+diff --git a/app/Models/Post.php b/app/Models/Post.php
+index 7834aae..c569c6e 100644
+--- a/app/Models/Post.php
++++ b/app/Models/Post.php
+@@ -8,6 +8,7 @@ class Post extends Model
+ {
+     protected $connection = 'mongodb';
+     protected $table = 'post';
++    protected $collection = 'post';
+ 
+     protected $fillable = [
+         'user_id',
+@@ -15,8 +16,12 @@ class Post extends Model
+         'category_id',
+         'title',
+         'content',
++        'mapel',
++        'jenjang',
++        'kelas',
++        'semester',
++        'tags',
+         'visibility',
+-        'images',
+         'likes_count',
+         'comments_count',
+     ];
+@@ -28,9 +33,9 @@ class Post extends Model
+     ];
+ 
+     protected $casts = [
+-        'images' => 'array',
+         'likes_count' => 'integer',
+         'comments_count' => 'integer',
++        'tags' => 'array',
+     ];
+ 
+     // Relationships
+diff --git a/app/Models/User.php b/app/Models/User.php
+index 1ff8da9..880b8ff 100644
+--- a/app/Models/User.php
++++ b/app/Models/User.php
+@@ -11,7 +11,8 @@ class User extends Authenticatable
+     use HasApiTokens, Notifiable;
+ 
+     protected $connection = 'mongodb';
+-    protected $collection = 'users';
++    protected $collection = 'user';
++    protected $table = 'user';
+ 
+     protected $fillable = [
+         'name',
+@@ -77,9 +78,10 @@ public function createToken(string $name, array $abilities = ['*'], \DateTimeInt
+             'expires_at' => $expiresAt,
+         ]);
+ 
+-        return new class($token, $token->getKey().'|'.$plainTextToken) {
++        return new class ($token, $token->getKey() . '|' . $plainTextToken) {
+             public $accessToken, $plainTextToken;
+-            public function __construct($token, $plainText) {
++            public function __construct($token, $plainText)
++            {
+                 $this->accessToken = $token;
+                 $this->plainTextToken = $plainText;
+             }
+diff --git a/routes/api.php b/routes/api.php
+index 77cd443..eafcb4a 100644
+--- a/routes/api.php
++++ b/routes/api.php
+@@ -11,6 +11,7 @@
+ use App\Http\Controllers\CategoryController;
+ use App\Http\Controllers\TopicController;
+ use App\Http\Controllers\ReportController;
++use App\Http\Controllers\UserController;
+ 
+ Route::post('/v1/register', [AuthController::class, 'register']);
+ Route::post('/v1/login', [AuthController::class, 'login']);
+@@ -28,6 +29,9 @@
+     Route::get('/v1/posts/{id}', [PostController::class, 'show']);
+     Route::delete('/v1/posts/{id}', [PostController::class, 'destroy']);
+ 
++    // Verify
++    Route::put('/v1/posts/{id}/verify', [PostController::class, 'verify']);
++
+     // Comments
+     Route::post('/v1/posts/{postId}/comments', [CommentController::class, 'store']);
+     Route::delete('/v1/comments/{id}', [CommentController::class, 'destroy']);
+@@ -40,6 +44,9 @@
+     Route::get('/v1/reports', [ReportController::class, 'index']); // Admin only
+     Route::put('/v1/reports/{id}', [ReportController::class, 'update']); // Admin only
+ 
++    // Users
++    Route::get('/v1/users', [UserController::class, 'index']);
++
+     // Categories & Topics
+     Route::get('/v1/categories', [CategoryController::class, 'index']);
+     Route::get('/v1/topics', [TopicController::class, 'index']);

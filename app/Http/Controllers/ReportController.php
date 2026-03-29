@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Report;
 use App\Models\Post;
 use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,6 +29,17 @@ class ReportController extends Controller
             'reason' => $request->reason,
             'description' => $request->description,
         ]);
+
+        $admins = User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'title'   => 'Laporan Konten Baru',
+                'message' => 'Ada laporan masuk dengan alasan: ' . $request->reason . '. Segera periksa di Dasbor Admin.',
+                'type'    => 'report',
+                'is_read' => false,
+            ]);
+        }
 
         return response()->json([
             'message' => 'Report berhasil dikirim',

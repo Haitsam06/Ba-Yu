@@ -17,10 +17,40 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   
   const [pendingCerts, setPendingCerts] = useState<any[]>([]);
+  const [reportsList, setReportsList] = useState<any[]>([]);
+  const [usersList, setUsersList] = useState<any[]>([]);
 
   useEffect(() => {
-    fetchPendingCertifications();
+    if (activeTab === 'sertifikasi') fetchPendingCertifications();
+    if (activeTab === 'laporan') fetchReports();
+    if (activeTab === 'users') fetchUsers();
   }, [activeTab]);
+
+  const fetchReports = async () => {
+    if (user?.role !== 'admin') return;
+    try {
+      const token = localStorage.getItem('bayu-token');
+      const res = await axios.get('/api/v1/reports', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setReportsList(res.data.data || []);
+    } catch (e) {
+      console.error("Failed to fetch reports", e);
+    }
+  };
+
+  const fetchUsers = async () => {
+    if (user?.role !== 'admin') return;
+    try {
+      const token = localStorage.getItem('bayu-token');
+      const res = await axios.get('/api/v1/users', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUsersList(res.data.data || []);
+    } catch (e) {
+      console.error("Failed to fetch users", e);
+    }
+  };
 
   const fetchPendingCertifications = async () => {
     if (user?.role !== 'admin') return;
@@ -72,8 +102,18 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleResolveReport = (reportId: string, action: 'approve' | 'reject') => {
-    alert(`Laporan ${action === 'approve' ? 'disetujui' : 'ditolak'}!`);
+  const handleResolveReport = async (reportId: string, actionType: 'abaikan' | 'takedown' | 'banned') => {
+    try {
+      const token = localStorage.getItem('bayu-token');
+      const res = await axios.put(`/api/v1/reports/${reportId}`, 
+        { action: actionType }, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert(res.data.message || 'Berhasil diproses!');
+      fetchReports();
+    } catch (e: any) {
+      alert(e.response?.data?.message || 'Gagal memproses laporan');
+    }
   };
 
   const handleVerifyCert = async (id: string, action: 'approve' | 'reject') => {
@@ -350,7 +390,7 @@ export default function AdminDashboard() {
                       </div>
 
                       <div className="space-y-4">
-                        {mockReports.map((report) => (
+                        {(reportsList.length > 0 ? reportsList : mockReports).map((report) => (
                           <div key={report.id} className="bg-white rounded-3xl border border-orange-200 p-5 lg:p-6 hover:shadow-md transition-shadow">
                             <div className="flex flex-col md:flex-row gap-5 items-start md:items-center">
                               <div className="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center flex-shrink-0 border border-orange-200">
@@ -358,29 +398,31 @@ export default function AdminDashboard() {
                               </div>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border uppercase tracking-wider ${report.type === 'catatan' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-purple-50 text-purple-600 border-purple-200'}`}>
-                                        REPORTED {report.type}
+                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border uppercase tracking-wider ${report.type === 'catatan' || report.post_id ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-purple-50 text-purple-600 border-purple-200'}`}>
+                                        REPORTED {report.type || 'CATATAN'}
                                     </span>
-                                    <span className="text-xs font-['Manrope'] text-gray-400">{report.date}</span>
+                                    <span className="text-xs font-['Manrope'] text-gray-400">{report.date || new Date(report.created_at).toLocaleDateString()}</span>
                                 </div>
                                 <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 text-lg mb-1 leading-tight">
-                                  {report.type === 'catatan' ? report.noteTitle : report.userName}
+                                  {report.post_id ? `Catatan ID: ${report.post_id}` : (report.type === 'catatan' ? report.noteTitle : report.userName)}
                                 </h4>
                                 <div className="bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-100 inline-block mt-2">
                                    <p className="text-sm font-['Manrope'] text-gray-700 font-medium">Alasan: <span className="text-red-500">{report.reason}</span></p>
                                 </div>
                                 <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-50">
-                                  <img src={report.reportedBy.avatar} alt={report.reportedBy.name} className="w-6 h-6 rounded-full object-cover" />
-                                  <span className="text-xs font-['Manrope'] font-medium text-gray-500">Dilaporkan oleh {report.reportedBy.name}</span>
+                                  <span className="text-xs font-['Manrope'] font-medium text-gray-500">Dilaporkan oleh User ID: {report.user_id || report.reportedBy?.name}</span>
                                 </div>
                               </div>
                               
                               <div className="flex md:flex-col lg:flex-row gap-2 w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-gray-100">
-                                <button onClick={() => handleResolveReport(report.id, 'reject')} className="flex-1 md:flex-none px-6 py-3 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300 rounded-xl font-['Lexend_Deca'] font-semibold text-sm transition-all text-center">
+                                <button onClick={() => handleResolveReport(report.id, 'abaikan')} className="flex-1 md:flex-none px-6 py-3 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300 rounded-xl font-['Lexend_Deca'] font-semibold text-sm transition-all text-center">
                                   Abaikan
                                 </button>
-                                <button onClick={() => handleResolveReport(report.id, 'approve')} className="flex-1 md:flex-none px-6 py-3 bg-red-500 text-white rounded-xl font-['Lexend_Deca'] font-semibold text-sm hover:bg-red-600 hover:shadow-md transition-all text-center">
-                                  {report.type === 'catatan' ? 'Take Down' : 'Banned User'}
+                                <button onClick={() => handleResolveReport(report.id, 'takedown')} className="flex-1 md:flex-none px-6 py-3 bg-red-500 text-white rounded-xl font-['Lexend_Deca'] font-semibold text-sm hover:bg-red-600 hover:shadow-md transition-all text-center">
+                                  Take Down Minta
+                                </button>
+                                <button onClick={() => handleResolveReport(report.id, 'banned')} className="flex-1 md:flex-none px-6 py-3 bg-black text-white rounded-xl font-['Lexend_Deca'] font-semibold text-sm hover:bg-gray-800 hover:shadow-md transition-all text-center">
+                                  Banned User
                                 </button>
                               </div>
                             </div>
@@ -400,20 +442,20 @@ export default function AdminDashboard() {
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {mockUsers.map((u) => (
-                          <div key={u.id} className="bg-white rounded-3xl border border-gray-100 p-5 hover:border-indigo-100 hover:shadow-md transition-all flex items-center gap-4">
-                            <img src={u.avatar} alt={u.name} className="w-14 h-14 rounded-2xl object-cover bg-gray-50 border border-gray-100" />
+                        {(usersList.length > 0 ? usersList : mockUsers).map((u) => (
+                          <div key={u.id || u._id} className="bg-white rounded-3xl border border-gray-100 p-5 hover:border-indigo-100 hover:shadow-md transition-all flex items-center gap-4">
+                            <img src={u.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400'} alt={u.name} className="w-14 h-14 rounded-2xl object-cover bg-gray-50 border border-gray-100" />
                             <div className="flex-1 min-w-0">
                               <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 text-sm mb-0.5 truncate">{u.name}</h4>
                               <p className="text-[11px] font-['Lexend_Deca'] font-bold text-indigo-600 uppercase tracking-wider mb-2">{u.role === 'admin' ? 'Administrator' : u.role === 'pakar' ? 'Expert' : 'Pelajar'}</p>
                               <div className="flex gap-4">
                                 <div>
-                                   <div className="font-['Lexend_Deca'] font-bold text-sm text-gray-800 leading-none">{mockNotes.filter(n => n.authorId === u.id).length}</div>
+                                   <div className="font-['Lexend_Deca'] font-bold text-sm text-gray-800 leading-none">{mockNotes.filter(n => n.authorId === (u.id || u._id)).length}</div>
                                    <div className="text-[10px] font-['Manrope'] text-gray-400">Catatan</div>
                                 </div>
                                 <div className="w-px bg-gray-200"></div>
                                 <div>
-                                   <div className="font-['Lexend_Deca'] font-bold text-sm text-gray-800 leading-none">{u.followers}</div>
+                                   <div className="font-['Lexend_Deca'] font-bold text-sm text-gray-800 leading-none">{u.followers || 0}</div>
                                    <div className="text-[10px] font-['Manrope'] text-gray-400">Followers</div>
                                 </div>
                               </div>

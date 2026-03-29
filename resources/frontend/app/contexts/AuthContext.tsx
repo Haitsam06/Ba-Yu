@@ -11,6 +11,9 @@ export interface User {
   role: UserRole;
   jenjang_pendidikan?: string;
   avatar?: string;
+  bio?: string;
+  school?: string;
+  phone?: string;
 }
 
 interface AuthContextType {
@@ -19,6 +22,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<string | null>; // Returns error string if failed, null if success
   register: (name: string, email: string, password: string, jenjang: string) => Promise<string | null>;
   logout: () => void;
+  updateUserSession: (data: Partial<User>) => void;
   isAuthenticated: boolean;
 }
 
@@ -117,6 +121,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Let the App Router handle the redirect to '/' when `user` becomes null inside a ProtectedRoute
   };
 
+  const updateUserSession = (data: Partial<User>) => {
+    setUser(prev => prev ? { ...prev, ...data } : null);
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -124,6 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login,
       register,
       logout,
+      updateUserSession,
       isAuthenticated: !!user
     }}>
       {children}

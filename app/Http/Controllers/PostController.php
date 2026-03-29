@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -54,6 +56,19 @@ class PostController extends Controller
             'visibility' => $request->visibility ?? 'public',
         ]);
 
+        if ($post->visibility === 'public') {
+            $pakars = User::where('role', 'pakar')->get();
+            foreach ($pakars as $pakar) {
+                Notification::create([
+                    'user_id' => $pakar->id,
+                    'title'   => 'Verifikasi Catatan Baru',
+                    'message' => 'Catatan "' . $post->title . '" dipublikasikan dan menunggu ulasan pakar.',
+                    'type'    => 'verifikasi',
+                    'is_read' => false,
+                ]);
+            }
+        }
+
         return response()->json([
             'message' => 'Catatan berhasil masuk ke awan',
             'data' => $post
@@ -72,6 +87,23 @@ class PostController extends Controller
             'message' => 'Berhasil mengambil post',
             'data' => $post
         ], 200);
+    }
+
+    public function verify($id)
+    {
+        $post = Post::find($id);
+
+        if (!$post) {
+            return response()->json(['message' => 'Post tidak ditemukan'], 404);
+        }
+
+        if (Auth::user()->role !== 'admin' && Auth::user()->role !== 'pakar') {
+            return response()->json(['message' => 'Akses ditolak'], 403);
+        }
+
+        $post->update(['is_verified' => true]);
+
+        return response()->json(['message' => 'Catatan berhasil diverifikasi!'], 200);
     }
 
     public function destroy($id)

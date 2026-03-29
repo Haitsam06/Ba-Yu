@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Sertifikasi;
 use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class SertifikasiController extends Controller
@@ -33,6 +34,18 @@ class SertifikasiController extends Controller
             'bidang_keahlian' => $request->bidang_keahlian,
             'file_sertifikat' => $pathFile,
         ]);
+
+        // Notif untuk admin
+        $admins = User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'title'   => 'Pengajuan Pakar Baru',
+                'message' => Auth::user()->name . ' mengajukan diri sebagai pakar di bidang ' . $request->bidang_keahlian . '.',
+                'type'    => 'sertifikasi',
+                'is_read' => false,
+            ]);
+        }
 
         return response()->json([
             'message' => 'Berkasi berhasil diajukan!.',

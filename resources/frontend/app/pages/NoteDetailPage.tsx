@@ -3,17 +3,18 @@ import { MobileLayout } from '../components/MobileLayout';
 import { Navbar } from '../components/navbar';
 import { Footer } from '../components/footer';
 import { useParams, Link, useNavigate } from 'react-router';
-import { ArrowLeft, Share2, Bookmark, Heart, Eye, MessageCircle, Flag, Check, Star, DownloadCloud, LogIn, ArrowUp, Calendar, Clock } from 'lucide-react';
+import { ArrowLeft, Share2, Bookmark, Heart, Eye, MessageCircle, Flag, Check, Star, DownloadCloud, LogIn, ArrowUp, Calendar, Clock, ShieldCheck } from 'lucide-react';
 import { getNoteById, getUserById, getCommentsByNoteId, mockNotes } from '../data/mockData';
 import { useAuth } from '../contexts/AuthContext';
 import { AuthModal } from '../components/auth-modal';
 import 'react-quill/dist/quill.snow.css'; // Just in case, though we apply custom styles
 import 'katex/dist/katex.min.css';
+import axios from 'axios';
 
 export default function NoteDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [commentText, setCommentText] = useState('');
@@ -79,6 +80,19 @@ export default function NoteDetailPage() {
     }
   };
 
+  const handleVerifyPakar = async () => {
+    if (!window.confirm('Verifikasi catatan ini sebagai materi yang akurat?')) return;
+    try {
+      const token = localStorage.getItem('bayu-token');
+      await axios.put(`/api/v1/posts/${id}/verify`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Catatan berhasil diverifikasi! Refresh untuk melihat perubahan (jika data dari backend).');
+    } catch (e: any) {
+      alert(e.response?.data?.message || 'Gagal memverifikasi catatan.');
+    }
+  };
+
   // Get Recommendations
   const allOtherNotes = mockNotes.filter(n => n.id !== note.id);
   const recommendedNotes = allOtherNotes
@@ -122,6 +136,14 @@ export default function NoteDetailPage() {
           </button>
           
           <div className="flex items-center gap-1">
+            {(user?.role === 'pakar' || user?.role === 'admin') && (
+              <button 
+                onClick={handleVerifyPakar}
+                className="hidden sm:flex mr-2 items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200 rounded-lg text-[13px] font-['Lexend_Deca'] font-bold transition-colors"
+              >
+                <ShieldCheck className="w-4 h-4" /> Verifikasi
+              </button>
+            )}
             <button className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-400 hover:text-gray-700">
               <Share2 className="w-[18px] h-[18px]" />
             </button>

@@ -20,7 +20,7 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
   const mainNavItems = [
     { path: '/home', icon: Home, label: 'Beranda' },
     { path: '/explore', icon: Search, label: 'Eksplorasi' },
-    { path: '/bookmarks', icon: Bookmark, label: 'Tersimpan' },
+    { path: '/profile?tab=bookmarks', icon: Bookmark, label: 'Tersimpan' },
     { path: '/profile', icon: User, label: 'Profil Saya' },
   ];
 
@@ -40,7 +40,10 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
          
          <div className="px-3 space-y-1">
             {mainNavItems.map((item) => {
-              const active = isActive(item.path);
+              // Exact match for /profile so it doesn't highlight when on /profile?tab=bookmarks
+              const isProfileBase = item.path === '/profile' && location.pathname === '/profile' && !location.search;
+              const isBookmarksTab = item.path === '/profile?tab=bookmarks' && location.pathname === '/profile' && location.search.includes('tab=bookmarks');
+              const active = item.path === '/profile' ? isProfileBase : (item.path === '/profile?tab=bookmarks' ? isBookmarksTab : isActive(item.path));
               return (
                 <Link
                   key={item.path}

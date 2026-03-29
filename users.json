@@ -1,0 +1,90 @@
+[
+    {
+        "username": "fajarx",
+        "display_name": "Fajar Hidayat",
+        "email": "fajar@gmail.com",
+        "phone": "08123456781",
+        "role_id": "RL03",
+        "bio": "Cloud computing learner",
+        "avatar": "",
+        "is_verified": true,
+        "created_at": "2024-01-01T00:00:00.000000Z",
+        "id": "69958a2e5925b35c80045530"
+    },
+    {
+        "username": "tiaradev",
+        "display_name": "Tiara Anindya",
+        "email": "tiara@gmail.com",
+        "phone": "08123456782",
+        "role_id": "RL02",
+        "bio": "Admin platform edukasi",
+        "avatar": "",
+        "is_verified": true,
+        "created_at": "2024-01-01T00:00:00.000000Z",
+        "id": "69958a2e5925b35c80045531"
+    },
+    {
+        "username": "dimasdev",
+        "display_name": "Dimas Nugroho",
+        "email": "dimas@gmail.com",
+        "phone": "08123456789",
+        "role_id": "RL01",
+        "bio": "Backend developer",
+        "avatar": "",
+        "is_verified": true,
+        "created_at": "2024-01-01T00:00:00.000000Z",
+        "id": "69958a2e5925b35c8004552e"
+    },
+    {
+        "username": "nabilah",
+        "display_name": "Nabilah Zahra",
+        "email": "nabilah@gmail.com",
+        "phone": "08123456780",
+        "role_id": "RL01",
+        "bio": "Suka menulis catatan kuliah",
+        "avatar": "",
+        "is_verified": true,
+        "created_at": "2024-01-01T00:00:00.000000Z",
+        "id": "69958a2e5925b35c8004552f"
+    },
+    {
+        "role": "user",
+        "is_verified": false,
+        "name": "abi123",
+        "email": "abi123@gmail.com",
+        "jenjang_pendidikan": "SMA",
+        "updated_at": "2026-03-29T08:16:45.488000Z",
+        "created_at": "2026-03-29T08:16:45.488000Z",
+        "id": "69c8dfedd8ae7d1fd501de29"
+    },
+    {
+        "role": "pakar",
+        "is_verified": false,
+        "name": "raden",
+        "email": "raden@gmail.com",
+        "jenjang_pendidikan": "Kuliah",
+        "updated_at": "2026-03-29T12:18:38.799000Z",
+        "created_at": "2026-03-29T12:18:38.799000Z",
+        "id": "69c9189ed8ae7d1fd501de30"
+    },
+    {
+        "role": "admin",
+        "is_verified": false,
+        "name": "galih",
+        "email": "galih@gmail.com",
+        "jenjang_pendidikan": "SMA",
+        "updated_at": "2026-03-29T12:34:48.990000Z",
+        "created_at": "2026-03-29T12:34:48.990000Z",
+        "id": "69c91c68d8ae7d1fd501de33"
+    },
+    {
+        "role": "user",
+        "is_verified": false,
+        "name": "user",
+        "email": "user@gmail.com",
+        "jenjang_pendidikan": "SMA",
+        "updated_at": "2026-03-29T14:45:11.841000Z",
+        "created_at": "2026-03-29T14:45:11.841000Z",
+        "id": "69c93af78fd21fafb108cde4"
+    }
+]

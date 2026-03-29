@@ -22,6 +22,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/v1/sertifikasi/pending', [SertifikasiController::class, 'getPending']);
     Route::put('/v1/sertifikasi/{id}/verifikasi', [SertifikasiController::class, 'verifikasi']);
     Route::get('/v1/notifikasi', [NotificationController::class, 'getNotifikasi']);
+    Route::put('/v1/notifikasi/read-all', [NotificationController::class, 'markAllAsRead']);
+    Route::put('/v1/notifikasi/{id}/read', [NotificationController::class, 'markAsRead']);
 
     // Posts
     Route::get('/v1/posts', [PostController::class, 'index']);
@@ -46,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Users
     Route::get('/v1/users', [UserController::class, 'index']);
+    Route::put('/v1/users/me', [UserController::class, 'updateProfile']);
 
     // Categories & Topics
     Route::get('/v1/categories', [CategoryController::class, 'index']);

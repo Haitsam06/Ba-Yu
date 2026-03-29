@@ -19,6 +19,10 @@ const getNotificationIcon = (type: string) => {
   switch (type) {
     case 'sertifikasi':
       return <Shield className="w-5 h-5 text-primary" />;
+    case 'report':
+      return <AlertCircle className="w-5 h-5 text-red-500" />;
+    case 'verifikasi':
+      return <CheckCheck className="w-5 h-5 text-emerald-500" />;
     default:
       return <Bell className="w-5 h-5 text-gray-500" />;
   }
@@ -28,6 +32,10 @@ const getNotificationBg = (type: string) => {
   switch (type) {
     case 'sertifikasi':
       return 'bg-primary/10';
+    case 'report':
+      return 'bg-red-50';
+    case 'verifikasi':
+      return 'bg-emerald-50';
     default:
       return 'bg-gray-100';
   }
@@ -75,6 +83,32 @@ export default function NotificationsPage() {
     }
   };
 
+  const handleMarkAsRead = async (id: string, is_read: boolean) => {
+    if (is_read) return;
+    try {
+      const token = localStorage.getItem('bayu-token');
+      await axios.put(`/api/v1/notifikasi/${id}/read`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Update local state without fetching all again
+      setNotifications(prev => prev.map(n => n._id === id ? { ...n, is_read: true } : n));
+    } catch (err) {
+      console.error('Failed to mark as read', err);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      const token = localStorage.getItem('bayu-token');
+      await axios.put('/api/v1/notifikasi/read-all', {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+    } catch (err) {
+      console.error('Failed to mark all as read', err);
+    }
+  };
+
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   return (
@@ -91,7 +125,10 @@ export default function NotificationsPage() {
             </p>
           </div>
           {unreadCount > 0 && (
-            <button className="flex items-center gap-1.5 text-primary text-sm font-semibold hover:bg-primary/5 px-3 py-1.5 rounded-xl transition-colors">
+            <button 
+              onClick={handleMarkAllAsRead}
+              className="flex items-center gap-1.5 text-primary text-sm font-semibold hover:bg-primary/5 px-3 py-1.5 rounded-xl transition-colors"
+            >
               <CheckCheck className="w-4 h-4" />
               Tandai semua
             </button>
@@ -129,6 +166,7 @@ export default function NotificationsPage() {
               {notifications.map((notif, index) => (
                 <div
                   key={notif._id}
+                  onClick={() => handleMarkAsRead(notif._id, notif.is_read)}
                   className={`rounded-2xl p-4 border transition-all duration-300 hover:shadow-sm cursor-pointer group ${
                     !notif.is_read
                       ? 'bg-primary/[0.03] border-primary/20 shadow-sm'
@@ -163,10 +201,15 @@ export default function NotificationsPage() {
 
                       {/* Type Badge */}
                       <div className="mt-3">
-                        <span className={`inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg ${
-                          notif.type === 'sertifikasi' ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-500'
+                        <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg ${
+                          notif.type === 'sertifikasi' ? 'bg-primary/10 text-primary' : 
+                          notif.type === 'report' ? 'bg-red-100 text-red-600' :
+                          notif.type === 'verifikasi' ? 'bg-emerald-100 text-emerald-600' :
+                          'bg-gray-100 text-gray-500'
                         }`}>
                           {notif.type === 'sertifikasi' && <Shield className="w-3 h-3" />}
+                          {notif.type === 'report' && <AlertCircle className="w-3 h-3" />}
+                          {notif.type === 'verifikasi' && <CheckCheck className="w-3 h-3" />}
                           {notif.type}
                         </span>
                       </div>

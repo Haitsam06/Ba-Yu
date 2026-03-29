@@ -1,0 +1,112 @@
+commit e0f030453b990c6eb44c7fa359baba7a0a1dc85d
+Author: Varmintzy <radenmasgalih@apps.ipb.ac.id>
+Date:   Sun Mar 29 20:17:49 2026 +0700
+
+    dashboard admin,pakar, verifikasi catatan oleh pakar
+
+ app/Http/Controllers/AuthController.php   |  4 ++--
+ app/Http/Controllers/PostController.php   | 36 ++++++++++++++++++++-----------
+ app/Http/Controllers/ReportController.php | 32 +++++++++++++++++++++------
+ app/Http/Controllers/UserController.php   | 24 +++++++++++++++++++++
+ app/Models/Post.php                       |  9 ++++++--
+ app/Models/User.php                       |  8 ++++---
+ routes/api.php                            |  7 ++++++
+ 7 files changed, 95 insertions(+), 25 deletions(-)
+
+commit 4c87c4d16e8bf0859aa461ef2b70d182ef007e8c
+Author: aris-ab <mabirizky05@gmail.com>
+Date:   Sun Mar 29 14:12:28 2026 +0700
+
+    feat: redesain eksplorasi, landing page, dan konsistensi UI global
+
+ app/Http/Controllers/CategoryController.php        |  19 +
+ app/Http/Controllers/CommentController.php         |  68 +++
+ app/Http/Controllers/LikeController.php            |  39 ++
+ app/Http/Controllers/PostController.php            |  81 +++
+ app/Http/Controllers/ReportController.php          |  77 +++
+ app/Http/Controllers/TopicController.php           |  19 +
+ app/Models/Category.php                            |  27 +
+ app/Models/Comment.php                             |  41 ++
+ app/Models/Like.php                                |  27 +
+ app/Models/Post.php                                |  66 +++
+ app/Models/Report.php                              |  35 ++
+ app/Models/Sertifikasi.php                         |   2 +-
+ app/Models/Topic.php                               |  22 +
+ app/Models/User.php                                |  40 ++
+ resources/frontend/app/components/MobileLayout.tsx |  57 +-
+ resources/frontend/app/components/SideNav.tsx      | 243 +++-----
+ resources/frontend/app/data/mockData.ts            |  47 +-
+ resources/frontend/app/pages/NoteDetailPage.tsx    | 618 ++++++++++++---------
+ routes/api.php                                     |  28 +
+ 19 files changed, 1108 insertions(+), 448 deletions(-)
+
+commit 9e303844df73a8a38a10835d8db9b2a22d8ab0ce
+Author: aris-ab <mabirizky05@gmail.com>
+Date:   Sun Mar 29 14:05:18 2026 +0700
+
+    ✨ feat: Redesain Halaman Eksplorasi & Konsistensi UI Global
+    
+    [Halaman Eksplorasi]
+    - Tambah layout 2-kolom bergaya Medium.com (feed kiri + sidebar kanan)
+    - Sidebar berisi Pakar Edukasi, Sering Dicari, dan Quick Links
+    - Sidebar sticky tanpa delay dan tanpa whitespace (rumus CSS min())
+    - Tambah filter jenjang pendidikan (SD, SMP, SMA, Kuliah, Umum)
+    - Tambah indikator Views (mata) di setiap kartu catatan
+    - Tambah animasi gradient pada search bar header
+    
+    [Landing Page]
+    - Ganti grid kategori 6 ikon menjadi feed 2-kolom editorial premium
+    - Feed hanya menampilkan 4 catatan terbaru (cukup untuk preview)
+    - Sidebar kanan (Pakar & Trending) ikut tampil di landing page
+    - Bagian Eksplorasi dibungkus container kaca (glassmorphism) ala Ba-Yu
+    
+    [Beranda / HomePage]
+    - Sidebar scroll kanan mengikuti halaman utama tanpa delay (sticky fix)
+    - Tambah indikator Views di kartu catatan
+    
+    [Profile Dropdown / TopNav]
+    - Hapus tombol Jadi Anggota Premium dari menu dropdown profil
+    
+    [Konsistensi UI Global]
+    - theme.css: Tambah token shadow Ba-Yu (--shadow-bayu, --shadow-floating, dll)
+    - theme.css: Focus state ungu khas Ba-Yu untuk semua input/textarea/select
+    - SettingsPage: Perbesar radius kartu ke rounded-3xl, naikkan ukuran teks
+    - HomePage & ExplorePage: Standarisasi thumbnail ke rounded-2xl
+
+ resources/frontend/app/components/TopNav.tsx  | 205 +++++++++++
+ resources/frontend/app/pages/ExplorePage.tsx  | 498 ++++++++++++++++----------
+ resources/frontend/app/pages/HomePage.tsx     | 415 ++++++++++++---------
+ resources/frontend/app/pages/SettingsPage.tsx |  18 +-
+ resources/frontend/app/pages/landing-page.tsx | 158 ++++++--
+ resources/frontend/styles/theme.css           |  34 ++
+ 6 files changed, 934 insertions(+), 394 deletions(-)
+
+commit cf3fbc136c8237a37880bd0e4930ca2fdd7c6dc8
+Author: Varmintzy <radenmasgalih@apps.ipb.ac.id>
+Date:   Sun Mar 29 01:09:59 2026 +0700
+
+    update aja mindahin database
+
+ routes/api.php | 2 +-
+ routes/web.php | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 2cb44d232ceedf6346ea8bff290755c37cd830b7
+Author: aris-ab <mabirizky05@gmail.com>
+Date:   Sat Mar 28 23:40:01 2026 +0700
+
+    feat: redesign landing page & note editor with Notion-style UI
+
+ latest_commit.txt                                  |   7 +
+ package-lock.json                                  |  33 +
+ package.json                                       |   2 +
+ resources/frontend/app/components/MobileLayout.tsx |   4 +-
+ resources/frontend/app/components/SideNav.tsx      |  84 ++-
+ resources/frontend/app/components/auth-modal.tsx   | 528 ++++++-------
+ resources/frontend/app/components/navbar.tsx       |   8 +-
+ resources/frontend/app/pages/ExplorePage.tsx       | 412 ++++++----
+ resources/frontend/app/pages/HomePage.tsx          | 221 +++---
+ resources/frontend/app/pages/NoteDetailPage.tsx    | 518 +++++++------
+ resources/frontend/app/pages/UploadPage.tsx        | 836 +++++++++------------
+ resources/frontend/app/pages/landing-page.tsx      |  63 +-
+ 12 files changed, 1434 insertions(+), 1282 deletions(-)
