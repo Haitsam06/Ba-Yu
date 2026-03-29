@@ -10,22 +10,62 @@ class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
+    protected $connection = 'mongodb';
+    protected $collection = 'users';
+
     protected $fillable = [
         'name',
         'email',
         'password',
         'role',
         'jenjang_pendidikan',
+        'username',
+        'display_name',
+        'phone',
+        'bio',
+        'avatar',
+        'is_verified',
     ];
 
     protected $attributes = [
         'role' => 'user',
+        'is_verified' => false,
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+    protected $casts = [
+        'is_verified' => 'boolean',
+    ];
+
+    // Relationships
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'user_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'user_id');
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(Like::class, 'user_id');
+    }
+
+    public function sertifikasi()
+    {
+        return $this->hasMany(Sertifikasi::class, 'user_id');
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'user_id');
+    }
     public function createToken(string $name, array $abilities = ['*'], \DateTimeInterface $expiresAt = null)
     {
         $plainTextToken = \Illuminate\Support\Str::random(40);

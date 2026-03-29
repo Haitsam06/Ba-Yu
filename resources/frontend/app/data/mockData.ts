@@ -140,7 +140,52 @@ export const mockNotes: Note[] = [
     id: '2',
     title: 'Algoritma Sorting - Bubble Sort & Quick Sort',
     description: 'Penjelasan algoritma sorting dengan contoh kode dan analisis kompleksitas',
-    content: 'Algoritma Sorting...',
+    content: `<h1>Selamat Datang di Seri Algoritma Dasar \uD83D\uDE80</h1>
+<p>Dalam ilmu komputer, <strong>Algoritma Sorting</strong> (pengurutan) adalah fondasi sentral yang harus dikuasai oleh setiap <em>software engineer</em>. Mari kita bedah dua algoritma unik yang paling sering ditanyakan saat interview: Bubble Sort dan Quick Sort.</p>
+<p><br></p>
+<h2>1. Bubble Sort (Pengurutan Gelembung)</h2>
+<p>Bubble sort adalah algoritma pengurutan yang paling primitif. Alur kerjanya seperti gelembung air yang naik ke permukaan; elemen terbesar perlahan-lahan "mengapung" ke posisi paling kanan array.</p>
+<blockquote><p><strong>⚠️ Warning:</strong> Jangan pernah menggunakan Bubble Sort untuk <em>production limit</em> karena kinerjanya sangat boros waktu untuk jumlah data yang besar.</p></blockquote>
+<h3>Kompleksitas Waktu</h3>
+<ul>
+  <li><strong>Worst Case: </strong> <span class="ql-formula" data-value="O(n^2)"></span> (Data terbalik)</li>
+  <li><strong>Best Case: </strong> <span class="ql-formula" data-value="O(n)"></span> (Data sudah terurut)</li>
+</ul>
+<p>Contoh implementasi murni dalam <code>Python</code>:</p>
+<pre class="ql-syntax" spellcheck="false">def bubble_sort(arr):
+    n = len(arr)
+    # Lakukan loop untuk setiap elemen
+    for i in range(n):
+        for j in range(0, n-i-1):
+            if arr[j] > arr[j+1]:
+                # Tukar posisi
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+    return arr
+</pre>
+<p><br></p>
+<h2>2. Quick Sort (Divide and Conquer)</h2>
+<p>Ditemukan oleh <em>Tony Hoare</em> pada tahun 1959, algoritma ini membelah masalah besar menjadi masalah kecil-kecil yang lebih gampang diselesaikan.</p>
+<h3>Mekanisme (Langkah Kerja)</h3>
+<ol>
+  <li>Pilih satu elemen sebagai elemen <strong>Pivot</strong>.</li>
+  <li>Lakukan <em>Partitioning</em>:
+    <ul>
+      <li>Pindahkan semua angka yang &lt; Pivot ke kiri</li>
+      <li>Pindahkan semua angka yang &gt; Pivot ke kanan</li>
+    </ul>
+  </li>
+  <li>Terapkan rekursi yang sama pada sub-array kiri dan kanan.</li>
+</ol>
+<h3>Persamaan Rekursi (Matematika)</h3>
+<p>Efisiensi Quick Sort didasari oleh persamaan Master Theorem berikut:</p>
+<p><br></p>
+<p><span class="ql-formula" data-value="T(n) = 2T\\left(\\frac{n}{2}\\right) + O(n)"></span></p>
+<p><br></p>
+<p>Sehingga kompleksitas rata-ratanya jauh menyalip Bubble Sort, yaitu <span class="ql-formula" data-value="O(n \\log n)"></span>.</p>
+<p><br></p>
+<p><img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80" alt="Code Background"></p>
+<h3>Kesimpulan</h3>
+<p>Memahami perbedaan <strong>Big-O Complexity</strong> adalah awal pertimbangan yang bijak saat menstrukturisasi aplikasi. Selamat <em>ngoding</em> teman-teman!</p>`,
     authorId: '2',
     mataPelajaran: 'Algoritma & Pemrograman',
     jenjang: 'SMA',

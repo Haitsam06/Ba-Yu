@@ -7,7 +7,7 @@ use MongoDB\Laravel\Eloquent\Model;
 class Sertifikasi extends Model
 {
     protected $connection = 'mongodb';
-    protected $collection = 'sertifikasis';
+    protected $table = 'sertifikasi';
 
     protected $fillable = [
         'user_id',

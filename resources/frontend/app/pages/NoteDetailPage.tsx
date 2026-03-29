@@ -3,10 +3,12 @@ import { MobileLayout } from '../components/MobileLayout';
 import { Navbar } from '../components/navbar';
 import { Footer } from '../components/footer';
 import { useParams, Link, useNavigate } from 'react-router';
-import { ArrowLeft, Share2, Bookmark, Heart, Eye, MessageCircle, Flag, Check, Star, DownloadCloud, LogIn, ArrowUp } from 'lucide-react';
-import { getNoteById, getUserById, getCommentsByNoteId } from '../data/mockData';
+import { ArrowLeft, Share2, Bookmark, Heart, Eye, MessageCircle, Flag, Check, Star, DownloadCloud, LogIn, ArrowUp, Calendar, Clock } from 'lucide-react';
+import { getNoteById, getUserById, getCommentsByNoteId, mockNotes } from '../data/mockData';
 import { useAuth } from '../contexts/AuthContext';
 import { AuthModal } from '../components/auth-modal';
+import 'react-quill/dist/quill.snow.css'; // Just in case, though we apply custom styles
+import 'katex/dist/katex.min.css';
 
 export default function NoteDetailPage() {
   const { id } = useParams();
@@ -29,7 +31,6 @@ export default function NoteDetailPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Auth modal for guest users
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
 
@@ -43,7 +44,6 @@ export default function NoteDetailPage() {
     setShowAuthModal(true);
   };
 
-  // Guard interactive actions for guests
   const requireAuth = (action: () => void) => {
     if (!isAuthenticated) {
       openAuthModal('login');
@@ -79,317 +79,427 @@ export default function NoteDetailPage() {
     }
   };
 
+  // Get Recommendations
+  const allOtherNotes = mockNotes.filter(n => n.id !== note.id);
+  const recommendedNotes = allOtherNotes
+    .filter(n => n.mataPelajaran === note.mataPelajaran)
+    .slice(0, 2);
+  if (recommendedNotes.length < 2) {
+    const remaining = allOtherNotes.filter(n => !recommendedNotes.includes(n));
+    recommendedNotes.push(...remaining.slice(0, 2 - recommendedNotes.length));
+  }
+
+  // Here, we simulate HTML content if the mock data just provides plain text.
+  // We'll wrap it in standard paragraph tags to work with Quill's styling.
+  const processedContent = note.content.includes('<') ? note.content : `<p>${note.content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br/>')}</p><br/><br/><p class="text-gray-500 italic text-center">...[Unduh file versi komplit di Bawah]...</p>`;
+
+
   const noteContent = (
-    <div className={`pb-8 ${!isAuthenticated ? 'pt-24 sm:pt-28' : ''}`}>
-      {/* Top Header */}
-      <div className="bg-white border-b border-gray-200 mb-6 w-full shadow-sm">
-        <div className={`flex items-center justify-between px-6 py-4 ${!isAuthenticated ? 'max-w-7xl mx-auto' : 'w-full'}`}>
-          <div className="flex items-center gap-3">
-            <button onClick={() => navigate(-1)} className="p-2 -ml-2 bg-gray-50 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center">
-              <ArrowLeft className="w-5 h-5 text-gray-700" />
-            </button>
-            <h1 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 line-clamp-1 flex-1 hidden md:block">
-              {note.title}
-            </h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <button className="p-2 bg-gray-50 hover:bg-gray-100 rounded-full transition-colors text-gray-600">
-              <Share2 className="w-5 h-5" />
+    <div className={`pb-20 ${!isAuthenticated ? 'pt-16 sm:pt-20' : ''}`}>
+      
+      {/* Notion/Medium-style Stylesheet explicitly for Reading Mode */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .notion-reader .ql-editor { padding: 0 !important; font-family: 'Manrope', sans-serif; font-size: 19px; line-height: 1.8; color: #292929; }
+        .notion-reader .ql-editor h1 { font-family: 'Lexend Deca', sans-serif; font-size: 2em; font-weight: 800; margin: 1.5em 0 0.5em; color: #111827; letter-spacing: -0.02em; }
+        .notion-reader .ql-editor h2 { font-family: 'Lexend Deca', sans-serif; font-size: 1.5em; font-weight: 700; margin: 1.5em 0 0.5em; color: #1f2937; letter-spacing: -0.01em; }
+        .notion-reader .ql-editor h3 { font-family: 'Lexend Deca', sans-serif; font-size: 1.25em; font-weight: 600; margin: 1.2em 0 0.5em; color: #374151; }
+        .notion-reader .ql-editor p { margin-bottom: 1.25em; }
+        .notion-reader .ql-editor b, .notion-reader .ql-editor strong { font-weight: 700; color: #111827; }
+        .notion-reader .ql-editor img { border-radius: 12px; margin: 2em auto; display: block; max-width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #f3f4f6; }
+        .notion-reader .ql-editor ul, .notion-reader .ql-editor ol { padding-left: 1.5em; margin-bottom: 1.25em; }
+        .notion-reader .ql-editor li { margin-bottom: 0.5em; }
+        .notion-reader .ql-editor blockquote { border-left: 4px solid #4f46e5; padding-left: 1em; margin: 1.5em 0; font-style: italic; color: #4b5563; background: #fafafa; padding: 1em 1em 1em 1.5em; border-radius: 0 8px 8px 0; }
+        .notion-reader .ql-editor code { background: #f3f4f6; padding: 0.2em 0.4em; border-radius: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.85em; color: #ef4444; }
+        .notion-reader .ql-editor pre { background: #1f2937; color: #f3f4f6; padding: 1em; border-radius: 12px; overflow-x: auto; margin-bottom: 1.2em; }
+        .notion-reader .ql-editor .ql-formula { padding: 4px 8px; background: #faf5ff; border-radius: 6px; border: 1px solid #e9d5ff; color: #7c3aed; display: inline-block; font-size: 0.9em; margin: 0 0.2em; }
+      `}} />
+
+      {/* Top Bar - Clean / Sticky */}
+      <div className="sticky top-0 bg-white/95 backdrop-blur-md border-b border-gray-100/50 z-30 transition-all">
+        <div className="max-w-3xl mx-auto px-5 py-3 flex items-center justify-between">
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center group">
+            <ArrowLeft className="w-5 h-5 text-gray-500 group-hover:text-gray-900 transition-colors" />
+          </button>
+          
+          <div className="flex items-center gap-1">
+            <button className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-400 hover:text-gray-700">
+              <Share2 className="w-[18px] h-[18px]" />
             </button>
             <button
               onClick={() => requireAuth(() => setBookmarked(!bookmarked))}
-              className={`p-2 rounded-full transition-colors ${bookmarked ? 'bg-primary/10 text-primary' : 'bg-gray-50 hover:bg-gray-100 text-gray-600'}`}
+              className={`p-2 rounded-full transition-colors ${bookmarked ? 'text-primary bg-primary/5 hover:bg-primary/10' : 'text-gray-400 hover:text-gray-700 hover:bg-gray-50'}`}
             >
-              <Bookmark className={`w-5 h-5 ${bookmarked ? 'fill-primary' : ''}`} />
+              <Bookmark className={`w-[18px] h-[18px] ${bookmarked ? 'fill-primary' : ''}`} />
             </button>
-            <button className="p-2 bg-red-50 hover:bg-red-100 rounded-full transition-colors text-red-500">
-              <Flag className="w-5 h-5" />
+            <button className="p-2 hover:bg-red-50 rounded-full transition-colors text-gray-400 hover:text-red-500">
+              <Flag className="w-[18px] h-[18px]" />
             </button>
           </div>
         </div>
       </div>
 
-      <div className={`${isAuthenticated ? 'px-6 md:px-0' : 'px-6 sm:px-8 max-w-7xl mx-auto'} grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-8`}>
+      <article className="max-w-3xl mx-auto px-5 lg:px-0 pt-8 mt-2">
         
-        {/* Main Reading Area */}
-        <div className="lg:col-span-2 xl:col-span-3 space-y-8">
-          {/* Header Content & Title */}
-          <div className="pt-4 md:pt-0 border-b border-gray-100 pb-6">
-             <div className="flex flex-wrap gap-2 mb-4">
-               <span className="text-xs font-['Manrope'] font-bold text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-                 {note.mataPelajaran}
-               </span>
-               <span className="text-xs font-['Manrope'] font-bold text-secondary bg-secondary/10 px-3 py-1 rounded-full border border-secondary/20">
-                 Kelas {note.kelas}
-               </span>
-               <span className="text-xs font-['Manrope'] font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-full border border-gray-200">
-                 Semester {note.semester}
-               </span>
-             </div>
-             
-             <h1 className="font-['Lexend_Deca'] font-bold text-3xl md:text-4xl text-gray-900 mb-4 leading-tight">
-               {note.title}
-             </h1>
-             
-             <div className="flex items-center gap-6 text-gray-500">
-               <div className="flex items-center gap-2">
-                 <Eye className="w-5 h-5 text-gray-400" />
-                 <span className="text-sm font-['Manrope'] font-medium">{note.views.toLocaleString()} views</span>
-               </div>
-               <div className="flex items-center gap-2">
-                 <Heart className="w-5 h-5 text-red-400" />
-                 <span className="text-sm font-['Manrope'] font-medium">{note.likes.toLocaleString()} likes</span>
-               </div>
-               <div className="text-sm font-['Manrope'] text-gray-400 font-medium ml-auto hidden sm:block">
-                 Diupload {note.createdAt}
-               </div>
-             </div>
-          </div>
+        {/* Category & Tags (Substack / Medium style over title) */}
+        <div className="flex flex-wrap gap-2 mb-4 items-center">
+            <span className="text-[11px] font-['Manrope'] font-bold text-primary uppercase tracking-wider bg-primary/5 px-2.5 py-1 rounded-md">
+              {note.mataPelajaran}
+            </span>
+            <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+            <span className="text-[13px] font-['Manrope'] font-semibold text-gray-500">
+              Kelas {note.kelas} 
+            </span>
+            <span className="w-1 h-1 rounded-full bg-gray-300 hidden sm:block"></span>
+            <span className="text-[13px] font-['Manrope'] font-semibold text-gray-500 hidden sm:block">
+              Semester {note.semester}
+            </span>
+        </div>
 
-          {/* Note Thumbnail */}
-          <div className="w-full bg-gray-100 rounded-3xl overflow-hidden shadow-sm border border-gray-200">
+        {/* Title */}
+        <h1 className="font-['Lexend_Deca'] font-extrabold text-[2.5rem] md:text-[3.25rem] text-gray-900 mb-6 leading-[1.12] tracking-tight">
+          {note.title}
+        </h1>
+
+        {/* Medium-style Author Info Bar */}
+        <div className="flex items-center gap-4 py-4 mb-6">
+            <img
+              src={author.avatar}
+              alt={author.name}
+              className="w-12 h-12 rounded-full object-cover shadow-sm border border-gray-100 bg-gray-50"
+            />
+            <div className="flex-1">
+                <div className="flex items-center gap-2">
+                    <span className="font-['Manrope'] font-bold text-gray-900 text-[15px]">{author.name}</span>
+                    <button className="text-sm font-['Manrope'] text-emerald-600 font-semibold hover:text-emerald-700 transition-colors">
+                      • Ikuti
+                    </button>
+                </div>
+                <div className="flex items-center gap-3 text-[13px] font-['Manrope'] text-gray-500 mt-0.5">
+                    <div className="flex items-center gap-1.5">
+                       <span>{note.createdAt}</span>
+                    </div>
+                    <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                    <div className="flex items-center gap-1.5">
+                       <Clock className="w-3.5 h-3.5" />
+                       <span>5 mnt baca</span>
+                    </div>
+                    {author.role === 'pakar' && (
+                        <>
+                          <span className="w-1 h-1 rounded-full bg-gray-300 hidden sm:block"></span>
+                          <span className="text-green-600 font-semibold flex items-center gap-1 hidden sm:flex">
+                             <Check className="w-3.5 h-3.5" /> Pakar Terverifikasi
+                          </span>
+                        </>
+                    )}
+                </div>
+            </div>
+        </div>
+
+        {/* Interactivity Bar Top */}
+        <div className="flex items-center justify-between py-3 border-y border-gray-100/80 mb-10 px-1">
+           <div className="flex items-center gap-6">
+              <button 
+                onClick={() => requireAuth(() => setLiked(!liked))}
+                className="flex items-center gap-2 text-[15px] font-['Manrope'] font-medium transition-colors group"
+                aria-label="Suka catatan"
+              >
+                  <Heart className={`w-5 h-5 transition-transform group-hover:scale-110 ${liked ? 'fill-red-500 text-red-500' : 'text-gray-400 group-hover:text-red-500'}`} />
+                  <span className={liked ? 'text-red-500' : 'text-gray-500'}>{note.likes + (liked ? 1 : 0)}</span>
+              </button>
+              
+              <button 
+                onClick={() => {
+                  const commentsSection = document.getElementById('comments-section');
+                  if (commentsSection) {
+                    commentsSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                className="flex items-center gap-2 text-[15px] font-['Manrope'] font-medium text-gray-500 hover:text-gray-800 transition-colors group"
+              >
+                  <MessageCircle className="w-5 h-5 text-gray-400 group-hover:text-gray-700 transition-transform group-hover:scale-110" />
+                  <span>{comments.length}</span>
+              </button>
+              
+              <div className="flex items-center gap-2 text-[15px] font-['Manrope'] font-medium text-gray-500 ml-2 hidden sm:flex">
+                  <Eye className="w-5 h-5 text-gray-400" />
+                  <span>{note.views}</span>
+              </div>
+           </div>
+           
+           <div className="flex items-center gap-3">
+              {note.isValidated && (
+                <div className="flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-[11px] uppercase tracking-wide font-['Manrope'] font-bold border border-green-100/50">
+                   <Check className="w-3 h-3" />
+                   Review Pakar
+                </div>
+              )}
+           </div>
+        </div>
+
+        {/* Cover Image */}
+        <figure className="mb-12 w-full">
             <img
               src={note.thumbnail}
               alt={note.title}
-              className="w-full h-[300px] md:h-[450px] lg:h-[500px] object-cover"
+              className="w-full h-auto max-h-[450px] object-cover rounded-2xl shadow-sm border border-gray-100 bg-gray-50"
             />
-          </div>
+            {note.description && (
+                <figcaption className="text-center mt-4 text-[14px] font-['Manrope'] text-gray-400 italic px-4">
+                   {note.description}
+                </figcaption>
+            )}
+        </figure>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 py-2 border-y border-gray-100">
-            <button
-              onClick={() => requireAuth(() => setLiked(!liked))}
-              className={`flex-1 py-3.5 rounded-2xl font-['Lexend_Deca'] font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-sm ${
-                liked
-                  ? 'bg-red-50 text-red-500 border border-red-200 hover:bg-red-100'
-                  : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              <Heart className={`w-5 h-5 ${liked ? 'fill-red-500' : ''}`} />
-              {liked ? 'Telah Disukai' : 'Suka Catatan Ini'} <span>({note.likes + (liked ? 1 : 0)})</span>
-            </button>
-            <button className="flex-1 bg-gradient-to-r from-primary to-blue-600 text-white py-3.5 rounded-2xl font-['Lexend_Deca'] font-semibold text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
-              <DownloadCloud className="w-5 h-5" /> Download PDF File
-            </button>
-          </div>
-
-          {/* Description */}
-          <div className="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm leading-relaxed">
-             <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 mb-4">
-               Deskripsi
-             </h3>
-             <p className="font-['Manrope'] text-gray-800 mb-8 text-[15px] opacity-90">
-               {note.description}
-             </p>
-
-             <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 mb-4 pt-6 border-t border-gray-50">
-               Pratinjau Catatan
-             </h3>
-             <div className="prose prose-blue max-w-none font-['Manrope'] text-gray-800 opacity-90">
-               <p className="whitespace-pre-wrap">{note.content}</p>
-               <p className="whitespace-pre-wrap mt-4 text-gray-500 italic">...[Unduh untuk membaca selengkapnya]...</p>
-             </div>
-          </div>
-          
+        {/* Editor Content Area (Borderless Notion / Substack View) */}
+        <div className="notion-reader ql-snow mb-16">
+            <div className="ql-editor" dangerouslySetInnerHTML={{ __html: processedContent }} />
+            
+            {/* Paywall simulatiom if not logged in (Optional UI flair, matching mock design "Download PDF") */}
+            <div className="mt-14 bg-gray-50/80 rounded-3xl p-8 md:p-10 text-center border border-gray-100">
+                <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 mb-3">Ingin membaca materi ini secara offline?</h3>
+                <p className="font-['Manrope'] text-[15px] text-gray-500 mb-8 max-w-md mx-auto leading-relaxed">Unduh file aslinya dalam format PDF untuk dipelajari kapan saja tanpa koneksi internet.</p>
+                <button className="mx-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-gray-900 hover:bg-black text-white rounded-xl text-sm font-['Lexend_Deca'] font-semibold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">
+                   <DownloadCloud className="w-5 h-5" /> Download PDF Materi
+                </button>
+            </div>
         </div>
 
-        {/* Sidebar Area */}
-        <div className="lg:col-span-1 space-y-6">
-           
-           {/* Author Card */}
-           <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
-              <h4 className="font-['Lexend_Deca'] font-bold text-sm text-gray-500 mb-4 uppercase tracking-wider">Pembuat Catatan</h4>
-              <div className="flex flex-col items-center justify-center text-center">
-                  <img
-                    src={author.avatar}
-                    alt={author.name}
-                    className="w-20 h-20 rounded-full object-cover mb-3 border-4 border-white shadow-md bg-gray-50"
-                  />
-                  <div className="flex items-center gap-1.5 justify-center mb-1">
-                    <h3 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900">
-                      {author.name}
-                    </h3>
-                    {author.role === 'pakar' && (
-                      <div className="bg-green-500 text-white p-0.5 rounded-full" title="Verified Expert">
-                        <Check className="w-3 h-3" />
-                      </div>
-                    )}
-                  </div>
-                  
-                  <p className="text-sm font-['Manrope'] text-primary font-medium mb-5">{author.role === 'pakar' ? 'Pakar Pendidikan' : `Siswa ${author.jenjang}`}</p>
-                  
-                  <div className="flex gap-4 w-full justify-center mb-5 border-y border-gray-100 py-3">
-                     <div className="text-center">
-                        <div className="font-['Lexend_Deca'] font-bold text-gray-900">{author.totalCatatan}</div>
-                        <div className="font-['Manrope'] text-[11px] text-gray-500">Posts</div>
-                     </div>
-                     <div className="text-center">
-                        <div className="font-['Lexend_Deca'] font-bold text-gray-900">{author.followers}</div>
-                        <div className="font-['Manrope'] text-[11px] text-gray-500">Pengikut</div>
-                     </div>
-                  </div>
-
-                  <button 
-                    onClick={() => requireAuth(() => {})}
-                    className="w-full bg-blue-50 hover:bg-blue-100 text-blue-600 py-2.5 rounded-xl text-sm font-['Lexend_Deca'] font-semibold transition-colors border border-blue-200"
-                  >
-                    Ikuti Penulis
-                  </button>
-              </div>
-           </div>
-
-           {/* Validation Status */}
-           {note.isValidated && validator && (
-              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-3xl p-6 shadow-md shadow-green-500/20 text-white relative overflow-hidden">
-                <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-white/20 rounded-full blur-2xl pointer-events-none"></div>
+        {/* Bottom Banner Validation (Minimalist Bright Style) */}
+        {note.isValidated && validator && (
+           <div className="bg-gradient-to-br from-blue-50/80 to-indigo-50/50 rounded-3xl p-6 md:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 mb-16 shadow-sm border border-indigo-100/60 w-full relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
                 
-                <div className="flex gap-3 mb-4 items-center">
-                   <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30">
-                      <Check className="w-6 h-6 text-white" />
+                <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-5 flex-1 relative z-10">
+                   <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center border border-indigo-100 shadow-sm shrink-0">
+                      <Check className="w-8 h-8 text-primary" />
                    </div>
                    <div>
-                      <h4 className="font-['Lexend_Deca'] font-bold text-white text-base leading-tight">
-                        Diperiksa Pakar
-                      </h4>
-                      <p className="font-['Manrope'] text-white/80 text-[11px] mt-0.5">Akurat & Terjamin</p>
+                       <h4 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 mb-1.5">Materi Terverifikasi</h4>
+                       <p className="font-['Manrope'] text-gray-600 text-[15px] leading-relaxed max-w-lg">
+                          Konten catatan ini telah melalui pemeriksaan kebenaran materi oleh pakar pendidikan terpercaya Ba-Yu.
+                       </p>
                    </div>
                 </div>
                 
-                <div className="bg-white/10 rounded-xl p-3 border border-white/20">
-                   <div className="flex items-center gap-3">
-                     <img
-                       src={validator.avatar}
-                       alt={validator.name}
-                       className="w-8 h-8 rounded-full object-cover border border-white/40"
-                     />
-                     <div>
-                        <p className="text-xs font-['Manrope'] text-white/70">Divalidasi Oleh:</p>
-                        <span className="text-sm font-['Lexend_Deca'] font-bold text-white leading-tight">{validator.name}</span>
-                     </div>
-                   </div>
-                   
-                   {note.rating && (
-                     <div className="flex items-center gap-1 mt-3 pt-3 border-t border-white/10">
-                       <span className="text-xs font-['Manrope'] text-white/80 mr-1">Skor Kualitas:</span>
-                       {[...Array(5)].map((_, i) => (
-                         <Star
-                           key={i}
-                           className={`w-3.5 h-3.5 ${i < note.rating! ? 'fill-yellow-300 text-yellow-300' : 'fill-white/20 text-white/20'}`}
-                         />
-                       ))}
-                     </div>
-                   )}
+                <div className="bg-white/80 rounded-2xl p-4 border border-indigo-50 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex items-center gap-4 shrink-0 shrink-0 w-full sm:w-auto relative z-10 backdrop-blur-sm">
+                    <img src={validator.avatar} alt={validator.name} className="w-12 h-12 rounded-full border-2 border-primary/20 object-cover" />
+                    <div>
+                        <p className="text-[11px] font-['Manrope'] text-gray-500 uppercase tracking-wide mb-0.5">Divalidasi Oleh</p>
+                        <p className="text-[15px] font-['Lexend_Deca'] font-bold text-primary">{validator.name}</p>
+                        {note.rating && (
+                         <div className="flex items-center gap-1 mt-1">
+                           {[...Array(5)].map((_, i) => (
+                             <Star key={i} className={`w-3.5 h-3.5 ${i < note.rating! ? 'fill-yellow-400 text-yellow-500' : 'fill-gray-200 text-gray-200'}`} />
+                           ))}
+                         </div>
+                       )}
+                    </div>
                 </div>
-              </div>
-            )}
+           </div>
+        )}
 
-           {/* Comments Widget */}
-           <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col h-[500px]">
-              <h4 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 mb-4 flex items-center justify-between">
-                Diskusi 
-                <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-lg text-sm">{comments.length}</span>
-              </h4>
+        {/* Separator */}
+        <div className="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-16"></div>
 
-              {/* Comment Input */}
-              {isAuthenticated ? (
-                <div className="mb-4">
-                  <div className="relative">
-                    <img
-                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
-                      alt="Your avatar"
-                      className="w-8 h-8 rounded-full border border-gray-200 absolute left-3 top-3 object-cover"
-                    />
+        {/* Author Bottom Profile (Substack style) */}
+        <div className="mb-20">
+            <h4 className="font-['Lexend_Deca'] font-bold text-[13px] text-gray-400 uppercase tracking-widest mb-6 text-center sm:text-left">DITULIS OLEH</h4>
+            <div className="bg-transparent flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
+               <img
+                 src={author.avatar}
+                 alt={author.name}
+                 className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover shrink-0 border border-gray-100"
+               />
+               <div className="flex-1">
+                  <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
+                     <h3 className="font-['Lexend_Deca'] font-extrabold text-[28px] text-gray-900">{author.name}</h3>
+                     {author.role === 'pakar' && (
+                        <div className="bg-green-500 text-white p-0.5 rounded-full" title="Verified Expert">
+                          <Check className="w-4 h-4" />
+                        </div>
+                      )}
+                  </div>
+                  <p className="font-['Manrope'] text-[16px] text-gray-600 mb-6 max-w-xl leading-relaxed">
+                      {author.role === 'pakar' 
+                        ? 'Pakar Pendidikan tersertifikasi yang aktif membimbing siswa dan meninjau ribuan catatan.' 
+                        : `Siswa ${author.jenjang} yang aktif membagikan catatannya. Mari belajar bersama dan raih prestasi!`
+                      }
+                  </p>
+                  
+                  <div className="flex flex-col sm:flex-row items-center gap-4">
+                      <button 
+                        onClick={() => requireAuth(() => {})}
+                        className="w-full sm:w-auto px-8 py-3 bg-gray-900 text-white rounded-full text-[15px] font-['Manrope'] font-bold transition-transform hover:scale-[1.02] shadow-sm hover:bg-black"
+                      >
+                        Ikuti Penulis
+                      </button>
+                      <div className="flex items-center gap-6 mt-4 sm:mt-0 font-['Manrope'] text-[15px] text-gray-500 font-medium">
+                         <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-gray-900">{author.followers}</span> Pengikut
+                         </div>
+                         <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-gray-900">{author.totalCatatan}</span> Tulisan
+                         </div>
+                      </div>
+                  </div>
+               </div>
+            </div>
+        </div>
+
+        {/* Comments Section (Bottom placement) */}
+        <div id="comments-section" className="mb-24 pt-10 border-t border-gray-100">
+            <h4 className="font-['Lexend_Deca'] font-bold text-2xl text-gray-900 mb-8">
+              Diskusi ({comments.length})
+            </h4>
+
+            {/* Comment Input */}
+            {isAuthenticated ? (
+              <div className="mb-12 flex gap-4 bg-white p-2 rounded-3xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+                 <img
+                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
+                    alt="Your avatar"
+                    className="w-10 h-10 rounded-full border border-gray-200 object-cover shrink-0 hidden sm:block m-4"
+                  />
+                  <div className="flex-1 p-2">
                     <textarea
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
-                      placeholder="Tulis pendapatmu..."
-                      className="w-full pl-13 pr-3 py-3 bg-gray-50 border border-gray-200 rounded-2xl font-['Manrope'] text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all h-24"
+                      placeholder="Apa pendapatmu? Jadilah yang pertama memulai diskusi."
+                      className="w-full px-2 py-2 bg-transparent border-none font-['Manrope'] text-base resize-none focus:outline-none focus:ring-0 min-h-[80px]"
                     />
+                    <div className="flex justify-between items-center mt-2 border-t border-gray-50 pt-3">
+                      <p className="text-xs text-gray-400 font-['Manrope'] px-2">Format dengan Markdown didukung (segera)</p>
+                      <button
+                        onClick={handleComment}
+                        disabled={!commentText.trim()}
+                        className="px-6 py-2 bg-primary text-white rounded-xl text-sm font-['Lexend_Deca'] font-semibold disabled:opacity-40 transition-all shadow-sm"
+                      >
+                        Kirim
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex justify-end mt-2">
-                    <button
-                      onClick={handleComment}
-                      disabled={!commentText.trim()}
-                      className="px-5 py-2 bg-primary text-white rounded-xl text-sm font-['Lexend_Deca'] font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-opacity shadow-sm"
-                    >
-                      Kirim
-                    </button>
-                  </div>
+              </div>
+            ) : (
+              <div className="mb-12 bg-gray-50 rounded-3xl p-8 border border-gray-100 flex flex-col items-center justify-center text-center">
+                 <MessageCircle className="w-8 h-8 text-gray-400 mb-3" />
+                 <h5 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 mb-1">Punya Pertanyaan?</h5>
+                 <p className="font-['Manrope'] text-[15px] text-gray-500 mb-6">Gabung dengan diskusi dan tanyakan langsung ke penulis atau pakar.</p>
+                 <button 
+                  onClick={() => openAuthModal('login')}
+                  className="px-8 py-3 bg-white border border-gray-200 text-gray-800 rounded-xl text-[15px] font-['Lexend_Deca'] font-bold shadow-sm hover:border-gray-300 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                >
+                  <LogIn className="w-5 h-5" /> Masuk untuk Berkomentar
+                </button>
+              </div>
+            )}
+
+            {/* Comments List */}
+            <div className="space-y-8">
+              {comments.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="font-['Manrope'] text-base text-gray-400">Belum ada komentar.</p>
                 </div>
               ) : (
-                <button 
-                  onClick={() => openAuthModal('login')}
-                  className="mb-4 w-full py-3.5 bg-gray-50 hover:bg-primary/5 border-2 border-dashed border-gray-200 hover:border-primary/30 rounded-2xl flex items-center justify-center gap-2 text-gray-500 hover:text-primary transition-all group"
-                >
-                  <LogIn className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                  <span className="font-['Manrope'] text-sm font-semibold">Masuk untuk berkomentar</span>
-                </button>
-              )}
-
-              {/* Comments List */}
-              <div className="flex-1 overflow-y-auto pr-2 space-y-4 -mr-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
-                {comments.length === 0 ? (
-                  <div className="text-center py-8 opacity-60">
-                    <MessageCircle className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-                    <p className="font-['Manrope'] text-sm text-gray-500">Jadilah yang pertama berkomentar!</p>
-                  </div>
-                ) : (
-                  comments.map((comment) => {
-                    const commentAuthor = getUserById(comment.userId);
-                    if (!commentAuthor) return null;
-                    return (
-                      <div key={comment.id} className="flex gap-3 group">
-                        <img
-                          src={commentAuthor.avatar}
-                          alt={commentAuthor.name}
-                          className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                        />
-                        <div className="flex-1">
-                          <div className="bg-gray-50 group-hover:bg-gray-100 transition-colors rounded-tr-2xl rounded-br-2xl rounded-bl-2xl p-3 inline-block w-full">
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="font-['Lexend_Deca'] font-bold text-xs text-gray-900">
-                                {commentAuthor.name}
-                              </span>
-                              <span className="text-[10px] font-['Manrope'] font-medium text-gray-400">
-                                {new Date(comment.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
-                              </span>
-                            </div>
-                            <p className="font-['Manrope'] text-sm text-gray-700 leading-relaxed">
-                              {comment.text}
-                            </p>
-                          </div>
+                comments.map((comment) => {
+                  const commentAuthor = getUserById(comment.userId);
+                  if (!commentAuthor) return null;
+                  return (
+                    <div key={comment.id} className="flex gap-4">
+                      <img
+                        src={commentAuthor.avatar}
+                        alt={commentAuthor.name}
+                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-gray-100"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1 cursor-pointer">
+                            <span className="font-['Manrope'] font-bold text-base text-gray-900 hover:underline">
+                              {commentAuthor.name}
+                            </span>
+                            <span className="text-xs font-['Manrope'] text-gray-400">
+                              {new Date(comment.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            </span>
+                        </div>
+                        <p className="font-['Manrope'] text-[16px] text-gray-800 leading-relaxed mb-3">
+                            {comment.text}
+                        </p>
+                        <div className="flex items-center gap-4 text-[13px] font-['Manrope'] font-semibold text-gray-500">
+                           <button className="flex items-center gap-1.5 hover:text-gray-900">
+                              <Heart className="w-3.5 h-3.5" /> Suka
+                           </button>
+                           <button className="flex items-center gap-1.5 hover:text-gray-900">
+                             <MessageCircle className="w-3.5 h-3.5" /> Balas
+                           </button>
+                           <button className="hover:text-red-500 ml-auto">Laporkan</button>
                         </div>
                       </div>
-                    );
-                  })
-                )}
-              </div>
-           </div>
-
+                    </div>
+                  );
+                })
+              )}
+            </div>
         </div>
 
-      </div>
+        {/* Recommended Notes Section */}
+        <div className="mt-8 mb-24 border-t border-gray-100 pt-16">
+            <h4 className="font-['Lexend_Deca'] font-bold text-2xl text-gray-900 mb-8 border-l-4 border-primary pl-4">
+              Rekomendasi Catatan Lainnya
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               {recommendedNotes.map(recNote => {
+                 const recAuthor = getUserById(recNote.authorId);
+                 return (
+                   <Link 
+                     key={recNote.id} 
+                     to={`/notes/${recNote.id}`} 
+                     className="group bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 flex flex-col"
+                   >
+                     <div className="relative h-48 overflow-hidden bg-gray-50">
+                       <img src={recNote.thumbnail} alt={recNote.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                       <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-xl text-[11px] uppercase tracking-wide font-['Lexend_Deca'] font-bold text-primary shadow-sm">
+                         {recNote.mataPelajaran}
+                       </div>
+                     </div>
+                     <div className="p-6 flex flex-col flex-1">
+                       <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 mb-3 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
+                         {recNote.title}
+                       </h3>
+                       <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
+                         <div className="flex items-center gap-3">
+                           <img src={recAuthor?.avatar} alt={recAuthor?.name} className="w-8 h-8 rounded-full border border-gray-100 object-cover" />
+                           <span className="text-sm font-['Manrope'] font-bold text-gray-700">{recAuthor?.name}</span>
+                         </div>
+                         <div className="flex items-center gap-3 text-sm text-gray-500 font-medium">
+                           <div className="flex items-center gap-1.5"><Heart className="w-4 h-4 text-gray-400" /> {recNote.likes}</div>
+                         </div>
+                       </div>
+                     </div>
+                   </Link>
+                 );
+               })}
+            </div>
+        </div>
+
+      </article>
 
       {/* Scroll to Top Button */}
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 z-50 p-4 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center group"
+          className="fixed bottom-8 right-8 z-50 p-4 bg-gray-900 text-white rounded-full shadow-xl hover:bg-black hover:-translate-y-1 transition-all duration-300 flex items-center justify-center group"
           aria-label="Kembali ke atas"
         >
-          <ArrowUp className="w-6 h-6 group-hover:-translate-y-1 transition-transform" />
+          <ArrowUp className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
         </button>
       )}
     </div>
   );
 
-  // Auth-aware layout
   if (isAuthenticated) {
     return <MobileLayout showBottomNav={false}>{noteContent}</MobileLayout>;
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-white">
       <Navbar variant="default" />
       {noteContent}
       <Footer />
