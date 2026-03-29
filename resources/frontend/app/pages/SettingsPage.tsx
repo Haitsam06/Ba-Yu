@@ -60,7 +60,7 @@ export default function SettingsPage() {
             <h3 className="font-['Lexend_Deca'] font-semibold text-sm text-muted-foreground mb-3 px-1">
               Akun
             </h3>
-            <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
+            <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden">
               <Link
                 to="/edit-profile"
                 className="flex items-center gap-3 px-4 py-4 hover:bg-gray-50 transition-colors border-b border-gray-100"
@@ -110,7 +110,7 @@ export default function SettingsPage() {
                   <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm">
                     Notifikasi
                   </h4>
-                  <p className="font-['Manrope'] text-xs text-muted-foreground">
+                  <p className="font-['Manrope'] text-[13px] text-muted-foreground">
                     Atur preferensi notifikasi
                   </p>
                 </div>
@@ -125,12 +125,12 @@ export default function SettingsPage() {
                   <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm">
                     Tampilan
                   </h4>
-                  <p className="font-['Manrope'] text-xs text-muted-foreground">
+                  <p className="font-['Manrope'] text-[13px] text-muted-foreground">
                     Mode terang atau gelap
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-['Manrope'] text-xs text-muted-foreground">Terang</span>
+                  <span className="font-['Manrope'] text-[13px] text-muted-foreground">Terang</span>
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />
                 </div>
               </button>
@@ -143,12 +143,12 @@ export default function SettingsPage() {
                   <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm">
                     Bahasa
                   </h4>
-                  <p className="font-['Manrope'] text-xs text-muted-foreground">
+                  <p className="font-['Manrope'] text-[13px] text-muted-foreground">
                     Pilih bahasa aplikasi
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-['Manrope'] text-xs text-muted-foreground">Indonesia</span>
+                  <span className="font-['Manrope'] text-[13px] text-muted-foreground">Indonesia</span>
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />
                 </div>
               </button>
@@ -169,7 +169,7 @@ export default function SettingsPage() {
                   <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm">
                     Pusat Bantuan
                   </h4>
-                  <p className="font-['Manrope'] text-xs text-muted-foreground">
+                  <p className="font-['Manrope'] text-[13px] text-muted-foreground">
                     FAQ dan panduan penggunaan
                   </p>
                 </div>
@@ -184,7 +184,7 @@ export default function SettingsPage() {
                   <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm">
                     Privasi & Keamanan
                   </h4>
-                  <p className="font-['Manrope'] text-xs text-muted-foreground">
+                  <p className="font-['Manrope'] text-[13px] text-muted-foreground">
                     Kebijakan privasi dan syarat layanan
                   </p>
                 </div>
@@ -201,7 +201,7 @@ export default function SettingsPage() {
                   <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm">
                     Tentang Ba-Yu
                   </h4>
-                  <p className="font-['Manrope'] text-xs text-muted-foreground">
+                  <p className="font-['Manrope'] text-[13px] text-muted-foreground">
                     Versi aplikasi dan informasi
                   </p>
                 </div>

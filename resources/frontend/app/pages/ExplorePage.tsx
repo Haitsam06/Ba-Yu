@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { MobileLayout } from '../components/MobileLayout';
 import { Navbar } from '../components/navbar';
 import { Footer } from '../components/footer';
-import { Search, Filter, BookOpen, Check, Eye, Heart, Upload, LogIn, Sparkles, TrendingUp, Clock } from 'lucide-react';
+import { Search, Filter, BookOpen, Check, Eye, Heart, Upload, LogIn, Sparkles, TrendingUp, Clock, Bookmark, Star, X } from 'lucide-react';
 import { mockNotes, mataPelajaran, getUserById } from '../data/mockData';
 import { Link } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
@@ -16,6 +16,13 @@ export default function ExplorePage() {
   // Auth modal for guest users
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
+  
+  // Filter Modal & States
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [selectedJenjang, setSelectedJenjang] = useState<string>('Semua');
+  const [selectedTopic, setSelectedTopic] = useState<string>('Semua');
+  
+  const jenjangList = ['Semua', 'SD', 'SMP', 'SMA', 'Perguruan Tinggi', 'Umum'];
 
   const openAuthModal = (tab: 'login' | 'register') => {
     setAuthTab(tab);
@@ -53,41 +60,40 @@ export default function ExplorePage() {
       
       {/* Hero Section — Guest Only */}
       {!isAuthenticated && (
-        <div className="relative overflow-hidden bg-white pt-28 sm:pt-36 pb-12 sm:pb-16 border-b border-gray-100">
-          {/* Decorative orbs */}
-          <div className="absolute top-10 right-[10%] w-72 h-72 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="absolute bottom-0 left-[5%] w-56 h-56 bg-fuchsia-500/5 rounded-full blur-3xl pointer-events-none"></div>
-          
+        <div className="relative bg-white pt-28 sm:pt-32 pb-12 sm:pb-16 border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-6 sm:px-8">
-            <div className="explore-reveal opacity-0 translate-y-6" style={{ transition: 'all 0.7s cubic-bezier(0.16, 1, 0.3, 1)' }}>
-              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase mb-6">
-                <BookOpen className="w-3.5 h-3.5" />
-                Perpustakaan Digital Ba-Yu
+            <div className="explore-reveal opacity-0 translate-y-4" style={{ transition: 'all 0.7s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+              <div className="inline-flex items-center gap-2 text-gray-400 text-xs font-bold tracking-widest uppercase mb-6">
+                <BookOpen className="w-4 h-4 text-gray-300" />
+                Perpustakaan Digital
               </div>
-              <h1 className="font-['Lexend_Deca'] font-extrabold text-4xl sm:text-5xl lg:text-6xl text-gray-900 tracking-tight mb-4 leading-[1.1]">
+              <h1 className="font-['Lexend_Deca'] font-extrabold text-5xl sm:text-6xl text-gray-900 tracking-tight mb-6 leading-[1.05]">
                 Jelajahi Ribuan <br className="hidden sm:block" />
-                <span className="bg-gradient-to-r from-primary via-indigo-500 to-purple-600 bg-clip-text text-transparent">Catatan Belajar</span>
+                Catatan Belajar.
               </h1>
-              <p className="text-gray-500 font-['Manrope'] text-base sm:text-lg max-w-xl leading-relaxed mb-8">
-                Temukan materi terbaik dari pelajar dan pakar pendidikan di seluruh Indonesia. Gratis untuk semua.
+              <p className="text-gray-500 font-['Manrope'] text-lg sm:text-xl max-w-2xl leading-relaxed mb-10">
+                Temukan materi terkurasi dari pelajar dan pakar pendidikan <br className="hidden md:block" /> di seluruh Indonesia. Gratis selamanya.
               </p>
             </div>
             
-            {/* Search Bar — Premium */}
-            <div className="explore-reveal opacity-0 translate-y-6 max-w-2xl" style={{ transition: 'all 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s' }}>
+            {/* Search Bar — Premium Minimalist (Centered Medium Style) */}
+            <div className="explore-reveal opacity-0 translate-y-4 max-w-[720px] mx-auto mt-8" style={{ transition: 'all 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s' }}>
               <div className="flex gap-3">
-                <div className="relative flex-1">
-                  <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <div className="relative flex-1 group">
+                  <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 group-focus-within:text-gray-800 transition-colors" strokeWidth={2} />
                   <input
                     type="text"
-                    placeholder="Cari mata pelajaran, topik, atau kata kunci..."
+                    placeholder="Cari preferensi..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-13 pr-5 py-4 bg-white border-2 border-gray-100 rounded-2xl font-['Manrope'] text-[15px] focus:outline-none focus:border-primary focus:shadow-[0_0_0_4px_rgba(79,70,229,0.08)] transition-all shadow-sm placeholder:text-gray-400"
+                    className="w-full pl-12 pr-5 py-4 bg-gray-50 hover:bg-gray-100 focus:bg-white border text-gray-900 border-transparent focus:border-gray-300 rounded-[14px] font-['Manrope'] text-[15px] font-medium focus:outline-none transition-colors placeholder:text-gray-400 shadow-sm"
                   />
                 </div>
-                <button className="w-14 h-14 bg-primary hover:bg-indigo-700 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 shrink-0">
-                  <Filter className="w-5 h-5" />
+                <button 
+                  onClick={() => setIsFilterOpen(true)}
+                  className="w-14 h-14 bg-gray-900 hover:bg-black text-white rounded-[14px] flex items-center justify-center transition-all shrink-0 shadow-md hover:-translate-y-0.5"
+                >
+                  <Filter className="w-[18px] h-[18px]" strokeWidth={2} />
                 </button>
               </div>
             </div>
@@ -95,182 +101,191 @@ export default function ExplorePage() {
         </div>
       )}
 
-      {/* Logged-in Header */}
-      {isAuthenticated && (
-        <div className="px-6 md:px-0 pt-7 md:pt-2 pb-6">
-          <h1 className="text-2xl font-['Lexend_Deca'] font-bold text-gray-900">Eksplorasi</h1>
-          <p className="text-gray-500 font-['Manrope'] text-sm mt-1">Temukan materi belajar terbaik untukmu</p>
-          {/* Search for logged in */}
-          <div className="flex gap-3 mt-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Cari biologi kelas 10..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-3.5 bg-white border border-gray-200 rounded-2xl font-['Manrope'] text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
-              />
-            </div>
-            <button className="w-12 h-12 bg-white border border-gray-200 rounded-2xl flex items-center justify-center shadow-sm hover:bg-gray-50 hover:text-primary transition-colors flex-shrink-0">
-              <Filter className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Categories Grid */}
-      <div className={`${isAuthenticated ? 'px-6 md:px-0' : 'max-w-7xl mx-auto px-6 sm:px-8 pt-10 sm:pt-14'} mb-10`}>
-        <div className="explore-reveal opacity-0 translate-y-6" style={{ transition: 'all 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s' }}>
-          <h2 className={`font-['Lexend_Deca'] font-bold text-gray-900 mb-5 ${isAuthenticated ? 'text-lg' : 'text-xl sm:text-2xl'}`}>
-            Mata Pelajaran
-          </h2>
-          <div className={`grid gap-3 ${isAuthenticated ? 'grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 md:gap-4' : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4'}`}>
-            {mataPelajaran.map((subject, i) => (
-              <button
-                key={subject.id}
-                className={`bg-white border border-gray-100 p-4 flex gap-3 items-center hover:shadow-lg hover:border-primary/30 hover:-translate-y-0.5 transition-all text-left group ${
-                  isAuthenticated ? 'rounded-2xl' : 'rounded-[1.25rem]'
-                }`}
-                style={!isAuthenticated ? { transitionDelay: `${i * 30}ms` } : undefined}
-              >
-                <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform"
-                  style={{ backgroundColor: `${subject.color}15` }}
-                >
-                  {subject.icon}
+      {/* Main 2-Column Container */}
+      <div className="w-full flex justify-center pb-12 sm:pb-20">
+        <div className="w-full max-w-[1140px] px-0 sm:px-4 md:px-6 flex flex-col xl:flex-row gap-0 xl:gap-14">
+          
+          {/* LEFT COLUMN (Main Feed) */}
+          <div className="flex-1 min-w-0 max-w-[720px] mx-auto xl:mx-0 w-full pt-10">
+            {/* Logged-in Header (Enhanced Medium Style) */}
+            {isAuthenticated && (
+              <div className="px-6 md:px-0 pb-2 mb-4 w-full">
+                <div className="relative overflow-hidden bg-gradient-to-br from-gray-50/80 to-white border border-gray-100/60 rounded-3xl p-6 sm:p-8 shadow-sm mb-2 group/header hover:shadow-md transition-shadow">
+                   <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none group-hover/header:bg-primary/10 transition-colors duration-700"></div>
+                   <div className="relative z-10">
+                     <h1 className="text-[28px] sm:text-[32px] font-['Lexend_Deca'] font-extrabold text-gray-900 tracking-tight leading-tight">Eksplorasi Topik</h1>
+                     <p className="text-gray-500 font-['Manrope'] text-[15px] mt-1.5 mb-6">Temukan materi dan inspirasi terbaru pilihan.</p>
+                     
+                     <div className="flex gap-3">
+                       <div className="relative flex-1 group">
+                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-gray-400 group-focus-within:text-primary transition-colors" strokeWidth={2.5} />
+                         <input
+                           type="text"
+                           placeholder="Cari referensi (contoh: Logaritma Dasar)"
+                           value={searchQuery}
+                           onChange={(e) => setSearchQuery(e.target.value)}
+                           className="w-full pl-11 pr-4 py-3.5 bg-white hover:bg-gray-50/50 focus:bg-white border border-gray-200 focus:border-primary/40 focus:shadow-[0_0_0_4px_rgba(93,92,230,0.08)] rounded-full font-['Manrope'] text-[15px] font-medium focus:outline-none transition-all placeholder:text-gray-400 text-gray-900"
+                         />
+                       </div>
+                       <button 
+                         onClick={() => setIsFilterOpen(true)}
+                         className="w-[52px] h-[52px] bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 hover:border-primary/40 hover:text-primary transition-all flex-shrink-0 text-gray-600 shadow-sm"
+                       >
+                         <Filter className="w-5 h-5" strokeWidth={2.5} />
+                       </button>
+                     </div>
+                   </div>
                 </div>
-                <div className="min-w-0">
-                   <h3 className="font-['Lexend_Deca'] font-bold text-sm text-gray-900 truncate">
-                     {subject.name}
+              </div>
+            )}
+
+            {/* Animated Feed Tab Navigation */}
+            <div className={`px-6 md:px-0 w-full mb-8 ${!isAuthenticated ? 'border-b border-gray-100 mt-2' : 'px-2'}`}>
+              <div className={`${!isAuthenticated ? 'explore-reveal opacity-0 translate-y-4' : ''}`} style={{ transition: 'all 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s' }}>
+                <div className={`flex gap-8 overflow-x-auto no-scrollbar relative ${isAuthenticated ? 'border-b border-gray-100' : ''}`}>
+                  {tabItems.map((tab) => (
+                    <button
+                      key={tab.key}
+                      onClick={() => setActiveSegment(tab.key)}
+                      className={`pb-4 relative shrink-0 font-['Lexend_Deca'] text-[15px] transition-colors focus:outline-none flex items-center gap-2 group ${
+                        activeSegment === tab.key 
+                        ? 'text-gray-900 font-extrabold' 
+                        : 'text-gray-500 font-medium hover:text-gray-900'
+                      }`}
+                    >
+                      <tab.icon className={`w-[16px] h-[16px] transition-colors ${activeSegment === tab.key ? 'text-gray-900' : 'text-gray-400 group-hover:text-gray-600'}`} strokeWidth={activeSegment === tab.key ? 2.5 : 2} />
+                      {tab.label}
+                      {activeSegment === tab.key && (
+                        <div className="absolute -bottom-[1px] left-0 w-full h-[2px] bg-gray-900 rounded-t-full shadow-[0_-1px_6px_rgba(0,0,0,0.2)]"></div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Notes Vertical Feed (Medium Style) */}
+            <div className={`px-6 md:px-0 w-full flex flex-col pb-16`}>
+              {mockNotes.map((note, i) => {
+                const author = getUserById(note.authorId);
+                return (
+                   <article 
+                     key={note.id} 
+                     className={`${!isAuthenticated ? 'explore-reveal opacity-0 translate-y-4' : ''} group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-8 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors bg-transparent outline-none`}
+                     style={!isAuthenticated ? { transition: `opacity 0.6s ease ${i * 40}ms, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${i * 40}ms` } : undefined}
+                   >
+                      {/* Feed Text */}
+                      <div className="flex-1 min-w-0 flex flex-col w-full h-full">
+                         {/* Title */}
+                         <Link to={`/note/${note.id}`} className="block mb-2.5 outline-none font-['Lexend_Deca'] cursor-pointer">
+                           <h2 className="text-[20px] md:text-[22px] font-extrabold text-gray-900 leading-[1.25] tracking-tight group-hover:text-primary transition-colors line-clamp-2">
+                             {note.title}
+                           </h2>
+                         </Link>
+
+                         {/* Excerpt */}
+                         <p className="text-[15px] font-['Manrope'] font-medium text-gray-500 line-clamp-2 leading-relaxed mb-5 pr-2">
+                             {note.description}
+                         </p>
+
+                         {/* Meta & Author Footer */}
+                         <div className="flex items-center justify-between mt-auto">
+                            <Link to={`/profile/${author?.id}`} className="flex items-center gap-2.5 group/author outline-none cursor-pointer">
+                              <img src={author?.avatar} alt={author?.name} className="w-[28px] h-[28px] rounded-full object-cover ring-2 ring-transparent group-hover/author:ring-primary/20 transition-all" />
+                              <div className="flex flex-col">
+                                 <span className="text-[13px] font-['Lexend_Deca'] font-bold text-gray-900 tracking-tight group-hover/author:underline">{author?.name}</span>
+                                 <span className="text-[11px] font-['Manrope'] font-semibold text-gray-400">{new Date(note.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+                              </div>
+                            </Link>
+                            
+                            <div className="flex items-center gap-3">
+                               <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors" title={`${note.views} kali dilihat`}>
+                                 <Eye className="w-[14px] h-[14px]" strokeWidth={2} />
+                                 <span className="text-[12px] font-['Lexend_Deca'] font-bold text-gray-700">{note.views}</span>
+                               </div>
+                               <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-lg" title={`Rating ${note.rating || '4.0'}`}>
+                                 <Star className="w-[14px] h-[14px] text-amber-500 fill-amber-500" />
+                                 <span className="text-[12px] font-['Lexend_Deca'] font-bold text-gray-700">{note.rating || '4.0'}</span>
+                               </div>
+                               <button aria-label="Save" className="opacity-0 md:opacity-100 p-1.5 rounded-full text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors outline-none md:group-hover:opacity-100">
+                                 <Bookmark className="w-[18px] h-[18px]" strokeWidth={2} />
+                               </button>
+                            </div>
+                         </div>
+                      </div>
+
+                      {/* Thumbnail */}
+                      <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-gray-100 relative shadow-sm">
+                         <Link to={`/note/${note.id}`} className="block w-full h-full outline-none cursor-pointer">
+                           <img src={note.thumbnail} alt={note.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
+                           {/* Floating badge */}
+                           <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
+                             <Clock className="w-3 h-3" /> 5m
+                           </div>
+                         </Link>
+                      </div>
+                   </article>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN (Sidebar) */}
+          <div className={`${!isAuthenticated ? 'explore-reveal opacity-0 translate-y-6' : ''} hidden xl:block w-[320px] shrink-0 xl:border-l xl:border-gray-100 xl:pl-10`} style={{ transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s' }}>
+             <div className="sticky flex flex-col gap-10 pt-8 pb-12" style={{ top: 'min(72px, calc(100vh - 100% - 24px))' }}>
+                
+                {/* Penulis Direkomendasikan */}
+                <div>
+                   <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 tracking-tight mb-5 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-primary" strokeWidth={2.5} /> Pakar Edukasi
                    </h3>
-                   <p className="text-[10px] font-['Manrope'] text-gray-400 truncate font-semibold">
-                     120+ Catatan
-                   </p>
+                   <div className="flex flex-col gap-5">
+                      {['1', '2', '3'].map((userId) => {
+                        const recAuthor = getUserById(userId);
+                        if(!recAuthor) return null;
+                        return (
+                           <div key={recAuthor.id} className="flex items-center justify-between group">
+                              <Link to={`/profile/${recAuthor.id}`} className="flex items-center gap-3 min-w-0 pr-4 outline-none">
+                                <img src={recAuthor.avatar} alt={recAuthor.name} className="w-10 h-10 rounded-full object-cover bg-gray-100 ring-2 ring-transparent group-hover:ring-primary/20 transition-all" />
+                                <div className="flex flex-col min-w-0">
+                                   <span className="font-['Lexend_Deca'] font-bold text-[14px] text-gray-900 truncate group-hover:text-primary transition-colors">{recAuthor.name}</span>
+                                   <span className="font-['Manrope'] font-medium text-[12px] text-gray-500 truncate">{recAuthor.role === 'pakar' ? 'Pakar Edukasi' : 'Pelajar'}</span>
+                                </div>
+                              </Link>
+                              <button className="px-3.5 py-1.5 rounded-[10px] border border-gray-200 text-gray-600 font-['Manrope'] text-[12px] font-bold hover:border-primary hover:text-primary hover:bg-primary/5 transition-all focus:outline-none">
+                                Ikuti
+                              </button>
+                           </div>
+                        );
+                      })}
+                   </div>
                 </div>
-              </button>
-            ))}
+
+                {/* Pencarian Populer (Trending Searches) */}
+                <div>
+                   <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 tracking-tight mb-4 flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4 text-rose-500" strokeWidth={2.5} /> Sering Dicari
+                   </h3>
+                   <div className="flex flex-wrap gap-2.5">
+                      {['Fisika Kuantum', 'Limit Trigonometri', 'Grammar IELTS', 'SBMPTN 2026', 'Sistem Pencernaan'].map((term) => (
+                        <button key={term} className="px-3.5 py-2.5 bg-white border border-gray-100 hover:border-gray-300 hover:bg-gray-50 text-gray-600 rounded-2xl font-['Manrope'] text-[13px] font-semibold transition-colors truncate max-w-full text-left focus:outline-none">
+                          <Search className="w-3.5 h-3.5 inline-block mr-1.5 text-gray-400" strokeWidth={2.5} /> {term}
+                        </button>
+                      ))}
+                   </div>
+                </div>
+
+                {/* Quick Links */}
+                <div className="pt-2 flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-['Manrope'] font-semibold text-gray-400">
+                   <Link to="#" className="hover:text-gray-900 transition-colors">Bantuan</Link>
+                   <Link to="#" className="hover:text-gray-900 transition-colors">Status</Link>
+                   <Link to="#" className="hover:text-gray-900 transition-colors">Tentang Kami</Link>
+                   <Link to="#" className="hover:text-gray-900 transition-colors">Karir</Link>
+                   <Link to="#" className="hover:text-gray-900 transition-colors">Privasi</Link>
+                   <Link to="#" className="hover:text-gray-900 transition-colors">Ketentuan</Link>
+                </div>
+             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Feed Tab Navigation */}
-      <div className={`${isAuthenticated ? 'px-6 md:px-0' : 'max-w-7xl mx-auto px-6 sm:px-8'} mb-8`}>
-        <div className="explore-reveal opacity-0 translate-y-6" style={{ transition: 'all 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s' }}>
-          {!isAuthenticated ? (
-            /* Premium Pill Tabs for Guests */
-            <div className="inline-flex bg-gray-100/80 rounded-2xl p-1.5 gap-1">
-              {tabItems.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveSegment(tab.key)}
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-[14px] font-['Lexend_Deca'] font-bold text-sm transition-all duration-300 ${
-                    activeSegment === tab.key
-                      ? 'bg-white text-gray-900 shadow-md'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  <tab.icon className="w-4 h-4" />
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          ) : (
-            /* Underline Tabs for Logged In */
-            <div className="flex gap-8 border-b border-gray-200">
-              {tabItems.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveSegment(tab.key)}
-                  className={`pb-4 relative font-['Lexend_Deca'] font-semibold text-sm transition-colors ${
-                    activeSegment === tab.key ? 'text-primary' : 'text-gray-400 hover:text-gray-700'
-                  }`}
-                >
-                  {tab.label}
-                  {activeSegment === tab.key && (
-                    <div className="absolute bottom-[-1px] left-0 w-full h-0.5 bg-primary rounded-t-full"></div>
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Notes Grid */}
-      <div className={`${isAuthenticated ? 'px-6 md:px-0' : 'max-w-7xl mx-auto px-6 sm:px-8'}`}>
-        <div className={`grid gap-6 ${isAuthenticated ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
-          {mockNotes.map((note, i) => {
-            const author = getUserById(note.authorId);
-            return (
-              <Link
-                key={note.id}
-                to={`/note/${note.id}`}
-                className={`explore-reveal opacity-0 translate-y-6 bg-white overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group flex flex-col h-full border border-gray-100 ${
-                  isAuthenticated ? 'rounded-2xl shadow-sm' : 'rounded-[1.5rem] shadow-[0_4px_20px_rgba(0,0,0,0.04)]'
-                }`}
-                style={{ transition: `opacity 0.6s ease ${i * 60}ms, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${i * 60}ms, box-shadow 0.3s ease` }}
-              >
-                {/* Thumbnail */}
-                <div className="relative h-44 bg-gray-100 overflow-hidden">
-                  <img
-                    src={note.thumbnail}
-                    alt={note.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  {note.isValidated && (
-                    <div className="absolute top-3 left-3 bg-green-500/90 backdrop-blur text-white text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm">
-                      <Check className="w-3.5 h-3.5" /> Tervalidasi
-                    </div>
-                  )}
-                  <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1">
-                    <BookOpen className="w-3.5 h-3.5" /> 12 Hal
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="inline-block text-[10px] font-['Manrope'] font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-lg">
-                      {note.mataPelajaran}
-                    </span>
-                    <span className="text-[10px] font-['Manrope'] font-semibold text-gray-400 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-100">
-                      {note.jenjang}
-                    </span>
-                  </div>
-                  
-                  <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 text-[15px] mb-4 leading-snug flex-1">
-                    {note.title}
-                  </h4>
-
-                  {/* Author & Stats */}
-                  <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
-                    <div className="flex items-center gap-2.5">
-                      <img
-                        src={author?.avatar}
-                        alt={author?.name}
-                        className="w-7 h-7 rounded-full object-cover border border-gray-100"
-                      />
-                      <div>
-                        <p className="font-['Manrope'] font-bold text-xs text-gray-900 truncate w-24">
-                          {author?.name}
-                        </p>
-                        <p className="text-[9px] text-gray-400 font-medium">2 jam yang lalu</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 text-gray-400 text-xs font-medium">
-                      <div className="flex items-center gap-1 group-hover:text-primary transition-colors">
-                        <Eye className="w-3.5 h-3.5" /> <span>{note.views}</span>
-                      </div>
-                      <div className="flex items-center gap-1 group-hover:text-red-500 transition-colors">
-                        <Heart className="w-3.5 h-3.5" /> <span>{note.likes}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
         </div>
       </div>
 
@@ -313,9 +328,111 @@ export default function ExplorePage() {
     </div>
   );
 
+  const filterModalUI = (
+    <div className={`fixed inset-0 z-[100] flex items-end sm:items-center justify-center pointer-events-none transition-opacity duration-300 ${isFilterOpen ? 'opacity-100' : 'opacity-0'}`}>
+       <div 
+         className={`absolute inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity duration-300 ${isFilterOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`} 
+         onClick={() => setIsFilterOpen(false)}
+       />
+       <div className={`relative w-full sm:w-[500px] max-h-[85vh] sm:max-h-[600px] bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col transition-transform duration-300 ${isFilterOpen ? 'pointer-events-auto translate-y-0 scale-100' : 'pointer-events-none translate-y-full sm:translate-y-4 sm:scale-95'}`}>
+          <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white z-10">
+             <div className="flex items-center gap-3">
+               <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                 <Filter className="w-[18px] h-[18px] text-primary" strokeWidth={2.5} />
+               </div>
+               <h3 className="font-['Lexend_Deca'] font-extrabold text-[18px] text-gray-900 tracking-tight">Filter Referensi</h3>
+             </div>
+             <button onClick={() => setIsFilterOpen(false)} className="p-2 -mr-2 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-full transition-colors focus:outline-none">
+               <X className="w-5 h-5" strokeWidth={2.5} />
+             </button>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar bg-gray-50/50">
+             {/* Tingkat Pendidikan */}
+             <div>
+                <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 mb-4 flex items-center justify-between">
+                  Tingkat Pendidikan
+                  {selectedJenjang !== 'Semua' && <span className="text-[11px] font-['Lexend_Deca'] text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-md">1 Dipilih</span>}
+                </h4>
+                <div className="flex flex-wrap gap-2.5">
+                  {jenjangList.map((jenjang) => (
+                    <button
+                      key={jenjang}
+                      onClick={() => setSelectedJenjang(jenjang)}
+                      className={`px-4 py-2.5 rounded-2xl font-['Manrope'] text-[13.5px] font-bold transition-all border ${
+                        selectedJenjang === jenjang 
+                        ? 'bg-primary text-white border-primary shadow-[0_4px_12px_rgb(93,92,230,0.3)]' 
+                        : 'bg-white text-gray-600 border-gray-200 hover:border-primary/40 hover:text-primary hover:bg-primary/5 hover:shadow-sm'
+                      }`}
+                    >
+                      {jenjang}
+                    </button>
+                  ))}
+                </div>
+             </div>
+
+             {/* Topik Pembelajaran */}
+             <div>
+                <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 mb-4 flex items-center justify-between">
+                  Topik Belajar
+                  {selectedTopic !== 'Semua' && <span className="text-[11px] font-['Lexend_Deca'] text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-md">1 Dipilih</span>}
+                </h4>
+                <div className="flex flex-wrap gap-2.5">
+                  <button 
+                    onClick={() => setSelectedTopic('Semua')}
+                    className={`px-4 py-2.5 rounded-2xl font-['Manrope'] text-[13.5px] font-bold transition-all border flex items-center gap-2 ${
+                      selectedTopic === 'Semua' 
+                      ? 'bg-primary text-white border-primary shadow-[0_4px_12px_rgb(93,92,230,0.3)]' 
+                      : 'bg-white text-gray-600 border-gray-200 hover:border-primary/40 hover:text-primary hover:bg-primary/5 hover:shadow-sm'
+                    }`}
+                  >
+                    ✨ Semua Topik
+                  </button>
+                  {mataPelajaran.map((subject) => (
+                    <button
+                      key={subject.id}
+                      onClick={() => setSelectedTopic(subject.id)}
+                      className={`px-4 py-2.5 rounded-2xl font-['Manrope'] text-[13.5px] font-bold transition-all border flex items-center gap-2 ${
+                        selectedTopic === subject.id
+                        ? 'bg-primary text-white border-primary shadow-[0_4px_12px_rgb(93,92,230,0.3)]'
+                        : 'bg-white text-gray-600 border-gray-200 hover:border-primary/40 hover:text-primary hover:bg-primary/5 hover:shadow-sm'
+                      }`}
+                    >
+                      <span>{subject.icon}</span> {subject.name}
+                    </button>
+                  ))}
+                </div>
+             </div>
+          </div>
+
+          <div className="p-5 border-t border-gray-100 bg-white z-10">
+             <div className="flex gap-3">
+                <button 
+                  onClick={() => { setSelectedJenjang('Semua'); setSelectedTopic('Semua'); }}
+                  className="px-5 py-3.5 rounded-xl font-['Lexend_Deca'] text-[14px] font-extrabold text-gray-500 bg-gray-50 hover:bg-gray-100 hover:text-gray-900 transition-colors w-1/3 border border-gray-200"
+                >
+                  Reset
+                </button>
+                <button 
+                  onClick={() => setIsFilterOpen(false)}
+                  className="flex-1 px-5 py-3.5 rounded-xl font-['Lexend_Deca'] text-[14px] font-extrabold text-white bg-primary hover:bg-primary/90 shadow-[0_4px_10px_rgb(93,92,230,0.25)] hover:shadow-[0_8px_20px_rgb(93,92,230,0.35)] hover:-translate-y-0.5 transition-all text-center"
+                >
+                  Terapkan Filter
+                </button>
+             </div>
+          </div>
+       </div>
+    </div>
+  );
+
   // Logged-in: dashboard layout
   if (isAuthenticated) {
-    return <MobileLayout>{exploreContent}</MobileLayout>;
+    return (
+      <MobileLayout>
+        {exploreContent}
+        {filterModalUI}
+      </MobileLayout>
+    );
   }
 
   // Guest: landing page layout with reveal styles
@@ -329,6 +446,7 @@ export default function ExplorePage() {
       `}</style>
       <Navbar variant="default" />
       {exploreContent}
+      {filterModalUI}
       <Footer />
       <AuthModal 
         isOpen={showAuthModal} 
