@@ -40,9 +40,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Likes
     Route::post('/v1/posts/{postId}/like', [LikeController::class, 'toggle']);
+    Route::post('/v1/comments/{commentId}/like', [LikeController::class, 'toggleCommentLike']);
 
     // Reports
     Route::post('/v1/posts/{postId}/report', [ReportController::class, 'store']);
+    Route::post('/v1/comments/{commentId}/report', [ReportController::class, 'storeCommentReport']);
     Route::get('/v1/reports', [ReportController::class, 'index']); // Admin only
     Route::put('/v1/reports/{id}', [ReportController::class, 'update']); // Admin only
 

@@ -47,6 +47,43 @@ class ReportController extends Controller
         ], 201);
     }
 
+    public function storeCommentReport(Request $request, $commentId)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:255',
+            'description' => 'required|string',
+        ]);
+
+        $comment = \App\Models\Comment::find($commentId);
+        if (!$comment) {
+            return response()->json(['message' => 'Komentar tidak ditemukan'], 404);
+        }
+
+        $report = Report::create([
+            'reporter_id' => Auth::id(),
+            'comment_id' => $commentId,
+            'post_id' => $comment->post_id,
+            'reason' => $request->reason,
+            'description' => $request->description,
+        ]);
+
+        $admins = User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'title'   => 'Laporan Komentar Baru',
+                'message' => 'Ada komentar toxic dilaporkan: ' . $request->reason . '. Segera periksa.',
+                'type'    => 'report',
+                'is_read' => false,
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Laporan komentar berhasil dikirim',
+            'data' => $report
+        ], 201);
+    }
+
     public function index()
     {
         if (Auth::user()->role !== 'admin') {
@@ -85,18 +122,29 @@ class ReportController extends Controller
             $pesan = 'Laporan aman, berhasil diabaikan. 🛡️';
 
         } elseif ($action === 'takedown') {
-            Post::where('id', $report->post_id)->delete();
-            
+            if ($report->comment_id) {
+                \App\Models\Comment::where('id', $report->comment_id)->delete();
+                $pesan = 'BAM! Komentar ngawur berhasil di-Take Down! 💥';
+            } else {
+                Post::where('id', $report->post_id)->delete();
+                $pesan = 'BAM! Catatan ngawur berhasil di-Take Down! 💥';
+            }
             $report->update(['status' => 'resolved', 'admin_note' => $request->admin_note]);
-            $pesan = 'BAM! Catatan ngawur berhasil di-Take Down! 💥';
 
         } elseif ($action === 'banned') {
-            $post = Post::find($report->post_id);
-            if ($post) {
-                User::where('id', $post->user_id)->update(['role' => 'banned']);
-                $post->delete();
+            if ($report->comment_id) {
+                $comment = \App\Models\Comment::find($report->comment_id);
+                if ($comment) {
+                    User::where('id', $comment->user_id)->update(['role' => 'banned']);
+                    $comment->delete();
+                }
+            } else {
+                $post = Post::find($report->post_id);
+                if ($post) {
+                    User::where('id', $post->user_id)->update(['role' => 'banned']);
+                    $post->delete();
+                }
             }
-            
             $report->update(['status' => 'resolved', 'admin_note' => $request->admin_note]);
             $pesan = 'MAMPUS! User toxic berhasil di-Banned permanen! 🔨';
         }

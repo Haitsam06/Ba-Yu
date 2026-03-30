@@ -19,6 +19,10 @@ class PostController extends Controller
             $query->where('is_verified', $isVerified);
         }
 
+        if ($request->has('user_id')) {
+            $query->where('user_id', $request->query('user_id'));
+        }
+
         $posts = $query->orderBy('created_at', 'desc')->get();
 
         return response()->json([
@@ -26,7 +30,6 @@ class PostController extends Controller
             'data' => $posts
         ], 200);
     }
-
     public function store(Request $request)
     {
         $request->validate([
