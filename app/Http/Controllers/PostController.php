@@ -34,9 +34,12 @@ class PostController extends Controller
             // Overwrite with real counts
             $post->likes_count = $realLikes;
             $post->comments_count = $realComments;
+
             if ($post->isDirty(['likes_count', 'comments_count'])) {
                 $post->save();
             }
+
+            $post->is_liked = $post->likes ? $post->likes->where('user_id', Auth::id())->isNotEmpty() : false;
         });
 
         return response()->json([
@@ -84,9 +87,9 @@ class PostController extends Controller
             foreach ($pakars as $pakar) {
                 Notification::create([
                     'user_id' => $pakar->id,
-                    'title'   => 'Verifikasi Catatan Baru',
+                    'title' => 'Verifikasi Catatan Baru',
                     'message' => 'Catatan "' . $post->title . '" dipublikasikan dan menunggu ulasan pakar.',
-                    'type'    => 'verifikasi',
+                    'type' => 'verifikasi',
                     'is_read' => false,
                 ]);
             }
@@ -115,6 +118,8 @@ class PostController extends Controller
         if ($post->isDirty(['likes_count', 'comments_count'])) {
             $post->save();
         }
+
+        $post->is_liked = \App\Models\Like::where('post_id', $id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->exists();
 
         return response()->json([
             'message' => 'Berhasil mengambil post',
