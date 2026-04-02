@@ -84,11 +84,20 @@ export default function NoteDetailPage() {
   }, [comments, window.location.hash]);
 
   useEffect(() => {
-    const fetchNoteDetail = async () => {
-      if (!id) return;
-      try {
-        const response = await axios.get(`/api/v1/posts/${id}`);
-        const n = response.data.data;
+const fetchNoteDetail = async () => {
+        if (!id) return;
+        try {
+            // 1. Ambil KTP (Token) dulu
+            const token = localStorage.getItem('bayu-token');
+
+            // 2. Selipin tokennya ke dalem request GET
+            const response = await axios.get(`/api/v1/posts/${id}`, {
+                headers: token ? { Authorization: `Bearer ${token}` } : {}
+            });
+            const n = response.data.data;
+
+            // 3. Sinkronin warna hati!
+            setLiked(n.is_liked === true);
         
         setNote({
           ...n,
@@ -260,23 +269,23 @@ export default function NoteDetailPage() {
   };
 
   const handleLikePost = async () => {
-    if (!isAuthenticated) return openAuthModal('login');
-    try {
-      const token = localStorage.getItem('bayu-token');
-      // Optimistic update
-      setLiked(prev => !prev);
-      setNote((prev: any) => ({ ...prev, likes: prev.likes + (!liked ? 1 : -1) }));
+        if (!isAuthenticated) return openAuthModal('login');
+        try {
+            const token = localStorage.getItem('bayu-token');
 
-      await axios.post(`/api/v1/posts/${id}/like`, {}, {
-         headers: { Authorization: `Bearer ${token}` }
-      });
-    } catch (e) {
-      console.error(e);
-      // Revert if error
-      setLiked(prev => !prev);
-      setNote((prev: any) => ({ ...prev, likes: Math.max(0, prev.likes + (liked ? 1 : -1)) }));
-    }
-  };
+            const res = await axios.post(`/api/v1/posts/${id}/like`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            // Langsung tempel data dari Backend lu ke UI
+            setLiked(res.data.is_liked);
+            setNote((prev: any) => ({ ...prev, likes: res.data.likes_count }));
+
+        } catch (e) {
+            console.error(e);
+            alert("Gagal memproses Like");
+        }
+    };
 
   const handleReportSubmit = async () => {
     if (!isAuthenticated) return openAuthModal('login');

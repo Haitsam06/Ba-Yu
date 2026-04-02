@@ -119,7 +119,29 @@ class PostController extends Controller
             $post->save();
         }
 
-        $post->is_liked = \App\Models\Like::where('post_id', $id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->exists();
+        // 🔥 JURUS BACA KTP (ANTI CRASH/PINGSAN)
+        $userId = null;
+        try { 
+            $userId = Auth::guard('sanctum')->id(); 
+        } catch (\Exception $e) {}
+
+        if (!$userId) {
+            try { 
+                $userId = Auth::guard('api')->id(); 
+            } catch (\Exception $e) {}
+        }
+        
+        if (!$userId) {
+            $userId = Auth::id();
+        }
+
+        $userIdStr = (string) $userId;
+
+        if ($userIdStr !== "") {
+            $post->is_liked = \App\Models\Like::where('post_id', (string) $id)->where('user_id', $userIdStr)->exists();
+        } else {
+            $post->is_liked = false;
+        }
 
         return response()->json([
             'message' => 'Berhasil mengambil post',

@@ -20,21 +20,30 @@ class LikeController extends Controller
 
         $userId = (string) Auth::id();
         $postIdStr = (string) $postId;
-        $like = Like::where('post_id', $postIdStr)->where('user_id', $userId)->first();
 
-        if ($like) {
-            // Unlike
-            $like->delete();
-            $post->decrement('likes_count');
-            return response()->json(['message' => 'Berhasil unlike post'], 200);
+        // 🔥 JURUS PAMUNGKAS: Langsung coba hapus.
+        // Ini bakal nge-unlike, dan mencegah adanya data DUPLIKAT.
+        $deleted = Like::where('post_id', $postIdStr)
+                       ->where('user_id', $userId)
+                       ->delete();
+
+        if ($deleted) {
+            // Kalau ada yang terhapus, berarti action-nya adalah UNLIKE
+            $isLikedNow = false;
+            $msg = 'Berhasil unlike post';
+            $statusCode = 200;
         } else {
-            // Like
+            // Kalau nggak ada yang terhapus, berarti user emang belum like.
+            // Bikin data Like BARU.
             Like::create([
                 'post_id' => $postIdStr,
                 'user_id' => $userId
             ]);
-            $post->increment('likes_count');
+            $isLikedNow = true;
+            $msg = 'Berhasil like post';
+            $statusCode = 201;
 
+            // Logika Notifikasi Lu (Aman!)
             if ($post->user_id) { 
                 $postUserIdStr = is_array($post->user_id) ? (string) current($post->user_id) : (string) $post->user_id;
                 if ($postUserIdStr !== $userId) {
@@ -48,9 +57,20 @@ class LikeController extends Controller
                     ]);
                 }
             }
-
-            return response()->json(['message' => 'Berhasil like post'], 201);
         }
+
+        // 🔥 JURUS PAMUNGKAS: Ngitung LANGSUNG dari tabel likes!
+        // Ini buat mastiin angka di Post Model selalu sinkron sama tabel Like.
+        $actualLikesCount = Like::where('post_id', $postIdStr)->count();
+        $post->update(['likes_count' => $actualLikesCount]);
+
+        // 🔥 Suapin FE data mateng.
+        // FE lu HARUS pake data `is_liked` ini buat nentuin warna hati!
+        return response()->json([
+            'message' => $msg,
+            'likes_count' => $actualLikesCount,
+            'is_liked' => $isLikedNow
+        ], $statusCode);
     }
 
     public function toggleCommentLike($commentId)
@@ -62,21 +82,28 @@ class LikeController extends Controller
 
         $userId = (string) Auth::id();
         $commentIdStr = (string) $commentId;
-        $like = Like::where('comment_id', $commentIdStr)->where('user_id', $userId)->first();
 
-        if ($like) {
-            // Unlike Komentar
-            $like->delete();
-            $comment->decrement('likes_count');
-            return response()->json(['message' => 'Berhasil unlike komentar'], 200);
+        // 🔥 JURUS PAMUNGKAS: Langsung coba hapus.
+        $deleted = Like::where('comment_id', $commentIdStr)
+                       ->where('user_id', $userId)
+                       ->delete();
+
+        if ($deleted) {
+            // UNLIKE KOMENTAR
+            $isLikedNow = false;
+            $msg = 'Berhasil unlike komentar';
+            $statusCode = 200;
         } else {
-            // Like Komentar
+            // LIKE KOMENTAR
             Like::create([
                 'comment_id' => $commentIdStr,
                 'user_id' => $userId
             ]);
-            $comment->increment('likes_count');
+            $isLikedNow = true;
+            $msg = 'Berhasil like komentar! 👍';
+            $statusCode = 201;
 
+            // Logika Notifikasi Lu (Aman!)
             if ($comment->user_id) {
                 $commentUserIdStr = is_array($comment->user_id) ? (string) current($comment->user_id) : (string) $comment->user_id;
                 if ($commentUserIdStr !== $userId) {
@@ -90,8 +117,16 @@ class LikeController extends Controller
                     ]);
                 }
             }
-
-            return response()->json(['message' => 'Berhasil like komentar! 👍'], 201);
         }
+
+        // 🔥 JURUS PAMUNGKAS: Ngitung LANGSUNG dari tabel likes!
+        $actualLikesCount = Like::where('comment_id', $commentIdStr)->count();
+        $comment->update(['likes_count' => $actualLikesCount]);
+
+        return response()->json([
+            'message' => $msg,
+            'likes_count' => $actualLikesCount,
+            'is_liked' => $isLikedNow
+        ], $statusCode);
     }
 }
