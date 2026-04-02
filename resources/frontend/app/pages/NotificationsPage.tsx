@@ -1,6 +1,7 @@
 import { MobileLayout } from '../components/MobileLayout';
 import { Bell, Check, Shield, AlertCircle, Loader2, CheckCheck } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 
@@ -10,6 +11,7 @@ interface Notification {
   title: string;
   message: string;
   type: string;
+  link?: string;
   is_read: boolean;
   created_at: string;
   updated_at: string;
@@ -58,6 +60,7 @@ function timeAgo(dateStr: string) {
 
 export default function NotificationsPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,17 +86,25 @@ export default function NotificationsPage() {
     }
   };
 
-  const handleMarkAsRead = async (id: string, is_read: boolean) => {
-    if (is_read) return;
-    try {
-      const token = localStorage.getItem('bayu-token');
-      await axios.put(`/api/v1/notifikasi/${id}/read`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      // Update local state without fetching all again
-      setNotifications(prev => prev.map(n => n._id === id ? { ...n, is_read: true } : n));
-    } catch (err) {
-      console.error('Failed to mark as read', err);
+  const handleMarkAsRead = async (id: string, is_read: boolean, type: string, link?: string) => {
+    if (!is_read) {
+      try {
+        const token = localStorage.getItem('bayu-token');
+        await axios.put(`/api/v1/notifikasi/${id}/read`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setNotifications(prev => prev.map(n => n._id === id ? { ...n, is_read: true } : n));
+      } catch (err) {
+        console.error('Failed to mark as read', err);
+      }
+    }
+
+    if (link) {
+       navigate(link);
+    } else if (type === 'report') {
+       if (user?.role === 'admin') navigate('/admin', { state: { tab: 'laporan' } });
+    } else if (type === 'sertifikasi') {
+       if (user?.role === 'admin') navigate('/admin', { state: { tab: 'sertifikasi' } });
     }
   };
 
@@ -166,7 +177,7 @@ export default function NotificationsPage() {
               {notifications.map((notif, index) => (
                 <div
                   key={notif._id}
-                  onClick={() => handleMarkAsRead(notif._id, notif.is_read)}
+                  onClick={() => handleMarkAsRead(notif._id, notif.is_read, notif.type, notif.link)}
                   className={`rounded-2xl p-4 border transition-all duration-300 hover:shadow-sm cursor-pointer group ${
                     !notif.is_read
                       ? 'bg-primary/[0.03] border-primary/20 shadow-sm'

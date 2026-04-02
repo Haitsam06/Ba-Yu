@@ -6,19 +6,26 @@ import {
   Search, Filter, Trash2, Flag, BarChart3, ShieldCheck, DownloadCloud, Server, Activity, ArrowUpRight, Check
 } from 'lucide-react';
 import { mockNotes, mockUsers, getUserById, mataPelajaran } from '../data/mockData';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import axios from 'axios';
 
 type TabType = 'catatan' | 'laporan' | 'users' | 'sertifikasi';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState<TabType>('sertifikasi');
   const [searchQuery, setSearchQuery] = useState('');
   
   const [pendingCerts, setPendingCerts] = useState<any[]>([]);
   const [reportsList, setReportsList] = useState<any[]>([]);
   const [usersList, setUsersList] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (location.state?.tab) {
+      setActiveTab(location.state.tab as TabType);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     if (activeTab === 'sertifikasi') fetchPendingCertifications();
@@ -65,29 +72,8 @@ export default function AdminDashboard() {
     }
   };
 
-  // Mock reports
-  const mockReports = [
-    {
-      id: '1',
-      type: 'catatan',
-      noteId: mockNotes[0].id,
-      noteTitle: mockNotes[0].title,
-      reportedBy: mockUsers[1],
-      reason: 'Konten tidak sesuai',
-      status: 'pending',
-      date: '2024-03-08'
-    },
-    {
-      id: '2',
-      type: 'user',
-      userId: mockUsers[2].id,
-      userName: mockUsers[2].name,
-      reportedBy: mockUsers[3],
-      reason: 'Spam berlebihan',
-      status: 'pending',
-      date: '2024-03-07'
-    }
-  ];
+  // Remove mock reports as requested
+  const mockReports: any[] = [];
 
   const stats = [
     { label: 'Total User', value: mockUsers.length, color: 'bg-blue-500', icon: Users, increment: '+12%' },
@@ -103,14 +89,21 @@ export default function AdminDashboard() {
   };
 
   const handleResolveReport = async (reportId: string, actionType: 'abaikan' | 'takedown' | 'banned') => {
+    let adminNote = '';
+    if (actionType === 'abaikan') {
+       const reason = window.prompt('Alasan laporan diabaikan (opsional, untuk diinfokan ke pelapor):', 'Sesuai dengan panduan komunitas');
+       if (reason === null) return; // cancelled
+       adminNote = reason;
+    }
+
     try {
       const token = localStorage.getItem('bayu-token');
       const res = await axios.put(`/api/v1/reports/${reportId}`, 
-        { action: actionType }, 
+        { action: actionType, admin_note: adminNote }, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
       alert(res.data.message || 'Berhasil diproses!');
-      fetchReports();
+      setReportsList(prev => prev.filter(r => r.id !== reportId && r._id !== reportId));
     } catch (e: any) {
       alert(e.response?.data?.message || 'Gagal memproses laporan');
     }
@@ -390,8 +383,12 @@ export default function AdminDashboard() {
                       </div>
 
                       <div className="space-y-4">
-                        {(reportsList.length > 0 ? reportsList : mockReports).map((report) => (
-                          <div key={report.id} className="bg-white rounded-3xl border border-orange-200 p-5 lg:p-6 hover:shadow-md transition-shadow">
+                        {reportsList.length === 0 ? (
+                            <div className="text-center py-10">
+                               <p className="font-['Manrope'] text-gray-500">Tidak ada laporan masuk yang perlu diperiksa.</p>
+                            </div>
+                        ) : reportsList.map((report) => (
+                          <div key={report.id || report._id} className="bg-white rounded-3xl border border-orange-200 p-5 lg:p-6 hover:shadow-md transition-shadow">
                             <div className="flex flex-col md:flex-row gap-5 items-start md:items-center">
                               <div className="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center flex-shrink-0 border border-orange-200">
                                 <Flag className="w-6 h-6 text-orange-600" />
@@ -406,23 +403,24 @@ export default function AdminDashboard() {
                                 <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 text-lg mb-1 leading-tight">
                                   {report.post_id ? `Catatan ID: ${report.post_id}` : (report.type === 'catatan' ? report.noteTitle : report.userName)}
                                 </h4>
-                                <div className="bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-100 inline-block mt-2">
-                                   <p className="text-sm font-['Manrope'] text-gray-700 font-medium">Alasan: <span className="text-red-500">{report.reason}</span></p>
+                                <div className="bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-100 mt-2">
+                                   <p className="text-sm font-['Manrope'] text-gray-700 font-medium mb-1">Kategori Laporan: <span className="text-red-500">{report.reason}</span></p>
+                                   <p className="text-[13px] font-['Manrope'] text-gray-600 border-l-2 border-red-300 pl-3 leading-relaxed break-words whitespace-pre-wrap">{report.description || '-'}</p>
                                 </div>
                                 <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-50">
-                                  <span className="text-xs font-['Manrope'] font-medium text-gray-500">Dilaporkan oleh User ID: {report.user_id || report.reportedBy?.name}</span>
+                                  <span className="text-xs font-['Manrope'] font-medium text-gray-500">Dilaporkan oleh: {report.reporter?.name || 'Anonim'}</span>
                                 </div>
                               </div>
                               
-                              <div className="flex md:flex-col lg:flex-row gap-2 w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-gray-100">
-                                <button onClick={() => handleResolveReport(report.id, 'abaikan')} className="flex-1 md:flex-none px-6 py-3 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300 rounded-xl font-['Lexend_Deca'] font-semibold text-sm transition-all text-center">
+                              <div className="flex md:flex-col lg:flex-row gap-2 w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-gray-100 shrink-0">
+                                <button onClick={() => handleResolveReport(report.id || report._id, 'abaikan')} className="flex-1 md:flex-none px-6 py-3 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300 rounded-xl font-['Lexend_Deca'] font-semibold text-sm transition-all text-center">
                                   Abaikan
                                 </button>
-                                <button onClick={() => handleResolveReport(report.id, 'takedown')} className="flex-1 md:flex-none px-6 py-3 bg-red-500 text-white rounded-xl font-['Lexend_Deca'] font-semibold text-sm hover:bg-red-600 hover:shadow-md transition-all text-center">
-                                  Take Down Minta
+                                <button onClick={() => handleResolveReport(report.id || report._id, 'takedown')} className="flex-1 md:flex-none px-6 py-3 bg-red-500 text-white rounded-xl font-['Lexend_Deca'] font-semibold text-sm hover:bg-red-600 hover:shadow-md transition-all text-center">
+                                  Takedown
                                 </button>
-                                <button onClick={() => handleResolveReport(report.id, 'banned')} className="flex-1 md:flex-none px-6 py-3 bg-black text-white rounded-xl font-['Lexend_Deca'] font-semibold text-sm hover:bg-gray-800 hover:shadow-md transition-all text-center">
-                                  Banned User
+                                <button onClick={() => handleResolveReport(report.id || report._id, 'banned')} className="flex-1 md:flex-none px-6 py-3 bg-black text-white rounded-xl font-['Lexend_Deca'] font-semibold text-sm hover:bg-gray-800 hover:shadow-md transition-all text-center">
+                                  Banned
                                 </button>
                               </div>
                             </div>

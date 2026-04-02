@@ -8,6 +8,36 @@ import 'react-quill/dist/quill.snow.css';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import axios from 'axios';
+import Cropper from 'react-easy-crop';
+
+async function getCroppedImg(imageSrc: string, pixelCrop: any): Promise<string> {
+  const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = document.createElement('img');
+    img.addEventListener('load', () => resolve(img));
+    img.addEventListener('error', (err: any) => reject(err));
+    if (imageSrc.startsWith('http')) {
+      img.setAttribute('crossOrigin', 'anonymous');
+    }
+    img.src = imageSrc;
+  });
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return '';
+  canvas.width = pixelCrop.width;
+  canvas.height = pixelCrop.height;
+  ctx.drawImage(
+    image,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    pixelCrop.width,
+    pixelCrop.height
+  );
+  return canvas.toDataURL('image/jpeg', 0.9);
+}
 
 // Make katex available globally for Quill's formula module
 if (typeof window !== 'undefined') {
@@ -38,6 +68,43 @@ class DividerBlot extends BlockEmbed {
 DividerBlot.blotName = 'divider';
 DividerBlot.tagName = 'hr';
 Quill.register(DividerBlot);
+
+const ImageFormat = Quill.import('formats/image') as any;
+class CustomImage extends ImageFormat {
+  static create(value: any) {
+    if (typeof value === 'string') {
+      return super.create(value);
+    }
+    const node = super.create(value.src);
+    if (value.layout) node.setAttribute('data-layout', value.layout);
+    if (value.alt) node.setAttribute('alt', value.alt);
+    return node;
+  }
+  static formats(domNode: Element) {
+    return {
+      layout: domNode.getAttribute('data-layout') || 'inline',
+      alt: domNode.getAttribute('alt') || ''
+    };
+  }
+  format(name: string, value: any) {
+    if (name === 'layout') {
+      if (value) {
+        this.domNode.setAttribute('data-layout', value);
+      } else {
+        this.domNode.removeAttribute('data-layout');
+      }
+    } else if (name === 'alt') {
+      if (value) {
+        this.domNode.setAttribute('alt', value);
+      } else {
+        this.domNode.removeAttribute('alt');
+      }
+    } else {
+      super.format(name, value);
+    }
+  }
+}
+Quill.register(CustomImage, true);
 
 const jenjangOptions = [
   { id: 'SD', label: 'SD', kelas: ['1', '2', '3', '4', '5', '6'], kelasLabel: 'Kelas', maxSemester: 2 },
@@ -90,6 +157,14 @@ function FloatingToolbar({ quillRef }: { quillRef: React.RefObject<ReactQuill | 
 
     const handleSelectionChange = (range: any) => {
       if (range && range.length > 0) {
+        // Block text toolbar if an image is selected
+        const [blot] = quill.getLeaf(range.index);
+        if (blot && blot.domNode && blot.domNode.tagName === 'IMG') {
+          setPosition(null);
+          setShowColorPicker(false);
+          return;
+        }
+
         const quillBounds = quill.getBounds(range.index, range.length);
         const editorRect = (quill.root.parentElement as HTMLElement).getBoundingClientRect();
         const toolbarWidth = 380;
@@ -97,7 +172,7 @@ function FloatingToolbar({ quillRef }: { quillRef: React.RefObject<ReactQuill | 
         // Keep within viewport bounds
         left = Math.max(8, Math.min(left, window.innerWidth - toolbarWidth - 8));
         setPosition({
-          top: editorRect.top + quillBounds.top - 52 + window.scrollY,
+          top: editorRect.top + quillBounds.top - 52,
           left,
         });
         setFormats(quill.getFormat(range.index, range.length));
@@ -107,9 +182,19 @@ function FloatingToolbar({ quillRef }: { quillRef: React.RefObject<ReactQuill | 
       }
     };
 
+    const updatePosition = () => {
+      const range = quill.getSelection();
+      if (range) handleSelectionChange(range);
+    };
+
     quill.on('selection-change', handleSelectionChange);
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+    
     return () => {
       quill.off('selection-change', handleSelectionChange);
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
     };
   }, [quillRef]);
 
@@ -229,6 +314,128 @@ function FloatingToolbar({ quillRef }: { quillRef: React.RefObject<ReactQuill | 
   );
 }
 
+// ========== FLOATING IMAGE TOOLBAR ==========
+function FloatingImageToolbar({ quillRef, onEditAlt }: { quillRef: React.RefObject<ReactQuill | null>; onEditAlt: (index: number, currentAlt: string) => void }) {
+  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
+  const [currentLayout, setCurrentLayout] = useState('inline');
+  const toolbarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+
+    const handleSelectionChange = (range: any) => {
+      if (range && range.length === 1) {
+        const [blot] = quill.getLeaf(range.index);
+        if (blot && blot.domNode && blot.domNode.tagName === 'IMG') {
+          const imgRect = blot.domNode.getBoundingClientRect();
+          const editorRect = (quill.root.parentElement as HTMLElement).getBoundingClientRect();
+          
+          const toolbarWidth = 220;
+          let left = editorRect.left + (imgRect.left - editorRect.left) + (imgRect.width / 2) - (toolbarWidth / 2);
+          left = Math.max(8, Math.min(left, window.innerWidth - toolbarWidth - 8));
+          
+          setPosition({
+            top: imgRect.top - 52,
+            left,
+          });
+          setActiveImageIndex(range.index);
+          const layout = blot.domNode.getAttribute('data-layout') || 'inline';
+          setCurrentLayout(layout);
+          return;
+        }
+      }
+      setPosition(null);
+      setActiveImageIndex(null);
+    };
+
+    const handleEditorClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target && target.tagName === 'IMG') {
+        const blot = Quill.find(target);
+        if (blot) {
+          const index = quill.getIndex(blot);
+          const currentSelection = quill.getSelection();
+          if (!currentSelection || currentSelection.index !== index || currentSelection.length !== 1) {
+            quill.setSelection(index, 1, 'user');
+          }
+        }
+      }
+    };
+
+    const updatePosition = () => {
+      if (activeImageIndex !== null) {
+        const range = quill.getSelection();
+        if (range) handleSelectionChange(range);
+      }
+    };
+
+    quill.root.addEventListener('click', handleEditorClick);
+    quill.on('selection-change', handleSelectionChange);
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+    
+    return () => { 
+        quill.root.removeEventListener('click', handleEditorClick);
+        quill.off('selection-change', handleSelectionChange); 
+        window.removeEventListener('scroll', updatePosition, true);
+        window.removeEventListener('resize', updatePosition);
+    };
+  }, [quillRef]);
+
+  if (!position || activeImageIndex === null) return null;
+
+  const setLayout = (layout: string) => {
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+    quill.formatText(activeImageIndex, 1, 'layout', layout);
+    setCurrentLayout(layout);
+  };
+
+  const handleAltClick = () => {
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+    const [blot] = quill.getLeaf(activeImageIndex);
+    if (blot && blot.domNode) {
+        const currentAlt = blot.domNode.getAttribute('alt') || '';
+        onEditAlt(activeImageIndex, currentAlt);
+    }
+  };
+
+  const btnClass = (active: boolean) =>
+    `w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-200 ${active ? 'bg-primary text-white shadow-sm' : 'text-gray-400 hover:text-white hover:bg-white/10'}`;
+
+  return (
+    <div
+      ref={toolbarRef}
+      className="fixed z-50 animate-in fade-in zoom-in-95 duration-150"
+      style={{ top: position.top, left: position.left }}
+      onMouseDown={(e) => e.preventDefault()}
+    >
+      <div className="bg-gray-900/95 backdrop-blur-md rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] px-1.5 py-1.5 flex items-center gap-1 border border-white/10 relative">
+        <button className={btnClass(currentLayout === 'inline')} onClick={() => setLayout('inline')} title="Standard / Center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-80"><rect x="7" y="5" width="10" height="14" rx="2"/><line x1="10" y1="9" x2="14" y2="9"/><line x1="10" y1="13" x2="14" y2="13"/></svg>
+        </button>
+        <button className={btnClass(currentLayout === 'wide')} onClick={() => setLayout('wide')} title="Lebar (Wide)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-90"><rect x="4" y="5" width="16" height="14" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="17" y2="13"/></svg>
+        </button>
+        <button className={btnClass(currentLayout === 'fullBleed')} onClick={() => setLayout('fullBleed')} title="Penuh (Full Bleed)">
+           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="5" width="22" height="14" rx="2"/><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="13" x2="20" y2="13"/></svg>
+        </button>
+        
+        <div className="w-px h-5 bg-white/20 mx-1.5"></div>
+        
+        <button onClick={handleAltClick} className="px-3 h-8 text-[12px] font-semibold text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+          Alt text
+        </button>
+        
+        <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-gray-900/95 border-b border-r border-white/10 rotate-45" />
+      </div>
+    </div>
+  );
+}
+
 // ========== PLUS BUTTON (BLOCK INSERTER) ==========
 function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<ReactQuill | null>; onFormulaClick: () => void }) {
   const [position, setPosition] = useState<{ top: number } | null>(null);
@@ -248,7 +455,7 @@ function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<Re
           const bounds = quill.getBounds(range.index);
           const editorRect = (quill.root.parentElement as HTMLElement).getBoundingClientRect();
           setPosition({
-            top: editorRect.top + bounds.top + window.scrollY,
+            top: editorRect.top + bounds.top,
           });
         } else {
           setPosition(null);
@@ -263,11 +470,21 @@ function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<Re
       if (range) handleSelectionChange(range);
     };
 
+    const updatePosition = () => {
+      const range = quill.getSelection();
+      if (range) handleSelectionChange(range);
+    };
+
     quill.on('selection-change', handleSelectionChange);
     quill.on('text-change', handleTextChange);
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+    
     return () => {
       quill.off('selection-change', handleSelectionChange);
       quill.off('text-change', handleTextChange);
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
     };
   }, [quillRef]);
 
@@ -300,6 +517,11 @@ function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<Re
             const reader = new FileReader();
             reader.onload = () => {
               quill.insertEmbed(range.index, 'image', reader.result, 'user');
+              quill.formatText(range.index, 1, 'layout', 'inline');
+              quill.insertText(range.index + 1, '\n', 'user');
+              quill.formatLine(range.index + 1, 1, 'align', 'center');
+              quill.insertText(range.index + 2, '\n', 'user');
+              quill.formatLine(range.index + 2, 1, 'align', false);
               quill.setSelection(range.index + 1, 0);
             };
             reader.readAsDataURL(file);
@@ -312,6 +534,10 @@ function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<Re
         const url = prompt('Masukkan URL video (YouTube/Vimeo):');
         if (url) {
           quill.insertEmbed(range.index, 'video', url, 'user');
+          quill.insertText(range.index + 1, '\n', 'user');
+          quill.formatLine(range.index + 1, 1, 'align', 'center');
+          quill.insertText(range.index + 2, '\n', 'user');
+          quill.formatLine(range.index + 2, 1, 'align', false);
           quill.setSelection(range.index + 1, 0);
         }
         break;
@@ -355,39 +581,33 @@ function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<Re
   return (
     <div
       ref={containerRef}
-      className="fixed z-40"
-      style={{ top: position.top, left: editorRect.left - 48 }}
+      className="fixed z-40 flex items-center"
+      style={{ top: position.top - 8, left: editorRect.left - 48 }}
     >
-      {!expanded ? (
-        <button
-          onClick={() => setExpanded(true)}
-          className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 text-gray-400 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] group"
-          title="Sisipkan blok"
-        >
-          <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" strokeWidth={2.5} />
-        </button>
-      ) : (
-        <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-4 duration-500 cubic-bezier(0.16, 1, 0.3, 1)">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className={`w-10 h-10 relative z-10 flex items-center justify-center rounded-full border transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.04)]
+          ${expanded ? 'border-gray-900 bg-gray-900 text-white rotate-45 shadow-lg shadow-gray-900/20' : 'border-gray-200 text-gray-400 hover:text-primary hover:border-primary/30 hover:bg-primary/5 bg-white group'}`}
+        title="Sisipkan blok"
+      >
+        <Plus className="w-6 h-6 outline-none transition-transform duration-300 group-hover:scale-110" strokeWidth={2.5} />
+      </button>
+
+      <div 
+        className={`flex items-center gap-1 bg-white border border-gray-100 rounded-2xl shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] px-2 py-1.5 absolute left-8 pl-4 transition-all duration-300 origin-left 
+          ${expanded ? 'opacity-100 scale-100 translate-x-0 pointer-events-auto' : 'opacity-0 scale-50 -translate-x-6 pointer-events-none'}`}
+      >
+        {actions.map((action) => (
           <button
-            onClick={() => setExpanded(false)}
-            className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-900 bg-gray-900 text-white transition-all duration-300 rotate-45 shadow-lg shadow-gray-900/20"
+            key={action.id}
+            onClick={() => insertBlock(action.id)}
+            className={`w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-50 active:scale-95 transition-all group ${action.color}`}
+            title={action.label}
           >
-            <Plus className="w-6 h-6" strokeWidth={2.5} />
-          </button>
-          <div className="flex items-center gap-1 bg-white border border-gray-100 rounded-2xl shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] px-2 py-2 ml-1">
-            {actions.map((action) => (
-              <button
-                key={action.id}
-                onClick={() => insertBlock(action.id)}
-                className={`w-11 h-11 flex items-center justify-center rounded-xl hover:bg-gray-50 active:scale-95 transition-all group ${action.color}`}
-                title={action.label}
-              >
                 <action.icon className="w-5 h-5 group-hover:scale-110 transition-transform" strokeWidth={2.5} />
               </button>
             ))}
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -398,11 +618,23 @@ export default function UploadPage() {
   const quillRef = useRef<ReactQuill>(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [showMeta, setShowMeta] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showFormulaModal, setShowFormulaModal] = useState(false);
   const [formulaInput, setFormulaInput] = useState('');
   const [formulaTab, setFormulaTab] = useState('Umum');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [extractedThumbnail, setExtractedThumbnail] = useState<string | null>(null);
+  const [finalThumbnail, setFinalThumbnail] = useState<string | null>(null);
+  const [thumbnailFit, setThumbnailFit] = useState<'cover' | 'contain'>('cover');
+  const [availableImages, setAvailableImages] = useState<string[]>([]);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
+  const [previewDescription, setPreviewDescription] = useState('');
+  const [descriptionEdited, setDescriptionEdited] = useState(false);
+  const [isCropping, setIsCropping] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [altModalParams, setAltModalParams] = useState<{ index: number; text: string } | null>(null);
 
   const [meta, setMeta] = useState({
     mataPelajaran: '',
@@ -422,7 +654,7 @@ export default function UploadPage() {
   const formats = [
     'header', 'bold', 'italic', 'underline', 'strike', 'background',
     'list', 'bullet', 'link', 'image', 'video', 'formula',
-    'blockquote', 'code-block', 'divider',
+    'blockquote', 'code-block', 'divider', 'layout', 'alt', 'align'
   ];
 
   const currentJenjang = jenjangOptions.find(j => j.id === meta.jenjang);
@@ -454,19 +686,78 @@ export default function UploadPage() {
   }, []);
 
   const hasContent = content.replace(/<[^>]*>/g, '').trim().length > 0;
-  const canPublish = title.trim() && hasContent && meta.mataPelajaran;
+  // We allow clicking the first publish to open modal regardless of metadata
+  const canOpenPreview = title.trim() && hasContent;
+  const canPublishFinal = title.trim() && hasContent && meta.mataPelajaran;
+
+  const handleSelectImage = (index: number) => {
+    setSelectedImageIndex(index);
+    const newThumb = availableImages[index];
+    setExtractedThumbnail(newThumb);
+    setFinalThumbnail(newThumb);
+    setThumbnailFit('cover');
+    setIsCropping(false);
+  };
+
+  const handleOpenPreview = () => {
+    if (!canOpenPreview) return;
+    
+    const urls: string[] = [];
+    const imgRegex = /<img[^>]+src="([^">]+)"/g;
+    let match;
+    while ((match = imgRegex.exec(content)) !== null) {
+      urls.push(match[1]);
+    }
+    
+    setAvailableImages(urls);
+    
+    if (urls.length > 0) {
+        if (!extractedThumbnail || !urls.includes(extractedThumbnail)) {
+            setExtractedThumbnail(urls[0]);
+            setFinalThumbnail(urls[0]);
+            setSelectedImageIndex(0);
+            setThumbnailFit('cover');
+        } else {
+            setSelectedImageIndex(urls.indexOf(extractedThumbnail));
+        }
+    } else {
+        setExtractedThumbnail(null);
+        if(!finalThumbnail) setFinalThumbnail(null);
+    }
+    
+    setIsCropping(false);
+    if (!descriptionEdited) {
+      const strippedContent = content.replace(/<[^>]*>?/gm, '');
+      setPreviewDescription(strippedContent.length > 150 ? strippedContent.substring(0, 150) + '...' : strippedContent);
+    }
+    setShowPreviewModal(true);
+  };
+
+  const handleApplyCrop = async () => {
+    if (extractedThumbnail && croppedAreaPixels) {
+      try {
+        const croppedImage = await getCroppedImg(extractedThumbnail, croppedAreaPixels);
+        setFinalThumbnail(croppedImage);
+        setThumbnailFit('cover');
+        setIsCropping(false);
+      } catch (e) {
+        console.error('Failed to crop image', e);
+        alert('Gagal menerapkan crop gambar. Pastikan format gambar valid.');
+      }
+    }
+  };
 
   const handleSubmit = async () => {
-    if (!canPublish) {
-      if (!meta.mataPelajaran) setShowMeta(true);
-      return;
-    }
+    if (!canPublishFinal) return;
     setIsSubmitting(true);
 
     try {
       await axios.post('/api/v1/posts', {
         title: title.trim(),
         content: content,
+        description: previewDescription,
+        thumbnail: finalThumbnail || extractedThumbnail,
+        thumbnail_fit: thumbnailFit,
         mapel: meta.mataPelajaran,
         jenjang: meta.jenjang,
         kelas: meta.kelas.toString(),
@@ -475,7 +766,7 @@ export default function UploadPage() {
         visibility: 'public'
       });
       alert('Catatan berhasil dipublikasikan!');
-      navigate('/home');
+      navigate(-1);
     } catch (error) {
       console.error('Gagal mempublikasikan catatan:', error);
       alert('Terjadi kesalahan saat menyimpan catatan.');
@@ -508,130 +799,233 @@ export default function UploadPage() {
 
             <div className="flex items-center gap-2.5 shrink-0">
               <button
-                onClick={() => setShowMeta(!showMeta)}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] font-['Lexend_Deca'] font-bold transition-all duration-200 border ${
-                  showMeta 
-                    ? 'bg-gray-100 text-gray-900 border-gray-200' 
-                    : 'text-gray-500 border-transparent hover:bg-gray-50 hover:text-gray-700 hover:border-gray-200'
-                } ${!meta.mataPelajaran ? 'ring-2 ring-orange-200/60 text-orange-600 border-orange-200' : ''}`}
+                onClick={handleOpenPreview}
+                disabled={!canOpenPreview}
+                className="flex items-center gap-1.5 bg-emerald-600 text-white px-5 py-2.5 rounded-full text-[13px] font-['Lexend_Deca'] font-extrabold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-700 hover:shadow-[0_4px_12px_rgba(5,150,105,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] transition-all duration-200"
               >
-                <Tag className="w-3.5 h-3.5" strokeWidth={2.5} />
-                <span className="hidden sm:inline">{meta.mataPelajaran || 'Kategori'}</span>
-                <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${showMeta ? 'rotate-180' : ''}`} />
-              </button>
-
-              <button
-                onClick={handleSubmit}
-                disabled={!canPublish || isSubmitting}
-                className="flex items-center gap-1.5 bg-primary text-white px-5 py-2.5 rounded-full text-[13px] font-['Lexend_Deca'] font-extrabold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary/90 hover:shadow-[0_4px_12px_rgb(93,92,230,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] transition-all duration-200"
-              >
-                <Send className="w-3.5 h-3.5" strokeWidth={2.5} />
-                {isSubmitting ? 'Mengirim...' : 'Publish'}
+                Publish
               </button>
             </div>
           </div>
+        </div>
 
-          {/* Metadata Panel — premium redesign */}
-          {showMeta && (
-            <div className="border-t border-gray-100 bg-gradient-to-b from-gray-50/90 to-white animate-in fade-in slide-in-from-top-2 duration-300">
-              <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-5">
+        {/* Story Preview Modal */}
+        {showPreviewModal && (
+          <div className="fixed inset-0 bg-white z-[100] overflow-y-auto animate-in fade-in zoom-in-95 duration-300">
+            <div className="max-w-6xl mx-auto px-6 py-8 min-h-screen flex flex-col">
+              
+              {/* Modal Header */}
+              <div className="flex items-center justify-between mb-12">
+                <h1 className="font-['Lexend_Deca'] font-extrabold text-2xl md:text-3xl text-gray-900 tracking-tight">Story Preview</h1>
+                <button 
+                  onClick={() => setShowPreviewModal(false)}
+                  className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-8 h-8" strokeWidth={2} />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
                 
-                {/* Mapel Chips */}
-                <div className="mb-6">
-                  <p className="text-[10px] font-['Lexend_Deca'] font-extrabold text-gray-400 uppercase tracking-[0.15em] mb-3">Mata Pelajaran <span className="text-red-400 font-bold">*</span></p>
-                  <div className="flex flex-wrap gap-2.5">
-                    {mataPelajaran.map((m) => (
-                      <button
-                        key={m.id}
-                        onClick={() => setMeta({ ...meta, mataPelajaran: m.name })}
-                        className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-['Manrope'] font-semibold border transition-all duration-200 ${
-                          meta.mataPelajaran === m.name
-                            ? 'bg-primary text-white border-primary shadow-md shadow-primary/25 scale-[1.02]'
-                            : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm'
-                        }`}
-                      >
-                        <span className="text-base">{m.icon}</span>
-                        {m.name}
-                      </button>
-                    ))}
+                {/* Left Side: Thumbnail Preview */}
+                <div className="flex-1 max-w-xl">
+                  <div className={`w-full aspect-video bg-gray-50 rounded-2xl bg-gray-100/80 mb-4 flex flex-col items-center justify-center text-center p-8 border border-gray-200/50 relative overflow-hidden group ${isCropping ? 'ring-4 ring-primary' : ''}`}>
+                    {isCropping && extractedThumbnail ? (
+                      <div className="absolute inset-0 z-20 bg-black">
+                        <Cropper
+                          image={extractedThumbnail}
+                          crop={crop}
+                          zoom={zoom}
+                          aspect={16 / 9}
+                          onCropChange={setCrop}
+                          onCropComplete={(croppedArea, croppedAreaPixels) => setCroppedAreaPixels(croppedAreaPixels as any)}
+                          onZoomChange={setZoom}
+                        />
+                        <div className="absolute bottom-4 right-4 z-30 flex gap-2">
+                           <button onClick={() => setIsCropping(false)} className="px-3 py-1.5 bg-gray-900/50 text-white rounded text-xs font-bold hover:bg-gray-900/80 transition-colors">Batal</button>
+                           <button onClick={handleApplyCrop} className="px-3 py-1.5 bg-primary text-white rounded text-xs font-bold shadow-md hover:bg-primary/90 transition-colors">Terapkan Crop</button>
+                        </div>
+                      </div>
+                    ) : finalThumbnail || extractedThumbnail ? (
+                      <img src={finalThumbnail || extractedThumbnail!} alt="Thumbnail" className={`absolute inset-0 w-full h-full ${thumbnailFit === 'cover' ? 'object-cover' : 'object-contain'}`} />
+                    ) : (
+                      <>
+                        <h4 className="font-['Manrope'] font-semibold text-gray-500 mb-2">Include a high-quality image in your story to make it more inviting to readers.</h4>
+                        <p className="text-xs text-gray-400 font-['Manrope']">Gambar yang kamu tambahkan di dalam tulisan otomatis akan tampil di sini.</p>
+                      </>
+                    )}
+
+                    {!isCropping && extractedThumbnail && (
+                      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                         <div className="bg-white/95 backdrop-blur-md rounded-lg shadow-sm border border-gray-200 p-1 flex gap-1">
+                            <button onClick={() => { setFinalThumbnail(extractedThumbnail); setThumbnailFit('contain'); }} className={`px-2.5 py-1 text-[11px] font-bold rounded-md transition-colors ${thumbnailFit==='contain' && finalThumbnail === extractedThumbnail ? 'bg-gray-900 text-white':'text-gray-500 hover:bg-gray-100'}`}>Tampil Utuh</button>
+                            <button onClick={() => setIsCropping(true)} className="px-2.5 py-1 text-[11px] font-bold rounded-md bg-white text-gray-900 border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors">Sesuaikan Ruang Crop</button>
+                         </div>
+                      </div>
+                    )}
                   </div>
+
+                  {/* Thumbnail Selector Carousel */}
+                  {!isCropping && availableImages.length > 1 && (
+                    <div className="mb-4 animate-in fade-in zoom-in-95 duration-300">
+                      <p className="text-[13px] font-['Lexend_Deca'] font-extrabold text-gray-900 mb-2.5">Pilih Sampul Khusus</p>
+                      <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                         {availableImages.map((img, idx) => (
+                             <button 
+                               key={idx}
+                               onClick={() => handleSelectImage(idx)}
+                               className={`w-[88px] h-[52px] shrink-0 rounded-[10px] overflow-hidden border-2 transition-all duration-200 cursor-pointer ${selectedImageIndex === idx ? 'border-primary ring-2 ring-primary/30 scale-[1.02] shadow-sm' : 'border-transparent opacity-60 hover:opacity-100 hover:scale-[1.02]'}`}
+                               title={`Gambar ${idx+1}`}
+                             >
+                                <img src={img} alt={`Pilihan Thumbnail ${idx+1}`} className="w-full h-full object-cover" />
+                             </button>
+                         ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-4 font-['Manrope'] text-gray-500 border-b border-gray-100 pb-6 group">
+                    <div className="relative">
+                      <input 
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Ubah judul catatan..."
+                        className="w-full font-['Lexend_Deca'] text-xl font-bold text-gray-900 mb-1 border-b border-transparent hover:border-gray-300 focus:border-primary focus:outline-none bg-transparent transition-colors py-1"
+                      />
+                      <textarea 
+                        value={previewDescription}
+                        onChange={(e) => {
+                           setPreviewDescription(e.target.value);
+                           setDescriptionEdited(true);
+                        }}
+                        placeholder="Tulis subjudul/ringkasan singkat yang menarik..."
+                        className="w-full text-sm leading-relaxed border-b border-transparent hover:border-gray-300 focus:border-primary focus:outline-none bg-transparent transition-colors resize-none overflow-hidden min-h-[60px]"
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                  <p className="text-[13px] text-gray-400 font-['Manrope'] font-medium mt-4">
+                    Note: Perubahan metadata di sini akan memengaruhi cara catatanmu ditemukan oleh pelajar lain di Ba-Yu.
+                  </p>
                 </div>
 
-                {/* Detail Row */}
-                <div className="flex flex-wrap items-end gap-3 mb-5">
-                  <div className="flex-1 min-w-[120px]">
-                    <p className="text-[10px] font-['Lexend_Deca'] font-extrabold text-gray-400 uppercase tracking-[0.15em] mb-2">Jenjang Pendidikan</p>
-                    <div className="flex gap-2">
+                {/* Right Side: Meta Inputs */}
+                <div className="w-full lg:w-[400px] shrink-0">
+                  
+                  {/* Mapel Row */}
+                  <div className="mb-8">
+                     <p className="font-['Lexend_Deca'] font-bold text-gray-900 text-[15px] mb-2">Kategori Mapel <span className="text-red-500">*</span></p>
+                     <p className="text-[13px] text-gray-500 font-['Manrope'] mb-3">Bantu pelajar menemukan catatan spesifik.</p>
+                     
+                     {/* Horizontal Scroll for Mapel - cleaner UX */}
+                     <div className="flex overflow-x-auto no-scrollbar gap-2 pb-2 -mx-2 px-2">
+                      {mataPelajaran.map((m) => (
+                        <button
+                          key={m.id}
+                          onClick={() => setMeta({ ...meta, mataPelajaran: m.name })}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-['Manrope'] font-semibold border transition-all duration-200 shrink-0 ${
+                            meta.mataPelajaran === m.name
+                              ? 'bg-primary text-white border-primary shadow-md shadow-primary/25'
+                              : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          <span>{m.icon}</span> {m.name}
+                        </button>
+                      ))}
+                     </div>
+                  </div>
+
+                  {/* Pendidikan & Kelas Row */}
+                  <div className="mb-8">
+                     <p className="font-['Lexend_Deca'] font-bold text-gray-900 text-[15px] mb-2">Tingkat Pendidikan</p>
+                     <p className="text-[13px] text-gray-500 font-['Manrope'] mb-3">Tentukan audiens kelas sasaran catatan ini.</p>
+                     
+                     <div className="flex gap-2 flex-wrap mb-3">
                       {jenjangOptions.map((j) => (
                         <button
                           key={j.id}
                           onClick={() => setMeta({ ...meta, jenjang: j.id, kelas: j.kelas[0], semester: 1 })}
-                          className={`px-4 py-2 rounded-xl text-[11px] font-['Lexend_Deca'] font-bold border transition-all duration-300 ${
+                          className={`px-3 py-1 rounded-full text-[12px] font-['Lexend_Deca'] font-bold border transition-all duration-200 ${
                             meta.jenjang === j.id
                               ? 'bg-gray-900 text-white border-gray-900 shadow-md shadow-gray-900/10'
-                              : 'bg-white text-gray-400 border-gray-200 hover:border-gray-300 hover:text-gray-600'
+                              : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:text-gray-700'
                           }`}
                         >
                           {j.label}
                         </button>
                       ))}
-                    </div>
+                     </div>
+
+                     <div className="flex gap-3">
+                        <select
+                          value={meta.kelas}
+                          onChange={(e) => setMeta({ ...meta, kelas: e.target.value })}
+                          className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-['Manrope'] font-semibold focus:outline-none focus:border-primary transition-all cursor-pointer"
+                        >
+                          {kelasOptions.map((k) => (
+                            <option key={k} value={k}>{meta.jenjang === 'Kuliah' ? k : `Kelas ${k}`}</option>
+                          ))}
+                        </select>
+
+                        <select
+                          value={meta.semester}
+                          onChange={(e) => setMeta({ ...meta, semester: parseInt(e.target.value) })}
+                          className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-['Manrope'] font-semibold focus:outline-none focus:border-primary transition-all cursor-pointer"
+                        >
+                          {Array.from({ length: maxSemester }, (_, i) => i + 1).map((s) => (
+                            <option key={s} value={s}>Semester {s}</option>
+                          ))}
+                        </select>
+                     </div>
                   </div>
 
-                  <div className="min-w-[110px]">
-                    <p className="text-[10px] font-['Lexend_Deca'] font-extrabold text-gray-400 uppercase tracking-[0.15em] mb-2">{kelasLabel}</p>
-                    <select
-                      value={meta.kelas}
-                      onChange={(e) => setMeta({ ...meta, kelas: e.target.value })}
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-['Manrope'] font-semibold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
-                    >
-                      {kelasOptions.map((k) => (
-                        <option key={k} value={k}>{meta.jenjang === 'Kuliah' ? k : `Kelas ${k}`}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="min-w-[140px]">
-                    <p className="text-[10px] font-['Lexend_Deca'] font-extrabold text-gray-400 uppercase tracking-[0.15em] mb-2">Pilih Semester</p>
-                    <select
-                      value={meta.semester}
-                      onChange={(e) => setMeta({ ...meta, semester: parseInt(e.target.value) })}
-                      className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-[13px] font-['Lexend_Deca'] font-bold focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary/40 transition-all appearance-none cursor-pointer"
-                    >
-                      {Array.from({ length: maxSemester }, (_, i) => i + 1).map((s) => (
-                        <option key={s} value={s}>Semester {s}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Tags */}
-                <div>
-                  <p className="text-[10px] font-['Lexend_Deca'] font-extrabold text-gray-400 uppercase tracking-[0.15em] mb-2">Tag & Keyword</p>
-                  <div className="flex items-center gap-2.5 flex-wrap">
+                  {/* Tags Row */}
+                  <div className="mb-10">
+                    <p className="font-['Lexend_Deca'] font-bold text-gray-900 text-[15px] mb-2">Tags / Keywords</p>
+                    <p className="text-[13px] text-gray-500 font-['Manrope'] mb-3">Tambahkan hingga 5 kata kunci agar mudah dicari.</p>
+                    
                     <input
                       type="text"
                       value={tagInput}
                       onChange={(e) => setTagInput(e.target.value)}
                       onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddTag(); }}}
-                      placeholder="Contoh: Logaritma, Kalkulus..."
-                      className="flex-1 min-w-[180px] px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-[13px] font-['Manrope'] font-semibold focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary/40 transition-all"
+                      placeholder="Add a topic (press Enter)..."
+                      className="w-full px-4 py-3 bg-gray-50 border border-transparent hover:border-gray-200 rounded-lg text-[14px] font-['Manrope'] focus:outline-none focus:bg-white focus:border-primary/50 transition-all mb-3"
                     />
-                    {meta.tags.map((tag) => (
-                      <span key={tag} className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-primary/5 text-primary rounded-xl text-[11px] font-['Lexend_Deca'] font-extrabold shrink-0 border border-primary/10 animate-in fade-in zoom-in-90 duration-300">
-                        #{tag}
-                        <button onClick={() => handleRemoveTag(tag)} className="hover:text-red-500 transition-colors">
-                          <X className="w-3 h-3" strokeWidth={3} />
-                        </button>
-                      </span>
-                    ))}
+                    
+                    <div className="flex flex-wrap gap-2">
+                       {meta.tags.map((tag) => (
+                        <span key={tag} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 text-gray-600 rounded text-[12px] font-['Manrope'] font-semibold shrink-0">
+                          {tag}
+                          <button onClick={() => handleRemoveTag(tag)} className="hover:text-red-500 transition-colors">
+                            <X className="w-3.5 h-3.5" strokeWidth={2.5} />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Publish Area */}
+                  <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
+                     <button
+                        onClick={handleSubmit}
+                        disabled={!canPublishFinal || isSubmitting}
+                        className="bg-emerald-600 text-white px-7 py-2 rounded-full text-[14px] font-['Manrope'] font-bold disabled:opacity-40 hover:bg-emerald-700 transition-colors cursor-pointer"
+                     >
+                        {isSubmitting ? 'Publishing...' : 'Publish now'}
+                     </button>
+                     <button className="text-[14px] font-['Manrope'] text-gray-500 hover:text-gray-900 transition-colors">
+                        Simpan draf
+                     </button>
                   </div>
                 </div>
 
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Writing Area — centered and padded for plus button */}
         <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 sm:pl-16 relative">
@@ -661,8 +1055,46 @@ export default function UploadPage() {
               .notion-editor .ql-editor h1 { font-family: 'Lexend Deca', sans-serif; font-size: 1.75em; font-weight: 700; margin: 1em 0 0.4em; color: #111827; }
               .notion-editor .ql-editor h2 { font-family: 'Lexend Deca', sans-serif; font-size: 1.35em; font-weight: 700; margin: 0.8em 0 0.3em; color: #1f2937; }
               .notion-editor .ql-editor h3 { font-family: 'Lexend Deca', sans-serif; font-size: 1.15em; font-weight: 600; margin: 0.6em 0 0.3em; color: #374151; }
-              .notion-editor .ql-editor p { margin-bottom: 0.5em; }
-              .notion-editor .ql-editor img { border-radius: 12px; margin: 1.5em 0; max-width: 100%; }
+              .notion-editor .ql-editor p { margin-bottom: 0.5em; position: relative; }
+              /* Caption Placeholder via CSS */
+              .notion-editor .ql-editor p:has(img) + p.ql-align-center:has(> br:only-child)::before,
+              .notion-editor .ql-editor .ql-video + p.ql-align-center:has(> br:only-child)::before {
+                 content: "Type caption for image (optional)";
+                 color: #9ca3af;
+                 display: block;
+                 text-align: center;
+                 font-style: italic;
+                 font-size: 0.9em;
+                 pointer-events: none;
+              }
+              .notion-editor .ql-editor img, .notion-editor .ql-editor .ql-video { 
+                  border-radius: 12px; 
+                  display: block !important; 
+                  margin-left: auto !important; 
+                  margin-right: auto !important; 
+                  margin-top: 2em !important; 
+                  margin-bottom: 0.5em !important; 
+                  cursor: pointer; 
+                  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+              }
+              /* Layout Modifications */
+              .notion-editor .ql-editor img[data-layout="inline"] {
+                  max-width: 70%;
+              }
+              .notion-editor .ql-editor img[data-layout="wide"] {
+                  max-width: 100%;
+                  width: 100%;
+              }
+              .notion-editor .ql-editor img[data-layout="fullBleed"] {
+                  max-width: none;
+                  width: 100vw !important;
+                  margin-left: 50% !important;
+                  transform: translateX(-50%);
+                  border-radius: 0;
+                  height: auto;
+                  object-fit: contain;
+                  max-height: 85vh;
+              }
               .notion-editor .ql-editor ul, .notion-editor .ql-editor ol { padding-left: 1.5em; }
               .notion-editor .ql-editor li { margin-bottom: 0.3em; }
               .notion-editor .ql-editor .ql-formula { padding: 3px 8px; background: #faf5ff; border-radius: 6px; border: 1px solid #e9d5ff; color: #7c3aed; }
@@ -686,6 +1118,9 @@ export default function UploadPage() {
 
           {/* Floating Toolbar (appears on text selection) */}
           <FloatingToolbar quillRef={quillRef} />
+
+          {/* Floating Image Toolbar */}
+          <FloatingImageToolbar quillRef={quillRef} onEditAlt={(index, text) => setAltModalParams({ index, text })} />
 
           {/* Plus Button (appears on empty lines) */}
           <PlusButton quillRef={quillRef} onFormulaClick={() => setShowFormulaModal(true)} />
@@ -769,11 +1204,42 @@ export default function UploadPage() {
           </div>
         )}
 
+        {/* Alt Text Modal */}
+        {altModalParams && (
+          <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setAltModalParams(null)}>
+            <div className="bg-white rounded-2xl w-full max-w-md shadow-xl" onClick={(e) => e.stopPropagation()}>
+              <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+                <div>
+                  <h3 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900">Alternative text</h3>
+                  <p className="text-[13px] font-['Manrope'] text-gray-400 mt-1">Deskripsikan gambar ini untuk pembaca dengan gangguan penglihatan</p>
+                </div>
+                <button onClick={() => setAltModalParams(null)} className="p-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors"><X className="w-5 h-5"/></button>
+              </div>
+              <div className="p-5">
+                <textarea 
+                  value={altModalParams.text}
+                  onChange={(e) => setAltModalParams({ ...altModalParams, text: e.target.value })}
+                  placeholder="Contoh: Seorang guru sedang mengajar di depan kelas yang berisi murid-murid..."
+                  className="w-full h-32 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-['Manrope'] focus:outline-none focus:border-primary resize-none"
+                />
+              </div>
+              <div className="p-4 border-t border-gray-100 flex justify-end gap-2">
+                <button onClick={() => setAltModalParams(null)} className="px-5 py-2 text-sm font-['Manrope'] font-semibold text-gray-500 hover:bg-gray-50 rounded-xl transition-colors">Batal</button>
+                <button onClick={() => {
+                  const quill = quillRef.current?.getEditor();
+                  if (quill) quill.formatText(altModalParams.index, 1, 'alt', altModalParams.text);
+                  setAltModalParams(null);
+                }} className="px-5 py-2 bg-emerald-600 text-white rounded-xl text-sm font-['Manrope'] font-semibold hover:bg-emerald-700 transition-colors shadow-sm">Simpan</button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Bottom hint — sticky so it respects sidebar layout */}
-        {!canPublish && (
+        {!canOpenPreview && (
           <div className="sticky bottom-0 bg-white/90 backdrop-blur-md border-t border-gray-100 py-3 z-10 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <p className="text-sm font-['Manrope'] text-gray-400 text-center px-4">
-              {!title.trim() ? '✏️  Mulai dengan menulis judul' : !hasContent ? '📝  Tulis isi catatan' : !meta.mataPelajaran ? '🏷️  Pilih kategori mapel dulu sebelum publish' : ''}
+              {!title.trim() ? '✏️  Mulai dengan menulis judul' : !hasContent ? '📝  Tulis isi catatan' : ''}
             </p>
           </div>
         )}

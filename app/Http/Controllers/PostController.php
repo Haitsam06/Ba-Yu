@@ -12,7 +12,8 @@ class PostController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Post::with(['user', 'topic', 'category', 'comments', 'likes'])->where('visibility', 'public');
+        $query = Post::with(['user', 'topic', 'category', 'comments', 'likes'])
+            ->where('visibility', 'public');
 
         if ($request->has('is_verified')) {
             $isVerified = filter_var($request->query('is_verified'), FILTER_VALIDATE_BOOLEAN);
@@ -25,6 +26,19 @@ class PostController extends Controller
 
         $posts = $query->orderBy('created_at', 'desc')->get();
 
+        // Compute real counts from loaded relations and auto-sync
+        $posts->each(function ($post) {
+            $realLikes = $post->likes ? $post->likes->count() : 0;
+            $realComments = $post->comments ? $post->comments->count() : 0;
+
+            // Overwrite with real counts
+            $post->likes_count = $realLikes;
+            $post->comments_count = $realComments;
+            if ($post->isDirty(['likes_count', 'comments_count'])) {
+                $post->save();
+            }
+        });
+
         return response()->json([
             'message' => 'Berhasil mengambil daftar post',
             'data' => $posts
@@ -35,11 +49,14 @@ class PostController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
+            'description' => 'nullable|string',
             'mapel' => 'nullable|string',
             'jenjang' => 'nullable|string',
             'kelas' => 'nullable|string',
             'semester' => 'nullable|string',
             'tags' => 'nullable|array',
+            'thumbnail' => 'nullable|string',
+            'thumbnail_fit' => 'nullable|in:cover,contain',
             'topic_id' => 'nullable|string',
             'category_id' => 'nullable|string',
             'visibility' => 'in:public,private',
@@ -49,11 +66,14 @@ class PostController extends Controller
             'user_id' => Auth::id(),
             'title' => $request->title,
             'content' => $request->content,
+            'description' => $request->description,
             'mapel' => $request->mapel,
             'jenjang' => $request->jenjang,
             'kelas' => $request->kelas,
             'semester' => $request->semester,
             'tags' => $request->tags ?? [],
+            'thumbnail' => $request->thumbnail,
+            'thumbnail_fit' => $request->thumbnail_fit ?? 'cover',
             'topic_id' => $request->topic_id,
             'category_id' => $request->category_id,
             'visibility' => $request->visibility ?? 'public',
@@ -84,6 +104,16 @@ class PostController extends Controller
 
         if (!$post) {
             return response()->json(['message' => 'Post tidak ditemukan'], 404);
+        }
+
+        // Sync real counts from relations
+        $realLikes = $post->likes ? $post->likes->count() : 0;
+        $realComments = $post->comments ? $post->comments->count() : 0;
+
+        $post->likes_count = $realLikes;
+        $post->comments_count = $realComments;
+        if ($post->isDirty(['likes_count', 'comments_count'])) {
+            $post->save();
         }
 
         return response()->json([

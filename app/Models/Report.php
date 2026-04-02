@@ -12,6 +12,7 @@ class Report extends Model
     protected $fillable = [
         'reporter_id',
         'post_id',
+        'comment_id',
         'reason',
         'description',
         'status',

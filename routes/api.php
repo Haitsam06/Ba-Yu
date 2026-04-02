@@ -12,9 +12,13 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BookmarkController;
 
 Route::post('/v1/register', [AuthController::class, 'register']);
 Route::post('/v1/login', [AuthController::class, 'login']);
+
+Route::get('/v1/posts', [PostController::class, 'index']);
+Route::get('/v1/posts/{id}', [PostController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -26,9 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/v1/notifikasi/{id}/read', [NotificationController::class, 'markAsRead']);
 
     // Posts
-    Route::get('/v1/posts', [PostController::class, 'index']);
     Route::post('/v1/posts', [PostController::class, 'store']);
-    Route::get('/v1/posts/{id}', [PostController::class, 'show']);
     Route::delete('/v1/posts/{id}', [PostController::class, 'destroy']);
 
     // Verify
@@ -41,6 +43,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Likes
     Route::post('/v1/posts/{postId}/like', [LikeController::class, 'toggle']);
     Route::post('/v1/comments/{commentId}/like', [LikeController::class, 'toggleCommentLike']);
+
+    // Bookmarks
+    Route::post('/v1/posts/{postId}/bookmark', [BookmarkController::class, 'toggle']);
+    Route::get('/v1/bookmarks', [BookmarkController::class, 'index']);
 
     // Reports
     Route::post('/v1/posts/{postId}/report', [ReportController::class, 'store']);

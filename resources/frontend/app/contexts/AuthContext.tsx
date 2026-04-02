@@ -46,8 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const response = await axios.get('/api/user');
         setUser({
           ...response.data,
-          jenjang_pendidikan: response.data.jenjang_pendidikan || 'SMP',
-          avatar: response.data.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400'
+          jenjang_pendidikan: response.data.jenjang_pendidikan || 'SMP'
         });
       } catch (error) {
         console.error('Failed to load user', error);
@@ -73,10 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('bayu-token', access_token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
       
-      setUser({
-        ...userData,
-        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400'
-      });
+      setUser(userData);
       return null;
     } catch (error: any) {
       console.error('Login failed', error);
@@ -98,10 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('bayu-token', access_token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
       
-      setUser({
-        ...userData,
-        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400'
-      });
+      setUser(userData);
       return null;
     } catch (error: any) {
       console.error('Registration failed', error);

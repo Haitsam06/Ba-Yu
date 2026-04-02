@@ -1,17 +1,54 @@
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { MobileLayout } from '../components/MobileLayout';
-import { Bookmark, Star, LayoutGrid, Clock, ChevronRight, Eye } from 'lucide-react';
-import { mockNotes, getUserById, mockUsers, mataPelajaran, Note } from '../data/mockData';
+import { Bookmark, Star, LayoutGrid, Clock, ChevronRight, Eye, Heart, MessageCircle } from 'lucide-react';
+import { mataPelajaran } from '../data/mockData';
 import { Link } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
-import { useState } from 'react';
+import { useBookmarks } from '../contexts/BookmarkContext';
 
 export default function HomePage() {
   const { user } = useAuth();
+  const { isBookmarked, toggleBookmark } = useBookmarks();
+  const [notes, setNotes] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get('/api/v1/posts');
+        setNotes(response.data.data || []);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  // Format array fallback if API fields are missing or empty
+  const formattedNotes = notes.map(note => ({
+    ...note,
+    id: note._id || note.id,
+    author: note.user ? { ...note.user, avatar: note.user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400' } : { name: 'Anonim', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400' },
+    createdAt: note.created_at,
+    thumbnail: note.thumbnail || null,
+    views: note.views || 0,
+    rating: note.rating || 5,
+    description: note.content ? note.content.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...' : 'Tidak ada deskripsi',
+    mataPelajaran: note.mapel || 'Lainnya',
+    jenjang: note.jenjang || '-',
+    kelas: note.kelas || '-',
+    likes: note.likes_count || 0,
+    comments: note.comments_count || 0
+  }));
   
   // Destructure content
-  const heroNote = mockNotes[0];
-  const feedNotes = mockNotes.slice(1, 10);
-  const trendingNotes = [...mockNotes].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 5);
+  const heroNote = formattedNotes[0];
+  const feedNotes = formattedNotes.slice(1, 10);
+  const trendingNotes = [...formattedNotes].sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0)).slice(0, 5);
 
   return (
     <MobileLayout>
@@ -67,9 +104,9 @@ export default function HomePage() {
                         <div className="flex items-center justify-between mt-auto">
                            <div className="flex items-center gap-3">
                               {(() => {
-                                 const hAuthor = getUserById(heroNote.authorId);
+                                 const hAuthor = heroNote.author;
                                  return (
-                                   <Link to={`/profile/${hAuthor?.id}`} className="flex items-center gap-3 group/hauth">
+                                   <Link to={`/profile/${hAuthor?.id || hAuthor?._id}`} className="flex items-center gap-3 group/hauth">
                                       <img src={hAuthor?.avatar} alt={hAuthor?.name} className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-50 group-hover/hauth:ring-primary/30 transition-all" />
                                       <div className="flex flex-col">
                                          <span className="text-[14px] font-['Lexend_Deca'] font-bold text-gray-900 tracking-tight group-hover/hauth:underline">
@@ -90,15 +127,17 @@ export default function HomePage() {
                      </div>
                      
                      {/* Hero Image */}
-                     <div className="w-full md:w-[45%] h-[240px] md:h-[320px] overflow-hidden relative shrink-0 rounded-2xl">
-                        <Link to={`/note/${heroNote.id}`} className="block w-full h-full">
-                           <img 
-                             src={heroNote.thumbnail} 
-                             alt={heroNote.title} 
-                             className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700 ease-out" 
-                           />
-                        </Link>
-                     </div>
+                     {heroNote.thumbnail && (
+                        <div className="w-full md:w-[45%] h-[240px] md:h-[320px] overflow-hidden relative shrink-0 rounded-2xl">
+                           <Link to={`/note/${heroNote.id}`} className="block w-full h-full">
+                              <img 
+                                src={heroNote.thumbnail} 
+                                alt={heroNote.title} 
+                                className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700 ease-out" 
+                              />
+                           </Link>
+                        </div>
+                     )}
                 </div>
               )}
 
@@ -112,61 +151,78 @@ export default function HomePage() {
 
               <div className="flex flex-col">
                  {feedNotes.map((note) => {
-                   const author = getUserById(note.authorId);
+                   const author = note.author;
                    return (
                      <article key={note.id} className="group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-8 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors">
                         
                         {/* Feed Text */}
                         <div className="flex-1 min-w-0 flex flex-col w-full">
+                           {/* Author Header */}
+                           <div className="flex items-center gap-2 mb-3 flex-wrap">
+                              <Link to={`/profile/${author?.id || author?._id}`} className="flex items-center gap-2 group/author outline-none">
+                                <img src={author?.avatar} alt={author?.name} className="w-[24px] h-[24px] rounded-full object-cover ring-2 ring-transparent group-hover/author:ring-primary/20 transition-all" />
+                                <span className="text-[13px] font-medium text-gray-900 group-hover/author:underline">{author?.name}</span>
+                              </Link>
+                              <span className="text-gray-300 text-[10px] hidden sm:inline-block">•</span>
+                              <span className="text-[12px] font-semibold text-primary/80 bg-primary/5 px-2 py-0.5 rounded-md hidden sm:inline-block">
+                                {note.mataPelajaran}
+                              </span>
+                              <span className="text-[12px] font-medium text-gray-500 bg-gray-50 px-2 py-0.5 rounded-md hidden sm:inline-block">
+                                {note.jenjang === 'Kuliah' ? `${note.kelas} Semester ${note.semester || 1}` : `${note.jenjang} Kelas ${note.kelas}`}
+                              </span>
+                           </div>
                            
                            {/* Title */}
-                           <Link to={`/note/${note.id}`} className="block mb-2.5 outline-none font-['Lexend_Deca']">
+                           <Link to={`/note/${note.id}`} className="block mb-2 outline-none font-['Lexend_Deca']">
                              <h2 className="text-[20px] md:text-[22px] font-extrabold text-gray-900 leading-[1.25] tracking-tight group-hover:text-primary transition-colors line-clamp-2">
                                {note.title}
                              </h2>
                            </Link>
 
                            {/* Excerpt */}
-                           <p className="text-[15px] font-['Manrope'] font-medium text-gray-500 line-clamp-2 leading-relaxed mb-5 pr-2">
+                           <p className="text-[15px] font-['Manrope'] text-gray-500 line-clamp-2 leading-relaxed mb-6 pr-2">
                                {note.description}
                            </p>
 
-                           {/* Meta & Author Footer */}
+                           {/* Meta Footer (Medium Style) */}
                            <div className="flex items-center justify-between mt-auto">
-                              <Link to={`/profile/${author?.id}`} className="flex items-center gap-2.5 group/author outline-none">
-                                <img src={author?.avatar} alt={author?.name} className="w-[28px] h-[28px] rounded-full object-cover ring-2 ring-transparent group-hover/author:ring-primary/20 transition-all" />
-                                <div className="flex flex-col">
-                                   <span className="text-[13px] font-['Lexend_Deca'] font-bold text-gray-900 tracking-tight group-hover/author:underline">{author?.name}</span>
-                                   <span className="text-[11px] font-['Manrope'] font-semibold text-gray-400">{new Date(note.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
-                                </div>
-                              </Link>
+                              <div className="flex items-center gap-1.5 text-gray-500">
+                                 <Star className="w-[14px] h-[14px] text-amber-500 fill-amber-500" strokeWidth={1} />
+                                 <span className="text-[13px] font-['Manrope'] font-medium">
+                                   {new Date(note.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                 </span>
+                              </div>
                               
-                              <div className="flex items-center gap-3">
-                                 <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors" title={`${note.views} kali dilihat`}>
-                                   <Eye className="w-[14px] h-[14px]" strokeWidth={2} />
-                                   <span className="text-[12px] font-['Lexend_Deca'] font-bold text-gray-700">{note.views}</span>
+                              <div className="flex items-center gap-3 shrink-0 ml-4">
+                                 <div className="flex items-center gap-1.5 text-gray-500 hover:text-red-500 transition-colors" title={`${note.likes} suka`}>
+                                   <Heart className="w-[15px] h-[15px]" strokeWidth={2} />
+                                   <span className="text-[13px] font-['Manrope'] font-medium">{note.likes}</span>
                                  </div>
-                                 <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-lg" title={`Rating ${note.rating || '4.0'}`}>
-                                   <Star className="w-[14px] h-[14px] text-amber-500 fill-amber-500" />
-                                   <span className="text-[12px] font-['Lexend_Deca'] font-bold text-gray-700">{note.rating || '4.0'}</span>
+                                 <div className="flex items-center gap-1.5 text-gray-500 hover:text-gray-900 transition-colors" title={`${note.comments} komentar`}>
+                                   <MessageCircle className="w-[15px] h-[15px]" strokeWidth={2} />
+                                   <span className="text-[13px] font-['Manrope'] font-medium">{note.comments}</span>
                                  </div>
-                                 <button aria-label="Save" className="opacity-0 md:opacity-100 p-1.5 rounded-full text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors outline-none md:group-hover:opacity-100">
-                                    <Bookmark className="w-[18px] h-[18px]" strokeWidth={2} />
+                                 <button aria-label="Save" onClick={() => toggleBookmark(note.id)} className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? 'text-primary scale-110' : 'opacity-0 md:opacity-100 text-gray-400 hover:text-primary md:group-hover:opacity-100'}`}>
+                                     <Bookmark className={`w-[18px] h-[18px] transition-all duration-300 ${isBookmarked(note.id) ? 'fill-primary' : ''}`} strokeWidth={1.5} />
                                  </button>
                               </div>
                            </div>
                         </div>
 
                         {/* Thumbnail */}
-                        <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-gray-100 relative shadow-sm">
-                           <Link to={`/note/${note.id}`} className="block w-full h-full outline-none">
-                             <img src={note.thumbnail} alt={note.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
-                             {/* Floating badge top right */}
-                             <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
-                               <Clock className="w-3 h-3" /> 5m
-                             </div>
-                           </Link>
-                        </div>
+                        {note.thumbnail ? (
+                           <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-gray-100 relative shadow-sm">
+                              <Link to={`/note/${note.id}`} className="block w-full h-full outline-none">
+                                <img src={note.thumbnail} alt={note.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
+                                {/* Floating badge top right */}
+                                <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
+                                  <Clock className="w-3 h-3" /> 5m
+                                </div>
+                              </Link>
+                           </div>
+                        ) : (
+                           <div className="hidden sm:block sm:w-[160px] md:w-[200px] shrink-0 pointer-events-none"></div>
+                        )}
                      </article>
                    );
                  })}
@@ -193,7 +249,7 @@ export default function HomePage() {
                    
                    <div className="flex flex-col gap-6">
                       {trendingNotes.map((trend, idx) => {
-                        const tAuth = getUserById(trend.authorId);
+                        const tAuth = trend.author;
                         return (
                            <div key={trend.id} className="group relative flex gap-4 items-start">
                               {/* Giant Watermark Number */}
@@ -204,7 +260,7 @@ export default function HomePage() {
                               </div>
                               
                               <div className="flex flex-col flex-1 min-w-0 pt-1.5">
-                                 <Link to={`/profile/${tAuth?.id}`} className="flex items-center gap-1.5 mb-2 hover:opacity-80 transition-opacity">
+                                 <Link to={`/profile/${tAuth?.id || tAuth?._id}`} className="flex items-center gap-1.5 mb-2 hover:opacity-80 transition-opacity">
                                    <img src={tAuth?.avatar} alt={tAuth?.name} className="w-[20px] h-[20px] rounded-[6px] object-cover" />
                                    <span className="font-['Lexend_Deca'] font-bold text-[13px] text-gray-700 truncate tracking-tight">{tAuth?.name}</span>
                                  </Link>

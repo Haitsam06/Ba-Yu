@@ -10,9 +10,9 @@ class NotificationController extends Controller
 {
     public function getNotifikasi()
     {
-        $user = Auth::user();
+        $userId = (string) Auth::id();
 
-        $notifikasi = Notification::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+        $notifikasi = Notification::where('user_id', $userId)->orderBy('created_at', 'desc')->get();
 
         return response()->json([
             'message' => 'Berhasil mengambil data notifikasi',
@@ -31,7 +31,7 @@ class NotificationController extends Controller
             return response()->json(['message' => 'Notifikasi tidak ditemukan'], 404);
         }
 
-        if ($notifikasi->user_id !== Auth::id()) {
+        if ($notifikasi->user_id !== (string) Auth::id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -42,7 +42,7 @@ class NotificationController extends Controller
 
     public function markAllAsRead()
     {
-        Notification::where('user_id', Auth::id())
+        Notification::where('user_id', (string) Auth::id())
             ->where('is_read', false)
             ->update(['is_read' => true]);
 

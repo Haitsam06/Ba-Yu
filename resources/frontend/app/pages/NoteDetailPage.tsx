@@ -3,9 +3,10 @@ import { MobileLayout } from '../components/MobileLayout';
 import { Navbar } from '../components/navbar';
 import { Footer } from '../components/footer';
 import { useParams, Link, useNavigate } from 'react-router';
-import { ArrowLeft, Share2, Bookmark, Heart, Eye, MessageCircle, Flag, Check, Star, DownloadCloud, LogIn, ArrowUp, Calendar, Clock, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Share2, Bookmark, Heart, Eye, MessageCircle, Flag, Check, Star, DownloadCloud, LogIn, ArrowUp, Calendar, Clock, ShieldCheck, MoreHorizontal, Trash2 } from 'lucide-react';
 import { getNoteById, getUserById, getCommentsByNoteId, mockNotes } from '../data/mockData';
 import { useAuth } from '../contexts/AuthContext';
+import { useBookmarks } from '../contexts/BookmarkContext';
 import { AuthModal } from '../components/auth-modal';
 import 'react-quill/dist/quill.snow.css'; // Just in case, though we apply custom styles
 import 'katex/dist/katex.min.css';
@@ -15,10 +16,38 @@ export default function NoteDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
+  const { isBookmarked, toggleBookmark } = useBookmarks();
   const [liked, setLiked] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
   const [commentText, setCommentText] = useState('');
+  const [replyingTo, setReplyingTo] = useState<{id: string, name: string} | null>(null);
+  const [replyText, setReplyText] = useState('');
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [activeCommentMenu, setActiveCommentMenu] = useState<string | null>(null);
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (!window.confirm('Apakah Anda yakin ingin menghapus komentar ini?')) return;
+    try {
+      const token = localStorage.getItem('bayu-token');
+      await axios.delete(`/api/v1/comments/${commentId}`, { headers: { Authorization: `Bearer ${token}` } });
+      
+      setComments(prev => {
+         const newComments = prev.filter(c => (c._id || c.id) !== commentId && c.parent_comment_id !== commentId);
+         const removedCount = prev.length - newComments.length;
+         setNote((n: any) => ({ ...n, comments: Math.max(0, n.comments - removedCount) }));
+         return newComments;
+      });
+    } catch (e: any) {
+      alert(e.response?.data?.message || 'Gagal menghapus komentar');
+    }
+  };
+
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportTarget, setReportTarget] = useState<{type: 'note'|'comment', id: string, title?: string} | null>(null);
+  const [reportReason, setReportReason] = useState('');
+  const [reportDescription, setReportDescription] = useState('');
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [isSubmittingReply, setIsSubmittingReply] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,10 +64,77 @@ export default function NoteDetailPage() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
 
-  const note = getNoteById(id || '');
-  const author = note ? getUserById(note.authorId) : null;
-  const comments = note ? getCommentsByNoteId(note.id) : [];
-  const validator = note?.validatedBy ? getUserById(note.validatedBy) : null;
+  const [note, setNote] = useState<any>(null);
+  const [author, setAuthor] = useState<any>(null);
+  const [comments, setComments] = useState<any[]>([]);
+  const [validator, setValidator] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (window.location.hash && comments.length > 0) {
+      setTimeout(() => {
+        const el = document.getElementById(window.location.hash.slice(1));
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.add('bg-indigo-50/50', 'transition-colors', 'duration-1000');
+          setTimeout(() => el.classList.remove('bg-indigo-50/50'), 2000);
+        }
+      }, 500); // give dom time to render
+    }
+  }, [comments, window.location.hash]);
+
+  useEffect(() => {
+    const fetchNoteDetail = async () => {
+      if (!id) return;
+      try {
+        const response = await axios.get(`/api/v1/posts/${id}`);
+        const n = response.data.data;
+        
+        setNote({
+          ...n,
+          id: n._id || n.id,
+          title: n.title,
+          content: n.content,
+          createdAt: n.created_at ? new Date(n.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : '',
+          thumbnail: n.thumbnail || null,
+          mataPelajaran: n.mapel || 'Umum',
+          jenjang: n.jenjang || '-',
+          kelas: n.kelas || '-',
+          semester: n.semester || '-',
+          isValidated: n.is_verified,
+          likes: n.likes_count || 0,
+          comments: n.comments_count || 0,
+          views: n.views || 0,
+          description: n.content ? n.content.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...' : ''
+        });
+        
+        setAuthor(n.user ? { 
+           ...n.user, 
+           avatar: n.user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400',
+           role: n.user.role || 'siswa',
+           totalCatatan: 0,
+           followers: 0,
+        } : { name: 'Anonim', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400', role: 'siswa', totalCatatan: 0, followers: 0 });
+        
+        // Handle comments logic if available, for now map simple
+        setComments(n.comments || []);
+        
+        if (user && n.likes) {
+           const isLiked = n.likes.some((l: any) => l.user_id === user.id || l.user_id === user._id);
+           setLiked(isLiked);
+        }
+        
+        if (n.is_verified) {
+           setValidator({ name: 'Tim Pakar Ba-Yu', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop' });
+        }
+      } catch (err) {
+        console.error('Error fetching note', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchNoteDetail();
+  }, [id]);
 
   const openAuthModal = (tab: 'login' | 'register') => {
     setAuthTab(tab);
@@ -53,10 +149,60 @@ export default function NoteDetailPage() {
     action();
   };
 
+  const SkeletonContainer = isAuthenticated 
+    ? ({children}: {children: React.ReactNode}) => <MobileLayout showBottomNav={false}>{children}</MobileLayout> 
+    : ({children}: {children: React.ReactNode}) => <div className="min-h-screen bg-white"><Navbar variant="default" />{children}</div>;
+
+  if (isLoading) {
+    return (
+      <SkeletonContainer>
+        <div className="max-w-3xl mx-auto px-5 lg:px-0 pt-10 sm:pt-20 pb-20 animate-pulse">
+          {/* Skeleton Title */}
+          <div className="h-10 sm:h-14 bg-gray-100 rounded-2xl w-3/4 mb-6"></div>
+          
+          {/* Skeleton Tags */}
+          <div className="flex gap-3 mb-8">
+             <div className="h-8 w-24 bg-gray-100 rounded-full"></div>
+             <div className="h-8 w-32 bg-gray-100 rounded-full"></div>
+             <div className="h-8 w-28 bg-gray-100 rounded-full hidden sm:block"></div>
+          </div>
+          
+          {/* Skeleton Author Info */}
+          <div className="flex items-center gap-4 py-4 mb-8">
+             <div className="w-12 h-12 rounded-full bg-gray-100 shrink-0"></div>
+             <div className="flex-1">
+                <div className="h-4 w-32 bg-gray-100 rounded mb-2"></div>
+                <div className="h-3 w-48 bg-gray-100 rounded"></div>
+             </div>
+          </div>
+
+          {/* Skeleton Interactivity Bar */}
+          <div className="flex items-center justify-between py-4 border-y border-gray-100/50 mb-10">
+             <div className="flex gap-6">
+                <div className="w-8 h-8 rounded-full bg-gray-50"></div>
+                <div className="w-8 h-8 rounded-full bg-gray-50"></div>
+             </div>
+          </div>
+
+          {/* Skeleton Content Body */}
+          <div className="space-y-4 mb-16">
+             <div className="h-4 bg-gray-50 rounded w-full"></div>
+             <div className="h-4 bg-gray-50 rounded w-[90%]"></div>
+             <div className="h-4 bg-gray-50 rounded w-[95%]"></div>
+             <div className="h-4 bg-gray-50 rounded w-3/4"></div>
+             <div className="h-40 bg-gray-50 rounded-xl w-full my-6"></div>
+             <div className="h-4 bg-gray-50 rounded w-full"></div>
+             <div className="h-4 bg-gray-50 rounded w-[85%]"></div>
+          </div>
+        </div>
+      </SkeletonContainer>
+    );
+  }
+
   if (!note || !author) {
     const notFoundContent = (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-gray-500 font-['Manrope']">Catatan tidak ditemukan</p>
+      <div className="flex items-center justify-center h-[60vh]">
+        <p className="text-gray-500 font-['Manrope']">Catatan tidak ditemukan atau telah dihapus.</p>
       </div>
     );
     if (isAuthenticated) return <MobileLayout showBottomNav={false}>{notFoundContent}</MobileLayout>;
@@ -69,14 +215,90 @@ export default function NoteDetailPage() {
     );
   }
 
-  const handleComment = () => {
-    if (!isAuthenticated) {
-      openAuthModal('login');
-      return;
-    }
-    if (commentText.trim()) {
+  const handleComment = async () => {
+    if (!isAuthenticated) return openAuthModal('login');
+    if (!commentText.trim() || isSubmittingComment) return;
+    setIsSubmittingComment(true);
+    try {
+      const token = localStorage.getItem('bayu-token');
+      const res = await axios.post(`/api/v1/posts/${id}/comments`, { content: commentText }, {
+         headers: { Authorization: `Bearer ${token}` }
+      });
+      const newComment = { ...res.data.data, user: user }; // inject user for UI
+      setComments((prev: any[]) => [...prev, newComment]);
       setCommentText('');
-      alert('Komentar berhasil ditambahkan!');
+      setNote((prev: any) => ({ ...prev, comments: prev.comments + 1 }));
+    } catch (e: any) {
+      alert(e.response?.data?.message || 'Gagal mengirim komentar');
+    } finally {
+      setIsSubmittingComment(false);
+    }
+  };
+
+  const handleReplySubmit = async (parentId: string) => {
+    if (!isAuthenticated) return openAuthModal('login');
+    if (!replyText.trim() || isSubmittingReply) return;
+    setIsSubmittingReply(true);
+    try {
+      const token = localStorage.getItem('bayu-token');
+      const res = await axios.post(`/api/v1/posts/${id}/comments`, { 
+         content: replyText,
+         parent_comment_id: parentId
+      }, {
+         headers: { Authorization: `Bearer ${token}` }
+      });
+      const newComment = { ...res.data.data, user: user };
+      setComments((prev: any[]) => [...prev, newComment]);
+      setReplyingTo(null);
+      setReplyText('');
+      setNote((prev: any) => ({ ...prev, comments: prev.comments + 1 }));
+    } catch (e: any) {
+      alert(e.response?.data?.message || 'Gagal mengirim balasan');
+    } finally {
+      setIsSubmittingReply(false);
+    }
+  };
+
+  const handleLikePost = async () => {
+    if (!isAuthenticated) return openAuthModal('login');
+    try {
+      const token = localStorage.getItem('bayu-token');
+      // Optimistic update
+      setLiked(prev => !prev);
+      setNote((prev: any) => ({ ...prev, likes: prev.likes + (!liked ? 1 : -1) }));
+
+      await axios.post(`/api/v1/posts/${id}/like`, {}, {
+         headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (e) {
+      console.error(e);
+      // Revert if error
+      setLiked(prev => !prev);
+      setNote((prev: any) => ({ ...prev, likes: Math.max(0, prev.likes + (liked ? 1 : -1)) }));
+    }
+  };
+
+  const handleReportSubmit = async () => {
+    if (!isAuthenticated) return openAuthModal('login');
+    if (!reportReason || !reportDescription) return alert('Mohon isi semua field!');
+    setIsSubmittingReport(true);
+    try {
+      const token = localStorage.getItem('bayu-token');
+      const url = reportTarget?.type === 'note' 
+        ? `/api/v1/posts/${reportTarget.id}/report`
+        : `/api/v1/comments/${reportTarget?.id}/report`;
+      
+      await axios.post(url, { reason: reportReason, description: reportDescription }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Laporan berhasil dikirim, terima kasih telah menjaga lingkungan hijau Ba-Yu!');
+      setShowReportModal(false);
+      setReportReason('');
+      setReportDescription('');
+    } catch (e: any) {
+      alert(e.response?.data?.message || 'Gagal mengirim laporan.');
+    } finally {
+      setIsSubmittingReport(false);
     }
   };
 
@@ -118,6 +340,7 @@ export default function NoteDetailPage() {
         .notion-reader .ql-editor h2 { font-family: 'Lexend Deca', sans-serif; font-size: 1.5em; font-weight: 700; margin: 1.5em 0 0.5em; color: #1f2937; letter-spacing: -0.01em; }
         .notion-reader .ql-editor h3 { font-family: 'Lexend Deca', sans-serif; font-size: 1.25em; font-weight: 600; margin: 1.2em 0 0.5em; color: #374151; }
         .notion-reader .ql-editor p { margin-bottom: 1.25em; }
+        .notion-reader .ql-editor p:has(img) { display: flex; justify-content: center; text-align: center; width: 100%; }
         .notion-reader .ql-editor b, .notion-reader .ql-editor strong { font-weight: 700; color: #111827; }
         .notion-reader .ql-editor img { border-radius: 12px; margin: 2em auto; display: block; max-width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #f3f4f6; }
         .notion-reader .ql-editor ul, .notion-reader .ql-editor ol { padding-left: 1.5em; margin-bottom: 1.25em; }
@@ -148,12 +371,18 @@ export default function NoteDetailPage() {
               <Share2 className="w-[18px] h-[18px]" />
             </button>
             <button
-              onClick={() => requireAuth(() => setBookmarked(!bookmarked))}
-              className={`p-2 rounded-full transition-colors ${bookmarked ? 'text-primary bg-primary/5 hover:bg-primary/10' : 'text-gray-400 hover:text-gray-700 hover:bg-gray-50'}`}
+              onClick={() => requireAuth(() => toggleBookmark(note.id))}
+              className={`p-2 rounded-full transition-colors ${isBookmarked(note.id) ? 'text-primary bg-primary/5 hover:bg-primary/10' : 'text-gray-400 hover:text-gray-700 hover:bg-gray-50'}`}
             >
-              <Bookmark className={`w-[18px] h-[18px] ${bookmarked ? 'fill-primary' : ''}`} />
+              <Bookmark className={`w-[18px] h-[18px] ${isBookmarked(note.id) ? 'fill-primary' : ''}`} />
             </button>
-            <button className="p-2 hover:bg-red-50 rounded-full transition-colors text-gray-400 hover:text-red-500">
+            <button 
+              onClick={() => requireAuth(() => {
+                setReportTarget({ type: 'note', id: note.id, title: note.title });
+                setShowReportModal(true);
+              })}
+              className="p-2 hover:bg-red-50 rounded-full transition-colors text-gray-400 hover:text-red-500"
+            >
               <Flag className="w-[18px] h-[18px]" />
             </button>
           </div>
@@ -162,25 +391,23 @@ export default function NoteDetailPage() {
 
       <article className="max-w-3xl mx-auto px-5 lg:px-0 pt-8 mt-2">
         
+        {/* Title */}
+        <h1 className="font-['Lexend_Deca'] font-extrabold text-[2.5rem] md:text-[3.25rem] text-gray-900 mb-4 leading-[1.12] tracking-tight">
+          {note.title}
+        </h1>
+        
         {/* Category & Tags (Substack / Medium style over title) */}
-        <div className="flex flex-wrap gap-2 mb-4 items-center">
-            <span className="text-[11px] font-['Manrope'] font-bold text-primary uppercase tracking-wider bg-primary/5 px-2.5 py-1 rounded-md">
+        <div className="flex flex-wrap gap-2.5 mb-8 items-center">
+            <span className="text-[12px] font-['Lexend_Deca'] font-bold text-primary uppercase tracking-widest bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
               {note.mataPelajaran}
             </span>
-            <span className="w-1 h-1 rounded-full bg-gray-300"></span>
-            <span className="text-[13px] font-['Manrope'] font-semibold text-gray-500">
-              Kelas {note.kelas} 
+            <span className="text-[14px] font-['Manrope'] font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+              {note.jenjang === 'Kuliah' ? `S${note.kelas || '1'}` : `${note.jenjang} Kelas ${note.kelas}`}
             </span>
-            <span className="w-1 h-1 rounded-full bg-gray-300 hidden sm:block"></span>
-            <span className="text-[13px] font-['Manrope'] font-semibold text-gray-500 hidden sm:block">
+            <span className="text-[14px] font-['Manrope'] font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full hidden sm:block">
               Semester {note.semester}
             </span>
         </div>
-
-        {/* Title */}
-        <h1 className="font-['Lexend_Deca'] font-extrabold text-[2.5rem] md:text-[3.25rem] text-gray-900 mb-6 leading-[1.12] tracking-tight">
-          {note.title}
-        </h1>
 
         {/* Medium-style Author Info Bar */}
         <div className="flex items-center gap-4 py-4 mb-6">
@@ -221,12 +448,12 @@ export default function NoteDetailPage() {
         <div className="flex items-center justify-between py-3 border-y border-gray-100/80 mb-10 px-1">
            <div className="flex items-center gap-6">
               <button 
-                onClick={() => requireAuth(() => setLiked(!liked))}
+                onClick={handleLikePost}
                 className="flex items-center gap-2 text-[15px] font-['Manrope'] font-medium transition-colors group"
                 aria-label="Suka catatan"
               >
                   <Heart className={`w-5 h-5 transition-transform group-hover:scale-110 ${liked ? 'fill-red-500 text-red-500' : 'text-gray-400 group-hover:text-red-500'}`} />
-                  <span className={liked ? 'text-red-500' : 'text-gray-500'}>{note.likes + (liked ? 1 : 0)}</span>
+                  <span className={liked ? 'text-red-500' : 'text-gray-500'}>{note.likes}</span>
               </button>
               
               <button 
@@ -257,20 +484,6 @@ export default function NoteDetailPage() {
               )}
            </div>
         </div>
-
-        {/* Cover Image */}
-        <figure className="mb-12 w-full">
-            <img
-              src={note.thumbnail}
-              alt={note.title}
-              className="w-full h-auto max-h-[450px] object-cover rounded-2xl shadow-sm border border-gray-100 bg-gray-50"
-            />
-            {note.description && (
-                <figcaption className="text-center mt-4 text-[14px] font-['Manrope'] text-gray-400 italic px-4">
-                   {note.description}
-                </figcaption>
-            )}
-        </figure>
 
         {/* Editor Content Area (Borderless Notion / Substack View) */}
         <div className="notion-reader ql-snow mb-16">
@@ -384,19 +597,20 @@ export default function NoteDetailPage() {
                   />
                   <div className="flex-1 p-2">
                     <textarea
+                      dir="ltr"
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
                       placeholder="Apa pendapatmu? Jadilah yang pertama memulai diskusi."
-                      className="w-full px-2 py-2 bg-transparent border-none font-['Manrope'] text-base resize-none focus:outline-none focus:ring-0 min-h-[80px]"
+                      className="w-full px-2 py-2 bg-transparent border-none font-['Manrope'] text-base text-left resize-none focus:outline-none focus:ring-0 min-h-[80px]"
                     />
                     <div className="flex justify-between items-center mt-2 border-t border-gray-50 pt-3">
                       <p className="text-xs text-gray-400 font-['Manrope'] px-2">Format dengan Markdown didukung (segera)</p>
                       <button
                         onClick={handleComment}
-                        disabled={!commentText.trim()}
+                        disabled={!commentText.trim() || isSubmittingComment}
                         className="px-6 py-2 bg-primary text-white rounded-xl text-sm font-['Lexend_Deca'] font-semibold disabled:opacity-40 transition-all shadow-sm"
                       >
-                        Kirim
+                        {isSubmittingComment ? 'Mengirim...' : 'Kirim'}
                       </button>
                     </div>
                   </div>
@@ -416,46 +630,159 @@ export default function NoteDetailPage() {
             )}
 
             {/* Comments List */}
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8">
               {comments.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="font-['Manrope'] text-base text-gray-400">Belum ada komentar.</p>
                 </div>
               ) : (
-                comments.map((comment) => {
-                  const commentAuthor = getUserById(comment.userId);
-                  if (!commentAuthor) return null;
-                  return (
-                    <div key={comment.id} className="flex gap-4">
-                      <img
-                        src={commentAuthor.avatar}
-                        alt={commentAuthor.name}
-                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-gray-100"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1 cursor-pointer">
-                            <span className="font-['Manrope'] font-bold text-base text-gray-900 hover:underline">
-                              {commentAuthor.name}
-                            </span>
-                            <span className="text-xs font-['Manrope'] text-gray-400">
-                              {new Date(comment.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-                            </span>
-                        </div>
-                        <p className="font-['Manrope'] text-[16px] text-gray-800 leading-relaxed mb-3">
-                            {comment.text}
-                        </p>
-                        <div className="flex items-center gap-4 text-[13px] font-['Manrope'] font-semibold text-gray-500">
-                           <button className="flex items-center gap-1.5 hover:text-gray-900">
-                              <Heart className="w-3.5 h-3.5" /> Suka
-                           </button>
-                           <button className="flex items-center gap-1.5 hover:text-gray-900">
-                             <MessageCircle className="w-3.5 h-3.5" /> Balas
-                           </button>
-                           <button className="hover:text-red-500 ml-auto">Laporkan</button>
-                        </div>
+                comments.filter(c => !c.parent_comment_id).map((root) => {
+                   const rootId = root._id || root.id;
+                   const childReplies = comments.filter(c => c.parent_comment_id === rootId);
+                   
+                   const renderCommentItem = (comment: any, isReply: boolean = false) => {
+                       const cAuth = comment.user || getUserById(comment.userId);
+                       if (!cAuth) return null;
+                       const cid = comment._id || comment.id;
+                       const currentLikes = comment.likes_count || 0;
+                       const isLiked = comment.is_liked_by_me || false;
+                  
+                       return (
+                          <div key={`comment-el-${cid}`} id={`comment-${cid}`} className={`flex gap-3 sm:gap-4 p-2 rounded-2xl ${isReply ? 'bg-gray-50/50' : ''}`}>
+                             <img
+                               src={cAuth.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400'}
+                               alt={cAuth.name}
+                               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-gray-100"
+                             />
+                             <div className="flex-1 w-full overflow-hidden">
+                                 <div className="flex items-center justify-between mb-1">
+                                     <div className="flex items-center gap-2 cursor-pointer">
+                                         <span className="font-['Manrope'] font-bold text-base text-gray-900 hover:underline">
+                                           {cAuth.name}
+                                         </span>
+                                         {cAuth.role === 'pakar' && <Check className="w-3.5 h-3.5 bg-green-500 text-white rounded-full p-[2px]" />}
+                                         <span className="text-xs font-['Manrope'] text-gray-400">
+                                           {new Date(comment.created_at || comment.createdAt || new Date()).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                                         </span>
+                                     </div>
+                                     
+                                     <div className="relative">
+                                         <button 
+                                           onClick={() => setActiveCommentMenu(activeCommentMenu === cid ? null : cid)}
+                                           className="p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                                         >
+                                             <MoreHorizontal className="w-5 h-5" />
+                                         </button>
+                                         
+                                         {activeCommentMenu === cid && (
+                                             <>
+                                                 <div 
+                                                   className="fixed inset-0 z-40" 
+                                                   onClick={() => setActiveCommentMenu(null)}
+                                                 />
+                                                 <div className="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-50 overflow-hidden transform origin-top-right transition-all">
+                                                     {isAuthenticated && user && ((user._id || user.id) === (cAuth._id || cAuth.id || comment.user_id)) && (
+                                                         <button
+                                                           onClick={() => {
+                                                             setActiveCommentMenu(null);
+                                                             handleDeleteComment(cid);
+                                                           }}
+                                                           className="w-full text-left px-4 py-2.5 text-[14px] font-['Manrope'] font-medium text-red-600 hover:bg-red-50 flex items-center gap-2"
+                                                         >
+                                                           <Trash2 className="w-4 h-4" /> Hapus Komentar
+                                                         </button>
+                                                     )}
+                                                     <button
+                                                       onClick={() => requireAuth(() => {
+                                                         setActiveCommentMenu(null);
+                                                         setReportTarget({ type: 'comment', id: cid });
+                                                         setShowReportModal(true);
+                                                       })}
+                                                       className="w-full text-left px-4 py-2.5 text-[14px] font-['Manrope'] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                                     >
+                                                       <Flag className="w-4 h-4 text-gray-400" /> Laporkan
+                                                     </button>
+                                                 </div>
+                                             </>
+                                         )}
+                                     </div>
+                                 </div>
+                                 <p className="font-['Manrope'] text-[15.5px] text-gray-800 leading-relaxed mb-2.5 break-words">
+                                     {comment.content || comment.text}
+                                 </p>
+                                 <div className="flex items-center gap-4 text-[13px] font-['Manrope'] font-semibold text-gray-500">
+                                    <button 
+                                      onClick={async () => {
+                                        if (!isAuthenticated) return openAuthModal('login');
+                                        setComments(prev => prev.map(c => 
+                                            (c._id || c.id) === cid 
+                                              ? { ...c, likes_count: isLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1, is_liked_by_me: !isLiked }
+                                              : c
+                                        ));
+                                        try {
+                                          const tk = localStorage.getItem('bayu-token');
+                                          await axios.post(`/api/v1/comments/${cid}/like`, {}, { headers: { Authorization: `Bearer ${tk}` } });
+                                        } catch(e) {}
+                                      }}
+                                      className={`flex items-center gap-1.5 transition-colors ${isLiked ? 'text-red-500' : 'hover:text-red-500'}`}
+                                    >
+                                       <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-red-500' : ''}`} /> Suka {currentLikes > 0 && `(${currentLikes})`}
+                                    </button>
+                                    <button 
+                                      onClick={() => {
+                                         if (!isAuthenticated) return openAuthModal('login');
+                                         setReplyingTo({ id: cid, name: cAuth.name });
+                                         setReplyText('');
+                                      }}
+                                      className="flex items-center gap-1.5 hover:text-gray-900"
+                                    >
+                                      <MessageCircle className="w-3.5 h-3.5" /> Balas
+                                    </button>
+                                  </div>
+                  
+                                 {replyingTo?.id === cid && (
+                                    <div className="mt-4 bg-white p-2.5 sm:p-3 rounded-2xl border border-gray-200 shadow-sm flex flex-col sm:flex-row gap-2 sm:gap-3 items-end sm:items-center">
+                                        <textarea 
+                                          dir="ltr"
+                                          autoFocus
+                                          placeholder={`Membalas ${cAuth.name}...`}
+                                          value={replyText}
+                                          onChange={e => setReplyText(e.target.value)}
+                                          className="w-full sm:flex-1 bg-transparent border-none text-[15px] font-['Manrope'] text-left focus:outline-none focus:ring-0 resize-none h-[40px] pt-2"
+                                          onKeyDown={async e => {
+                                             if (e.key === 'Enter' && !e.shiftKey) {
+                                                e.preventDefault();
+                                                await handleReplySubmit(rootId); // reply matches the parent root
+                                             }
+                                          }}
+                                        />
+                                        <div className="flex gap-2 shrink-0 w-full sm:w-auto justify-end border-t sm:border-t-0 border-gray-50 pt-2 sm:pt-0">
+                                           <button onClick={() => setReplyingTo(null)} className="px-3 py-1.5 text-gray-500 hover:text-gray-700 text-xs font-['Lexend_Deca'] font-bold bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">Batal</button>
+                                           <button 
+                                             onClick={() => handleReplySubmit(rootId)} 
+                                             disabled={!replyText.trim() || isSubmittingReply}
+                                             className="px-4 py-1.5 text-white bg-primary hover:bg-indigo-600 disabled:opacity-50 text-xs font-['Lexend_Deca'] font-bold rounded-lg transition-colors shadow-sm"
+                                           >
+                                             {isSubmittingReply ? 'Menyimpan...' : 'Kirim'}
+                                           </button>
+                                        </div>
+                                    </div>
+                                 )}
+                             </div>
+                          </div>
+                       );
+                    };
+
+                   return (
+                      <div key={rootId} className="flex flex-col gap-3 sm:gap-4">
+                         {renderCommentItem(root, false)}
+                         {childReplies.length > 0 && (
+                            <div className="ml-10 sm:ml-12 flex flex-col gap-3 sm:gap-4 border-l-[3px] border-gray-100 pl-4 sm:pl-5">
+                               {childReplies.map(child => renderCommentItem(child, true))}
+                            </div>
+                         )}
                       </div>
-                    </div>
-                  );
+                   )
                 })
               )}
             </div>
@@ -516,8 +843,75 @@ export default function NoteDetailPage() {
     </div>
   );
 
+  const modals = (
+    <>
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+        defaultTab={authTab} 
+      />
+
+      {/* Modal Report */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+            <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 mb-2">Laporkan {reportTarget?.type === 'note' ? 'Catatan' : 'Komentar'}</h3>
+            <p className="font-['Manrope'] text-sm text-gray-500 mb-4">Bantu kami menjaga lingkungan belajar yang positif dan aman.</p>
+            
+            <div className="mb-4">
+              <label className="block font-['Manrope'] text-sm font-semibold text-gray-700 mb-1.5">Alasan Pelaporan</label>
+              <select 
+                value={reportReason} 
+                onChange={e => setReportReason(e.target.value)}
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl font-['Manrope'] focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+              >
+                <option value="">Pilih Alasan...</option>
+                <option value="Spam">Spam pemasaran/promosi</option>
+                <option value="Informasi Palsu">Informasi keliru / misinformasi</option>
+                <option value="Kata Kasar">Menggunakan kata kasar / ujaran kebencian</option>
+                <option value="Pelecehan">Pelecehan atau intimidasi</option>
+                <option value="Lainnya">Lainnya...</option>
+              </select>
+            </div>
+
+            <div className="mb-6">
+              <label className="block font-['Manrope'] text-sm font-semibold text-gray-700 mb-1.5">Deskripsi Singkat</label>
+              <textarea 
+                value={reportDescription}
+                onChange={e => setReportDescription(e.target.value)}
+                placeholder="Beritahu kami lebih detail tentang laporan ini..."
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl font-['Manrope'] text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none h-24"
+              ></textarea>
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <button 
+                onClick={() => setShowReportModal(false)}
+                className="px-5 py-2 rounded-xl font-['Manrope'] font-bold text-gray-600 hover:bg-gray-100 transition-colors"
+              >
+                Batal
+              </button>
+              <button 
+                onClick={handleReportSubmit}
+                disabled={isSubmittingReport}
+                className="px-5 py-2 rounded-xl font-['Lexend_Deca'] font-bold bg-red-500 text-white hover:bg-red-600 transition-colors shadow-sm disabled:opacity-50"
+              >
+                {isSubmittingReport ? 'Mengirim...' : 'Kirim Laporan'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+
   if (isAuthenticated) {
-    return <MobileLayout showBottomNav={false}>{noteContent}</MobileLayout>;
+    return (
+      <MobileLayout showBottomNav={false}>
+        {noteContent}
+        {modals}
+      </MobileLayout>
+    );
   }
 
   return (
@@ -525,11 +919,7 @@ export default function NoteDetailPage() {
       <Navbar variant="default" />
       {noteContent}
       <Footer />
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)} 
-        defaultTab={authTab} 
-      />
+      {modals}
     </div>
   );
 }

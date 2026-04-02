@@ -1,0 +1,89 @@
+﻿commit ef9adc0de661eaab1fcb9fbcf19bdeb8e5ee7fc3
+Author: Varmintzy <radenmasgalih@apps.ipb.ac.id>
+Date:   Mon Mar 30 10:45:27 2026 +0700
+
+    like, comentar, flag, Laporkan
+
+ app/Http/Controllers/LikeController.php   | 28 ++++++++++++++
+ app/Http/Controllers/PostController.php   |  5 ++-
+ app/Http/Controllers/ReportController.php | 64 +++++++++++++++++++++++++++----
+ routes/api.php                            |  2 +
+ 4 files changed, 90 insertions(+), 9 deletions(-)
+
+commit a79cf74dd1d417f046f3ef441bafbd05f4c6b2ee
+Author: aris-ab <mabirizky05@gmail.com>
+Date:   Mon Mar 30 06:40:51 2026 +0700
+
+    update panjang judul maks 200 karakter
+
+ resources/frontend/app/pages/UploadPage.tsx | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+commit 5e46eef405f6b76cd1d198ae388c6a840ac12f46
+Author: aris-ab <mabirizky05@gmail.com>
+Date:   Sun Mar 29 23:17:37 2026 +0700
+
+    Refactor Premium Editor and Notifications integration
+
+ app/Http/Controllers/NotificationController.php    |  29 +
+ app/Http/Controllers/PostController.php            |  32 +
+ app/Http/Controllers/ReportController.php          |  12 +
+ app/Http/Controllers/SertifikasiController.php     |  13 +
+ app/Http/Controllers/UserController.php            |  20 +
+ app/Models/Post.php                                |   3 +
+ diff.txt                                           | 282 +++++++++
+ log.txt                                            | Bin 0 -> 1418 bytes
+ log_utf8.txt                                       | 112 ++++
+ resources/frontend/app/components/SideNav.tsx      |   7 +-
+ resources/frontend/app/contexts/AuthContext.tsx    |   9 +
+ resources/frontend/app/pages/AdminDashboard.tsx    |  78 ++-
+ resources/frontend/app/pages/EditProfilePage.tsx   | 334 +++++-----
+ resources/frontend/app/pages/NoteDetailPage.tsx    |  26 +-
+ resources/frontend/app/pages/NotificationsPage.tsx |  49 +-
+ resources/frontend/app/pages/ProfilePage.tsx       | 428 +++++++------
+ resources/frontend/app/pages/UploadPage.tsx        | 674 +++++++++++++++------
+ routes/api.php                                     |   3 +
+ users.json                                         |  90 +++
+ 19 files changed, 1670 insertions(+), 531 deletions(-)
+
+commit e0f030453b990c6eb44c7fa359baba7a0a1dc85d
+Author: Varmintzy <radenmasgalih@apps.ipb.ac.id>
+Date:   Sun Mar 29 20:17:49 2026 +0700
+
+    dashboard admin,pakar, verifikasi catatan oleh pakar
+
+ app/Http/Controllers/AuthController.php   |  4 ++--
+ app/Http/Controllers/PostController.php   | 36 ++++++++++++++++++++-----------
+ app/Http/Controllers/ReportController.php | 32 +++++++++++++++++++++------
+ app/Http/Controllers/UserController.php   | 24 +++++++++++++++++++++
+ app/Models/Post.php                       |  9 ++++++--
+ app/Models/User.php                       |  8 ++++---
+ routes/api.php                            |  7 ++++++
+ 7 files changed, 95 insertions(+), 25 deletions(-)
+
+commit 4c87c4d16e8bf0859aa461ef2b70d182ef007e8c
+Author: aris-ab <mabirizky05@gmail.com>
+Date:   Sun Mar 29 14:12:28 2026 +0700
+
+    feat: redesain eksplorasi, landing page, dan konsistensi UI global
+
+ app/Http/Controllers/CategoryController.php        |  19 +
+ app/Http/Controllers/CommentController.php         |  68 +++
+ app/Http/Controllers/LikeController.php            |  39 ++
+ app/Http/Controllers/PostController.php            |  81 +++
+ app/Http/Controllers/ReportController.php          |  77 +++
+ app/Http/Controllers/TopicController.php           |  19 +
+ app/Models/Category.php                            |  27 +
+ app/Models/Comment.php                             |  41 ++
+ app/Models/Like.php                                |  27 +
+ app/Models/Post.php                                |  66 +++
+ app/Models/Report.php                              |  35 ++
+ app/Models/Sertifikasi.php                         |   2 +-
+ app/Models/Topic.php                               |  22 +
+ app/Models/User.php                                |  40 ++
+ resources/frontend/app/components/MobileLayout.tsx |  57 +-
+ resources/frontend/app/components/SideNav.tsx      | 243 +++-----
+ resources/frontend/app/data/mockData.ts            |  47 +-
+ resources/frontend/app/pages/NoteDetailPage.tsx    | 618 ++++++++++++---------
+ routes/api.php                                     |  28 +
+ 19 files changed, 1108 insertions(+), 448 deletions(-)
