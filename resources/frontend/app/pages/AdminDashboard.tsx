@@ -20,6 +20,7 @@ export default function AdminDashboard() {
   const [pendingCerts, setPendingCerts] = useState<any[]>([]);
   const [reportsList, setReportsList] = useState<any[]>([]);
   const [usersList, setUsersList] = useState<any[]>([]);
+  const [notesList, setNotesList] = useState<any[]>([]);
 
   useEffect(() => {
     if (location.state?.tab) {
@@ -28,10 +29,12 @@ export default function AdminDashboard() {
   }, [location.state]);
 
   useEffect(() => {
-    if (activeTab === 'sertifikasi') fetchPendingCertifications();
-    if (activeTab === 'laporan') fetchReports();
-    if (activeTab === 'users') fetchUsers();
-  }, [activeTab]);
+    // Tarik semua data di awal biar kotak statistiknya langsung akurat!
+    fetchPendingCertifications();
+    fetchReports();
+    fetchUsers();
+    fetchNotes(); 
+  }, []);
 
   const fetchReports = async () => {
     if (user?.role !== 'admin') return;
@@ -43,6 +46,16 @@ export default function AdminDashboard() {
       setReportsList(res.data.data || []);
     } catch (e) {
       console.error("Failed to fetch reports", e);
+    }
+  };
+
+  const fetchNotes = async () => {
+    try {
+      // Kita nembak API posts yang kemaren lu bikin di Backend!
+      const res = await axios.get('/api/v1/posts');
+      setNotesList(res.data.data || []);
+    } catch (e) {
+      console.error("Failed to fetch notes", e);
     }
   };
 
@@ -76,10 +89,10 @@ export default function AdminDashboard() {
   const mockReports: any[] = [];
 
   const stats = [
-    { label: 'Total User', value: mockUsers.length, color: 'bg-blue-500', icon: Users, increment: '+12%' },
-    { label: 'Total Catatan', value: mockNotes.length, color: 'bg-indigo-500', icon: FileText, increment: '+8%' },
-    { label: 'Pending Laporan', value: mockReports.length, color: 'bg-orange-500', icon: AlertCircle, increment: '+2%' },
-    { label: 'Sertifikasi Pakar', value: pendingCerts.length, color: 'bg-fuchsia-600', icon: ShieldCheck, increment: 'Baru' },
+    { label: 'Total User', value: usersList.length, color: 'bg-blue-500', icon: Users, increment: '+12%' },
+    { label: 'Total Catatan', value: notesList.length, color: 'bg-indigo-500', icon: FileText, increment: '+8%' },
+    { label: 'Pending Laporan', value: reportsList.length, color: 'bg-orange-500', icon: AlertCircle, increment: '+2%' },
+    { label: 'Sertifikasi Pakar', value: pendingCerts.length, color: 'bg-fuchsia-600', icon: ShieldCheck, increment: 'Baru' }
   ];
 
   const handleDeleteNote = (noteId: string) => {

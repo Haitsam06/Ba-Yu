@@ -5,33 +5,49 @@ import { Footer } from '../components/footer';
 import { Search, Filter, BookOpen, Check, Eye, Heart, MessageCircle, Upload, LogIn, Sparkles, TrendingUp, Clock, Bookmark, Star, X } from 'lucide-react';
 import { mataPelajaran, getUserById } from '../data/mockData';
 import axios from 'axios';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { useBookmarks } from '../contexts/BookmarkContext';
 import { AuthModal } from '../components/auth-modal';
+
 
 export default function ExplorePage() {
   const { isAuthenticated } = useAuth();
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const [activeSegment, setActiveSegment] = useState<'kategori' | 'populer' | 'terbaru'>('kategori');
   const [searchQuery, setSearchQuery] = useState('');
-  
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const searchTermFromUrl = queryParams.get('q') || '';
   const [notes, setNotes] = useState<any[]>([]);
   const [isLoadingNotes, setIsLoadingNotes] = useState(true);
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get('/api/v1/posts');
-        setNotes(response.data.data || []);
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      } finally {
-        setIsLoadingNotes(false);
-      }
-    };
-    fetchPosts();
-  }, []);
+        const fetchPosts = async () => {
+            setIsLoadingNotes(true);
+            try {
+                const keyword = searchTermFromUrl || searchQuery;
+                const queryParamsAPI: any = { sort: activeSegment };
+                
+                if (keyword !== '') {
+                    queryParamsAPI.search = keyword;
+                }
+
+                const response = await axios.get('/api/v1/posts', {
+                    params: queryParamsAPI 
+                });
+                
+                setNotes(response.data.data || []);
+            } catch (error) {
+                // Nah ini! Kalau error dia bakal teriak di sini
+                console.error('Pesan Error dari Backend:', error); 
+            } finally {
+                setIsLoadingNotes(false);
+            }
+        };
+
+        fetchPosts();
+    }, [searchQuery, searchTermFromUrl, activeSegment]);
 
   const formattedNotes = notes.map(note => ({
     ...note,

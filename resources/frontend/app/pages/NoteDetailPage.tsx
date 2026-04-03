@@ -650,11 +650,11 @@ const fetchNoteDetail = async () => {
                    const childReplies = comments.filter(c => c.parent_comment_id === rootId);
                    
                    const renderCommentItem = (comment: any, isReply: boolean = false) => {
-                       const cAuth = comment.user || getUserById(comment.userId);
-                       if (!cAuth) return null;
-                       const cid = comment._id || comment.id;
-                       const currentLikes = comment.likes_count || 0;
-                       const isLiked = comment.is_liked_by_me || false;
+                      const cAuth = comment.user || getUserById(comment.userId);
+                      if (!cAuth) return null;
+                      const cid = comment._id || comment.id;
+                      const currentLikes = comment.likes_count || 0;
+                      const isLiked = comment.is_liked || comment.is_liked_by_me || false;
                   
                        return (
                           <div key={`comment-el-${cid}`} id={`comment-${cid}`} className={`flex gap-3 sm:gap-4 p-2 rounded-2xl ${isReply ? 'bg-gray-50/50' : ''}`}>
@@ -720,23 +720,35 @@ const fetchNoteDetail = async () => {
                                      {comment.content || comment.text}
                                  </p>
                                  <div className="flex items-center gap-4 text-[13px] font-['Manrope'] font-semibold text-gray-500">
-                                    <button 
-                                      onClick={async () => {
-                                        if (!isAuthenticated) return openAuthModal('login');
-                                        setComments(prev => prev.map(c => 
-                                            (c._id || c.id) === cid 
-                                              ? { ...c, likes_count: isLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1, is_liked_by_me: !isLiked }
-                                              : c
-                                        ));
-                                        try {
-                                          const tk = localStorage.getItem('bayu-token');
-                                          await axios.post(`/api/v1/comments/${cid}/like`, {}, { headers: { Authorization: `Bearer ${tk}` } });
-                                        } catch(e) {}
+                                    <button
+                                        onClick={async () => {
+                                            if (!isAuthenticated) return openAuthModal('login');
+                                            try {
+                                                const tk = localStorage.getItem('bayu-token');
+            
+                                                const res = await axios.post(`/api/v1/comments/${cid}/like`, {}, { 
+                                                    headers: { Authorization: `Bearer ${tk}` } 
+                                                });
+
+                                                setComments(prev => prev.map(c =>
+                                                  (c._id || c.id) === cid
+                                                  ? { 
+                                                      ...c, 
+                                                      likes_count: res.data.likes_count, 
+                                                      is_liked: res.data.is_liked,
+                                                      is_liked_by_me: res.data.is_liked
+                                                    }
+                                                  : c
+                                              ));
+                                          } catch (e) {
+                                              console.error(e);
+                                              alert("Gagal memproses like komentar");
+                                          }
                                       }}
                                       className={`flex items-center gap-1.5 transition-colors ${isLiked ? 'text-red-500' : 'hover:text-red-500'}`}
-                                    >
-                                       <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-red-500' : ''}`} /> Suka {currentLikes > 0 && `(${currentLikes})`}
-                                    </button>
+                                  >
+                                      <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-red-500' : ''}`} /> Suka {currentLikes > 0 && `(${currentLikes})`}
+                                  </button>
                                     <button 
                                       onClick={() => {
                                          if (!isAuthenticated) return openAuthModal('login');

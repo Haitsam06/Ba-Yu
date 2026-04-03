@@ -15,25 +15,54 @@ class PostController extends Controller
         $query = Post::with(['user', 'topic', 'category', 'comments', 'likes'])
             ->where('visibility', 'public');
 
-        if ($request->has('is_verified')) {
+        if ($request->filled('is_verified')) {
             $isVerified = filter_var($request->query('is_verified'), FILTER_VALIDATE_BOOLEAN);
             $query->where('is_verified', $isVerified);
         }
 
-        if ($request->has('user_id')) {
+        if ($request->filled('user_id')) {
             $query->where('user_id', $request->query('user_id'));
         }
 
-        $posts = $query->orderBy('created_at', 'desc')->get();
+        if ($request->filled('search')) {
+            $search = $request->query('search');
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('content', 'like', '%' . $search . '%')
+                  ->orWhere('mapel', 'like', '%' . $search . '%');
+            });
+        }
 
-        // Compute real counts from loaded relations and auto-sync
+        $isRandom = false;
+
+        if ($request->filled('sort')) {
+            $sort = $request->query('sort');
+            
+            if ($sort === 'populer') {
+                $query->orderBy('likes_count', 'desc')->orderBy('comments_count', 'desc');
+            } elseif ($sort === 'terbaru') {
+                $query->orderBy('created_at', 'desc');
+            } else {
+                $query->orderBy('created_at', 'desc'); 
+                $isRandom = true;
+            }
+        } else {
+            $query->orderBy('created_at', 'desc');
+            $isRandom = true;
+        }
+
+        $posts = $query->get();
+
+        if ($isRandom) {
+            $posts = $posts->shuffle()->values();
+        }
+
         $posts->each(function ($post) {
             $realLikes = $post->likes ? $post->likes->count() : 0;
             $realComments = $post->comments ? $post->comments->count() : 0;
 
-            // Overwrite with real counts
-            $post->likes_count = $realLikes;
-            $post->comments_count = $realComments;
+            $post->setAttribute('likes_count', $realLikes);
+            $post->setAttribute('comments_count', $realComments);
 
             if ($post->isDirty(['likes_count', 'comments_count'])) {
                 $post->save();
@@ -46,8 +75,8 @@ class PostController extends Controller
             'message' => 'Berhasil mengambil daftar post',
             'data' => $posts
         ], 200);
-    }
-    public function store(Request $request)
+
+    }    public function store(Request $request)
     {
         $request->validate([
             'title' => 'required|string|max:255',
@@ -119,7 +148,6 @@ class PostController extends Controller
             $post->save();
         }
 
-        // 🔥 JURUS BACA KTP (ANTI CRASH/PINGSAN)
         $userId = null;
         try { 
             $userId = Auth::guard('sanctum')->id(); 
@@ -141,6 +169,20 @@ class PostController extends Controller
             $post->is_liked = \App\Models\Like::where('post_id', (string) $id)->where('user_id', $userIdStr)->exists();
         } else {
             $post->is_liked = false;
+        }
+
+        if ($post->comments) {
+            $post->comments->each(function ($comment) use ($userIdStr) {
+                $commentIdStr = (string) $comment->id;
+
+                $comment->likes_count = \App\Models\Like::where('comment_id', $commentIdStr)->count();
+
+                if ($userIdStr !== "") {
+                    $comment->is_liked = \App\Models\Like::where('comment_id', $commentIdStr)->where('user_id', $userIdStr)->exists();
+                } else {
+                    $comment->is_liked = false;
+                }
+            });
         }
 
         return response()->json([

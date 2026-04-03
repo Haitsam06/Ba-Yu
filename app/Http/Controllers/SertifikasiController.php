@@ -93,6 +93,14 @@ class SertifikasiController extends Controller
             'status' => $request->status
         ]);
 
+        // 🔥 INI DIA OBATNYA: Kalau di-ACC, ubah jabatan usernya di tabel User!
+        if ($request->status === 'approved') {
+            $userPengaju = User::find($sertifikasi->user_id);
+            if ($userPengaju) {
+                $userPengaju->update(['role' => 'pakar']);
+            }
+        }
+
         $title = $request->status === 'approved' ? 'Sertifikasi Diterima!' : 'Sertifikasi Ditolak';
 
         $message = $request->status === 'approved' 
