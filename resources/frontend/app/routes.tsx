@@ -2,9 +2,10 @@ import { createBrowserRouter } from 'react-router';
 import { RootLayout } from './components/RootLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { LandingPage } from './pages/landing-page';
-import Login from './pages/Login';
+import LoginPage from './pages/Login';
 import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
+import PublicExplorePage from './pages/PublicExplorePage';
 import UploadPage from './pages/UploadPage';
 import NoteDetailPage from './pages/NoteDetailPage';
 import NotificationsPage from './pages/NotificationsPage';
@@ -26,11 +27,15 @@ export const router = createBrowserRouter([
       },
       {
         path: 'login',
-        element: <Login />,
+        element: <LoginPage />,
       },
       {
         path: 'explore',
         element: <ExplorePage />,
+      },
+      {
+        path: 'katalog',
+        element: <PublicExplorePage />,
       },
       {
         path: 'note/:id',

@@ -8,11 +8,13 @@ import {
 import { mockNotes, mockUsers, getUserById, mataPelajaran } from '../data/mockData';
 import { Link, useLocation } from 'react-router';
 import axios from 'axios';
+import { useToast } from '../contexts/ToastContext';
 
 type TabType = 'catatan' | 'laporan' | 'users' | 'sertifikasi';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState<TabType>('sertifikasi');
   const [searchQuery, setSearchQuery] = useState('');
@@ -97,7 +99,7 @@ export default function AdminDashboard() {
 
   const handleDeleteNote = (noteId: string) => {
     if (confirm('Yakin ingin menghapus catatan ini?')) {
-      alert('Catatan berhasil dihapus!');
+      showToast('Catatan berhasil dihapus!', 'success');
     }
   };
 
@@ -115,10 +117,10 @@ export default function AdminDashboard() {
         { action: actionType, admin_note: adminNote }, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert(res.data.message || 'Berhasil diproses!');
+      showToast(res.data.message || 'Berhasil diproses!', 'success');
       setReportsList(prev => prev.filter(r => r.id !== reportId && r._id !== reportId));
     } catch (e: any) {
-      alert(e.response?.data?.message || 'Gagal memproses laporan');
+      showToast(e.response?.data?.message || 'Gagal memproses laporan', 'error');
     }
   };
 
@@ -130,9 +132,9 @@ export default function AdminDashboard() {
       });
       
       setPendingCerts(prev => prev.filter(c => c.id !== id));
-      alert(`Pengajuan Pakar ${action === 'approve' ? 'diterima' : 'ditolak'}.`);
+      showToast(`Pengajuan Pakar ${action === 'approve' ? 'diterima' : 'ditolak'}.`, 'success');
     } catch (e: any) {
-      alert(e.response?.data?.message || 'Gagal mengubah status verifikasi');
+      showToast(e.response?.data?.message || 'Gagal mengubah status verifikasi', 'error');
     }
   };
 

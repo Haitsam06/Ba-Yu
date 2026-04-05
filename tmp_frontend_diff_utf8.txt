@@ -1,0 +1,207 @@
+﻿commit 8860c33059e5adaaa9c38784c2feae21167b2240
+Author: Varmintzy <radenmasgalih@apps.ipb.ac.id>
+Date:   Fri Apr 3 20:58:52 2026 +0700
+
+    bug komentar like, searching, filter untuk anda, terbaru, terpopuler, statistik admin
+
+diff --git a/resources/frontend/app/pages/AdminDashboard.tsx b/resources/frontend/app/pages/AdminDashboard.tsx
+index 220bcb7..7207da1 100644
+--- a/resources/frontend/app/pages/AdminDashboard.tsx
++++ b/resources/frontend/app/pages/AdminDashboard.tsx
+@@ -20,6 +20,7 @@ export default function AdminDashboard() {
+   const [pendingCerts, setPendingCerts] = useState<any[]>([]);
+   const [reportsList, setReportsList] = useState<any[]>([]);
+   const [usersList, setUsersList] = useState<any[]>([]);
++  const [notesList, setNotesList] = useState<any[]>([]);
+ 
+   useEffect(() => {
+     if (location.state?.tab) {
+@@ -28,10 +29,12 @@ export default function AdminDashboard() {
+   }, [location.state]);
+ 
+   useEffect(() => {
+-    if (activeTab === 'sertifikasi') fetchPendingCertifications();
+-    if (activeTab === 'laporan') fetchReports();
+-    if (activeTab === 'users') fetchUsers();
+-  }, [activeTab]);
++    // Tarik semua data di awal biar kotak statistiknya langsung akurat!
++    fetchPendingCertifications();
++    fetchReports();
++    fetchUsers();
++    fetchNotes(); 
++  }, []);
+ 
+   const fetchReports = async () => {
+     if (user?.role !== 'admin') return;
+@@ -46,6 +49,16 @@ export default function AdminDashboard() {
+     }
+   };
+ 
++  const fetchNotes = async () => {
++    try {
++      // Kita nembak API posts yang kemaren lu bikin di Backend!
++      const res = await axios.get('/api/v1/posts');
++      setNotesList(res.data.data || []);
++    } catch (e) {
++      console.error("Failed to fetch notes", e);
++    }
++  };
++
+   const fetchUsers = async () => {
+     if (user?.role !== 'admin') return;
+     try {
+@@ -76,10 +89,10 @@ export default function AdminDashboard() {
+   const mockReports: any[] = [];
+ 
+   const stats = [
+-    { label: 'Total User', value: mockUsers.length, color: 'bg-blue-500', icon: Users, increment: '+12%' },
+-    { label: 'Total Catatan', value: mockNotes.length, color: 'bg-indigo-500', icon: FileText, increment: '+8%' },
+-    { label: 'Pending Laporan', value: mockReports.length, color: 'bg-orange-500', icon: AlertCircle, increment: '+2%' },
+-    { label: 'Sertifikasi Pakar', value: pendingCerts.length, color: 'bg-fuchsia-600', icon: ShieldCheck, increment: 'Baru' },
++    { label: 'Total User', value: usersList.length, color: 'bg-blue-500', icon: Users, increment: '+12%' },
++    { label: 'Total Catatan', value: notesList.length, color: 'bg-indigo-500', icon: FileText, increment: '+8%' },
++    { label: 'Pending Laporan', value: reportsList.length, color: 'bg-orange-500', icon: AlertCircle, increment: '+2%' },
++    { label: 'Sertifikasi Pakar', value: pendingCerts.length, color: 'bg-fuchsia-600', icon: ShieldCheck, increment: 'Baru' }
+   ];
+ 
+   const handleDeleteNote = (noteId: string) => {
+diff --git a/resources/frontend/app/pages/ExplorePage.tsx b/resources/frontend/app/pages/ExplorePage.tsx
+index 80c59da..bc2083a 100644
+--- a/resources/frontend/app/pages/ExplorePage.tsx
++++ b/resources/frontend/app/pages/ExplorePage.tsx
+@@ -5,33 +5,49 @@ import { Footer } from '../components/footer';
+ import { Search, Filter, BookOpen, Check, Eye, Heart, MessageCircle, Upload, LogIn, Sparkles, TrendingUp, Clock, Bookmark, Star, X } from 'lucide-react';
+ import { mataPelajaran, getUserById } from '../data/mockData';
+ import axios from 'axios';
+-import { Link } from 'react-router';
++import { Link, useLocation } from 'react-router';
+ import { useAuth } from '../contexts/AuthContext';
+ import { useBookmarks } from '../contexts/BookmarkContext';
+ import { AuthModal } from '../components/auth-modal';
+ 
++
+ export default function ExplorePage() {
+   const { isAuthenticated } = useAuth();
+   const { isBookmarked, toggleBookmark } = useBookmarks();
+   const [activeSegment, setActiveSegment] = useState<'kategori' | 'populer' | 'terbaru'>('kategori');
+   const [searchQuery, setSearchQuery] = useState('');
+-  
++  const location = useLocation();
++  const queryParams = new URLSearchParams(location.search);
++  const searchTermFromUrl = queryParams.get('q') || '';
+   const [notes, setNotes] = useState<any[]>([]);
+   const [isLoadingNotes, setIsLoadingNotes] = useState(true);
+ 
+   useEffect(() => {
+-    const fetchPosts = async () => {
+-      try {
+-        const response = await axios.get('/api/v1/posts');
+-        setNotes(response.data.data || []);
+-      } catch (error) {
+-        console.error('Error fetching posts:', error);
+-      } finally {
+-        setIsLoadingNotes(false);
+-      }
+-    };
+-    fetchPosts();
+-  }, []);
++        const fetchPosts = async () => {
++            setIsLoadingNotes(true);
++            try {
++                const keyword = searchTermFromUrl || searchQuery;
++                const queryParamsAPI: any = { sort: activeSegment };
++                
++                if (keyword !== '') {
++                    queryParamsAPI.search = keyword;
++                }
++
++                const response = await axios.get('/api/v1/posts', {
++                    params: queryParamsAPI 
++                });
++                
++                setNotes(response.data.data || []);
++            } catch (error) {
++                // Nah ini! Kalau error dia bakal teriak di sini
++                console.error('Pesan Error dari Backend:', error); 
++            } finally {
++                setIsLoadingNotes(false);
++            }
++        };
++
++        fetchPosts();
++    }, [searchQuery, searchTermFromUrl, activeSegment]);
+ 
+   const formattedNotes = notes.map(note => ({
+     ...note,
+diff --git a/resources/frontend/app/pages/NoteDetailPage.tsx b/resources/frontend/app/pages/NoteDetailPage.tsx
+index b4a38f2..6897b32 100644
+--- a/resources/frontend/app/pages/NoteDetailPage.tsx
++++ b/resources/frontend/app/pages/NoteDetailPage.tsx
+@@ -650,11 +650,11 @@ const fetchNoteDetail = async () => {
+                    const childReplies = comments.filter(c => c.parent_comment_id === rootId);
+                    
+                    const renderCommentItem = (comment: any, isReply: boolean = false) => {
+-                       const cAuth = comment.user || getUserById(comment.userId);
+-                       if (!cAuth) return null;
+-                       const cid = comment._id || comment.id;
+-                       const currentLikes = comment.likes_count || 0;
+-                       const isLiked = comment.is_liked_by_me || false;
++                      const cAuth = comment.user || getUserById(comment.userId);
++                      if (!cAuth) return null;
++                      const cid = comment._id || comment.id;
++                      const currentLikes = comment.likes_count || 0;
++                      const isLiked = comment.is_liked || comment.is_liked_by_me || false;
+                   
+                        return (
+                           <div key={`comment-el-${cid}`} id={`comment-${cid}`} className={`flex gap-3 sm:gap-4 p-2 rounded-2xl ${isReply ? 'bg-gray-50/50' : ''}`}>
+@@ -720,23 +720,35 @@ const fetchNoteDetail = async () => {
+                                      {comment.content || comment.text}
+                                  </p>
+                                  <div className="flex items-center gap-4 text-[13px] font-['Manrope'] font-semibold text-gray-500">
+-                                    <button 
+-                                      onClick={async () => {
+-                                        if (!isAuthenticated) return openAuthModal('login');
+-                                        setComments(prev => prev.map(c => 
+-                                            (c._id || c.id) === cid 
+-                                              ? { ...c, likes_count: isLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1, is_liked_by_me: !isLiked }
+-                                              : c
+-                                        ));
+-                                        try {
+-                                          const tk = localStorage.getItem('bayu-token');
+-                                          await axios.post(`/api/v1/comments/${cid}/like`, {}, { headers: { Authorization: `Bearer ${tk}` } });
+-                                        } catch(e) {}
++                                    <button
++                                        onClick={async () => {
++                                            if (!isAuthenticated) return openAuthModal('login');
++                                            try {
++                                                const tk = localStorage.getItem('bayu-token');
++            
++                                                const res = await axios.post(`/api/v1/comments/${cid}/like`, {}, { 
++                                                    headers: { Authorization: `Bearer ${tk}` } 
++                                                });
++
++                                                setComments(prev => prev.map(c =>
++                                                  (c._id || c.id) === cid
++                                                  ? { 
++                                                      ...c, 
++                                                      likes_count: res.data.likes_count, 
++                                                      is_liked: res.data.is_liked,
++                                                      is_liked_by_me: res.data.is_liked
++                                                    }
++                                                  : c
++                                              ));
++                                          } catch (e) {
++                                              console.error(e);
++                                              alert("Gagal memproses like komentar");
++                                          }
+                                       }}
+                                       className={`flex items-center gap-1.5 transition-colors ${isLiked ? 'text-red-500' : 'hover:text-red-500'}`}
+-                                    >
+-                                       <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-red-500' : ''}`} /> Suka {currentLikes > 0 && `(${currentLikes})`}
+-                                    </button>
++                                  >
++                                      <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-red-500' : ''}`} /> Suka {currentLikes > 0 && `(${currentLikes})`}
++                                  </button>
+                                     <button 
+                                       onClick={() => {
+                                          if (!isAuthenticated) return openAuthModal('login');

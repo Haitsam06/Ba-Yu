@@ -9,6 +9,7 @@ import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import axios from 'axios';
 import Cropper from 'react-easy-crop';
+import { useToast } from '../contexts/ToastContext';
 
 async function getCroppedImg(imageSrc: string, pixelCrop: any): Promise<string> {
   const image = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -616,6 +617,7 @@ function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<Re
 export default function UploadPage() {
   const navigate = useNavigate();
   const quillRef = useRef<ReactQuill>(null);
+  const { showToast } = useToast();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [showPreviewModal, setShowPreviewModal] = useState(false);
@@ -742,7 +744,7 @@ export default function UploadPage() {
         setIsCropping(false);
       } catch (e) {
         console.error('Failed to crop image', e);
-        alert('Gagal menerapkan crop gambar. Pastikan format gambar valid.');
+        showToast('Gagal menerapkan crop gambar. Pastikan format gambar valid.', 'error');
       }
     }
   };
@@ -765,11 +767,11 @@ export default function UploadPage() {
         tags: meta.tags,
         visibility: 'public'
       });
-      alert('Catatan berhasil dipublikasikan!');
+      showToast('Catatan berhasil dipublikasikan!', 'success');
       navigate(-1);
     } catch (error) {
       console.error('Gagal mempublikasikan catatan:', error);
-      alert('Terjadi kesalahan saat menyimpan catatan.');
+      showToast('Terjadi kesalahan saat menyimpan catatan.', 'error');
     } finally {
       setIsSubmitting(false);
     }

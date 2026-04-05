@@ -11,7 +11,7 @@ import { useBookmarks } from '../contexts/BookmarkContext';
 import { AuthModal } from '../components/auth-modal';
 
 
-export default function ExplorePage() {
+export default function PublicExplorePage() {
   const { isAuthenticated } = useAuth();
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const [activeSegment, setActiveSegment] = useState<'kategori' | 'populer' | 'terbaru'>('kategori');
@@ -558,17 +558,7 @@ export default function ExplorePage() {
     </div>
   );
 
-  // Logged-in: dashboard layout
-  if (isAuthenticated) {
-    return (
-      <MobileLayout>
-        {exploreContent}
-        {filterModalUI}
-      </MobileLayout>
-    );
-  }
-
-  // Guest: landing page layout with reveal styles
+  // Public: landing page layout with reveal styles
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
       <style>{`

@@ -309,7 +309,7 @@ export function LandingPage() {
 
                   {/* View All Button */}
                   <div className="mt-4 flex justify-center">
-                    <Link to="/explore" className="inline-flex items-center gap-2 bg-white border border-gray-200 hover:border-primary text-gray-700 hover:text-primary font-bold px-8 py-3.5 rounded-full shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+                    <Link to="/katalog" className="inline-flex items-center gap-2 bg-white border border-gray-200 hover:border-primary text-gray-700 hover:text-primary font-bold px-8 py-3.5 rounded-full shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
                       Lihat Semua Catatan Eksplorasi <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>

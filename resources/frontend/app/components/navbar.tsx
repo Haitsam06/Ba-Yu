@@ -3,12 +3,14 @@ import { Button } from './ui/button';
 import { BookOpen } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { AuthModal } from './auth-modal';
+import { useAuth } from '../contexts/AuthContext';
 
 interface NavbarProps {
   variant?: 'default' | 'dashboard';
 }
 
 export function Navbar({ variant = 'default' }: NavbarProps) {
+  const { isAuthenticated, user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
   const [isScrolled, setIsScrolled] = useState(false);
@@ -73,7 +75,7 @@ export function Navbar({ variant = 'default' }: NavbarProps) {
               Tentang
             </a>
             <Link
-              to="/explore"
+              to="/katalog"
               className="text-gray-600 hover:text-primary transition-colors font-semibold text-[15px] hover:-translate-y-0.5 transform duration-200"
             >
               Jelajahi
@@ -82,18 +84,30 @@ export function Navbar({ variant = 'default' }: NavbarProps) {
 
           {/* Auth Actions */}
           <div className="flex items-center gap-2 sm:gap-3">
-            <button 
-              className="hidden md:block font-bold text-gray-700 hover:text-primary px-3 sm:px-4 py-2 hover:bg-gray-50/50 rounded-full transition-colors text-sm"
-              onClick={() => openAuthModal('login')}
-            >
-              Masuk
-            </button>
-            <button 
-              className={`bg-primary hover:bg-indigo-700 text-white rounded-full font-bold shadow-md hover:shadow-lg hover:shadow-primary/30 transition-all hover:-translate-y-0.5 ${isScrolled ? 'px-5 py-2 text-sm' : 'px-6 md:px-7 py-2.5 md:py-3 text-sm md:text-[15px]'}`}
-              onClick={() => openAuthModal('register')}
-            >
-              Daftar Gratis
-            </button>
+            {isAuthenticated && user ? (
+              <Link to="/profile" className="group rounded-full p-1 border border-transparent hover:border-gray-200 transition-colors">
+                <img 
+                  src={user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'} 
+                  alt={user.name} 
+                  className={`rounded-full object-cover shadow-sm group-hover:ring-2 group-hover:ring-primary/20 transition-all ${isScrolled ? 'w-8 h-8' : 'w-10 h-10'}`}
+                />
+              </Link>
+            ) : (
+              <>
+                <button 
+                  className="hidden md:block font-bold text-gray-700 hover:text-primary px-3 sm:px-4 py-2 hover:bg-gray-50/50 rounded-full transition-colors text-sm"
+                  onClick={() => openAuthModal('login')}
+                >
+                  Masuk
+                </button>
+                <button 
+                  className={`bg-primary hover:bg-indigo-700 text-white rounded-full font-bold shadow-md hover:shadow-lg hover:shadow-primary/30 transition-all hover:-translate-y-0.5 ${isScrolled ? 'px-5 py-2 text-sm' : 'px-6 md:px-7 py-2.5 md:py-3 text-sm md:text-[15px]'}`}
+                  onClick={() => openAuthModal('register')}
+                >
+                  Daftar Gratis
+                </button>
+              </>
+            )}
           </div>
         </div>
       </nav>

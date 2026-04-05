@@ -32,7 +32,20 @@ class UserController extends Controller
             'jenjang_pendidikan' => 'sometimes|string|in:SD,SMP,SMA,Kuliah',
             'school' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            // Store the file in public/avatars folder
+            $file->move(public_path('avatars'), $filename);
+            
+            // App URL setup (dynamically getting url or setting relative path)
+            $avatarUrl = asset('avatars/' . $filename);
+            
+            $validated['avatar'] = $avatarUrl;
+        }
 
         $user->update($validated);
 

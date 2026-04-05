@@ -1,0 +1,131 @@
+﻿commit 8860c33059e5adaaa9c38784c2feae21167b2240
+Author: Varmintzy <radenmasgalih@apps.ipb.ac.id>
+Date:   Fri Apr 3 20:58:52 2026 +0700
+
+    bug komentar like, searching, filter untuk anda, terbaru, terpopuler, statistik admin
+
+diff --git a/app/Http/Controllers/PostController.php b/app/Http/Controllers/PostController.php
+index d7da53a..b18e4cb 100644
+--- a/app/Http/Controllers/PostController.php
++++ b/app/Http/Controllers/PostController.php
+@@ -15,25 +15,54 @@ public function index(Request $request)
+         $query = Post::with(['user', 'topic', 'category', 'comments', 'likes'])
+             ->where('visibility', 'public');
+ 
+-        if ($request->has('is_verified')) {
++        if ($request->filled('is_verified')) {
+             $isVerified = filter_var($request->query('is_verified'), FILTER_VALIDATE_BOOLEAN);
+             $query->where('is_verified', $isVerified);
+         }
+ 
+-        if ($request->has('user_id')) {
++        if ($request->filled('user_id')) {
+             $query->where('user_id', $request->query('user_id'));
+         }
+ 
+-        $posts = $query->orderBy('created_at', 'desc')->get();
++        if ($request->filled('search')) {
++            $search = $request->query('search');
++            $query->where(function($q) use ($search) {
++                $q->where('title', 'like', '%' . $search . '%')
++                  ->orWhere('content', 'like', '%' . $search . '%')
++                  ->orWhere('mapel', 'like', '%' . $search . '%');
++            });
++        }
++
++        $isRandom = false;
++
++        if ($request->filled('sort')) {
++            $sort = $request->query('sort');
++            
++            if ($sort === 'populer') {
++                $query->orderBy('likes_count', 'desc')->orderBy('comments_count', 'desc');
++            } elseif ($sort === 'terbaru') {
++                $query->orderBy('created_at', 'desc');
++            } else {
++                $query->orderBy('created_at', 'desc'); 
++                $isRandom = true;
++            }
++        } else {
++            $query->orderBy('created_at', 'desc');
++            $isRandom = true;
++        }
++
++        $posts = $query->get();
++
++        if ($isRandom) {
++            $posts = $posts->shuffle()->values();
++        }
+ 
+-        // Compute real counts from loaded relations and auto-sync
+         $posts->each(function ($post) {
+             $realLikes = $post->likes ? $post->likes->count() : 0;
+             $realComments = $post->comments ? $post->comments->count() : 0;
+ 
+-            // Overwrite with real counts
+-            $post->likes_count = $realLikes;
+-            $post->comments_count = $realComments;
++            $post->setAttribute('likes_count', $realLikes);
++            $post->setAttribute('comments_count', $realComments);
+ 
+             if ($post->isDirty(['likes_count', 'comments_count'])) {
+                 $post->save();
+@@ -46,8 +75,8 @@ public function index(Request $request)
+             'message' => 'Berhasil mengambil daftar post',
+             'data' => $posts
+         ], 200);
+-    }
+-    public function store(Request $request)
++
++    }    public function store(Request $request)
+     {
+         $request->validate([
+             'title' => 'required|string|max:255',
+@@ -119,7 +148,6 @@ public function show($id)
+             $post->save();
+         }
+ 
+-        // ≡ƒöÑ JURUS BACA KTP (ANTI CRASH/PINGSAN)
+         $userId = null;
+         try { 
+             $userId = Auth::guard('sanctum')->id(); 
+@@ -143,6 +171,20 @@ public function show($id)
+             $post->is_liked = false;
+         }
+ 
++        if ($post->comments) {
++            $post->comments->each(function ($comment) use ($userIdStr) {
++                $commentIdStr = (string) $comment->id;
++
++                $comment->likes_count = \App\Models\Like::where('comment_id', $commentIdStr)->count();
++
++                if ($userIdStr !== "") {
++                    $comment->is_liked = \App\Models\Like::where('comment_id', $commentIdStr)->where('user_id', $userIdStr)->exists();
++                } else {
++                    $comment->is_liked = false;
++                }
++            });
++        }
++
+         return response()->json([
+             'message' => 'Berhasil mengambil post',
+             'data' => $post
+diff --git a/app/Http/Controllers/SertifikasiController.php b/app/Http/Controllers/SertifikasiController.php
+index a4a5313..77e475a 100644
+--- a/app/Http/Controllers/SertifikasiController.php
++++ b/app/Http/Controllers/SertifikasiController.php
+@@ -93,6 +93,14 @@ public function verifikasi(Request $request, $id)
+             'status' => $request->status
+         ]);
+ 
++        // ≡ƒöÑ INI DIA OBATNYA: Kalau di-ACC, ubah jabatan usernya di tabel User!
++        if ($request->status === 'approved') {
++            $userPengaju = User::find($sertifikasi->user_id);
++            if ($userPengaju) {
++                $userPengaju->update(['role' => 'pakar']);
++            }
++        }
++
+         $title = $request->status === 'approved' ? 'Sertifikasi Diterima!' : 'Sertifikasi Ditolak';
+ 
+         $message = $request->status === 'approved' 

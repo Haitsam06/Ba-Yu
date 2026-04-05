@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { MobileLayout } from '../components/MobileLayout';
 import { Navbar } from '../components/navbar';
 import { Footer } from '../components/footer';
-import { useParams, Link, useNavigate } from 'react-router';
+import { useParams, Link, useNavigate, useLocation } from 'react-router';
 import { ArrowLeft, Share2, Bookmark, Heart, Eye, MessageCircle, Flag, Check, Star, DownloadCloud, LogIn, ArrowUp, Calendar, Clock, ShieldCheck, MoreHorizontal, Trash2 } from 'lucide-react';
 import { getNoteById, getUserById, getCommentsByNoteId, mockNotes } from '../data/mockData';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,12 +11,15 @@ import { AuthModal } from '../components/auth-modal';
 import 'react-quill/dist/quill.snow.css'; // Just in case, though we apply custom styles
 import 'katex/dist/katex.min.css';
 import axios from 'axios';
+import { useToast } from '../contexts/ToastContext';
 
 export default function NoteDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, user } = useAuth();
   const { isBookmarked, toggleBookmark } = useBookmarks();
+  const { showToast } = useToast();
   const [liked, setLiked] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [replyingTo, setReplyingTo] = useState<{id: string, name: string} | null>(null);
@@ -37,7 +40,7 @@ export default function NoteDetailPage() {
          return newComments;
       });
     } catch (e: any) {
-      alert(e.response?.data?.message || 'Gagal menghapus komentar');
+      showToast(e.response?.data?.message || 'Gagal menghapus komentar', 'error');
     }
   };
 
@@ -145,6 +148,17 @@ const fetchNoteDetail = async () => {
     fetchNoteDetail();
   }, [id]);
 
+  useEffect(() => {
+    if (!isLoading && location.hash === '#comments-section') {
+      setTimeout(() => {
+        const commentsSection = document.getElementById('comments-section');
+        if (commentsSection) {
+          commentsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [isLoading, location.hash]);
+
   const openAuthModal = (tab: 'login' | 'register') => {
     setAuthTab(tab);
     setShowAuthModal(true);
@@ -238,7 +252,7 @@ const fetchNoteDetail = async () => {
       setCommentText('');
       setNote((prev: any) => ({ ...prev, comments: prev.comments + 1 }));
     } catch (e: any) {
-      alert(e.response?.data?.message || 'Gagal mengirim komentar');
+      showToast(e.response?.data?.message || 'Gagal mengirim komentar', 'error');
     } finally {
       setIsSubmittingComment(false);
     }
@@ -262,7 +276,7 @@ const fetchNoteDetail = async () => {
       setReplyText('');
       setNote((prev: any) => ({ ...prev, comments: prev.comments + 1 }));
     } catch (e: any) {
-      alert(e.response?.data?.message || 'Gagal mengirim balasan');
+      showToast(e.response?.data?.message || 'Gagal mengirim balasan', 'error');
     } finally {
       setIsSubmittingReply(false);
     }
@@ -283,13 +297,13 @@ const fetchNoteDetail = async () => {
 
         } catch (e) {
             console.error(e);
-            alert("Gagal memproses Like");
+            showToast('Gagal memproses Like', 'error');
         }
     };
 
   const handleReportSubmit = async () => {
     if (!isAuthenticated) return openAuthModal('login');
-    if (!reportReason || !reportDescription) return alert('Mohon isi semua field!');
+    if (!reportReason || !reportDescription) return showToast('Mohon isi semua field!', 'warning');
     setIsSubmittingReport(true);
     try {
       const token = localStorage.getItem('bayu-token');
@@ -300,12 +314,12 @@ const fetchNoteDetail = async () => {
       await axios.post(url, { reason: reportReason, description: reportDescription }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert('Laporan berhasil dikirim, terima kasih telah menjaga lingkungan hijau Ba-Yu!');
+      showToast('Laporan berhasil dikirim, terima kasih telah menjaga lingkungan hijau Ba-Yu!', 'success');
       setShowReportModal(false);
       setReportReason('');
       setReportDescription('');
     } catch (e: any) {
-      alert(e.response?.data?.message || 'Gagal mengirim laporan.');
+      showToast(e.response?.data?.message || 'Gagal mengirim laporan.', 'error');
     } finally {
       setIsSubmittingReport(false);
     }
@@ -318,9 +332,9 @@ const fetchNoteDetail = async () => {
       await axios.put(`/api/v1/posts/${id}/verify`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert('Catatan berhasil diverifikasi! Refresh untuk melihat perubahan (jika data dari backend).');
+      showToast('Catatan berhasil diverifikasi!', 'success');
     } catch (e: any) {
-      alert(e.response?.data?.message || 'Gagal memverifikasi catatan.');
+      showToast(e.response?.data?.message || 'Gagal memverifikasi catatan.', 'error');
     }
   };
 
@@ -742,7 +756,7 @@ const fetchNoteDetail = async () => {
                                               ));
                                           } catch (e) {
                                               console.error(e);
-                                              alert("Gagal memproses like komentar");
+                                              showToast('Gagal memproses like komentar', 'error');
                                           }
                                       }}
                                       className={`flex items-center gap-1.5 transition-colors ${isLiked ? 'text-red-500' : 'hover:text-red-500'}`}

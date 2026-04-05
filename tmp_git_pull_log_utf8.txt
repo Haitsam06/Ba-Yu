@@ -1,0 +1,11 @@
+﻿commit 8860c33059e5adaaa9c38784c2feae21167b2240
+Author: Varmintzy <radenmasgalih@apps.ipb.ac.id>
+Date:   Fri Apr 3 20:58:52 2026 +0700
+
+    bug komentar like, searching, filter untuk anda, terbaru, terpopuler, statistik admin
+
+M	app/Http/Controllers/PostController.php
+M	app/Http/Controllers/SertifikasiController.php
+M	resources/frontend/app/pages/AdminDashboard.tsx
+M	resources/frontend/app/pages/ExplorePage.tsx
+M	resources/frontend/app/pages/NoteDetailPage.tsx

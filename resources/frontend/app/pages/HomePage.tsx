@@ -6,12 +6,40 @@ import { mataPelajaran } from '../data/mockData';
 import { Link } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { useBookmarks } from '../contexts/BookmarkContext';
+import { useToast } from '../contexts/ToastContext';
 
 export default function HomePage() {
   const { user } = useAuth();
   const { isBookmarked, toggleBookmark } = useBookmarks();
+  const { showToast } = useToast();
   const [notes, setNotes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const handleLikePost = async (postId: string) => {
+    if (!user) return showToast('Silakan masuk (login) terlebih dahulu untuk menyukai tulisan.', 'warning');
+    
+    setNotes(prev => prev.map(note => {
+      if ((note._id || note.id) === postId) {
+        const isCurrentlyLiked = note.is_liked || false;
+        return { 
+          ...note, 
+          likes: isCurrentlyLiked ? Math.max(0, note.likes - 1) : note.likes + 1,
+          likes_count: isCurrentlyLiked ? Math.max(0, (note.likes_count || 0) - 1) : (note.likes_count || 0) + 1,
+          is_liked: !isCurrentlyLiked
+        };
+      }
+      return note;
+    }));
+
+    try {
+      const tk = localStorage.getItem('bayu-token');
+      await axios.post(`/api/v1/posts/${postId}/like`, {}, {
+        headers: { Authorization: `Bearer ${tk}` }
+      });
+    } catch(e) {
+      console.error(e);
+    }
+  };
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -49,6 +77,66 @@ export default function HomePage() {
   const heroNote = formattedNotes[0];
   const feedNotes = formattedNotes.slice(1, 10);
   const trendingNotes = [...formattedNotes].sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0)).slice(0, 5);
+
+  if (isLoading) {
+    return (
+      <MobileLayout>
+        <div className="w-full h-full flex justify-center pb-20 pt-6">
+          <div className="w-full max-w-[1140px] px-2 sm:px-4 md:px-6 flex flex-col xl:flex-row gap-10 xl:gap-14 animate-pulse">
+            <div className="flex-1 min-w-0">
+               {/* CATEGORY PILLS SKELETON */}
+               <div className="flex gap-3 mb-6 overflow-hidden">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="h-10 w-28 bg-gray-100 rounded-full shrink-0"></div>
+                  ))}
+               </div>
+               
+               {/* HERO NOTE SKELETON */}
+               <div className="w-full h-[350px] sm:h-[450px] bg-gray-100 rounded-[2rem] mb-12 border border-gray-50"></div>
+
+               {/* FEED SKELETON */}
+               <div className="flex flex-col gap-10">
+                  {[...Array(4)].map((_, i) => (
+                     <div key={i} className="flex flex-col-reverse sm:flex-row gap-6">
+                        <div className="flex-1 space-y-4 py-2">
+                           <div className="flex items-center gap-2 mb-2">
+                              <div className="h-5 w-5 bg-gray-100 rounded-full"></div>
+                              <div className="h-4 w-24 bg-gray-100 rounded-md"></div>
+                           </div>
+                           <div className="h-7 w-3/4 bg-gray-100 rounded-lg"></div>
+                           <div className="h-4 w-full bg-gray-100 rounded-md mt-3"></div>
+                           <div className="h-4 w-5/6 bg-gray-100 rounded-md"></div>
+                           <div className="flex items-center gap-4 mt-6">
+                              <div className="h-5 w-16 bg-gray-100 rounded-md"></div>
+                              <div className="h-5 w-16 bg-gray-100 rounded-md"></div>
+                           </div>
+                        </div>
+                        <div className="w-full sm:w-[150px] md:w-[180px] h-[160px] sm:h-[120px] md:h-[135px] bg-gray-100 rounded-2xl shrink-0"></div>
+                     </div>
+                  ))}
+               </div>
+            </div>
+
+            {/* RIGHT COLUMN SKELETON */}
+            <div className="hidden xl:block w-[320px] shrink-0 xl:border-l xl:border-gray-100 xl:pl-10 pt-4">
+               <div className="h-6 w-32 bg-gray-100 rounded-md mb-8"></div>
+               <div className="space-y-6">
+                  {[...Array(4)].map((_, i) => (
+                     <div key={i} className="flex gap-4">
+                        <div className="h-8 w-8 bg-gray-100 rounded-md shrink-0"></div>
+                        <div className="flex-1 space-y-2 py-1">
+                           <div className="h-4 w-full bg-gray-100 rounded-md"></div>
+                           <div className="h-3 w-1/2 bg-gray-100 rounded-md"></div>
+                        </div>
+                     </div>
+                  ))}
+               </div>
+            </div>
+          </div>
+        </div>
+      </MobileLayout>
+    );
+  }
 
   return (
     <MobileLayout>
@@ -194,15 +282,15 @@ export default function HomePage() {
                               </div>
                               
                               <div className="flex items-center gap-3 shrink-0 ml-4">
-                                 <div className="flex items-center gap-1.5 text-gray-500 hover:text-red-500 transition-colors" title={`${note.likes} suka`}>
-                                   <Heart className="w-[15px] h-[15px]" strokeWidth={2} />
+                                 <button onClick={(e) => { e.preventDefault(); handleLikePost(note.id); }} className={`flex items-center gap-1.5 transition-colors focus:outline-none ${note.is_liked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`} title={`${note.likes} suka`}>
+                                   <Heart className={`w-[15px] h-[15px] ${note.is_liked ? 'fill-red-500' : ''}`} strokeWidth={2} />
                                    <span className="text-[13px] font-['Manrope'] font-medium">{note.likes}</span>
-                                 </div>
-                                 <div className="flex items-center gap-1.5 text-gray-500 hover:text-gray-900 transition-colors" title={`${note.comments} komentar`}>
+                                 </button>
+                                 <Link to={`/note/${note.id}#comments-section`} onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5 text-gray-500 hover:text-gray-900 transition-colors focus:outline-none" title={`${note.comments} komentar`}>
                                    <MessageCircle className="w-[15px] h-[15px]" strokeWidth={2} />
                                    <span className="text-[13px] font-['Manrope'] font-medium">{note.comments}</span>
-                                 </div>
-                                 <button aria-label="Save" onClick={() => toggleBookmark(note.id)} className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? 'text-primary scale-110' : 'opacity-0 md:opacity-100 text-gray-400 hover:text-primary md:group-hover:opacity-100'}`}>
+                                 </Link>
+                                 <button aria-label="Save" onClick={(e) => { e.preventDefault(); toggleBookmark(note.id); }} className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? 'text-primary scale-110' : 'opacity-0 md:opacity-100 text-gray-400 hover:text-primary md:group-hover:opacity-100'}`}>
                                      <Bookmark className={`w-[18px] h-[18px] transition-all duration-300 ${isBookmarked(note.id) ? 'fill-primary' : ''}`} strokeWidth={1.5} />
                                  </button>
                               </div>
