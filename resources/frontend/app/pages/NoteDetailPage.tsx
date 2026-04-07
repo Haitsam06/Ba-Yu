@@ -28,21 +28,34 @@ export default function NoteDetailPage() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [activeCommentMenu, setActiveCommentMenu] = useState<string | null>(null);
 
-  const handleDeleteComment = async (commentId: string) => {
-    if (!window.confirm('Apakah Anda yakin ingin menghapus komentar ini?')) return;
-    try {
-      const token = localStorage.getItem('bayu-token');
-      await axios.delete(`/api/v1/comments/${commentId}`, { headers: { Authorization: `Bearer ${token}` } });
-      
-      setComments(prev => {
-         const newComments = prev.filter(c => (c._id || c.id) !== commentId && c.parent_comment_id !== commentId);
-         const removedCount = prev.length - newComments.length;
-         setNote((n: any) => ({ ...n, comments: Math.max(0, n.comments - removedCount) }));
-         return newComments;
-      });
-    } catch (e: any) {
-      showToast(e.response?.data?.message || 'Gagal menghapus komentar', 'error');
-    }
+  const handleDownloadPDF = () => {
+    const content = document.getElementById('area-materi-pdf');
+    if (!content) return;
+
+    // 1. Kita simpan dulu seluruh isi web lu (beserta navbar, sidebar, dll)
+    const originalHTML = document.body.innerHTML;
+
+    // 2. JURUS BRUTAL: Ganti paksa layar web lu JADI HANYA KOTAK MATERI!
+    document.body.innerHTML = `
+        <div style="padding: 40px; color: black; background: white; font-family: sans-serif;">
+            <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 20px;">
+                ${note?.title || 'Materi Catatan'} 
+            </h1>
+            <hr style="margin-bottom: 20px; border-color: #eee;" />
+            ${content.outerHTML}
+        </div>
+    `;
+
+    // 3. Kasih napas 0.1 detik biar browser nge-render layarnya, baru kita Print!
+    setTimeout(() => {
+        window.print();
+        
+        // 4. Kalau jendela print-nya udah ditutup, balikin web lu ke semula!
+        document.body.innerHTML = originalHTML;
+        
+        // 5. Reload web-nya biar tombol-tombol React lu nggak nge-bug
+        window.location.reload();
+    }, 100);
   };
 
   const [showReportModal, setShowReportModal] = useState(false);
@@ -472,17 +485,18 @@ const fetchNoteDetail = async () => {
         </div>
 
         {/* Editor Content Area (Borderless Notion / Substack View) */}
-        <div className="notion-reader ql-snow mb-16">
+        <div id="area-materi-pdf" className="notion-reader ql-snow mb-16">
             <div className="ql-editor" dangerouslySetInnerHTML={{ __html: processedContent }} />
-            
-            {/* Paywall simulatiom if not logged in (Optional UI flair, matching mock design "Download PDF") */}
-            <div className="mt-14 bg-gray-50/80 rounded-3xl p-8 md:p-10 text-center border border-gray-100">
-                <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 mb-3">Ingin membaca materi ini secara offline?</h3>
-                <p className="font-['Manrope'] text-[15px] text-gray-500 mb-8 max-w-md mx-auto leading-relaxed">Unduh file aslinya dalam format PDF untuk dipelajari kapan saja tanpa koneksi internet.</p>
-                <button className="mx-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-gray-900 hover:bg-black text-white rounded-xl text-sm font-['Lexend_Deca'] font-semibold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">
-                   <DownloadCloud className="w-5 h-5" /> Download PDF Materi
-                </button>
-            </div>
+        </div> 
+        {/* 🔥 KURUNG TUTUPNYA PINDAH KE SINI YA DER! 🔥 */}
+
+        {/* Paywall simulatiom if not logged in (Optional UI flair, matching mock design "Download PDF") */}
+        <div className="mt-14 bg-gray-50/80 rounded-3xl p-8 md:p-10 text-center border border-gray-100">
+            <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 mb-3">Ingin membaca materi ini secara offline?</h3>
+            <p className="font-['Manrope'] text-[15px] text-gray-500 mb-8 max-w-md mx-auto leading-relaxed">Unduh file aslinya dalam format PDF untuk dipelajari kapan saja tanpa koneksi internet.</p>
+            <button onClick={handleDownloadPDF} className="mx-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-gray-900 hover:bg-black text-white rounded-xl text-sm font-['Lexend_Deca'] font-semibold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">
+              <DownloadCloud className="w-5 h-5" /> Download PDF Materi
+            </button>
         </div>
 
         {/* Bottom Banner Validation (Minimalist Bright Style) */}

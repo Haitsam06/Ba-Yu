@@ -532,17 +532,30 @@ function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<Re
         break;
       }
       case 'video': {
-        const url = prompt('Masukkan URL video (YouTube/Vimeo):');
-        if (url) {
-          quill.insertEmbed(range.index, 'video', url, 'user');
-          quill.insertText(range.index + 1, '\n', 'user');
-          quill.formatLine(range.index + 1, 1, 'align', 'center');
-          quill.insertText(range.index + 2, '\n', 'user');
-          quill.formatLine(range.index + 2, 1, 'align', false);
-          quill.setSelection(range.index + 1, 0);
+            const rawUrl = prompt('Masukkan URL video (YouTube/Vimeo):');
+            if (rawUrl) {
+                let finalUrl = rawUrl;
+                
+                if (rawUrl.includes('youtu.be/')) {
+                    const videoId = rawUrl.split('youtu.be/')[1].split('?')[0];
+                    finalUrl = `https://www.youtube.com/embed/${videoId}`;
+                } 
+                else if (rawUrl.includes('youtube.com/watch')) {
+                    const safeUrl = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`; 
+                    const urlParams = new URLSearchParams(new URL(safeUrl).search);
+                    const videoId = urlParams.get('v');
+                    if (videoId) finalUrl = `https://www.youtube.com/embed/${videoId}`;
+                }
+
+                quill.insertEmbed(range.index, 'video', finalUrl, 'user');
+                quill.insertText(range.index + 1, '\n', 'user');
+                quill.formatLine(range.index + 1, 1, 'align', 'center');
+                quill.insertText(range.index + 2, '\n', 'user');
+                quill.formatLine(range.index + 2, 1, 'align', false);
+                quill.setSelection(range.index + 1, 0);
+            }
+            break;
         }
-        break;
-      }
       case 'code': {
         quill.insertText(range.index, '\n', 'user');
         quill.formatLine(range.index, 1, 'code-block', true);
