@@ -3,6 +3,7 @@ import { Menu, Search, Edit3, Bell, Settings, HelpCircle, LogOut } from 'lucide-
 import { useAuth } from '../contexts/AuthContext';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import AvatarNotifications from './ui/avatar-notifications';
 
 interface TopNavProps {
   isSidebarExpanded: boolean;
@@ -13,26 +14,8 @@ export function TopNav({ isSidebarExpanded, toggleSidebar }: TopNavProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [unreadNotifCount, setUnreadNotifCount] = useState(0);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const fetchUnread = async () => {
-      try {
-        const token = localStorage.getItem('bayu-token');
-        if (!token) return;
-        const res = await axios.get('/api/v1/notifikasi', {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = res.data.data || [];
-        setUnreadNotifCount(data.filter((n: any) => !n.is_read).length);
-      } catch { /* silent */ }
-    };
-    fetchUnread();
-    const interval = setInterval(fetchUnread, 30000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -80,7 +63,7 @@ export function TopNav({ isSidebarExpanded, toggleSidebar }: TopNavProps) {
         {/* Global Search */}
         <form onSubmit={handleSearch} className="hidden sm:flex items-center w-full max-w-[280px]">
            <div className="relative w-full group">
-             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" strokeWidth={2} />
+             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-hover:text-primary transition-colors" strokeWidth={2} />
              <input
                type="text"
                value={searchQuery}
@@ -118,15 +101,9 @@ export function TopNav({ isSidebarExpanded, toggleSidebar }: TopNavProps) {
           <Search className="w-5 h-5" strokeWidth={2} />
         </button>
 
-        <Link 
-          to="/notifications"
-          className="relative text-gray-500 hover:text-primary transition-colors p-1.5 rounded-full hover:bg-primary/5 mr-1"
-        >
-          <Bell className="w-[22px] h-[22px]" strokeWidth={1.5} />
-          {unreadNotifCount > 0 && (
-            <span className="absolute top-[3px] right-[4px] w-[8px] h-[8px] bg-red-500 rounded-full shadow-[0_0_0_2px_#ffffff] animate-pulse"></span>
-          )}
-        </Link>
+        <div className="mr-1">
+          <AvatarNotifications />
+        </div>
 
         {/* Profile Avatar & Dropdown */}
         <div className="relative" ref={profileRef}>
@@ -161,35 +138,31 @@ export function TopNav({ isSidebarExpanded, toggleSidebar }: TopNavProps) {
 
                 {/* Main Action Links */}
                 <div className="flex flex-col py-1">
-                   <Link to="/settings" className="flex items-center gap-3 px-5 py-2 hover:text-gray-900 text-gray-600 transition-colors group">
-                      <Settings className="w-[18px] h-[18px] text-gray-400 group-hover:text-gray-700 transition-colors" strokeWidth={1.5} />
-                      <span className="text-[14px] font-['Manrope']">Pengaturan</span>
-                   </Link>
+                    <Link to="/settings" className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl hover:bg-gray-50 group transition-colors">
+                      <div className="w-8 h-8 rounded-lg bg-gray-50 group-hover:bg-white border border-transparent group-hover:border-gray-200 flex items-center justify-center transition-all">
+                        <Settings className="w-[18px] h-[18px] text-gray-500 group-hover:text-gray-900 transition-colors" strokeWidth={1.5} />
+                      </div>
+                      <span className="font-['Manrope'] text-[14px] font-medium text-gray-700 group-hover:text-gray-900 transition-colors">Pengaturan</span>
+                    </Link>
                    <Link to="/not-found" className="flex items-center gap-3 px-5 py-2 hover:text-gray-900 text-gray-600 transition-colors group">
-                      <HelpCircle className="w-[18px] h-[18px] text-gray-400 group-hover:text-gray-700 transition-colors" strokeWidth={1.5} />
+                      <HelpCircle className="w-[18px] h-[18px] text-gray-500 group-hover:text-gray-700 transition-colors" strokeWidth={1.5} />
                       <span className="text-[14px] font-['Manrope']">Pusat Bantuan</span>
                    </Link>
                 </div>
 
                 {/* Sign Out */}
                 <div className="flex flex-col py-1 border-t border-gray-100">
-                   <button 
-                     onClick={() => {
-                       logout();
-                       navigate('/');
-                     }}
-                     className="flex items-center justify-between w-full text-left px-5 py-2.5 hover:bg-rose-50/50 hover:text-rose-600 text-gray-600 transition-colors group focus:outline-none"
-                   >
-                     <div className="flex flex-col">
-                        <span className="text-[14px] font-['Manrope'] font-medium">Keluar</span>
-                        <span className="text-[11px] font-['Manrope'] text-gray-400 group-hover:text-rose-400 transition-colors truncate max-w-[190px]">{user?.email || 'user@example.com'}</span>
+                   <button onClick={() => { logout(); navigate('/'); }} className="w-full flex items-center justify-between px-4 py-3 bg-red-50/50 hover:bg-red-50 group transition-colors text-left rounded-b-2xl">
+                     <div>
+                       <span className="block text-[13px] font-bold text-rose-600 font-['Lexend_Deca']">Keluar</span>
+                       <span className="text-[11px] font-['Manrope'] text-gray-500 group-hover:text-rose-400 transition-colors truncate max-w-[190px]">{user?.email || 'user@example.com'}</span>
                      </div>
-                     <LogOut className="w-[18px] h-[18px] text-gray-400 group-hover:text-rose-500 transition-colors" strokeWidth={1.5} />
-                   </button>
+                     <LogOut className="w-[18px] h-[18px] text-gray-500 group-hover:text-rose-500 transition-colors" strokeWidth={1.5} />
+                  </button>
                 </div>
 
                 {/* Footer Links (Mini) */}
-                <div className="px-5 pt-3 mt-1 pb-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-['Manrope'] text-gray-400">
+                <div className="px-5 pt-3 mt-1 pb-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-['Manrope'] text-gray-500">
                     <Link to="#" className="hover:text-gray-900 transition-colors">Tentang Kami</Link>
                     <Link to="#" className="hover:text-gray-900 transition-colors">Blog</Link>
                     <Link to="#" className="hover:text-gray-900 transition-colors">Ketentuan</Link>

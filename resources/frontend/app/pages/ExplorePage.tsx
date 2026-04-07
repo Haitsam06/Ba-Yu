@@ -9,7 +9,7 @@ import { Link, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { useBookmarks } from '../contexts/BookmarkContext';
 import { AuthModal } from '../components/auth-modal';
-
+import { NoteCardSkeleton } from '../components/ui/skeletons';
 
 export default function ExplorePage() {
   const { isAuthenticated } = useAuth();
@@ -245,29 +245,9 @@ export default function ExplorePage() {
             {/* Notes Vertical Feed (Medium Style) */}
             <div className={`px-6 md:px-0 w-full flex flex-col pb-16`}>
               {isLoadingNotes ? (
-                 <div className="animate-pulse space-y-2">
-                    {[...Array(4)].map((_, i) => (
-                       <div key={i} className="flex flex-col-reverse sm:flex-row gap-6 sm:gap-8 py-8 border-b border-gray-100 last:border-0">
-                          <div className="flex-1 space-y-4 py-2">
-                             <div className="h-7 w-3/4 bg-gray-100 rounded-lg"></div>
-                             <div className="h-4 w-full bg-gray-100 rounded-md mt-4"></div>
-                             <div className="h-4 w-5/6 bg-gray-100 rounded-md"></div>
-                             <div className="flex items-center justify-between mt-auto pt-6">
-                                <div className="flex items-center gap-3">
-                                   <div className="w-7 h-7 bg-gray-100 rounded-full"></div>
-                                   <div className="space-y-1.5">
-                                      <div className="h-3 w-20 bg-gray-100 rounded-md"></div>
-                                      <div className="h-2 w-12 bg-gray-100 rounded-md"></div>
-                                   </div>
-                                </div>
-                                <div className="flex gap-4">
-                                   <div className="h-5 w-10 bg-gray-100 rounded-md"></div>
-                                   <div className="h-5 w-10 bg-gray-100 rounded-md"></div>
-                                </div>
-                             </div>
-                          </div>
-                          <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] bg-gray-100 rounded-[12px] shrink-0"></div>
-                       </div>
+                 <div className="space-y-0">
+                    {[...Array(5)].map((_, i) => (
+                       <NoteCardSkeleton key={i} />
                     ))}
                  </div>
               ) : formattedNotes.length > 0 ? (

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MobileLayout } from '../components/MobileLayout';
+import { NoteCardSkeleton } from '../components/ui/skeletons';
 import { Settings, Edit, FileText, Bookmark, Eye, Heart, MessageCircle, Users, Shield, BarChart3, Clock, CheckCircle, ChevronRight, Activity, Calendar, Sparkles, MapPin, Link as LinkIcon, Star } from 'lucide-react';
 import { mockUsers, mockNotes } from '../data/mockData';
 import { Link, useSearchParams } from 'react-router';
@@ -226,15 +227,15 @@ export default function ProfilePage() {
                 </div>
 
                 {currentUser.bio ? (
-                  <div className="bg-gray-50/80 rounded-2xl p-4 sm:p-5 border border-gray-100 max-w-2xl mx-auto sm:mx-0">
-                     <p className="font-['Manrope'] text-[15px] text-gray-700 leading-relaxed italic whitespace-pre-wrap">
+                  <div className="bg-gray-100 rounded-2xl p-4 sm:p-5 border border-gray-200 max-w-2xl mx-auto sm:mx-0 shadow-sm">
+                     <p className="font-['Manrope'] text-[15px] text-gray-800 leading-relaxed italic whitespace-pre-wrap">
                        "{currentUser.bio}"
                      </p>
                   </div>
                 ) : (
-                  <div className="bg-gray-50/80 rounded-2xl p-4 sm:p-5 border border-gray-100 max-w-2xl mx-auto sm:mx-0">
-                     <p className="font-['Manrope'] text-[15px] text-gray-400 italic">
-                       Belum ada bio singkat. Lengkapi profilmu!
+                  <div className="bg-gray-100 rounded-2xl p-4 sm:p-5 border border-gray-200 max-w-2xl mx-auto sm:mx-0 shadow-sm">
+                     <p className="font-['Manrope'] text-[15px] text-gray-500 italic">
+                        Belum ada bio.
                      </p>
                   </div>
                 )}
@@ -304,7 +305,7 @@ export default function ProfilePage() {
                       key={tab.id}
                       onClick={() => handleTabChange(tab.id as any)}
                       className={`relative pb-4 font-['Lexend_Deca'] font-semibold text-[15px] whitespace-nowrap transition-colors flex items-center gap-2 ${
-                        activeTab === tab.id ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'
+                        activeTab === tab.id ? 'text-gray-900 border-b-2 border-primary' : 'text-gray-500 hover:text-gray-700'
                       }`}
                     >
                       {tab.label}
@@ -325,24 +326,9 @@ export default function ProfilePage() {
                {activeTab === 'catatan' && (
                  <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-3xl">
                    {isLoadingNotes ? (
-                      <div className="animate-pulse space-y-2">
+                      <div className="space-y-0">
                          {[...Array(3)].map((_, i) => (
-                            <div key={i} className="flex flex-col-reverse sm:flex-row gap-6 py-6 border-b border-gray-100">
-                               <div className="flex-1 space-y-4 py-2">
-                                  <div className="flex gap-2 items-center mb-2">
-                                     <div className="w-5 h-5 bg-gray-100 rounded-full"></div>
-                                     <div className="h-4 w-24 bg-gray-100 rounded"></div>
-                                  </div>
-                                  <div className="h-6 w-3/4 bg-gray-100 rounded-lg"></div>
-                                  <div className="h-4 w-full bg-gray-100 rounded mt-4"></div>
-                                  <div className="h-4 w-5/6 bg-gray-100 rounded"></div>
-                                  <div className="flex gap-4 mt-6">
-                                     <div className="h-4 w-12 bg-gray-100 rounded"></div>
-                                     <div className="h-4 w-12 bg-gray-100 rounded"></div>
-                                  </div>
-                               </div>
-                               <div className="w-full sm:w-[150px] md:w-[180px] h-[160px] sm:h-[120px] md:h-[135px] bg-gray-100 rounded-2xl shrink-0"></div>
-                            </div>
+                            <NoteCardSkeleton key={i} />
                          ))}
                       </div>
                    ) : userNotes.length > 0 ? userNotes.map((note) => (
@@ -435,26 +421,11 @@ export default function ProfilePage() {
                {activeTab === 'bookmarks' && (
                  <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-3xl">
                     {isLoadingBookmarks ? (
-                       <div className="animate-pulse space-y-2">
-                          {[...Array(3)].map((_, i) => (
-                             <div key={i} className="flex flex-col-reverse sm:flex-row gap-6 py-6 border-b border-gray-100">
-                                <div className="flex-1 space-y-4 py-2">
-                                   <div className="flex gap-2 items-center mb-2">
-                                      <div className="w-5 h-5 bg-gray-100 rounded-full"></div>
-                                      <div className="h-4 w-24 bg-gray-100 rounded"></div>
-                                   </div>
-                                   <div className="h-6 w-3/4 bg-gray-100 rounded-lg"></div>
-                                   <div className="h-4 w-full bg-gray-100 rounded mt-4"></div>
-                                   <div className="h-4 w-5/6 bg-gray-100 rounded"></div>
-                                   <div className="flex gap-4 mt-6">
-                                      <div className="h-4 w-12 bg-gray-100 rounded"></div>
-                                      <div className="h-4 w-12 bg-gray-100 rounded"></div>
-                                   </div>
-                                </div>
-                                <div className="w-full sm:w-[150px] md:w-[180px] h-[160px] sm:h-[120px] md:h-[135px] bg-gray-100 rounded-2xl shrink-0"></div>
-                             </div>
-                          ))}
-                       </div>
+                      <div className="space-y-0">
+                         {[...Array(3)].map((_, i) => (
+                            <NoteCardSkeleton key={i} />
+                         ))}
+                      </div>
                     ) : bookmarkedNotes.length > 0 ? bookmarkedNotes.map((note) => (
                       <article 
                         key={note.id} 

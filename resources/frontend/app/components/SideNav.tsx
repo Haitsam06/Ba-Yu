@@ -54,7 +54,7 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
                       : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200/60'
                   }`}
                 >
-                  <item.icon className={`shrink-0 transition-all duration-200 ${active ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-400 group-hover:text-gray-600'}`} strokeWidth={active ? 2.5 : 2} />
+                  <item.icon className={`shrink-0 transition-all duration-200 ${active ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-500 group-hover:text-gray-900'}`} strokeWidth={active ? 2.5 : 2} />
                   <span className={`font-['Manrope'] text-[14px] truncate mt-[1px] ${active ? 'font-bold' : 'font-medium'}`}>
                     {item.label}
                   </span>
@@ -74,7 +74,7 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
                 isActive('/stats') ? 'bg-primary/10 text-primary' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
               }`}
             >
-              <Hash className={`shrink-0 transition-all duration-200 ${isActive('/stats') ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-400 group-hover:text-gray-600'}`} strokeWidth={isActive('/stats') ? 2.5 : 2} />
+              <Hash className={`shrink-0 transition-all duration-200 ${isActive('/stats') ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-500 group-hover:text-gray-900'}`} strokeWidth={isActive('/stats') ? 2.5 : 2} />
               <span className={`font-['Manrope'] text-[14px] truncate mt-[1px] ${isActive('/stats') ? 'font-bold' : 'font-medium'}`}>Statistik Belajar</span>
             </Link>
          </div>

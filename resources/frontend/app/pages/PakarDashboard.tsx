@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { CheckCircle, XCircle, Eye, Clock, Search, Filter, ShieldCheck, Map, BookOpen, ChevronRight } from 'lucide-react';
 import { mockNotes, getUserById, mataPelajaran } from '../data/mockData';
 import { Link } from 'react-router';
+import { useToast } from '../contexts/ToastContext';
 
 type VerificationStatus = 'pending' | 'approved' | 'rejected';
 
@@ -11,6 +12,7 @@ export default function PakarDashboard() {
   const { user } = useAuth();
   const [filter, setFilter] = useState<'all' | VerificationStatus>('pending');
   const [searchQuery, setSearchQuery] = useState('');
+  const { showToast } = useToast();
 
   // Mock pending notes for verification
   const pendingNotes = mockNotes.filter(note => !note.isValidated).slice(0, 5);
@@ -18,7 +20,7 @@ export default function PakarDashboard() {
 
   const handleVerify = (noteId: string, status: 'approve' | 'reject') => {
     // Mock verification action
-    alert(`Catatan ${status === 'approve' ? 'disetujui' : 'ditolak'}!`);
+    showToast(`Catatan ${status === 'approve' ? 'disetujui' : 'ditolak'}!`, status === 'approve' ? 'success' : 'warning');
   };
 
   const filteredNotes = filter === 'all' 

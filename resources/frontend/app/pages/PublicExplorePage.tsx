@@ -3,6 +3,7 @@ import { MobileLayout } from '../components/MobileLayout';
 import { Navbar } from '../components/navbar';
 import { Footer } from '../components/footer';
 import { Search, Filter, BookOpen, Check, Eye, Heart, MessageCircle, Upload, LogIn, Sparkles, TrendingUp, Clock, Bookmark, Star, X } from 'lucide-react';
+import { NoteCardSkeleton } from '../components/ui/skeletons';
 import { mataPelajaran, getUserById } from '../data/mockData';
 import axios from 'axios';
 import { Link, useLocation } from 'react-router';
@@ -231,8 +232,10 @@ export default function PublicExplorePage() {
                         : 'text-gray-500 font-medium hover:text-gray-900'
                       }`}
                     >
-                      <tab.icon className={`w-[16px] h-[16px] transition-colors ${activeSegment === tab.key ? 'text-gray-900' : 'text-gray-400 group-hover:text-gray-600'}`} strokeWidth={activeSegment === tab.key ? 2.5 : 2} />
+                      <tab.icon className={`w-[16px] h-[16px] transition-colors ${activeSegment === tab.key ? 'text-gray-900' : 'text-gray-500 group-hover:text-gray-700'}`} strokeWidth={activeSegment === tab.key ? 2.5 : 2} />
+                      <span className={`font-['Lexend_Deca'] font-semibold text-[14px] transition-colors ${activeSegment === tab.key ? 'text-gray-900' : 'text-gray-500 group-hover:text-gray-700'}`}>
                       {tab.label}
+                      </span>
                       {activeSegment === tab.key && (
                         <div className="absolute -bottom-[1px] left-0 w-full h-[2px] bg-gray-900 rounded-t-full shadow-[0_-1px_6px_rgba(0,0,0,0.2)]"></div>
                       )}
@@ -245,29 +248,9 @@ export default function PublicExplorePage() {
             {/* Notes Vertical Feed (Medium Style) */}
             <div className={`px-6 md:px-0 w-full flex flex-col pb-16`}>
               {isLoadingNotes ? (
-                 <div className="animate-pulse space-y-2">
-                    {[...Array(4)].map((_, i) => (
-                       <div key={i} className="flex flex-col-reverse sm:flex-row gap-6 sm:gap-8 py-8 border-b border-gray-100 last:border-0">
-                          <div className="flex-1 space-y-4 py-2">
-                             <div className="h-7 w-3/4 bg-gray-100 rounded-lg"></div>
-                             <div className="h-4 w-full bg-gray-100 rounded-md mt-4"></div>
-                             <div className="h-4 w-5/6 bg-gray-100 rounded-md"></div>
-                             <div className="flex items-center justify-between mt-auto pt-6">
-                                <div className="flex items-center gap-3">
-                                   <div className="w-7 h-7 bg-gray-100 rounded-full"></div>
-                                   <div className="space-y-1.5">
-                                      <div className="h-3 w-20 bg-gray-100 rounded-md"></div>
-                                      <div className="h-2 w-12 bg-gray-100 rounded-md"></div>
-                                   </div>
-                                </div>
-                                <div className="flex gap-4">
-                                   <div className="h-5 w-10 bg-gray-100 rounded-md"></div>
-                                   <div className="h-5 w-10 bg-gray-100 rounded-md"></div>
-                                </div>
-                             </div>
-                          </div>
-                          <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] bg-gray-100 rounded-[12px] shrink-0"></div>
-                       </div>
+                 <div className="space-y-0">
+                    {[...Array(5)].map((_, i) => (
+                       <NoteCardSkeleton key={i} />
                     ))}
                  </div>
               ) : formattedNotes.length > 0 ? (

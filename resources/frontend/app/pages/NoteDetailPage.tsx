@@ -12,6 +12,7 @@ import 'react-quill/dist/quill.snow.css'; // Just in case, though we apply custo
 import 'katex/dist/katex.min.css';
 import axios from 'axios';
 import { useToast } from '../contexts/ToastContext';
+import { ArticleSkeleton } from '../components/ui/skeletons';
 
 export default function NoteDetailPage() {
   const { id } = useParams();
@@ -179,45 +180,7 @@ const fetchNoteDetail = async () => {
   if (isLoading) {
     return (
       <SkeletonContainer>
-        <div className="max-w-3xl mx-auto px-5 lg:px-0 pt-10 sm:pt-20 pb-20 animate-pulse">
-          {/* Skeleton Title */}
-          <div className="h-10 sm:h-14 bg-gray-100 rounded-2xl w-3/4 mb-6"></div>
-          
-          {/* Skeleton Tags */}
-          <div className="flex gap-3 mb-8">
-             <div className="h-8 w-24 bg-gray-100 rounded-full"></div>
-             <div className="h-8 w-32 bg-gray-100 rounded-full"></div>
-             <div className="h-8 w-28 bg-gray-100 rounded-full hidden sm:block"></div>
-          </div>
-          
-          {/* Skeleton Author Info */}
-          <div className="flex items-center gap-4 py-4 mb-8">
-             <div className="w-12 h-12 rounded-full bg-gray-100 shrink-0"></div>
-             <div className="flex-1">
-                <div className="h-4 w-32 bg-gray-100 rounded mb-2"></div>
-                <div className="h-3 w-48 bg-gray-100 rounded"></div>
-             </div>
-          </div>
-
-          {/* Skeleton Interactivity Bar */}
-          <div className="flex items-center justify-between py-4 border-y border-gray-100/50 mb-10">
-             <div className="flex gap-6">
-                <div className="w-8 h-8 rounded-full bg-gray-50"></div>
-                <div className="w-8 h-8 rounded-full bg-gray-50"></div>
-             </div>
-          </div>
-
-          {/* Skeleton Content Body */}
-          <div className="space-y-4 mb-16">
-             <div className="h-4 bg-gray-50 rounded w-full"></div>
-             <div className="h-4 bg-gray-50 rounded w-[90%]"></div>
-             <div className="h-4 bg-gray-50 rounded w-[95%]"></div>
-             <div className="h-4 bg-gray-50 rounded w-3/4"></div>
-             <div className="h-40 bg-gray-50 rounded-xl w-full my-6"></div>
-             <div className="h-4 bg-gray-50 rounded w-full"></div>
-             <div className="h-4 bg-gray-50 rounded w-[85%]"></div>
-          </div>
-        </div>
+        <ArticleSkeleton />
       </SkeletonContainer>
     );
   }
@@ -390,12 +353,12 @@ const fetchNoteDetail = async () => {
                 <ShieldCheck className="w-4 h-4" /> Verifikasi
               </button>
             )}
-            <button className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-400 hover:text-gray-700">
+            <button className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-500 hover:text-gray-900">
               <Share2 className="w-[18px] h-[18px]" />
             </button>
             <button
               onClick={() => requireAuth(() => toggleBookmark(note.id))}
-              className={`p-2 rounded-full transition-colors ${isBookmarked(note.id) ? 'text-primary bg-primary/5 hover:bg-primary/10' : 'text-gray-400 hover:text-gray-700 hover:bg-gray-50'}`}
+              className={`p-2 rounded-full transition-colors ${isBookmarked(note.id) ? 'text-primary bg-primary/5 hover:bg-primary/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
             >
               <Bookmark className={`w-[18px] h-[18px] ${isBookmarked(note.id) ? 'fill-primary' : ''}`} />
             </button>
@@ -404,7 +367,7 @@ const fetchNoteDetail = async () => {
                 setReportTarget({ type: 'note', id: note.id, title: note.title });
                 setShowReportModal(true);
               })}
-              className="p-2 hover:bg-red-50 rounded-full transition-colors text-gray-400 hover:text-red-500"
+              className="p-2 hover:bg-red-50 rounded-full transition-colors text-gray-500 hover:text-red-500"
             >
               <Flag className="w-[18px] h-[18px]" />
             </button>
@@ -475,7 +438,7 @@ const fetchNoteDetail = async () => {
                 className="flex items-center gap-2 text-[15px] font-['Manrope'] font-medium transition-colors group"
                 aria-label="Suka catatan"
               >
-                  <Heart className={`w-5 h-5 transition-transform group-hover:scale-110 ${liked ? 'fill-red-500 text-red-500' : 'text-gray-400 group-hover:text-red-500'}`} />
+                  <Heart className={`w-5 h-5 transition-transform group-hover:scale-110 ${liked ? 'fill-red-500 text-red-500' : 'text-gray-500 group-hover:text-red-500'}`} />
                   <span className={liked ? 'text-red-500' : 'text-gray-500'}>{note.likes}</span>
               </button>
               
@@ -488,12 +451,12 @@ const fetchNoteDetail = async () => {
                 }}
                 className="flex items-center gap-2 text-[15px] font-['Manrope'] font-medium text-gray-500 hover:text-gray-800 transition-colors group"
               >
-                  <MessageCircle className="w-5 h-5 text-gray-400 group-hover:text-gray-700 transition-transform group-hover:scale-110" />
+                  <MessageCircle className="w-5 h-5 text-gray-500 group-hover:text-gray-700 transition-transform group-hover:scale-110" />
                   <span>{comments.length}</span>
               </button>
               
               <div className="flex items-center gap-2 text-[15px] font-['Manrope'] font-medium text-gray-500 ml-2 hidden sm:flex">
-                  <Eye className="w-5 h-5 text-gray-400" />
+                  <Eye className="w-5 h-5 text-gray-500" />
                   <span>{note.views}</span>
               </div>
            </div>
@@ -614,7 +577,7 @@ const fetchNoteDetail = async () => {
             {isAuthenticated ? (
               <div className="mb-12 flex gap-4 bg-white p-2 rounded-3xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
                  <img
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
+                    src={user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop'}
                     alt="Your avatar"
                     className="w-10 h-10 rounded-full border border-gray-200 object-cover shrink-0 hidden sm:block m-4"
                   />
@@ -692,7 +655,7 @@ const fetchNoteDetail = async () => {
                                      <div className="relative">
                                          <button 
                                            onClick={() => setActiveCommentMenu(activeCommentMenu === cid ? null : cid)}
-                                           className="p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                                           className="p-1 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-900 transition-colors"
                                          >
                                              <MoreHorizontal className="w-5 h-5" />
                                          </button>
@@ -723,7 +686,7 @@ const fetchNoteDetail = async () => {
                                                        })}
                                                        className="w-full text-left px-4 py-2.5 text-[14px] font-['Manrope'] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                                                      >
-                                                       <Flag className="w-4 h-4 text-gray-400" /> Laporkan
+                                                       <Flag className="w-4 h-4 text-gray-500" /> Laporkan
                                                      </button>
                                                  </div>
                                              </>

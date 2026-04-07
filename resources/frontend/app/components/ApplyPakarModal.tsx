@@ -4,6 +4,7 @@ import { X, UploadCloud, FileText, CheckCircle2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
+import { useToast } from '../contexts/ToastContext';
 
 interface ApplyPakarModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const { showToast } = useToast();
   
   const [formData, setFormData] = useState({
     name: user?.name || '',
@@ -26,7 +28,7 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
     e.preventDefault();
     
     if (!file) {
-      alert("Harap unggah dokumen bukti (PDF/JPG) terlebih dahulu!");
+      showToast("Harap unggah dokumen bukti (PDF/JPG) terlebih dahulu!", "warning");
       return;
     }
 
@@ -55,7 +57,7 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
       }, 2000);
     } catch (error: any) {
       setIsSubmitting(false);
-      alert(error.response?.data?.message || 'Gagal mengirim pengajuan. Pastikan file maksimal 5MB.');
+      showToast(error.response?.data?.message || 'Gagal mengirim pengajuan. Pastikan file maksimal 5MB.', "error");
     }
   };
 
