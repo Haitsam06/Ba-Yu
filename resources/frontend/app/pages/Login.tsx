@@ -18,12 +18,12 @@ export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     
     if (isLogin) {
-      const success = login(formData.email, formData.password);
+      const success = await login(formData.email, formData.password);
       if (success) {
         // Navigate based on role
         const email = formData.email.toLowerCase();

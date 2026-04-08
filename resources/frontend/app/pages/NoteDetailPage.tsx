@@ -8,7 +8,9 @@ import { getNoteById, getUserById, getCommentsByNoteId, mockNotes } from '../dat
 import { useAuth } from '../contexts/AuthContext';
 import { useBookmarks } from '../contexts/BookmarkContext';
 import { AuthModal } from '../components/auth-modal';
-import 'react-quill/dist/quill.snow.css'; // Just in case, though we apply custom styles
+// @ts-ignore
+import 'react-quill/dist/quill.snow.css';
+// @ts-ignore // Just in case, though we apply custom styles
 import 'katex/dist/katex.min.css';
 import axios from 'axios';
 import { useToast } from '../contexts/ToastContext';
@@ -272,6 +274,28 @@ const fetchNoteDetail = async () => {
       showToast(e.response?.data?.message || 'Gagal mengirim komentar', 'error');
     } finally {
       setIsSubmittingComment(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (!isAuthenticated) return openAuthModal('login');
+    
+    if (!window.confirm('Yakin mau hapus komentar ini?')) return;
+
+    try {
+      const token = localStorage.getItem('bayu-token');
+      await axios.delete(`/api/v1/comments/${commentId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setComments((prev: any[]) => prev.filter((c: any) => c.id !== commentId));
+      
+      setNote((prev: any) => ({ ...prev, comments: prev.comments - 1 }));
+      showToast('Komentar berhasil dihapus!', 'success');
+
+    } catch (e: any) {
+      console.error(e);
+      showToast(e.response?.data?.message || 'Gagal menghapus komentar', 'error');
     }
   };
 
@@ -737,7 +761,7 @@ const fetchNoteDetail = async () => {
                                                            }}
                                                            className="w-full text-left px-4 py-2.5 text-[14px] font-['Manrope'] font-medium text-red-600 hover:bg-red-50 flex items-center gap-2"
                                                          >
-                                                           <Trash2 className="w-4 h-4" /> Hapus Komentar
+                                                           <Trash2 className="w-4 h-4"/> Hapus Komentar
                                                          </button>
                                                      )}
                                                      <button
