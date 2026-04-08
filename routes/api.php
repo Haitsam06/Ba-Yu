@@ -58,6 +58,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/v1/users', [UserController::class, 'index']);
     Route::put('/v1/users/me', [UserController::class, 'updateProfile']);
 
+    //Following
+    Route::post('/users/{id}/follow', [\App\Http\Controllers\FollowController::class, 'toggleFollow']);
+
     // Categories & Topics
     Route::get('/v1/categories', [CategoryController::class, 'index']);
     Route::get('/v1/topics', [TopicController::class, 'index']);

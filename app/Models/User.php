@@ -67,6 +67,22 @@ class User extends Authenticatable
     {
         return $this->hasMany(Notification::class, 'user_id');
     }
+
+    public function followings()
+    {
+        return $this->belongsToMany(User::class, null, 'follower_ids', 'following_ids');
+    }
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, null, 'following_ids', 'follower_ids');
+    }
+
+    public function isFollowing($userId)
+    {
+        return $this->followings()->where('_id', $userId)->exists();
+    }
+
     public function createToken(string $name, array $abilities = ['*'], \DateTimeInterface $expiresAt = null)
     {
         $plainTextToken = \Illuminate\Support\Str::random(40);

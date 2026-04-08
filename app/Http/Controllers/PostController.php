@@ -185,6 +185,18 @@ class PostController extends Controller
             });
         }
 
+        if ($post->user) {
+            $post->user->setAttribute('followers_count', $post->user->followers()->count());
+
+            if ($userIdStr !== "") {
+                $loggedInUser = \App\Models\User::find($userIdStr);
+                $isFollowed = $loggedInUser ? $loggedInUser->isFollowing($post->user->id) : false;
+                $post->user->setAttribute('is_followed_by_me', $isFollowed);
+            } else {
+                $post->user->setAttribute('is_followed_by_me', false);
+            }
+        }
+
         return response()->json([
             'message' => 'Berhasil mengambil post',
             'data' => $post

@@ -27,15 +27,15 @@ export default function NoteDetailPage() {
   const [replyText, setReplyText] = useState('');
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [activeCommentMenu, setActiveCommentMenu] = useState<string | null>(null);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
 
   const handleDownloadPDF = () => {
     const content = document.getElementById('area-materi-pdf');
     if (!content) return;
 
-    // 1. Kita simpan dulu seluruh isi web lu (beserta navbar, sidebar, dll)
     const originalHTML = document.body.innerHTML;
 
-    // 2. JURUS BRUTAL: Ganti paksa layar web lu JADI HANYA KOTAK MATERI!
     document.body.innerHTML = `
         <div style="padding: 40px; color: black; background: white; font-family: sans-serif;">
             <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 20px;">
@@ -46,16 +46,51 @@ export default function NoteDetailPage() {
         </div>
     `;
 
-    // 3. Kasih napas 0.1 detik biar browser nge-render layarnya, baru kita Print!
     setTimeout(() => {
         window.print();
-        
-        // 4. Kalau jendela print-nya udah ditutup, balikin web lu ke semula!
         document.body.innerHTML = originalHTML;
-        
-        // 5. Reload web-nya biar tombol-tombol React lu nggak nge-bug
         window.location.reload();
     }, 100);
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: note?.title || 'Catatan Menarik di Ba-Yu',
+      text: `Eh, cek catatan keren ini deh: "${note?.title || 'Materi Belajar'}" karya ${author?.name || 'seseorang'}. Cuma di Ba-Yu! 🚀`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareData.url);
+        showToast('Link catatan berhasil disalin ke clipboard!', 'success');
+      }
+    } catch (error) {
+      console.log('Gagal share atau share dibatalkan:', error);
+    }
+  };
+
+  const handleFollowToggle = async () => {
+    if (!author || !author.id) return; 
+
+    try {
+      const response = await axios.post(`/api/users/${author.id}/follow`);
+      
+      if (response.data.status === 'followed') {
+        setIsFollowing(true);
+        setFollowerCount(prev => prev + 1);
+        showToast('Berhasil mengikuti penulis!', 'success');
+      } else {
+        setIsFollowing(false);
+        setFollowerCount(prev => prev - 1);
+        showToast('Berhenti mengikuti penulis.', 'info');
+      }
+    } catch (error: any) {
+      console.error("Gagal toggle follow:", error);
+      showToast(error.response?.data?.message || 'Gagal memproses permintaan.', 'error');
+    }
   };
 
   const [showReportModal, setShowReportModal] = useState(false);
@@ -104,16 +139,13 @@ export default function NoteDetailPage() {
 const fetchNoteDetail = async () => {
         if (!id) return;
         try {
-            // 1. Ambil KTP (Token) dulu
             const token = localStorage.getItem('bayu-token');
 
-            // 2. Selipin tokennya ke dalem request GET
             const response = await axios.get(`/api/v1/posts/${id}`, {
                 headers: token ? { Authorization: `Bearer ${token}` } : {}
             });
             const n = response.data.data;
 
-            // 3. Sinkronin warna hati!
             setLiked(n.is_liked === true);
         
         setNote({
@@ -134,12 +166,14 @@ const fetchNoteDetail = async () => {
           description: n.content ? n.content.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...' : ''
         });
         
-        setAuthor(n.user ? { 
-           ...n.user, 
-           avatar: n.user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400',
-           role: n.user.role || 'siswa',
-           totalCatatan: 0,
-           followers: 0,
+        setAuthor(n.user ? {
+            ...n.user,
+            avatar: n.user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400',
+            role: n.user.role || 'siswa',
+            followers_count: n.user.followers_count || 0,
+            is_followed_by_me: n.user.is_followed_by_me || false,
+            totalCatatan: 0,
+            followers: 0,
         } : { name: 'Anonim', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400', role: 'siswa', totalCatatan: 0, followers: 0 });
         
         // Handle comments logic if available, for now map simple
@@ -172,6 +206,13 @@ const fetchNoteDetail = async () => {
       }, 100);
     }
   }, [isLoading, location.hash]);
+
+  useEffect(() => {
+    if (author) {
+      setFollowerCount(author.followers_count || 0);
+      setIsFollowing(author.is_followed_by_me || false); 
+    }
+  }, [author]);
 
   const openAuthModal = (tab: 'login' | 'register') => {
     setAuthTab(tab);
@@ -366,7 +407,9 @@ const fetchNoteDetail = async () => {
                 <ShieldCheck className="w-4 h-4" /> Verifikasi
               </button>
             )}
-            <button className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-500 hover:text-gray-900">
+            <button
+                onClick={handleShare} 
+                className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-500 hover:text-gray-900">
               <Share2 className="w-[18px] h-[18px]" />
             </button>
             <button
@@ -562,21 +605,26 @@ const fetchNoteDetail = async () => {
                   </p>
                   
                   <div className="flex flex-col sm:flex-row items-center gap-4">
-                      <button 
-                        onClick={() => requireAuth(() => {})}
-                        className="w-full sm:w-auto px-8 py-3 bg-gray-900 text-white rounded-full text-[15px] font-['Manrope'] font-bold transition-transform hover:scale-[1.02] shadow-sm hover:bg-black"
+                      <button
+                          onClick={() => requireAuth(handleFollowToggle)}
+                          className={`w-full sm:w-auto px-8 py-3 rounded-full text-[15px] font-['Manrope'] font-bold transition-all ${
+                              isFollowing 
+                              ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                              : 'bg-gray-900 text-white hover:bg-black'       
+                          }`}
                       >
-                        Ikuti Penulis
-                      </button>
-                      <div className="flex items-center gap-6 mt-4 sm:mt-0 font-['Manrope'] text-[15px] text-gray-500 font-medium">
-                         <div className="flex items-center gap-1.5">
-                            <span className="font-bold text-gray-900">{author.followers}</span> Pengikut
-                         </div>
-                         <div className="flex items-center gap-1.5">
-                            <span className="font-bold text-gray-900">{author.totalCatatan}</span> Tulisan
-                         </div>
-                      </div>
-                  </div>
+                          {isFollowing ? 'Mengikuti' : 'Ikuti Penulis'}
+                    </button>
+
+                    <div className="flex items-center gap-6 mt-4 sm:mt-0 font-['Manrope'] text-[15px] text-gray-500 font-medium">
+                        <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-gray-900">{followerCount}</span> Pengikut
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-gray-900">{author.totalCatatan || 0}</span> Tulisan
+                        </div>
+                    </div>
+                 </div>
                </div>
             </div>
         </div>
