@@ -3,7 +3,7 @@ import { MobileLayout } from '../components/MobileLayout';
 import { NoteCardSkeleton } from '../components/ui/skeletons';
 import { Settings, Edit, FileText, Bookmark, Eye, Heart, MessageCircle, Users, Shield, BarChart3, Clock, CheckCircle, ChevronRight, Activity, Calendar, Sparkles, MapPin, Link as LinkIcon, Star } from 'lucide-react';
 import { mockUsers, mockNotes } from '../data/mockData';
-import { Link, useSearchParams } from 'react-router';
+import { Link, useSearchParams, useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { useBookmarks } from '../contexts/BookmarkContext';
 import { ApplyPakarModal } from '../components/ApplyPakarModal';
@@ -11,6 +11,7 @@ import axios from 'axios';
 import { useToast } from '../contexts/ToastContext';
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab') as 'catatan' | 'bookmarks' | 'aktivitas';
   
@@ -38,6 +39,29 @@ export default function ProfilePage() {
     setActiveTab(tab);
     setSearchParams({ tab });
   };
+
+  const [activities, setActivities] = useState<any[]>([]);
+  const [isLoadingActivities, setIsLoadingActivities] = useState(false);
+
+  const fetchActivities = async () => {
+    setIsLoadingActivities(true);
+    try {
+      const token = localStorage.getItem('bayu-token');
+      const res = await axios.get('/api/profile/activities', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setActivities(res.data.data);
+    } catch (error) {
+      console.error("Gagal ngambil aktivitas", error);
+    } finally {
+      setIsLoadingActivities(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchActivities();
+  }, []);
+  // 🔥 BATAS MESIN 🔥
   
   const [notes, setNotes] = useState<any[]>([]);
   const [isLoadingNotes, setIsLoadingNotes] = useState(true);
@@ -299,7 +323,7 @@ export default function ProfilePage() {
                   {[
                     { id: 'catatan', label: 'Catatan Rilisan', count: userNotes.length },
                     { id: 'bookmarks', label: 'Tersimpan', count: bookmarkedNotes.length },
-                    { id: 'aktivitas', label: 'Aktivitas Diskusi', count: 0 }
+                    { id: 'aktivitas', label: 'Aktivitas Diskusi', count: activities.length }
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -517,15 +541,47 @@ export default function ProfilePage() {
                )}
 
                {activeTab === 'aktivitas' && (
-                 <div className="py-20 text-center bg-gray-50/50 rounded-3xl border border-gray-100 border-dashed flex flex-col items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center mb-5">
-                       <Clock className="w-8 h-8 text-gray-300" />
+                 <div className="w-full">
+            {isLoadingActivities ? (
+              <div className="py-20 text-center text-gray-500 font-['Manrope'] animate-pulse">Memuat jejak digitalmu...</div>
+            ) : activities.length > 0 ? (
+              <div className="flex flex-col gap-4 mt-2">
+                {activities.map((activity: any) => (
+                  <div 
+                    key={activity.id} 
+                    onClick={() => navigate(`/note/${activity.post_id}#comment-${activity.id}`)}
+                    className="p-5 border border-gray-200 rounded-2xl bg-white shadow-sm hover:shadow-md transition-all text-left cursor-pointer hover:border-primary/40 group"
+                  >
+                    <div className="text-sm text-gray-500 mb-3 font-['Manrope']">
+                      {activity.parent_comment_id ? (
+                         <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-xs font-bold mr-2">Balasan</span>
+                      ) : (
+                         <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-bold mr-2">Komentar</span>
+                      )}
+                      di catatan: <span className="font-semibold text-primary group-hover:underline">{activity.post?.title || 'Catatan telah dihapus'}</span>
                     </div>
-                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-[19px] mb-2">Belum Ada Riwayat</h3>
-                    <p className="font-['Manrope'] text-[15px] text-gray-500 mb-8 max-w-sm mx-auto leading-relaxed">
-                      Ruang ini akan dipenuhi dengan jejak interaksi diskusi dan ulasanmu seiring waktu.
-                    </p>
-                 </div>
+                    <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl text-gray-700 text-[15px] font-['Manrope'] leading-relaxed">
+                      "{activity.content}"
+                    </div>
+                    <div className="text-xs text-gray-400 mt-4 flex items-center gap-1.5 font-['Manrope']">
+                      <Clock className="w-3.5 h-3.5" />
+                      {new Date(activity.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-20 text-center bg-gray-50/50 rounded-3xl border border-gray-100 border-dashed flex flex-col items-center">
+                <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center mb-4">
+                  <Clock className="w-8 h-8 text-gray-300" />
+                </div>
+                <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-[19px] mb-2">Belum Ada Riwayat</h3>
+                <p className="font-['Manrope'] text-[15px] text-gray-500 max-w-sm mx-auto leading-relaxed">
+                  Ruang ini akan dipenuhi dengan jejak interaksi diskusi dan ulasanmu seiring waktu.
+                </p>
+              </div>
+            )}
+          </div>
                )}
 
             </div>

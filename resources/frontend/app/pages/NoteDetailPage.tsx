@@ -125,6 +125,22 @@ export default function NoteDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const hash = window.location.hash;
+    
+    if (hash && comments && comments.length > 0) {
+      setTimeout(() => {
+        const element = document.querySelector(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          
+          element.classList.add('bg-yellow-50', 'transition-colors', 'duration-1000');
+          setTimeout(() => element.classList.remove('bg-yellow-50'), 2000);
+        }
+      }, 500); 
+    }
+  }, [comments]);
+
+  useEffect(() => {
     if (window.location.hash && comments.length > 0) {
       setTimeout(() => {
         const el = document.getElementById(window.location.hash.slice(1));

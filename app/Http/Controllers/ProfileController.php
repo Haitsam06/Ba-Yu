@@ -60,4 +60,25 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    public function myActivities()
+    {
+        $userId = Auth::id();
+
+        if (!$userId) {
+            return response()->json(['message' => 'Belum login woi!'], 401);
+        }
+
+        $activities = \App\Models\Comment::with(['post' => function($query) {
+            $query->select('id', 'title'); 
+        }])
+        ->where('user_id', $userId)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        return response()->json([
+            'message' => 'Berhasil mengambil aktivitas diskusi',
+            'data' => $activities
+        ], 200);
+    }
 }

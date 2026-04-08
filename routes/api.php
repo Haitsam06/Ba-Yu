@@ -65,6 +65,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/v1/categories', [CategoryController::class, 'index']);
     Route::get('/v1/topics', [TopicController::class, 'index']);
 
+    // Activities
+    Route::get('/profile/activities', [\App\Http\Controllers\ProfileController::class, 'myActivities']);
+
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
