@@ -1,7 +1,6 @@
 import { MobileLayout } from '../components/MobileLayout';
 import { ChevronRight, User, Bell, Lock, HelpCircle, Shield, LogOut, Moon, Globe, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
-import { mockUsers } from '../data/mockData';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function SettingsPage() {

@@ -10,6 +10,7 @@ import UploadPage from './pages/UploadPage';
 import NoteDetailPage from './pages/NoteDetailPage';
 import NotificationsPage from './pages/NotificationsPage';
 import ProfilePage from './pages/ProfilePage';
+import PublicProfilePage from './pages/PublicProfilePage';
 import SettingsPage from './pages/SettingsPage';
 import EditProfilePage from './pages/EditProfilePage';
 import PakarDashboard from './pages/PakarDashboard';
@@ -40,6 +41,10 @@ export const router = createBrowserRouter([
       {
         path: 'note/:id',
         element: <NoteDetailPage />,
+      },
+      {
+        path: 'profile/:id',
+        element: <PublicProfilePage />,
       },
       {
         // Protected Wrapper

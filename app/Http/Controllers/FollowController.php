@@ -16,12 +16,17 @@ class FollowController extends Controller
             return response()->json(['message' => 'Nggak bisa follow diri sendiri bro!'], 400);
         }
 
+        $targetIdStr = (string)$targetUser->id;
+        $myIdStr = (string)$me->id;
+
         if ($me->isFollowing($targetUser->id)) {
-            $me->followings()->detach($targetUser->id);
+            $me->pull('following_ids', $targetIdStr);
+            $targetUser->pull('follower_ids', $myIdStr);
             return response()->json(['status' => 'unfollowed', 'message' => 'Berhenti mengikuti']);
         } 
         else {
-            $me->followings()->attach($targetUser->id);
+            $me->push('following_ids', $targetIdStr, true);
+            $targetUser->push('follower_ids', $myIdStr, true);
             return response()->json(['status' => 'followed', 'message' => 'Berhasil mengikuti']);
         }
     }

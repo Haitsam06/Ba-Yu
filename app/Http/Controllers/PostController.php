@@ -97,7 +97,7 @@ class PostController extends Controller
         $post = Post::create([
             'user_id' => Auth::id(),
             'title' => $request->title,
-            'content' => $request->content,
+            'content' => $request->input('content'),
             'description' => $request->description,
             'mapel' => $request->mapel,
             'jenjang' => $request->jenjang,
@@ -186,10 +186,11 @@ class PostController extends Controller
         }
 
         if ($post->user) {
-            $post->user->setAttribute('followers_count', $post->user->followers()->count());
+            $fCount = is_array($post->user->follower_ids) ? count($post->user->follower_ids) : 0;
+            $post->user->setAttribute('followers_count', $fCount);
 
             if ($userIdStr !== "") {
-                $loggedInUser = \App\Models\User::find($userIdStr);
+                $loggedInUser = User::find($userIdStr);
                 $isFollowed = $loggedInUser ? $loggedInUser->isFollowing($post->user->id) : false;
                 $post->user->setAttribute('is_followed_by_me', $isFollowed);
             } else {

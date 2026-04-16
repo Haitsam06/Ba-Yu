@@ -14,6 +14,8 @@ export interface User {
   bio?: string;
   school?: string;
   phone?: string;
+  followers_count?: number;
+  following_count?: number;
 }
 
 interface AuthContextType {

@@ -80,10 +80,10 @@ class User extends Authenticatable
 
     public function isFollowing($userId)
     {
-        return $this->followings()->where('_id', $userId)->exists();
+        return in_array((string)$userId, $this->following_ids ?? []);
     }
 
-    public function createToken(string $name, array $abilities = ['*'], \DateTimeInterface $expiresAt = null)
+    public function createToken(string $name, array $abilities = ['*'], ?\DateTimeInterface $expiresAt = null)
     {
         $plainTextToken = \Illuminate\Support\Str::random(40);
 

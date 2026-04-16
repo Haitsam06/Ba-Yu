@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { MobileLayout } from '../components/MobileLayout';
 import { NoteCardSkeleton } from '../components/ui/skeletons';
 import { Settings, Edit, FileText, Bookmark, Eye, Heart, MessageCircle, Users, Shield, BarChart3, Clock, CheckCircle, ChevronRight, Activity, Calendar, Sparkles, MapPin, Link as LinkIcon, Star } from 'lucide-react';
-import { mockUsers, mockNotes } from '../data/mockData';
 import { Link, useSearchParams, useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { useBookmarks } from '../contexts/BookmarkContext';
@@ -100,8 +99,7 @@ export default function ProfilePage() {
           const response = await axios.get(`/api/v1/posts?user_id=${userId}`);
           setNotes(response.data.data || []);
         } else {
-          // If no mapped user yet, we could use mock data as fallback or just empty
-          setNotes(mockNotes.filter(n => n.authorId === mockUsers[0].id));
+          setNotes([]);
         }
       } catch (error) {
         console.error('Error fetching user notes:', error);
@@ -112,16 +110,16 @@ export default function ProfilePage() {
     fetchUserNotes();
   }, [user]);
   
-  // Use auth user if available, fallback to mock user for stats
   const currentUser = {
-      ...mockUsers[0],
-      id: user?.id || user?._id || mockUsers[0].id,
-      name: user?.name || mockUsers[0].name,
-      avatar: user?.avatar || mockUsers[0].avatar,
+      id: user?.id || user?._id || '',
+      name: user?.name || 'Pengguna',
+      avatar: user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400',
       role: user?.role || 'siswa',
-      jenjang: user?.jenjang_pendidikan || 'SMA',
+      jenjang: user?.jenjang_pendidikan || '-',
       bio: user?.bio || '',
-      school: user?.school || ''
+      school: user?.school || '',
+      followers: user?.followers_count || 0,
+      following: user?.following_count || 0,
   };
     
   // Find notes based on matched ID (Now using API data)

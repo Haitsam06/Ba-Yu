@@ -1,40 +1,97 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MobileLayout } from '../components/MobileLayout';
 import { useAuth } from '../contexts/AuthContext';
 import { CheckCircle, XCircle, Eye, Clock, Search, Filter, ShieldCheck, Map, BookOpen, ChevronRight } from 'lucide-react';
-import { mockNotes, getUserById, mataPelajaran } from '../data/mockData';
+import { mataPelajaran } from '../data/mockData';
 import { Link } from 'react-router';
 import { useToast } from '../contexts/ToastContext';
+import axios from 'axios';
 
-type VerificationStatus = 'pending' | 'approved' | 'rejected';
+type VerificationStatus = 'pending' | 'approved' | 'all';
 
 export default function PakarDashboard() {
   const { user } = useAuth();
-  const [filter, setFilter] = useState<'all' | VerificationStatus>('pending');
+  const [filter, setFilter] = useState<VerificationStatus>('pending');
   const [searchQuery, setSearchQuery] = useState('');
   const { showToast } = useToast();
+  
+  const [notes, setNotes] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Mock pending notes for verification
-  const pendingNotes = mockNotes.filter(note => !note.isValidated).slice(0, 5);
-  const verifiedNotes = mockNotes.filter(note => note.isValidated).slice(0, 3);
+  useEffect(() => {
+    fetchPosts();
+  }, []);
 
-  const handleVerify = (noteId: string, status: 'approve' | 'reject') => {
-    // Mock verification action
-    showToast(`Catatan ${status === 'approve' ? 'disetujui' : 'ditolak'}!`, status === 'approve' ? 'success' : 'warning');
+  const fetchPosts = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get('/api/v1/posts');
+      const formattedNotes = (response.data.data || []).map((note: any) => ({
+        ...note,
+        id: note._id || note.id,
+        author: note.user ? { ...note.user, avatar: note.user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400' } : { name: 'Anonim', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400' },
+        createdAt: note.created_at || note.createdAt,
+        description: note.content ? note.content.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...' : 'Tidak ada deskripsi',
+        mataPelajaran: note.mapel || 'Lainnya',
+        kelas: note.kelas || '-',
+        isValidated: note.is_verified || false,
+      }));
+      setNotes(formattedNotes);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      showToast('Gagal memuat data antrean', 'error');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const filteredNotes = filter === 'all' 
-    ? [...pendingNotes, ...verifiedNotes]
+  const handleVerify = async (noteId: string, status: 'approve' | 'reject') => {
+    if (status === 'reject') {
+      showToast('Fitur tolak saat ini belum didukung sistem backend', 'warning');
+      return;
+    }
+
+    try {
+      const tk = localStorage.getItem('bayu-token');
+      await axios.put(`/api/v1/posts/${noteId}/verify`, {}, {
+        headers: { Authorization: `Bearer ${tk}` }
+      });
+      
+      showToast('Catatan berhasil disetujui!', 'success');
+      
+      // Update local state directly to feel fast
+      setNotes(prev => prev.map(note => 
+        (note.id === noteId ? { ...note, isValidated: true, is_verified: true } : note)
+      ));
+    } catch (error) {
+      console.error('Verification error:', error);
+      showToast('Gagal memverifikasi catatan', 'error');
+    }
+  };
+
+  const pendingNotes = notes.filter(note => !note.isValidated);
+  const verifiedNotes = notes.filter(note => note.isValidated);
+
+  const filteredNotes = (filter === 'all' 
+    ? notes
     : filter === 'pending' 
     ? pendingNotes 
     : filter === 'approved'
     ? verifiedNotes
-    : [];
+    : []).filter(note => {
+      if (!searchQuery) return true;
+      const q = searchQuery.toLowerCase();
+      return (
+        note.title?.toLowerCase().includes(q) ||
+        note.mataPelajaran?.toLowerCase().includes(q) ||
+        note.author?.name?.toLowerCase().includes(q)
+      );
+    });
 
   const stats = [
     { label: 'Perlu Verifikasi', value: pendingNotes.length, color: 'bg-orange-500', icon: Clock, extra: 'Urgent' },
     { label: 'Telah Disetujui', value: verifiedNotes.length, color: 'bg-emerald-500', icon: CheckCircle, extra: 'Bulan ini' },
-    { label: 'Total Database', value: mockNotes.length, color: 'bg-blue-500', icon: Eye, extra: 'Keseluruhan' },
+    { label: 'Total Database', value: notes.length, color: 'bg-blue-500', icon: Eye, extra: 'Keseluruhan' },
   ];
 
   return (
@@ -90,7 +147,7 @@ export default function PakarDashboard() {
                      </div>
                      <div>
                        <p className="text-3xl font-['Lexend_Deca'] font-bold text-white mb-1">
-                         {stat.value}
+                         {isLoading ? '-' : stat.value}
                        </p>
                        <p className="text-sm font-['Manrope'] text-white/80 font-medium tracking-wide">
                          {stat.label}
@@ -141,7 +198,7 @@ export default function PakarDashboard() {
                             }`}
                           >
                             {tab.label}
-                            {tab.id === 'pending' && pendingNotes.length > 0 && (
+                            {tab.id === 'pending' && pendingNotes.length > 0 && !isLoading && (
                               <span className={`ml-1.5 text-[10px] px-1.5 py-0.5 rounded-md font-bold ${isActive ? 'bg-white/20 text-white' : 'bg-orange-100 text-orange-600'}`}>
                                 {pendingNotes.length}
                               </span>
@@ -156,7 +213,11 @@ export default function PakarDashboard() {
                 {/* Content Area */}
                 <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 min-h-[500px]">
                   
-                  {filteredNotes.length === 0 ? (
+                  {isLoading ? (
+                    <div className="flex items-center justify-center py-16">
+                      <div className="animate-spin w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full"></div>
+                    </div>
+                  ) : filteredNotes.length === 0 ? (
                     <div className="py-16 text-center bg-gray-50 border border-gray-100 border-dashed rounded-3xl">
                        <CheckCircle className="w-16 h-16 text-teal-300 mx-auto mb-4" />
                        <h4 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 mb-1">Tidak Ada Antrean</h4>
@@ -165,7 +226,7 @@ export default function PakarDashboard() {
                   ) : (
                     <div className="space-y-4">
                       {filteredNotes.map((note) => {
-                        const author = getUserById(note.authorId);
+                        const author = note.author;
                         const subject = mataPelajaran.find(m => m.name === note.mataPelajaran);
                         return (
                           <div
@@ -181,9 +242,9 @@ export default function PakarDashboard() {
                                 <div className="flex items-center gap-3 mb-3">
                                   <div
                                     className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
-                                    style={{ backgroundColor: `${subject?.color}15` }}
+                                    style={{ backgroundColor: `${subject?.color || '#eee'}15` }}
                                   >
-                                    <span className="text-2xl">{subject?.icon}</span>
+                                    <span className="text-2xl">{subject?.icon || '📚'}</span>
                                   </div>
                                   <div>
                                     <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 text-base md:text-lg mb-0.5 line-clamp-1">
@@ -226,7 +287,7 @@ export default function PakarDashboard() {
                                             to={`/note/${note.id}`}
                                             className="py-2.5 bg-white text-gray-600 rounded-xl font-['Lexend_Deca'] font-semibold text-sm text-center hover:bg-gray-50 transition-colors border border-gray-200"
                                         >
-                                            Baca Ulang
+                                            Baca Detail
                                         </Link>
                                     </>
                                 ) : (

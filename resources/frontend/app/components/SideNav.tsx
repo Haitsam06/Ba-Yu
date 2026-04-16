@@ -1,7 +1,8 @@
+import { useState, useEffect } from 'react';
 import { Home, Search, Bookmark, User, LayoutDashboard, ChevronLeft, Hash, Star, FileText } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
-import { mockNotes } from '../data/mockData';
+import axios from 'axios';
 
 interface SideNavProps {
   isExpanded: boolean;
@@ -14,8 +15,19 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
   
   const isActive = (path: string) => location.pathname === path;
 
-  // Assuming Pakar Choice is just some top rated notes.
-  const pakarChoiceNotes = mockNotes.filter(n => n.rating === 5).slice(0, 3);
+  const [pakarChoiceNotes, setPakarChoiceNotes] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchTopNotes = async () => {
+      try {
+        const res = await axios.get('/api/v1/posts?sort=populer&is_verified=true');
+        setPakarChoiceNotes((res.data.data || []).slice(0, 3));
+      } catch (error) {
+        console.error('Failed to load pakar choice notes', error);
+      }
+    };
+    fetchTopNotes();
+  }, []);
 
   const mainNavItems = [
     { path: '/home', icon: Home, label: 'Beranda' },
@@ -84,22 +96,26 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
             <span className="text-[11px] font-['Lexend_Deca'] font-extrabold text-gray-400 tracking-wider">PAKAR CHOICE</span>
             <Star className="w-[10px] h-[10px] text-amber-500 fill-amber-500 mb-[1px]" />
          </div>
-         <div className="px-3 space-y-1">
-            {pakarChoiceNotes.map((note) => (
-              <Link
-                key={note.id}
-                to={`/note/${note.id}`}
-                className="flex items-start gap-3 px-3 py-[7px] rounded-[8px] transition-all duration-200 text-gray-600 hover:bg-gray-100 hover:text-gray-900 group w-full"
-              >
-                <div className="mt-[2.5px]">
-                  <FileText className="w-[16px] h-[16px] text-gray-300 group-hover:text-amber-500 transition-colors shrink-0" strokeWidth={2} />
-                </div>
-                <span className="font-['Manrope'] text-[14px] font-medium truncate overflow-hidden text-ellipsis w-full leading-tight">
-                  {note.title}
-                </span>
-              </Link>
-            ))}
-         </div>
+          {pakarChoiceNotes.length > 0 ? (
+            <div className="px-3 space-y-1">
+               {pakarChoiceNotes.map((note) => (
+                 <Link
+                   key={note.id || note._id}
+                   to={`/note/${note.id || note._id}`}
+                   className="flex items-start gap-3 px-3 py-[7px] rounded-[8px] transition-all duration-200 text-gray-600 hover:bg-gray-100 hover:text-gray-900 group w-full"
+                 >
+                   <div className="mt-[2.5px]">
+                     <FileText className="w-[16px] h-[16px] text-gray-300 group-hover:text-amber-500 transition-colors shrink-0" strokeWidth={2} />
+                   </div>
+                   <span className="font-['Manrope'] text-[14px] font-medium truncate overflow-hidden text-ellipsis w-full leading-tight">
+                     {note.title}
+                   </span>
+                 </Link>
+               ))}
+            </div>
+          ) : (
+            <div className="px-5 py-2 text-[12px] font-['Manrope'] text-gray-400">Belum ada pilihan pakar</div>
+          )}
       </div>
 
     </aside>

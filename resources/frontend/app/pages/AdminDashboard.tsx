@@ -5,7 +5,7 @@ import {
   Users, FileText, AlertCircle, CheckCircle, XCircle, Eye, 
   Search, Filter, Trash2, Flag, BarChart3, ShieldCheck, DownloadCloud, Server, Activity, ArrowUpRight, Check
 } from 'lucide-react';
-import { mockNotes, mockUsers, getUserById, mataPelajaran } from '../data/mockData';
+import { mataPelajaran } from '../data/mockData';
 import { Link, useLocation } from 'react-router';
 import axios from 'axios';
 import { useToast } from '../contexts/ToastContext';
@@ -344,26 +344,28 @@ export default function AdminDashboard() {
                       </div>
 
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        {mockNotes.slice(0, 10).map((note) => {
-                          const author = getUserById(note.authorId);
-                          const subject = mataPelajaran.find(m => m.name === note.mataPelajaran);
+                        {notesList.length === 0 ? (
+                           <div className="col-span-1 lg:col-span-2 text-center py-10 font-['Manrope'] text-gray-500">Tidak ada catatan dalam database.</div>
+                        ) : notesList.slice(0, 10).map((note) => {
+                          const author = note.user || { name: 'Anonim', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400' };
+                          const subject = mataPelajaran.find(m => m.name === (note.mataPelajaran || note.mapel));
                           return (
-                            <div key={note.id} className="bg-white rounded-3xl border border-gray-100 p-5 hover:border-gray-200 hover:shadow-md transition-all flex flex-col justify-between group">
+                            <div key={note.id || note._id} className="bg-white rounded-3xl border border-gray-100 p-5 hover:border-gray-200 hover:shadow-md transition-all flex flex-col justify-between group">
                               <div>
                                 <div className="flex items-start gap-4 mb-4">
-                                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${subject?.color}15` }}>
-                                    <span className="text-2xl group-hover:scale-110 transition-transform">{subject?.icon}</span>
+                                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${subject?.color || '#eee'}15` }}>
+                                    <span className="text-2xl group-hover:scale-110 transition-transform">{subject?.icon || '📚'}</span>
                                   </div>
                                   <div className="flex-1 min-w-0 pt-0.5">
                                     <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 text-sm mb-1.5 line-clamp-1">{note.title}</h4>
                                     <div className="flex items-center gap-2 mb-2">
-                                      <span className="text-[10px] font-['Lexend_Deca'] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg border border-gray-200">{note.mataPelajaran}</span>
-                                      <span className="text-[10px] font-['Lexend_Deca'] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg border border-gray-200">Kelas {note.kelas}</span>
+                                      <span className="text-[10px] font-['Lexend_Deca'] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg border border-gray-200">{note.mataPelajaran || note.mapel || 'Lainnya'}</span>
+                                      <span className="text-[10px] font-['Lexend_Deca'] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg border border-gray-200">Kelas {note.kelas || '-'}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                       <img src={author?.avatar} alt={author?.name} className="w-5 h-5 rounded-full object-cover" />
                                       <span className="text-xs font-['Manrope'] font-medium text-gray-500 truncate">{author?.name}</span>
-                                      {note.isValidated && (
+                                      {(note.isValidated || note.is_verified) && (
                                         <div className="ml-auto w-4 h-4 bg-green-500 rounded-full flex items-center justify-center text-white p-0.5" title="Verified">
                                           <Check className="w-full h-full" />
                                         </div>
@@ -373,10 +375,10 @@ export default function AdminDashboard() {
                                 </div>
                               </div>
                               <div className="flex gap-2 pt-4 border-t border-gray-50">
-                                <Link to={`/note/${note.id}`} className="flex-1 py-2.5 bg-gray-50 text-gray-700 rounded-xl font-['Lexend_Deca'] font-semibold text-xs text-center hover:bg-gray-100 transition-colors border border-gray-200">
+                                <Link to={`/note/${note.id || note._id}`} className="flex-1 py-2.5 bg-gray-50 text-gray-700 rounded-xl font-['Lexend_Deca'] font-semibold text-xs text-center hover:bg-gray-100 transition-colors border border-gray-200">
                                   Lihat Catatan
                                 </Link>
-                                <button onClick={() => handleDeleteNote(note.id)} className="px-4 py-2.5 bg-white text-red-500 rounded-xl hover:bg-red-50 hover:border-red-200 transition-colors border border-gray-200 flex items-center justify-center tooltip" title="Hapus Permanen">
+                                <button onClick={() => handleDeleteNote(note.id || note._id)} className="px-4 py-2.5 bg-white text-red-500 rounded-xl hover:bg-red-50 hover:border-red-200 transition-colors border border-gray-200 flex items-center justify-center tooltip" title="Hapus Permanen">
                                   <Trash2 className="w-4 h-4" />
                                 </button>
                               </div>
@@ -455,7 +457,11 @@ export default function AdminDashboard() {
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {(usersList.length > 0 ? usersList : mockUsers).map((u) => (
+                        {usersList.length === 0 ? (
+                           <div className="col-span-1 sm:col-span-2 text-center py-10 font-['Manrope'] text-gray-500">Tidak ada pengguna terpilih.</div>
+                        ) : usersList.map((u) => {
+                          const userPostsCount = notesList.filter((n: any) => (n.user_id || n.user?.id || n.user?._id) === (u.id || u._id)).length;
+                          return (
                           <div key={u.id || u._id} className="bg-white rounded-3xl border border-gray-100 p-5 hover:border-indigo-100 hover:shadow-md transition-all flex items-center gap-4">
                             <img src={u.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400'} alt={u.name} className="w-14 h-14 rounded-2xl object-cover bg-gray-50 border border-gray-100" />
                             <div className="flex-1 min-w-0">
@@ -463,7 +469,7 @@ export default function AdminDashboard() {
                               <p className="text-[11px] font-['Lexend_Deca'] font-bold text-indigo-600 uppercase tracking-wider mb-2">{u.role === 'admin' ? 'Administrator' : u.role === 'pakar' ? 'Expert' : 'Pelajar'}</p>
                               <div className="flex gap-4">
                                 <div>
-                                   <div className="font-['Lexend_Deca'] font-bold text-sm text-gray-800 leading-none">{mockNotes.filter(n => n.authorId === (u.id || u._id)).length}</div>
+                                   <div className="font-['Lexend_Deca'] font-bold text-sm text-gray-800 leading-none">{userPostsCount}</div>
                                    <div className="text-[10px] font-['Manrope'] text-gray-400">Catatan</div>
                                 </div>
                                 <div className="w-px bg-gray-200"></div>
@@ -477,7 +483,7 @@ export default function AdminDashboard() {
                                <ArrowUpRight className="w-4 h-4 text-gray-600" />
                             </button>
                           </div>
-                        ))}
+                        )})}
                       </div>
                     </div>
                   )}

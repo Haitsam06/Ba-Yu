@@ -4,7 +4,7 @@ import { Navbar } from '../components/navbar';
 import { Footer } from '../components/footer';
 import { Search, Filter, BookOpen, Check, Eye, Heart, MessageCircle, Upload, LogIn, Sparkles, TrendingUp, Clock, Bookmark, Star, X } from 'lucide-react';
 import { NoteCardSkeleton } from '../components/ui/skeletons';
-import { mataPelajaran, getUserById } from '../data/mockData';
+import { mataPelajaran } from '../data/mockData';
 import axios from 'axios';
 import { Link, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
@@ -22,6 +22,45 @@ export default function PublicExplorePage() {
   const searchTermFromUrl = queryParams.get('q') || '';
   const [notes, setNotes] = useState<any[]>([]);
   const [isLoadingNotes, setIsLoadingNotes] = useState(true);
+  const [experts, setExperts] = useState<any[]>([]);
+
+  // Fetch experts for sidebar
+  useEffect(() => {
+    const fetchExperts = async () => {
+      try {
+        const authHeader = isAuthenticated ? { Authorization: `Bearer ${localStorage.getItem('bayu-token')}` } : {};
+        const res = await axios.get('/api/v1/experts', { headers: authHeader });
+        setExperts(res.data.data || []);
+      } catch (e) {
+        console.error('Gagal fetch pakar:', e);
+      }
+    };
+    fetchExperts();
+  }, [isAuthenticated]);
+
+  const handleFollowExpert = async (expertId: string) => {
+    if (!isAuthenticated) return openAuthModal('login');
+    try {
+      const token = localStorage.getItem('bayu-token');
+      const response = await axios.post(`/api/users/${expertId}/follow`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setExperts(prev => prev.map(ex => {
+        if ((ex._id || ex.id) === expertId) {
+          return {
+            ...ex,
+            is_followed_by_me: response.data.status === 'followed',
+            followers_count: response.data.status === 'followed'
+              ? (ex.followers_count || 0) + 1
+              : Math.max(0, (ex.followers_count || 0) - 1)
+          };
+        }
+        return ex;
+      }));
+    } catch (e) {
+      console.error('Gagal toggle follow pakar:', e);
+    }
+  };
 
   const handleLikePost = async (postId: string) => {
     if (!isAuthenticated) return openAuthModal('login');
@@ -356,24 +395,29 @@ export default function PublicExplorePage() {
                       <Sparkles className="w-4 h-4 text-primary" strokeWidth={2.5} /> Pakar Edukasi
                    </h3>
                    <div className="flex flex-col gap-5">
-                      {['1', '2', '3'].map((userId) => {
-                        const recAuthor = getUserById(userId);
-                        if(!recAuthor) return null;
-                        return (
-                           <div key={recAuthor.id} className="flex items-center justify-between group">
-                              <Link to={`/profile/${recAuthor.id}`} className="flex items-center gap-3 min-w-0 pr-4 outline-none">
-                                <img src={recAuthor.avatar} alt={recAuthor.name} className="w-10 h-10 rounded-full object-cover bg-gray-100 ring-2 ring-transparent group-hover:ring-primary/20 transition-all" />
-                                <div className="flex flex-col min-w-0">
-                                   <span className="font-['Lexend_Deca'] font-bold text-[14px] text-gray-900 truncate group-hover:text-primary transition-colors">{recAuthor.name}</span>
-                                   <span className="font-['Manrope'] font-medium text-[12px] text-gray-500 truncate">{recAuthor.role === 'pakar' ? 'Pakar Edukasi' : 'Pelajar'}</span>
-                                </div>
-                              </Link>
-                              <button className="px-3.5 py-1.5 rounded-[10px] border border-gray-200 text-gray-600 font-['Manrope'] text-[12px] font-bold hover:border-primary hover:text-primary hover:bg-primary/5 transition-all focus:outline-none">
-                                Ikuti
-                              </button>
-                           </div>
-                        );
-                      })}
+                      {experts.length > 0 ? experts.map((expert: any) => (
+                         <div key={expert._id || expert.id} className="flex items-center justify-between group">
+                            <Link to={`/profile/${expert._id || expert.id}`} className="flex items-center gap-3 min-w-0 pr-4 outline-none">
+                              <img src={expert.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400'} alt={expert.name} className="w-10 h-10 rounded-full object-cover bg-gray-100 ring-2 ring-transparent group-hover:ring-primary/20 transition-all" />
+                              <div className="flex flex-col min-w-0">
+                                 <span className="font-['Lexend_Deca'] font-bold text-[14px] text-gray-900 truncate group-hover:text-primary transition-colors">{expert.name}</span>
+                                 <span className="font-['Manrope'] font-medium text-[12px] text-gray-500 truncate">{expert.followers_count || 0} pengikut</span>
+                              </div>
+                            </Link>
+                            <button 
+                              onClick={() => handleFollowExpert(expert._id || expert.id)}
+                              className={`px-3.5 py-1.5 rounded-[10px] border font-['Manrope'] text-[12px] font-bold transition-all focus:outline-none ${
+                                expert.is_followed_by_me
+                                ? 'border-gray-300 text-gray-600 bg-gray-100 hover:bg-gray-200'
+                                : 'border-gray-200 text-gray-600 hover:border-primary hover:text-primary hover:bg-primary/5'
+                              }`}
+                            >
+                              {expert.is_followed_by_me ? 'Mengikuti' : 'Ikuti'}
+                            </button>
+                         </div>
+                      )) : (
+                        <p className="text-gray-400 font-['Manrope'] text-sm">Belum ada pakar terdaftar.</p>
+                      )}
                    </div>
                 </div>
 

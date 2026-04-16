@@ -77,8 +77,17 @@ export default function NoteDetailPage() {
   const handleFollowToggle = async () => {
     if (!author || !author.id) return; 
 
+    if (isFollowing) {
+      if (!window.confirm(`Yakin ingin berhenti mengikuti ${author.name}?`)) {
+        return;
+      }
+    }
+
     try {
-      const response = await axios.post(`/api/users/${author.id}/follow`);
+      const token = localStorage.getItem('bayu-token');
+      const response = await axios.post(`/api/users/${author.id}/follow`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       
       if (response.data.status === 'followed') {
         setIsFollowing(true);
@@ -484,7 +493,7 @@ const fetchNoteDetail = async () => {
               {note.mataPelajaran}
             </span>
             <span className="text-[14px] font-['Manrope'] font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-              {note.jenjang === 'Kuliah' ? `S${note.kelas || '1'}` : `${note.jenjang} Kelas ${note.kelas}`}
+              {note.jenjang === 'Kuliah' ? `${note.kelas || '1'}` : `${note.jenjang} Kelas ${note.kelas}`}
             </span>
             <span className="text-[14px] font-['Manrope'] font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full hidden sm:block">
               Semester {note.semester}
@@ -493,17 +502,34 @@ const fetchNoteDetail = async () => {
 
         {/* Medium-style Author Info Bar */}
         <div className="flex items-center gap-4 py-4 mb-6">
-            <img
-              src={author.avatar}
-              alt={author.name}
-              className="w-12 h-12 rounded-full object-cover shadow-sm border border-gray-100 bg-gray-50"
-            />
+            <Link to={`/profile/${author._id || author.id}`}>
+              <img
+                src={author.avatar}
+                alt={author.name}
+                className="w-12 h-12 rounded-full object-cover shadow-sm border border-gray-100 bg-gray-50 hover:ring-2 hover:ring-primary/20 transition-all cursor-pointer"
+              />
+            </Link>
             <div className="flex-1">
                 <div className="flex items-center gap-2">
-                    <span className="font-['Manrope'] font-bold text-gray-900 text-[15px]">{author.name}</span>
-                    <button className="text-sm font-['Manrope'] text-emerald-600 font-semibold hover:text-emerald-700 transition-colors">
-                      • Ikuti
-                    </button>
+                    <Link to={`/profile/${author._id || author.id}`} className="font-['Manrope'] font-bold text-gray-900 text-[15px] hover:text-primary transition-colors">{author.name}</Link>
+                    {isAuthenticated && (user?.id !== author.id && user?.id !== author._id && user?._id !== author.id && user?._id !== author._id) && (
+                      <button 
+                        onClick={() => requireAuth(handleFollowToggle)}
+                        className={`text-sm font-['Manrope'] font-semibold transition-colors ${
+                          isFollowing ? 'text-gray-500 hover:text-gray-700' : 'text-emerald-600 hover:text-emerald-700'
+                        }`}
+                      >
+                        • {isFollowing ? 'Mengikuti' : 'Ikuti'}
+                      </button>
+                    )}
+                    {!isAuthenticated && (
+                      <button 
+                        onClick={() => openAuthModal('login')}
+                        className="text-sm font-['Manrope'] text-emerald-600 font-semibold hover:text-emerald-700 transition-colors"
+                      >
+                        • Ikuti
+                      </button>
+                    )}
                 </div>
                 <div className="flex items-center gap-3 text-[13px] font-['Manrope'] text-gray-500 mt-0.5">
                     <div className="flex items-center gap-1.5">
@@ -623,14 +649,18 @@ const fetchNoteDetail = async () => {
         <div className="mb-20">
             <h4 className="font-['Lexend_Deca'] font-bold text-[13px] text-gray-400 uppercase tracking-widest mb-6 text-center sm:text-left">DITULIS OLEH</h4>
             <div className="bg-transparent flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-               <img
-                 src={author.avatar}
-                 alt={author.name}
-                 className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover shrink-0 border border-gray-100"
-               />
+               <Link to={`/profile/${author._id || author.id}`}>
+                 <img
+                   src={author.avatar}
+                   alt={author.name}
+                   className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover shrink-0 border border-gray-100 hover:ring-4 hover:ring-primary/20 transition-all cursor-pointer"
+                 />
+               </Link>
                <div className="flex-1">
                   <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
-                     <h3 className="font-['Lexend_Deca'] font-extrabold text-[28px] text-gray-900">{author.name}</h3>
+                     <Link to={`/profile/${author._id || author.id}`} className="hover:text-primary transition-colors">
+                       <h3 className="font-['Lexend_Deca'] font-extrabold text-[28px] text-gray-900 hover:text-primary transition-colors">{author.name}</h3>
+                     </Link>
                      {author.role === 'pakar' && (
                         <div className="bg-green-500 text-white p-0.5 rounded-full" title="Verified Expert">
                           <Check className="w-4 h-4" />
@@ -737,17 +767,19 @@ const fetchNoteDetail = async () => {
                   
                        return (
                           <div key={`comment-el-${cid}`} id={`comment-${cid}`} className={`flex gap-3 sm:gap-4 p-2 rounded-2xl ${isReply ? 'bg-gray-50/50' : ''}`}>
-                             <img
-                               src={cAuth.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400'}
-                               alt={cAuth.name}
-                               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-gray-100"
-                             />
+                             <Link to={`/profile/${cAuth._id || cAuth.id}`}>
+                               <img
+                                 src={cAuth.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400'}
+                                 alt={cAuth.name}
+                                 className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-gray-100 hover:ring-2 hover:ring-primary/20 transition-all"
+                               />
+                             </Link>
                              <div className="flex-1 w-full overflow-hidden">
                                  <div className="flex items-center justify-between mb-1">
                                      <div className="flex items-center gap-2 cursor-pointer">
-                                         <span className="font-['Manrope'] font-bold text-base text-gray-900 hover:underline">
+                                         <Link to={`/profile/${cAuth._id || cAuth.id}`} className="font-['Manrope'] font-bold text-base text-gray-900 hover:underline hover:text-primary transition-colors">
                                            {cAuth.name}
-                                         </span>
+                                         </Link>
                                          {cAuth.role === 'pakar' && <Check className="w-3.5 h-3.5 bg-green-500 text-white rounded-full p-[2px]" />}
                                          <span className="text-xs font-['Manrope'] text-gray-400">
                                            {new Date(comment.created_at || comment.createdAt || new Date()).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}

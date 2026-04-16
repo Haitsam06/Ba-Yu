@@ -20,6 +20,11 @@ Route::post('/v1/login', [AuthController::class, 'login']);
 Route::get('/v1/posts', [PostController::class, 'index']);
 Route::get('/v1/posts/{id}', [PostController::class, 'show']);
 
+// Public User Endpoints
+Route::get('/v1/users/{id}', [UserController::class, 'show']);
+Route::get('/v1/users/{id}/activities', [UserController::class, 'activities']);
+Route::get('/v1/experts', [UserController::class, 'experts']);
+
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/v1/sertifikasi', [SertifikasiController::class, 'ajukan']);
@@ -69,6 +74,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile/activities', [\App\Http\Controllers\ProfileController::class, 'myActivities']);
 
     Route::get('/user', function (Request $request) {
-        return $request->user();
+        $user = clone $request->user();
+        if ($user) {
+            $user->followers_count = is_array($user->follower_ids) ? count($user->follower_ids) : 0;
+            $user->following_count = is_array($user->following_ids) ? count($user->following_ids) : 0;
+        }
+        return $user;
     });
 });
