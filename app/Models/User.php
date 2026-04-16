@@ -17,6 +17,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'avatar',
         'password',
         'role',
         'jenjang_pendidikan',
@@ -24,7 +25,6 @@ class User extends Authenticatable
         'display_name',
         'phone',
         'bio',
-        'avatar',
         'is_verified',
     ];
 
@@ -68,19 +68,20 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class, 'user_id');
     }
 
+
+    public function isFollowing($userId)
+    {
+        return \App\Models\Follow::where('follower_id', (string)$this->id)->where('following_id', (string)$userId)->exists();
+    }
+
     public function followings()
     {
-        return $this->belongsToMany(User::class, null, 'follower_ids', 'following_ids');
+        return $this->hasMany(\App\Models\Follow::class, 'follower_id');
     }
 
     public function followers()
     {
-        return $this->belongsToMany(User::class, null, 'following_ids', 'follower_ids');
-    }
-
-    public function isFollowing($userId)
-    {
-        return in_array((string)$userId, $this->following_ids ?? []);
+        return $this->hasMany(\App\Models\Follow::class, 'following_id');
     }
 
     public function createToken(string $name, array $abilities = ['*'], ?\DateTimeInterface $expiresAt = null)

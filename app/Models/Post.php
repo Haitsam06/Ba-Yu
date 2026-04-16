@@ -16,6 +16,7 @@ class Post extends Model
         'category_id',
         'title',
         'content',
+        'plain_content',
         'mapel',
         'jenjang',
         'kelas',

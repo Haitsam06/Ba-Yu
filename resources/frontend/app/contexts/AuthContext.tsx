@@ -120,6 +120,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(prev => prev ? { ...prev, ...data } : null);
   };
 
+if (isLoading) {
+    return (
+        <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
+            <div className="flex flex-col items-center gap-3">
+                {/* Animasi loading muter-muter */}
+                <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-gray-500 font-medium font-['Manrope']">Memuat sesi...</p>
+            </div>
+        </div>
+    );
+}
+
   return (
     <AuthContext.Provider value={{
       user,

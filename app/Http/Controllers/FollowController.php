@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Follow;
 use Illuminate\Http\Request;
 
 class FollowController extends Controller
@@ -19,14 +20,19 @@ class FollowController extends Controller
         $targetIdStr = (string)$targetUser->id;
         $myIdStr = (string)$me->id;
 
-        if ($me->isFollowing($targetUser->id)) {
-            $me->pull('following_ids', $targetIdStr);
-            $targetUser->pull('follower_ids', $myIdStr);
+        $existingFollow = Follow::where('follower_id', $myIdStr)
+                                ->where('following_id', $targetIdStr)
+                                ->first();
+
+        if ($existingFollow) {
+            $existingFollow->delete();
             return response()->json(['status' => 'unfollowed', 'message' => 'Berhenti mengikuti']);
         } 
         else {
-            $me->push('following_ids', $targetIdStr, true);
-            $targetUser->push('follower_ids', $myIdStr, true);
+            Follow::create([
+                'follower_id' => $myIdStr,
+                'following_id' => $targetIdStr
+            ]);
             return response()->json(['status' => 'followed', 'message' => 'Berhasil mengikuti']);
         }
     }

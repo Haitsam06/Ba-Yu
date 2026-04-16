@@ -24,31 +24,54 @@ class PostController extends Controller
             $query->where('user_id', $request->query('user_id'));
         }
 
-        if ($request->filled('search')) {
+        $isSearch = $request->filled('search');
+        if ($isSearch) {
             $search = $request->query('search');
             $query->where(function($q) use ($search) {
-                $q->where('title', 'like', '%' . $search . '%')
-                  ->orWhere('content', 'like', '%' . $search . '%')
-                  ->orWhere('mapel', 'like', '%' . $search . '%');
+                $q->where('title', 'like', '%' . $search . '%')->orWhere('plain_content', 'like', '%' . $search . '%')->orWhere('mapel', 'like', '%' . $search . '%');
             });
         }
 
         $isRandom = false;
+        $sort = $request->query('sort', 'untuk_anda');
 
-        if ($request->filled('sort')) {
-            $sort = $request->query('sort');
-            
-            if ($sort === 'populer') {
-                $query->orderBy('likes_count', 'desc')->orderBy('comments_count', 'desc');
-            } elseif ($sort === 'terbaru') {
-                $query->orderBy('created_at', 'desc');
-            } else {
-                $query->orderBy('created_at', 'desc'); 
-                $isRandom = true;
-            }
-        } else {
+        if ($sort === 'populer') {
+            $query->orderBy('likes_count', 'desc')->orderBy('comments_count', 'desc');
+            if (!$isSearch) $query->limit(50);
+
+        } elseif ($sort === 'terbaru') {
             $query->orderBy('created_at', 'desc');
-            $isRandom = true;
+            if (!$isSearch) $query->limit(50);
+
+        } else {
+            $userId = null;
+            try { $userId = Auth::guard('sanctum')->id(); } catch (\Exception $e) {}
+            if (!$userId) { try { $userId = Auth::guard('api')->id(); } catch (\Exception $e) {} }
+            if (!$userId) { $userId = Auth::id(); }
+
+            if ($userId && !$isSearch) {
+                $user = User::find((string)$userId);
+                if ($user && $user->role !== 'admin') {
+                    $likedPostIds = \App\Models\Like::where('user_id', (string)$user->id)
+                                        ->whereNotNull('post_id')
+                                        ->pluck('post_id');
+
+                    $preferredMapels = [];
+                    if ($likedPostIds->count() > 0) {
+                        $preferredMapels = Post::whereIn('_id', $likedPostIds)->pluck('mapel')->filter()->unique()->toArray();
+                    }
+
+                    if (!empty($preferredMapels)) {
+                        $query->whereIn('mapel', $preferredMapels);
+                    } elseif (!empty($user->jenjang_pendidikan)) {
+                        $query->where('jenjang', $user->jenjang_pendidikan);
+                    }
+                }
+            }
+            
+            $query->orderBy('created_at', 'desc');
+            if (!$isSearch) $query->limit(50);
+            $isRandom = !$isSearch;
         }
 
         $posts = $query->get();
@@ -75,8 +98,9 @@ class PostController extends Controller
             'message' => 'Berhasil mengambil daftar post',
             'data' => $posts
         ], 200);
+    }
 
-    }    public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'title' => 'required|string|max:255',
@@ -98,6 +122,7 @@ class PostController extends Controller
             'user_id' => Auth::id(),
             'title' => $request->title,
             'content' => $request->input('content'),
+            'plain_content' => strip_tags($request->input('content')),
             'description' => $request->description,
             'mapel' => $request->mapel,
             'jenjang' => $request->jenjang,
@@ -138,30 +163,19 @@ class PostController extends Controller
             return response()->json(['message' => 'Post tidak ditemukan'], 404);
         }
 
-        // Sync real counts from relations
         $realLikes = $post->likes ? $post->likes->count() : 0;
         $realComments = $post->comments ? $post->comments->count() : 0;
 
-        $post->likes_count = $realLikes;
-        $post->comments_count = $realComments;
+        $post->setAttribute('likes_count', $realLikes);
+        $post->setAttribute('comments_count', $realComments);
         if ($post->isDirty(['likes_count', 'comments_count'])) {
             $post->save();
         }
 
         $userId = null;
-        try { 
-            $userId = Auth::guard('sanctum')->id(); 
-        } catch (\Exception $e) {}
-
-        if (!$userId) {
-            try { 
-                $userId = Auth::guard('api')->id(); 
-            } catch (\Exception $e) {}
-        }
-        
-        if (!$userId) {
-            $userId = Auth::id();
-        }
+        try { $userId = Auth::guard('sanctum')->id(); } catch (\Exception $e) {}
+        if (!$userId) { try { $userId = Auth::guard('api')->id(); } catch (\Exception $e) {} }
+        if (!$userId) { $userId = Auth::id(); }
 
         $userIdStr = (string) $userId;
 
@@ -174,7 +188,6 @@ class PostController extends Controller
         if ($post->comments) {
             $post->comments->each(function ($comment) use ($userIdStr) {
                 $commentIdStr = (string) $comment->id;
-
                 $comment->likes_count = \App\Models\Like::where('comment_id', $commentIdStr)->count();
 
                 if ($userIdStr !== "") {
@@ -186,8 +199,7 @@ class PostController extends Controller
         }
 
         if ($post->user) {
-            $fCount = is_array($post->user->follower_ids) ? count($post->user->follower_ids) : 0;
-            $post->user->setAttribute('followers_count', $fCount);
+            $post->user->setAttribute('followers_count', $post->user->followers()->count());
 
             if ($userIdStr !== "") {
                 $loggedInUser = User::find($userIdStr);

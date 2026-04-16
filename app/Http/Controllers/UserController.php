@@ -15,10 +15,10 @@ class UserController extends Controller
         }
 
         $users = User::orderBy('created_at', 'desc')->get();
-        // Append counts for Admin Dashboard
+        
         $users->each(function($u) {
-            $u->followers = is_array($u->follower_ids) ? count($u->follower_ids) : 0;
-            $u->followings = is_array($u->following_ids) ? count($u->following_ids) : 0;
+            $u->followers = $u->followers()->count();
+            $u->followings = $u->followings()->count();
         });
 
         return response()->json([
@@ -43,16 +43,15 @@ class UserController extends Controller
         if ($request->hasFile('avatar')) {
             $file = $request->file('avatar');
             $filename = time() . '_' . $file->getClientOriginalName();
-            // Store the file in public/avatars folder
             $file->move(public_path('avatars'), $filename);
             
-            // App URL setup (dynamically getting url or setting relative path)
             $avatarUrl = asset('avatars/' . $filename);
             
             $validated['avatar'] = $avatarUrl;
         }
 
-        $user->update($validated);
+        $user->fill($validated);
+        $user->save();
 
         return response()->json([
             'message' => 'Profil berhasil diperbarui',
@@ -68,10 +67,10 @@ class UserController extends Controller
             return response()->json(['message' => 'Pengguna tidak ditemukan'], 404);
         }
 
-        $user->setAttribute('followers_count', is_array($user->follower_ids) ? count($user->follower_ids) : 0);
-        $user->setAttribute('following_count', is_array($user->following_ids) ? count($user->following_ids) : 0);
+        // 🔥 SULAP 2: Ngitung dari tabel Follows buat Halaman Profil
+        $user->setAttribute('followers_count', $user->followers()->count());
+        $user->setAttribute('following_count', $user->followings()->count());
 
-        // Hide private info
         $user->makeHidden(['email', 'phone', 'is_verified']); 
 
         $userId = null;
@@ -118,7 +117,6 @@ class UserController extends Controller
     {
         $experts = User::where('role', 'pakar')->get();
 
-        // Detect logged-in user (optional auth)
         $userId = null;
         try { $userId = Auth::guard('sanctum')->id(); } catch (\Exception $e) {}
         if (!$userId) { try { $userId = Auth::guard('api')->id(); } catch (\Exception $e) {} }
@@ -126,8 +124,8 @@ class UserController extends Controller
 
         $loggedInUser = $userId ? User::find((string)$userId) : null;
 
-        $experts->each(function ($expert) use ($loggedInUser) {
-            $expert->followers_count = is_array($expert->follower_ids) ? count($expert->follower_ids) : 0;
+        $experts->each(function (User $expert) use ($loggedInUser) {
+            $expert->setAttribute('followers_count', $expert->followers()->count());
             $expert->is_followed_by_me = $loggedInUser ? $loggedInUser->isFollowing($expert->id) : false;
             $expert->makeHidden(['email', 'phone', 'password', 'remember_token']);
         });

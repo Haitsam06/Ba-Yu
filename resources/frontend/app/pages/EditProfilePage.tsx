@@ -228,13 +228,14 @@ export default function EditProfilePage() {
         submitData.append('avatar', avatarFile);
       }
 
-      // Update data via API using POST spoofing for multipart PUT
-      const response = await axios.post('/api/v1/users/me?_method=PUT', submitData, {
-        headers: { 
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
+      submitData.append('_method', 'PUT');
+
+      const response = await axios.post('/api/v1/users/me', submitData, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
         }
-      });
+    });
 
       // Update global context so changes reflect immediately everywhere
       if (response.data && response.data.data) {

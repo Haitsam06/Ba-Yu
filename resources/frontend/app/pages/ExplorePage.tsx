@@ -14,8 +14,21 @@ import { NoteCardSkeleton } from '../components/ui/skeletons';
 export default function ExplorePage() {
   const { isAuthenticated } = useAuth();
   const { isBookmarked, toggleBookmark } = useBookmarks();
-  const [activeSegment, setActiveSegment] = useState<'kategori' | 'populer' | 'terbaru'>('kategori');
+  const [activeSegment, setActiveSegment] = useState<'kategori' | 'populer' | 'terbaru'>(() => {
+    return (sessionStorage.getItem('exploreTab') as 'kategori' | 'populer' | 'terbaru') || 'kategori';
+  });
+  useEffect(() => {
+    sessionStorage.setItem('exploreTab', activeSegment);
+  }, [activeSegment]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const searchTermFromUrl = queryParams.get('q') || '';
@@ -91,7 +104,7 @@ export default function ExplorePage() {
         const fetchPosts = async () => {
             setIsLoadingNotes(true);
             try {
-                const keyword = searchTermFromUrl || searchQuery;
+                const keyword = searchTermFromUrl || debouncedSearchQuery;
                 const queryParamsAPI: any = { sort: activeSegment };
                 
                 if (keyword !== '') {
@@ -104,7 +117,6 @@ export default function ExplorePage() {
                 
                 setNotes(response.data.data || []);
             } catch (error) {
-                // Nah ini! Kalau error dia bakal teriak di sini
                 console.error('Pesan Error dari Backend:', error); 
             } finally {
                 setIsLoadingNotes(false);
@@ -112,7 +124,7 @@ export default function ExplorePage() {
         };
 
         fetchPosts();
-    }, [searchQuery, searchTermFromUrl, activeSegment]);
+    }, [debouncedSearchQuery, searchTermFromUrl, activeSegment]);
 
   const formattedNotes = notes.map(note => ({
     ...note,

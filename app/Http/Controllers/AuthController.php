@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    // Fungsi Register
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -23,7 +22,6 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        // Simpen data ke MongoDB
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -41,7 +39,6 @@ class AuthController extends Controller
         ], 201);
     }
 
-    // Fungsi Login
     public function login(Request $request)
     {
         $request->validate([
@@ -68,7 +65,7 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'role' => $user->role,
-                'jenjang_pendidikan' => $user->jenjang_pendidikan, // <-- Balikin datanya pas login biar frontend tau
+                'jenjang_pendidikan' => $user->jenjang_pendidikan,
             ]
         ]);
     }
