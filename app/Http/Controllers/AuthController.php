@@ -50,12 +50,13 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
-                'message' => 'wkwkwk salah kocak, hama lu '
+                'message' => 'Email atau Password salah '
             ], 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        // TIMPA BAGIAN INI AJA YAA:
         return response()->json([
             'message' => 'Login sukses!',
             'access_token' => $token,
@@ -66,6 +67,10 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'role' => $user->role,
                 'jenjang_pendidikan' => $user->jenjang_pendidikan,
+                'avatar' => $user->avatar,
+                'bio' => $user->bio,      
+                'school' => $user->school,
+                'phone' => $user->phone
             ]
         ]);
     }

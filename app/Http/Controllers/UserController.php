@@ -29,8 +29,6 @@ class UserController extends Controller
 
     public function updateProfile(Request $request)
     {
-        $user = Auth::user();
-
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'bio' => 'nullable|string|max:255',
@@ -44,12 +42,13 @@ class UserController extends Controller
             $file = $request->file('avatar');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('avatars'), $filename);
-            
+
             $avatarUrl = asset('avatars/' . $filename);
             
-            $validated['avatar'] = $avatarUrl;
+            $validated['avatar'] = $avatarUrl; 
         }
 
+        $user = Auth::user();
         $user->fill($validated);
         $user->save();
 

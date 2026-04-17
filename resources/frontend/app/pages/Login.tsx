@@ -25,21 +25,19 @@ export default function Login() {
     if (isLogin) {
       const success = await login(formData.email, formData.password);
       if (success) {
-        // Navigate based on role
-        const email = formData.email.toLowerCase();
-        if (email === 'admin@gmail.com') {
-          navigate('/admin');
-        } else if (email === 'pakar@gmail.com') {
-          navigate('/pakar');
+            const email = formData.email.toLowerCase();
+            if (email === 'admin@gmail.com') {
+                window.location.href = '/admin';
+            } else if (email === 'pakar@gmail.com') {
+                window.location.href = '/pakar';
+            } else {
+                window.location.href = '/home';
+            }
         } else {
-          navigate('/home');
+            setError('Email atau password salah');
         }
-      } else {
-        setError('Email atau password salah');
-      }
     } else {
-      // Register - default to user role
-      navigate('/home');
+        window.location.href = '/home';
     }
   };
 
