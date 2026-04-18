@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
@@ -73,5 +74,31 @@ class AuthController extends Controller
                 'phone' => $user->phone
             ]
         ]);
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        // 1. Validasi: Pastiin emailnya diisi dan emang ada di database lu
+        $request->validate([
+            'email' => 'required|email|exists:user,email',
+        ], [
+            'email.exists' => 'Email belum terdaftar!'
+        ]);
+
+        // 2. Suruh Laravel bikin token dan "ngirim" email
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        // 3. Cek apakah berhasil dikirim
+        if ($status === Password::RESET_LINK_SENT) {
+            return response()->json([
+                'message' => 'Mantap! Link reset password udah dikirim ke email lu.'
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'Gagal ngirim email nih, coba lagi ntar ya.'
+        ], 500);
     }
 }

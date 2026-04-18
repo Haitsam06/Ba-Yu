@@ -10,11 +10,12 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalProps) {
-  const [activeTab, setActiveTab] = useState<'login' | 'register'>(defaultTab);
+  const [activeTab, setActiveTab] = useState<'login' | 'register' | 'forgot'>(defaultTab);
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const backdropRef = useRef<HTMLDivElement>(null);
   
   const [formData, setFormData] = useState({
@@ -47,7 +48,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
     setIsSubmitting(true);
     
     if (activeTab === 'login') {
-      const error = await login(formData.email, formData.password);
+      const error = await login(formData.email, formData.password, rememberMe);
       if (error) {
          setErrorMsg(error);
          setIsSubmitting(false);
@@ -108,6 +109,9 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
             <X className="w-4 h-4 text-gray-500 group-hover:rotate-90 transition-transform duration-300" />
           </button>
 
+          {activeTab !== 'forgot' && (<>
+
+
           {/* Header — Clean Minimal */}
           <div className="px-8 pt-10 pb-3 text-center relative overflow-hidden">
             {/* Subtle background orbs */}
@@ -165,6 +169,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
               </button>
             </div>
           </div>
+          </>)}
 
           {/* Form Area */}
           <div className="px-8 pt-5 pb-8 max-h-[58vh] overflow-y-auto">
@@ -175,8 +180,9 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                 {errorMsg}
               </div>
             )}
-
             <form onSubmit={handleSubmit} className="space-y-5">
+
+              {activeTab !== 'forgot' && (<>
               {/* Name — Register Only */}
               <div
                 style={{ transition: 'max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, margin 0.3s ease' }}
@@ -272,34 +278,120 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                 <div className="flex items-center justify-between text-sm pt-1">
                   <label className="flex items-center gap-2.5 cursor-pointer group">
                     <input
-                      type="checkbox" 
-                      className="w-4 h-4 rounded-md border-2 border-gray-200 text-primary focus:ring-primary/30 focus:ring-offset-0 cursor-pointer"
+                        type="checkbox"
+                        className="w-4 h-4 rounded-md border-2 border-gray-200 text-primary focus:ring-primary/30 focus:ring-offset-0 cursor-pointer"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
                     />
                     <span className="text-gray-500 group-hover:text-gray-700 transition-colors font-medium">Ingat saya</span>
                   </label>
-                  <button type="button" className="text-primary font-bold hover:underline underline-offset-2 text-sm">
-                    Lupa sandi?
+                  <button 
+                      type="button" 
+                      onClick={() => setActiveTab('forgot')} 
+                      className="text-primary font-bold hover:underline underline-offset-2 text-sm"
+                  >
+                      Lupa sandi?
                   </button>
                 </div>
               )}
+            </>)}
+
+              {activeTab === 'forgot' && (
+    <div className="space-y-4 animate-in fade-in zoom-in duration-300">
+        <div className="text-center mb-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Lupa Password? 🔒</h3>
+            <p className="text-sm text-gray-500">
+                Santai, masukin email lu di bawah, nanti kita kirimin link buat bikin password baru.
+            </p>
+        </div>
+        
+        <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-gray-700">Email</label>
+            <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                    placeholder="nama@email.com"
+                    required
+                />
+            </div>
+        </div>
+
+        <div className="pt-2">
+            <button
+    type="button"
+    disabled={isSubmitting}
+    onClick={async () => {
+        if (!formData.email) {
+            alert("Isi email terlebih dahulu!");
+            return;
+        }
+        
+        setIsSubmitting(true);
+        try {
+            const response = await fetch('http://localhost:8000/api/forgot-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ email: formData.email })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert("✅ SUKSES: " + data.message);
+                setActiveTab('login');
+            } else {
+                alert("❌ GAGAL: " + data.message);
+            }
+        } catch (error) {
+            alert("Servernya tewas atau belom dinyalain der!");
+        } finally {
+            setIsSubmitting(false);
+        }
+    }}
+    className="w-full bg-primary hover:bg-indigo-700 disabled:bg-gray-300 text-white h-[52px] rounded-xl font-bold text-[15px] shadow-xl shadow-primary/20 transition-all active:scale-[0.98]"
+>
+    {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Kirim Link Reset"}
+</button>
+        </div>
+
+        <div className="text-center mt-4">
+            <button
+                type="button"
+                onClick={() => setActiveTab('login')}
+                className="text-sm font-bold text-gray-500 hover:text-primary transition-colors"
+            >
+                Kembali ke Login
+            </button>
+        </div>
+    </div>
+)}
 
               {/* Submit CTA */}
-              <div className="pt-3">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-primary hover:bg-indigo-700 disabled:bg-gray-300 text-white h-[52px] rounded-2xl font-bold text-[15px] shadow-xl shadow-primary/20 hover:shadow-primary/30 disabled:shadow-none transition-all duration-300 flex items-center justify-center gap-2 group hover:-translate-y-0.5 active:translate-y-0"
-                >
-                  {isSubmitting ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <>
-                      {activeTab === 'login' ? 'Masuk ke Akun' : 'Buat Akun Gratis'}
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                    </>
-                  )}
-                </button>
-              </div>
+              {activeTab !== 'forgot' && (
+                  <div className="pt-3">
+                      <button
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="group w-full flex items-center justify-center gap-2 bg-primary hover:bg-indigo-700 disabled:bg-gray-300 text-white h-[52px] rounded-2xl font-bold text-[15px] shadow-xl shadow-primary/20 transition-all active:scale-[0.98]"
+                      >
+                          {isSubmitting ? (
+                              <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                          ) : (
+                              <>
+                                  {activeTab === 'login' ? 'Masuk ke Akun' : 'Buat Akun Gratis'}
+                                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                              </>
+                          )}
+                      </button>
+                  </div>
+              )}
 
               {/* Terms (Register) */}
               {activeTab === 'register' && (
@@ -314,19 +406,21 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
             </form>
 
             {/* Footer Switch */}
-            <div className="mt-6 pt-5 border-t border-gray-100 text-center">
-              <p className="text-sm text-gray-500 font-medium">
-                {activeTab === 'login' ? 'Belum punya akun?' : 'Sudah punya akun?'}
-                <button
-                  type="button"
-                  onClick={() => { setActiveTab(activeTab === 'login' ? 'register' : 'login'); setErrorMsg(null); }}
-                  className="text-primary font-bold hover:underline underline-offset-2 ml-1.5"
-                >
-                  {activeTab === 'login' ? 'Daftar Gratis' : 'Masuk'}
-                </button>
-              </p>
+            {activeTab !== 'forgot' && (
+                  <div className="mt-6 pt-5 border-t border-gray-100 text-center">
+                  <p className="text-sm text-gray-500 font-medium">
+            {activeTab === 'login' ? 'Belum punya akun?' : 'Sudah punya akun?'}
+            <button
+                type="button"
+                onClick={() => { setActiveTab(activeTab === 'login' ? 'register' : 'login'); setErrorMsg(null); }}
+                className="text-primary font-bold hover:underline underline-offset-2 ml-1.5"
+            >
+                {activeTab === 'login' ? 'Daftar Gratis' : 'Masuk'}
+            </button>
+            </p>
             </div>
-          </div>
+              )}
+            </div>
         </div>
       </div>
     </>

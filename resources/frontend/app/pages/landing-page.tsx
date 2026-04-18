@@ -473,4 +473,4 @@ export function LandingPage() {
       <Footer />
     </div>
   );
-}
+}

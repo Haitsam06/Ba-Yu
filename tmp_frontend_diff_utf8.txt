@@ -167,14 +167,14 @@ index b4a38f2..6897b32 100644
 -                                              : c
 -                                        ));
 -                                        try {
--                                          const tk = localStorage.getItem('bayu-token');
+-                                          const tk = localStorage.getItem('bayu-token') || sessionStorage.getItem('bayu-token');
 -                                          await axios.post(`/api/v1/comments/${cid}/like`, {}, { headers: { Authorization: `Bearer ${tk}` } });
 -                                        } catch(e) {}
 +                                    <button
 +                                        onClick={async () => {
 +                                            if (!isAuthenticated) return openAuthModal('login');
 +                                            try {
-+                                                const tk = localStorage.getItem('bayu-token');
++                                                const tk = localStorage.getItem('bayu-token') || sessionStorage.getItem('bayu-token');
 +            
 +                                                const res = await axios.post(`/api/v1/comments/${cid}/like`, {}, { 
 +                                                    headers: { Authorization: `Bearer ${tk}` } 

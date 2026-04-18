@@ -3,6 +3,7 @@ import { RootLayout } from './components/RootLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { LandingPage } from './pages/landing-page';
 import LoginPage from './pages/Login';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
 import PublicExplorePage from './pages/PublicExplorePage';
@@ -29,6 +30,10 @@ export const router = createBrowserRouter([
       {
         path: 'login',
         element: <LoginPage />,
+      },
+      {
+        path: 'reset-password/:token',
+        element: <ResetPasswordPage />,
       },
       {
         path: 'explore',

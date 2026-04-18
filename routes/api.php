@@ -16,6 +16,7 @@ use App\Http\Controllers\BookmarkController;
 
 Route::post('/v1/register', [AuthController::class, 'register']);
 Route::post('/v1/login', [AuthController::class, 'login']);
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 
 Route::get('/v1/posts', [PostController::class, 'index']);
 Route::get('/v1/posts/{id}', [PostController::class, 'show']);
@@ -76,8 +77,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         $user = clone $request->user();
         if ($user) {
-            $user->followers_count = is_array($user->follower_ids) ? count($user->follower_ids) : 0;
-            $user->following_count = is_array($user->following_ids) ? count($user->following_ids) : 0;
+            $user->setAttribute('followers_count', is_array($user->follower_ids) ? count($user->follower_ids) : 0);
+            $user->setAttribute('following_count', is_array($user->following_ids) ? count($user->following_ids) : 0);
         }
         return $user;
     });
