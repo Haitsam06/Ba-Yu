@@ -10,6 +10,7 @@ import {
     Eye,
     Heart,
     MessageCircle,
+    ShieldCheck,
 } from "lucide-react";
 import { NoteCardSkeleton } from "../components/ui/skeletons";
 import { Skeleton } from "../components/ui/skeleton";
@@ -202,11 +203,16 @@ export default function HomePage() {
                                         <span className="bg-primary/10 text-primary text-[11px] font-['Lexend_Deca'] font-bold px-2 py-1 rounded-[6px] uppercase tracking-wider">
                                             Fokus Utama
                                         </span>
-                                        <span className="text-gray-400 text-[12px] font-medium">
-                                            •{" "}
-                                            {Math.floor(Math.random() * 8) + 3}{" "}
-                                            min
+                                        <span className="text-gray-400 text-[12px] font-medium flex items-center gap-1.5">
+                                            • <Clock className="w-3 h-3" /> {heroNote.read_time || 1} min
                                         </span>
+
+                                        {/*Badge Verifikasi*/}
+                                        {heroNote.is_verified && (
+                                            <span className="flex items-center gap-1 bg-emerald-50 text-emerald-600 text-[11px] font-['Lexend_Deca'] font-bold px-2 py-1 rounded-[6px] uppercase tracking-wider border border-emerald-100">
+                                                <ShieldCheck className="w-3.5 h-3.5" />
+                                            </span>
+                                        )}
                                     </div>
 
                                     <Link
@@ -335,6 +341,12 @@ export default function HomePage() {
                                                         ? `${note.kelas} Semester ${note.semester || 1}`
                                                         : `${note.jenjang} Kelas ${note.kelas}`}
                                                 </span>
+
+                                                {note.is_verified && (
+                                                <span className="flex items-center gap-1 text-[12px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md">
+                                                    <ShieldCheck className="w-3.5 h-3.5" />
+                                                </span>
+                                            )}
                                             </div>
 
                                             {/* Title */}
@@ -374,6 +386,13 @@ export default function HomePage() {
                                                 </div>
 
                                                 <div className="flex items-center gap-3 shrink-0 ml-4">
+                                                    {/* --- view --- */}
+                                                    <div className="flex items-center gap-1.5 text-gray-500" title={`${note.views} kali dilihat`}>
+                                                        <Eye className="w-[15px] h-[15px]" strokeWidth={2} />
+                                                        <span className="text-[13px] font-['Manrope'] font-medium">
+                                                            {note.views}
+                                                        </span>
+                                                    </div>
                                                     <button
                                                         onClick={(e) => {
                                                             e.preventDefault();
@@ -441,8 +460,7 @@ export default function HomePage() {
                                                     />
                                                     {/* Floating badge top right */}
                                                     <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
-                                                        <Clock className="w-3 h-3" />{" "}
-                                                        5m
+                                                        <Clock className="w-3 h-3" /> {note.read_time || 1}m
                                                     </div>
                                                 </Link>
                                             </div>

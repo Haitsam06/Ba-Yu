@@ -18,6 +18,7 @@ import {
     Bookmark,
     Star,
     X,
+    ShieldCheck,
 } from "lucide-react";
 import { mataPelajaran } from "../data/mockData";
 import axios from "axios";
@@ -482,6 +483,12 @@ export default function ExplorePage() {
                                                             ? `S${note.kelas || "1"} Semester ${note.semester || 1}`
                                                             : `${note.jenjang} Kelas ${note.kelas}`}
                                                     </span>
+
+                                                    {note.is_verified && (
+                                                        <span className="flex items-center gap-1 text-[12px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md ml-1">
+                                                            <ShieldCheck className="w-3.5 h-3.5" />
+                                                        </span>
+                                                    )}
                                                 </div>
 
                                                 {/* Title */}
@@ -521,6 +528,12 @@ export default function ExplorePage() {
                                                     </div>
 
                                                     <div className="flex items-center gap-3 shrink-0 ml-4">
+                                                        <div className="flex items-center gap-1.5 text-gray-500" title={`${note.views} kali dilihat`}>
+                                                            <Eye className="w-[15px] h-[15px]" strokeWidth={2} />
+                                                            <span className="text-[13px] font-['Manrope'] font-medium">
+                                                                {note.views}
+                                                            </span>
+                                                        </div>
                                                         <button
                                                             onClick={(e) => {
                                                                 e.preventDefault();
@@ -591,7 +604,7 @@ export default function ExplorePage() {
                                                         {/* Floating badge */}
                                                         <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
                                                             <Clock className="w-3 h-3" />{" "}
-                                                            5m
+                                                            {note.read_time || 1}m
                                                         </div>
                                                     </Link>
                                                 </div>
