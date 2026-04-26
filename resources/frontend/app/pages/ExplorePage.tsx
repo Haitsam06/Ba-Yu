@@ -41,6 +41,10 @@ export default function ExplorePage() {
                 | "terbaru") || "kategori"
         );
     });
+
+    // Sort untuk popular dan terbaru
+    const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
+
     useEffect(() => {
         sessionStorage.setItem("exploreTab", activeSegment);
     }, [activeSegment]);
@@ -160,7 +164,12 @@ export default function ExplorePage() {
             setIsLoadingNotes(true);
             try {
                 const keyword = searchTermFromUrl || debouncedSearchQuery;
-                const queryParamsAPI: any = { sort: activeSegment };
+                
+                // --- 2. UBAH BAGIAN PARAMETER API INI ---
+                const queryParamsAPI: any = { 
+                    sort: activeSegment,
+                    order: sortOrder // <--- Kirim parameter asc/desc ke Backend
+                };
 
                 if (keyword !== "") {
                     queryParamsAPI.search = keyword;
@@ -169,6 +178,7 @@ export default function ExplorePage() {
                 const response = await axios.get("/api/v1/posts", {
                     params: queryParamsAPI,
                 });
+                // ----------------------------------------
 
                 setNotes(response.data.data || []);
             } catch (error) {
@@ -179,7 +189,8 @@ export default function ExplorePage() {
         };
 
         fetchPosts();
-    }, [debouncedSearchQuery, searchTermFromUrl, activeSegment]);
+    // --- 3. TAMBAHKAN sortOrder KE DALAM KURUNG SIKU DI BAWAH INI ---
+    }, [debouncedSearchQuery, searchTermFromUrl, activeSegment, sortOrder]);
 
     const formattedNotes = notes.map((note) => ({
         ...note,
@@ -383,46 +394,45 @@ export default function ExplorePage() {
                         )}
 
                         {/* Animated Feed Tab Navigation */}
-                        <div
-                            className={`px-6 md:px-0 w-full mb-8 ${!isAuthenticated ? "border-b border-gray-100 mt-2" : "px-2"}`}
-                        >
-                            <div
-                                className={`${!isAuthenticated ? "explore-reveal opacity-0 translate-y-4" : ""}`}
-                                style={{
-                                    transition:
-                                        "all 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s",
-                                }}
-                            >
-                                <div
-                                    className={`flex gap-8 overflow-x-auto no-scrollbar relative ${isAuthenticated ? "border-b border-gray-100" : ""}`}
-                                >
-                                    {tabItems.map((tab) => (
-                                        <button
-                                            key={tab.key}
-                                            onClick={() =>
-                                                setActiveSegment(tab.key)
-                                            }
-                                            className={`pb-4 relative shrink-0 font-['Lexend_Deca'] text-[15px] transition-colors focus:outline-none flex items-center gap-2 group ${
-                                                activeSegment === tab.key
-                                                    ? "text-gray-900 font-extrabold"
-                                                    : "text-gray-500 font-medium hover:text-gray-900"
-                                            }`}
+                        <div className={`px-6 md:px-0 w-full mb-8 ${!isAuthenticated ? "border-b border-gray-100 mt-2" : "px-2"}`}>
+                            <div className={`${!isAuthenticated ? "explore-reveal opacity-0 translate-y-4" : ""}`} style={{ transition: "all 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s" }}>
+                                
+                                <div className={`flex justify-between items-end ${isAuthenticated ? "border-b border-gray-100" : ""}`}>
+
+                                    {/* Bagian Kiri: Tab Navigasi (Untuk Anda, Terpopuler, dsb) */}
+                                    <div className={`flex gap-8 overflow-x-auto no-scrollbar relative`}>
+                                        {tabItems.map((tab) => (
+                                            <button
+                                                key={tab.key}
+                                                onClick={() => setActiveSegment(tab.key)}
+                                                className={`pb-4 relative shrink-0 font-['Lexend_Deca'] text-[15px] transition-colors focus:outline-none flex items-center gap-2 group ${
+                                                    activeSegment === tab.key ? "text-gray-900 font-extrabold" : "text-gray-500 font-medium hover:text-gray-900"
+                                                }`}
+                                            >
+                                                <tab.icon className={`w-[16px] h-[16px] transition-colors ${activeSegment === tab.key ? "text-gray-900" : "text-gray-400 group-hover:text-gray-600"}`} strokeWidth={activeSegment === tab.key ? 2.5 : 2} />
+                                                {tab.label}
+                                                {activeSegment === tab.key && (
+                                                    <div className="absolute -bottom-[1px] left-0 w-full h-[2px] bg-gray-900 rounded-t-full shadow-[0_-1px_6px_rgba(0,0,0,0.2)]"></div>
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Bagian Kanan: Dropdown Filter Order */}
+                                    <div className="pb-3 pl-4 hidden sm:block">
+                                        <select
+                                            value={sortOrder}
+                                            onChange={(e) => setSortOrder(e.target.value as "desc" | "asc")}
+                                            className="bg-gray-50/80 border border-gray-200 text-gray-700 text-[13px] font-['Manrope'] font-bold py-1.5 px-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 cursor-pointer hover:bg-gray-100 transition-all appearance-none outline-none text-center shadow-sm"
+                                            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.2em 1.2em', paddingRight: '2rem' }}
                                         >
-                                            <tab.icon
-                                                className={`w-[16px] h-[16px] transition-colors ${activeSegment === tab.key ? "text-gray-900" : "text-gray-400 group-hover:text-gray-600"}`}
-                                                strokeWidth={
-                                                    activeSegment === tab.key
-                                                        ? 2.5
-                                                        : 2
-                                                }
-                                            />
-                                            {tab.label}
-                                            {activeSegment === tab.key && (
-                                                <div className="absolute -bottom-[1px] left-0 w-full h-[2px] bg-gray-900 rounded-t-full shadow-[0_-1px_6px_rgba(0,0,0,0.2)]"></div>
-                                            )}
-                                        </button>
-                                    ))}
+                                            <option value="desc">Descending</option>
+                                            <option value="asc">Ascending</option>
+                                        </select>
+                                    </div>
+
                                 </div>
+
                             </div>
                         </div>
 

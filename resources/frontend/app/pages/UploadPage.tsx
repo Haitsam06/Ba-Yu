@@ -517,13 +517,28 @@ function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<Re
           if (file) {
             const reader = new FileReader();
             reader.onload = () => {
+              const captionText = "Ketik caption gambar di sini...";
+              
+              // 1. Sisipkan Gambar
               quill.insertEmbed(range.index, 'image', reader.result, 'user');
               quill.formatText(range.index, 1, 'layout', 'inline');
-              quill.insertText(range.index + 1, '\n', 'user');
-              quill.formatLine(range.index + 1, 1, 'align', 'center');
-              quill.insertText(range.index + 2, '\n', 'user');
-              quill.formatLine(range.index + 2, 1, 'align', false);
-              quill.setSelection(range.index + 1, 0);
+              
+              // 2. Buat baris baru dan teks caption
+              quill.insertText(range.index + 1, '\n' + captionText, 'user');
+              quill.formatLine(range.index + 2, 1, 'align', 'center'); // Rata tengah
+              
+              // 3. Beri warna abu-abu & miring (italic) pada caption
+              quill.formatText(range.index + 2, captionText.length, 'color', '#9ca3af');
+              quill.formatText(range.index + 2, captionText.length, 'italic', true);
+              
+              // 4. Siapkan baris normal di bawahnya
+              quill.insertText(range.index + 2 + captionText.length, '\n', 'user');
+              quill.formatLine(range.index + 3 + captionText.length, 1, 'align', false);
+              quill.formatText(range.index + 3 + captionText.length, 1, 'color', false);
+              quill.formatText(range.index + 3 + captionText.length, 1, 'italic', false);
+              
+              // 5. Highlight teks caption agar bisa langsung diketik/ditimpa
+              quill.setSelection(range.index + 2, captionText.length, 'user');
             };
             reader.readAsDataURL(file);
           }
@@ -547,12 +562,27 @@ function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<Re
                     if (videoId) finalUrl = `https://www.youtube.com/embed/${videoId}`;
                 }
 
+                const captionText = "Ketik caption video di sini...";
+
+                // 1. Sisipkan Video
                 quill.insertEmbed(range.index, 'video', finalUrl, 'user');
-                quill.insertText(range.index + 1, '\n', 'user');
-                quill.formatLine(range.index + 1, 1, 'align', 'center');
-                quill.insertText(range.index + 2, '\n', 'user');
-                quill.formatLine(range.index + 2, 1, 'align', false);
-                quill.setSelection(range.index + 1, 0);
+                
+                // 2. Buat baris baru dan teks caption
+                quill.insertText(range.index + 1, '\n' + captionText, 'user');
+                quill.formatLine(range.index + 2, 1, 'align', 'center');
+                
+                // 3. Format caption (abu-abu, miring)
+                quill.formatText(range.index + 2, captionText.length, 'color', '#9ca3af');
+                quill.formatText(range.index + 2, captionText.length, 'italic', true);
+                
+                // 4. Siapkan baris normal di bawahnya
+                quill.insertText(range.index + 2 + captionText.length, '\n', 'user');
+                quill.formatLine(range.index + 3 + captionText.length, 1, 'align', false);
+                quill.formatText(range.index + 3 + captionText.length, 1, 'color', false);
+                quill.formatText(range.index + 3 + captionText.length, 1, 'italic', false);
+                
+                // 5. Highlight teks caption
+                quill.setSelection(range.index + 2, captionText.length, 'user');
             }
             break;
         }
@@ -1071,17 +1101,6 @@ export default function UploadPage() {
               .notion-editor .ql-editor h2 { font-family: 'Lexend Deca', sans-serif; font-size: 1.35em; font-weight: 700; margin: 0.8em 0 0.3em; color: #1f2937; }
               .notion-editor .ql-editor h3 { font-family: 'Lexend Deca', sans-serif; font-size: 1.15em; font-weight: 600; margin: 0.6em 0 0.3em; color: #374151; }
               .notion-editor .ql-editor p { margin-bottom: 0.5em; position: relative; }
-              /* Caption Placeholder via CSS */
-              .notion-editor .ql-editor p:has(img) + p.ql-align-center:has(> br:only-child)::before,
-              .notion-editor .ql-editor .ql-video + p.ql-align-center:has(> br:only-child)::before {
-                 content: "Type caption for image (optional)";
-                 color: #9ca3af;
-                 display: block;
-                 text-align: center;
-                 font-style: italic;
-                 font-size: 0.9em;
-                 pointer-events: none;
-              }
               .notion-editor .ql-editor img, .notion-editor .ql-editor .ql-video { 
                   border-radius: 12px; 
                   display: block !important; 

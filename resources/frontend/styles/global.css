@@ -1,3 +1,15 @@
+/* Hilangkan scrollbar tapi tetap bisa di-scroll */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE dan Edge lama */
+    scrollbar-width: none;     /* Firefox */
+  }
+}
+
 /* Custom scrollbar styles */
 .scrollbar-hide {
   -ms-overflow-style: none;
