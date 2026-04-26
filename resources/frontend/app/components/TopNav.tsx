@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import AvatarNotifications from './ui/avatar-notifications';
+import ApplicationLogo from './ApplicationLogo';
 
 interface TopNavProps {
   isSidebarExpanded: boolean;
@@ -52,11 +53,9 @@ export function TopNav({ isSidebarExpanded, toggleSidebar }: TopNavProps) {
 
         {/* Ba-Yu Logo (Premium Gradient from Landing Page) */}
         <Link to="/home" className="flex items-center gap-2 mr-6 shrink-0 group">
-           <div className="w-8 h-8 rounded-[8px] flex items-center justify-center bg-primary/10 group-hover:bg-primary/20 transition-colors">
-              <span className="text-[14px]">📚</span>
-           </div>
+           <ApplicationLogo className="w-8 h-8" />
            <span className="font-['Lexend_Deca'] font-extrabold text-[22px] tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-800 hidden sm:block">
-              Ba-Yu.
+              Ba-Yu
            </span>
         </Link>
 

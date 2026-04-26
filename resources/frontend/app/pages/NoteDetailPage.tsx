@@ -615,7 +615,10 @@ export default function NoteDetailPage() {
         .notion-reader .ql-editor code { background: #f3f4f6; padding: 0.2em 0.4em; border-radius: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.85em; color: #ef4444; }
         .notion-reader .ql-editor pre { background: #1f2937; color: #f3f4f6; padding: 1em; border-radius: 12px; overflow-x: auto; margin-bottom: 1.2em; }
         .notion-reader .ql-editor .ql-formula { padding: 4px 8px; background: #faf5ff; border-radius: 6px; border: 1px solid #e9d5ff; color: #7c3aed; display: inline-block; font-size: 0.9em; margin: 0 0.2em; }
-      `,
+        .notion-reader .ql-editor iframe { width: 100% !important; aspect-ratio: 16 / 9; height: auto !important; border-radius: 12px; margin: 2em 0; box-shadow: 0 4px 20px rgba(0,0,0,0.08);}
+        .notion-reader .ql-editor .ql-video { display: block; max-width: 100%;}
+        `,
+      
                 }}
             />
 
