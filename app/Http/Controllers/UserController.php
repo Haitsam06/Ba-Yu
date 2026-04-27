@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Cloudinary\Cloudinary;
 
 class UserController extends Controller
 {
@@ -39,22 +40,21 @@ class UserController extends Controller
         ]);
 
         if ($request->hasFile('avatar')) {
-            $file = $request->file('avatar');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('avatars'), $filename);
-
-            $avatarUrl = asset('avatars/' . $filename);
+            $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
             
-            $validated['avatar'] = $avatarUrl; 
+            $upload = $cloudinary->uploadApi()->upload($request->file('avatar')->getRealPath(), [
+                'folder' => 'ba-yu-avatars'
+            ]);
+            
+            $validated['avatar'] = $upload['secure_url'];
         }
-
         $user = Auth::user();
         $user->fill($validated);
         $user->save();
 
         return response()->json([
             'message' => 'Profil berhasil diperbarui',
-            'data' => $user
+            'user' => $user
         ], 200);
     }
 
