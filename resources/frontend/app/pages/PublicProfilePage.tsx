@@ -98,7 +98,7 @@ export default function PublicProfilePage() {
     const fetchUserNotes = async () => {
         setIsLoadingNotes(true);
         try {
-            const response = await axios.get(`/api/v1/posts?user_id=${id}`);
+            const response = await axios.get(`/api/v1/posts?user_id=${id}&sort=terbaru`);
             setNotes(response.data.data || []);
         } catch (error) {
             console.error("Error fetching user notes:", error);
@@ -374,7 +374,7 @@ export default function PublicProfilePage() {
                 {/* Sticky Tab Navigation */}
                 <div
                     id="profil-tabs"
-                    className={`sticky bg-white/95 backdrop-blur-md z-20 border-b border-gray-100 mb-8 pt-2 ${isAuthenticated ? "top-[60px]" : "top-[60px] sm:top-[70px]"}`}
+                    className="sticky top-0 bg-white z-40 border-b border-gray-100 mb-8 pt-2"
                 >
                     <div className="flex gap-8 overflow-x-auto scrollbar-hide px-1">
                         {[

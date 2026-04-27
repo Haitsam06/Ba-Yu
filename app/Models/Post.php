@@ -29,11 +29,13 @@ class Post extends Model
         'is_verified',
         'likes_count',
         'comments_count',
+        'is_rejected',
     ];
 
     protected $attributes = [
         'visibility' => 'public',
         'is_verified' => false,
+        'is_rejected' => false,
         'likes_count' => 0,
         'comments_count' => 0,
     ];
@@ -43,6 +45,7 @@ class Post extends Model
         'comments_count' => 'integer',
         'tags' => 'array',
         'is_verified' => 'boolean',
+        'is_rejected' => 'boolean',
     ];
 
     // Relationships

@@ -36,7 +36,8 @@ export default function PakarDashboard() {
     const fetchPosts = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get("/api/v1/posts");
+            const response = await axios.get("/api/v1/posts?sort=terbaru");
+            console.log("CCTV BACKEND:", response.data.data);
             const formattedNotes = (response.data.data || []).map(
                 (note: any) => ({
                     ...note,
@@ -53,14 +54,17 @@ export default function PakarDashboard() {
                               avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
                           },
                     createdAt: note.created_at || note.createdAt,
+                    // KODINGAN BARU (MESIN CUCI DOUBLE):
                     description: note.content
                         ? note.content
-                              .replace(/<[^>]*>?/gm, "")
-                              .substring(0, 150) + "..."
+                            .replace(/<[^>]*>?/gm, "") // Ngebunuh tag HTML (<p>, <b>, dll)
+                            .replace(/&nbsp;/g, " ")   // Ngebunuh entitas spasi (&nbsp;) jadi spasi biasa
+                            .substring(0, 150) + "..."
                         : "Tidak ada deskripsi",
                     mataPelajaran: note.mapel || "Lainnya",
                     kelas: note.kelas || "-",
                     isValidated: note.is_verified || false,
+                    isRejected: note.is_rejected || false,
                 }),
             );
             setNotes(formattedNotes);
@@ -76,53 +80,50 @@ export default function PakarDashboard() {
         noteId: string,
         status: "approve" | "reject",
     ) => {
-        if (status === "reject") {
-            showToast(
-                "Fitur tolak saat ini belum didukung sistem backend",
-                "warning",
-            );
-            return;
-        }
-
         try {
-            const tk =
-                localStorage.getItem("bayu-token") ||
-                sessionStorage.getItem("bayu-token");
-            await axios.put(
-                `/api/v1/posts/${noteId}/verify`,
-                {},
-                {
-                    headers: { Authorization: `Bearer ${tk}` },
-                },
-            );
+            const tk = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+            const config = { headers: { Authorization: `Bearer ${tk}` } };
 
-            showToast("Catatan berhasil disetujui!", "success");
+            if (status === "approve") {
+                await axios.put(`/api/v1/posts/${noteId}/verify`, {}, config);
+                showToast("Catatan berhasil disetujui!", "success");
 
-            // Update local state directly to feel fast
-            setNotes((prev) =>
-                prev.map((note) =>
-                    note.id === noteId
-                        ? { ...note, isValidated: true, is_verified: true }
-                        : note,
-                ),
-            );
+                setNotes((prev) =>
+                    prev.map((note) =>
+                        note.id === noteId
+                            ? { ...note, isValidated: true, is_verified: true }
+                            : note,
+                    )
+                );
+            } else if (status === "reject") {
+                await axios.put(`/api/v1/posts/${noteId}/reject`, {}, config);
+                showToast("Catatan ditolak! Tetap aman di profil pengguna.", "success");
+
+                setNotes((prev) =>
+                    prev.map((note) =>
+                        note.id === noteId
+                            ? { ...note, isRejected: true }
+                            : note,
+                    )
+                );
+            }
         } catch (error) {
             console.error("Verification error:", error);
             showToast("Gagal memverifikasi catatan", "error");
         }
     };
 
-    const pendingNotes = notes.filter((note) => !note.isValidated);
+    const pendingNotes = notes.filter((note) => !note.isValidated && !note.isRejected);
     const verifiedNotes = notes.filter((note) => note.isValidated);
 
     const filteredNotes = (
         filter === "all"
-            ? notes
+            ? notes.filter((note) => !note.isRejected)
             : filter === "pending"
-              ? pendingNotes
-              : filter === "approved"
-                ? verifiedNotes
-                : []
+            ? pendingNotes
+            : filter === "approved"
+            ? verifiedNotes
+            : []
     ).filter((note) => {
         if (!searchQuery) return true;
         const q = searchQuery.toLowerCase();

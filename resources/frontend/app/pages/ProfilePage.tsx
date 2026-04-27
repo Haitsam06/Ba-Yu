@@ -137,28 +137,6 @@ export default function ProfilePage() {
         }
     };
 
-    // Fetch user notes from API
-    useEffect(() => {
-        const fetchUserNotes = async () => {
-            try {
-                const userId = user?.id || user?._id;
-                if (userId) {
-                    const response = await axios.get(
-                        `/api/v1/posts?user_id=${userId}`,
-                    );
-                    setNotes(response.data.data || []);
-                } else {
-                    setNotes([]);
-                }
-            } catch (error) {
-                console.error("Error fetching user notes:", error);
-            } finally {
-                setIsLoadingNotes(false);
-            }
-        };
-        fetchUserNotes();
-    }, [user]);
-
     const currentUser = {
         id: user?.id || user?._id || "",
         name: user?.name || "Pengguna",
@@ -174,16 +152,39 @@ export default function ProfilePage() {
     };
 
     // Find notes based on matched ID (Now using API data)
-    const userNotes = notes.map((note) => ({
+
+    const [fetchedNotes, setFetchedNotes] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchApiNotes = async () => {
+            try {
+                console.log("ID USER SEKARANG:", currentUser.id);
+                const response = await axios.get(`/api/v1/posts?user_id=${currentUser.id}&sort=terbaru`);
+                console.log("HASIL SEDOTAN API:", response.data);
+                setFetchedNotes(response.data.data || response.data || []);
+            } catch (error) {
+                console.error("Gagal nyedot data:", error);
+            } finally {
+                setIsLoadingNotes(false);
+            }
+        };
+
+        if (currentUser?.id) {
+            fetchApiNotes();
+        }
+    }, [currentUser?.id]);
+
+    const userNotes = fetchedNotes.map((note) => ({
         ...note,
         id: note._id || note.id,
         title: note.title,
+        description: String(note.description || note.plain_content || "").replace(/&nbsp;/g, ' '),
         createdAt: note.created_at
             ? new Date(note.created_at).toLocaleDateString("id-ID", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-              })
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+            })
             : "",
         thumbnail: note.thumbnail || null,
         mataPelajaran: note.mapel || "Umum",
@@ -431,7 +432,7 @@ export default function ProfilePage() {
                     {/* 3. Sticky Tab Navigation */}
                     <div
                         id="profil-tabs"
-                        className="sticky top-0 sm:top-[60px] bg-white/95 backdrop-blur-md z-20 border-b border-gray-100 mb-8 pt-2"
+                        className="sticky top-0 bg-white z-40 border-b border-gray-100 mb-8 pt-2"
                     >
                         <div className="flex gap-8 overflow-x-auto scrollbar-hide px-1">
                             {[

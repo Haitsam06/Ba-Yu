@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Verify
     Route::put('/v1/posts/{id}/verify', [PostController::class, 'verify']);
+    Route::put('/v1/posts/{id}/reject', [PostController::class, 'reject']);
 
     // Comments
     Route::post('/v1/posts/{postId}/comments', [CommentController::class, 'store']);

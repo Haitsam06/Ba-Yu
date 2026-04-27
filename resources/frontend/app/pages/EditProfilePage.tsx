@@ -285,9 +285,8 @@ export default function EditProfilePage() {
                 },
             });
 
-            // Update global context so changes reflect immediately everywhere
-            if (response.data && response.data.data) {
-                updateUserSession(response.data.data);
+            if (response.data && response.data.user) {
+                updateUserSession(response.data.user);
             } else {
                 // Fallback manual update if response format is unexpected
                 updateUserSession(formData);

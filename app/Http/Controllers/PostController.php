@@ -233,6 +233,30 @@ class PostController extends Controller
         return response()->json(['message' => 'Catatan berhasil diverifikasi!'], 200);
     }
 
+    public function reject($id)
+    {
+        // 1. Kita intip dulu datanya buat nyari tau "Siapa yang bikin" dan "Apa judulnya"
+        $post = Post::find($id);
+
+        if (!$post) {
+            return response()->json(['message' => 'Catatan tidak ditemukan'], 404);
+        }
+
+        // 2. Jurus barbar nembak MongoDB (Tetep kita pake biar manjur!)
+        Post::where('_id', $id)->update(['is_rejected' => true]);
+        
+        // 3. TUKANG POS BERAKSI: Kirim surat penolakan
+        Notification::create([
+            'user_id' => $post->user_id, // Alamat pengiriman (si pembuat catatan)
+            'title'   => 'Catatan Ditolak Pakar 😔', // Bebas lu mau ganti judul notifnya apa
+            'message' => 'Maaf, catatan kamu yang berjudul "' . $post->title . '" belum memenuhi standar dan ditolak oleh Pakar.',
+            'type'    => 'system',
+            'is_read' => false,
+        ]);
+
+        return response()->json(['message' => 'Catatan resmi ditolak dan notif terkirim!'], 200);
+    }
+
     public function destroy($id)
     {
         $post = Post::find($id);
