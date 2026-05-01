@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import { Navbar } from "../components/navbar";
 import { Footer } from "../components/footer";
@@ -51,12 +51,10 @@ export default function ExplorePage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedSearchQuery(searchQuery);
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [searchQuery]);
+    // --- STATE UNTUK AUTOCOMPLETE SEARCH ---
+    const searchInputRef = useRef<HTMLDivElement>(null);
+    const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
+    const [suggestions, setSuggestions] = useState<string[]>([]);
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const searchTermFromUrl = queryParams.get("q") || "";
@@ -64,14 +62,56 @@ export default function ExplorePage() {
     const [isLoadingNotes, setIsLoadingNotes] = useState(true);
     const [experts, setExperts] = useState<any[]>([]);
 
+// 1. Tutup dropdown saat klik di luar kotak pencarian
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (searchInputRef.current && !searchInputRef.current.contains(event.target as Node)) {
+                setIsSuggestionOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    // 2. Filter Prediksi dengan AMAN dan EFISIEN (Optimasi useMemo)
+    const searchData = useMemo(() => {
+        const safeNotes = Array.isArray(notes) ? notes : [];
+        const availableSubjects = safeNotes.map((note: any) => note?.mataPelajaran).filter(Boolean);
+        const availableTitles = safeNotes.map((note: any) => note?.title).filter(Boolean); 
+        
+        return {
+            uniqueKeywords: Array.from(new Set([...availableSubjects, ...availableTitles])),
+            topRealSearches: Array.from(new Set(availableSubjects)).slice(0, 5)
+        };
+    }, [notes]);
+
+    useEffect(() => {
+        if (searchQuery.trim().length > 0) {
+            const filtered = searchData.uniqueKeywords.filter(item => 
+                String(item).toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setSuggestions(filtered.slice(0, 5));
+        } else {
+            setSuggestions(searchData.topRealSearches as string[]); 
+        }
+    }, [searchQuery, searchData]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearchQuery(searchQuery);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+
     // Fetch experts for sidebar
     useEffect(() => {
         const fetchExperts = async () => {
             try {
                 const authHeader = isAuthenticated
                     ? {
-                          Authorization: `Bearer ${localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token")}`,
-                      }
+                        Authorization: `Bearer ${localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token")}`,
+                    }
                     : {};
                 const res = await axios.get("/api/v1/experts", {
                     headers: authHeader,
@@ -86,43 +126,47 @@ export default function ExplorePage() {
 
     const handleFollowExpert = async (expertId: string) => {
         if (!isAuthenticated) return openAuthModal("login");
+
+        const previousExperts = [...experts]; // Simpan state awal untuk rollback
+
+        // Optimistic Update
+        setExperts((prev) =>
+            prev.map((ex) => {
+                if ((ex._id || ex.id) === expertId) {
+                    const isCurrentlyFollowed = ex.is_followed_by_me;
+                    return {
+                        ...ex,
+                        is_followed_by_me: !isCurrentlyFollowed,
+                        followers_count: !isCurrentlyFollowed
+                            ? (ex.followers_count || 0) + 1
+                            : Math.max(0, (ex.followers_count || 0) - 1),
+                    };
+                }
+                return ex;
+            }),
+        );
+
         try {
             const token =
                 localStorage.getItem("bayu-token") ||
                 sessionStorage.getItem("bayu-token");
-            const response = await axios.post(
+            await axios.post(
                 `/api/users/${expertId}/follow`,
                 {},
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 },
             );
-            setExperts((prev) =>
-                prev.map((ex) => {
-                    if ((ex._id || ex.id) === expertId) {
-                        return {
-                            ...ex,
-                            is_followed_by_me:
-                                response.data.status === "followed",
-                            followers_count:
-                                response.data.status === "followed"
-                                    ? (ex.followers_count || 0) + 1
-                                    : Math.max(
-                                          0,
-                                          (ex.followers_count || 0) - 1,
-                                      ),
-                        };
-                    }
-                    return ex;
-                }),
-            );
         } catch (e) {
             console.error("Gagal toggle follow pakar:", e);
+            setExperts(previousExperts); // Rollback jika error
         }
     };
 
     const handleLikePost = async (postId: string) => {
         if (!isAuthenticated) return openAuthModal("login");
+
+        const previousNotes = [...notes]; // Simpan state awal untuk rollback
 
         setNotes((prev) =>
             prev.map((note) => {
@@ -156,6 +200,7 @@ export default function ExplorePage() {
             );
         } catch (e) {
             console.error(e);
+            setNotes(previousNotes); // Rollback jika error
         }
     };
 
@@ -164,9 +209,9 @@ export default function ExplorePage() {
             setIsLoadingNotes(true);
             try {
                 const keyword = searchTermFromUrl || debouncedSearchQuery;
-                
+
                 // --- 2. UBAH BAGIAN PARAMETER API INI ---
-                const queryParamsAPI: any = { 
+                const queryParamsAPI: any = {
                     sort: activeSegment,
                     order: sortOrder // <--- Kirim parameter asc/desc ke Backend
                 };
@@ -189,36 +234,38 @@ export default function ExplorePage() {
         };
 
         fetchPosts();
-    // --- 3. TAMBAHKAN sortOrder KE DALAM KURUNG SIKU DI BAWAH INI ---
+        // --- 3. TAMBAHKAN sortOrder KE DALAM KURUNG SIKU DI BAWAH INI ---
     }, [debouncedSearchQuery, searchTermFromUrl, activeSegment, sortOrder]);
 
-    const formattedNotes = notes.map((note) => ({
-        ...note,
-        id: note._id || note.id,
-        author: note.user
-            ? {
-                  ...note.user,
-                  avatar:
-                      note.user.avatar ||
-                      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
-              }
-            : {
-                  name: "Anonim",
-                  avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
-              },
-        createdAt: note.created_at,
-        thumbnail: note.thumbnail || null,
-        views: note.views || 0,
-        rating: note.rating || 5,
-        description: note.content
-            ? note.content.replace(/<[^>]*>?/gm, "").substring(0, 150) + "..."
-            : "Tidak ada deskripsi",
-        mataPelajaran: note.mapel || "Lainnya",
-        jenjang: note.jenjang || "-",
-        kelas: note.kelas || "-",
-        likes: note.likes_count || 0,
-        comments: note.comments_count || 0,
-    }));
+    const formattedNotes = useMemo(() => {
+        return notes.map((note) => ({
+            ...note,
+            id: note._id || note.id,
+            author: note.user
+                ? {
+                    ...note.user,
+                    avatar:
+                        note.user.avatar ||
+                        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+                }
+                : {
+                    name: "Anonim",
+                    avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+                },
+            createdAt: note.created_at,
+            thumbnail: note.thumbnail || null,
+            views: note.views || 0,
+            rating: note.rating || 5,
+            description: note.content
+                ? note.content.replace(/<[^>]*>?/gm, "").substring(0, 150) + "..."
+                : "Tidak ada deskripsi",
+            mataPelajaran: note.mapel || "Lainnya",
+            jenjang: note.jenjang || "-",
+            kelas: note.kelas || "-",
+            likes: note.likes_count || 0,
+            comments: note.comments_count || 0,
+        }));
+    }, [notes]);
 
     // Auth modal for guest users
     const [showAuthModal, setShowAuthModal] = useState(false);
@@ -300,38 +347,82 @@ export default function ExplorePage() {
                             </p>
                         </div>
 
-                        {/* Search Bar — Premium Minimalist (Centered Medium Style) */}
+                        {/* Search Bar — Premium Minimalist (Centered Medium Style) dengan Autocomplete */}
                         <div
                             className="explore-reveal opacity-0 translate-y-4 max-w-[720px] mx-auto mt-8"
-                            style={{
-                                transition:
-                                    "all 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s",
-                            }}
+                            style={{ transition: "all 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s" }}
                         >
                             <div className="flex gap-3">
-                                <div className="relative flex-1 group">
+                                {/* Wrapper Input & Dropdown (Pakai ref di sini agar klik di luar menutup dropdown) */}
+                                <div className="relative flex-1 group" ref={searchInputRef}>
+
+                                    {/* Icon Search */}
                                     <Search
-                                        className="absolute left-5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 group-focus-within:text-gray-800 transition-colors"
+                                        className={`absolute left-5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] transition-colors duration-300 ${isSuggestionOpen ? 'text-primary' : 'text-gray-400 group-focus-within:text-primary'}`}
                                         strokeWidth={2}
                                     />
+
+                                    {/* Input Field */}
                                     <input
                                         type="text"
-                                        placeholder="Cari preferensi..."
+                                        placeholder="Cari catatan, topik, atau pembuat..."
                                         value={searchQuery}
-                                        onChange={(e) =>
-                                            setSearchQuery(e.target.value)
-                                        }
-                                        className="w-full pl-12 pr-5 py-4 bg-gray-50 hover:bg-gray-100 focus:bg-white border text-gray-900 border-transparent focus:border-gray-300 rounded-[14px] font-['Manrope'] text-[15px] font-medium focus:outline-none transition-colors placeholder:text-gray-400 shadow-sm"
+                                        onChange={(e) => {setSearchQuery(e.target.value); setIsSuggestionOpen(true);}}
+                                        onFocus={() => setIsSuggestionOpen(true)}
+                                        onClick={() => setIsSuggestionOpen(true)}
+                                        className="w-full pl-12 pr-12 py-4 bg-white hover:bg-gray-50 focus:bg-white border text-gray-900 border-gray-200 focus:border-primary/30 rounded-[14px] font-['Manrope'] text-[15px] font-medium focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all duration-300 shadow-sm"
                                     />
+
+                                    {/* Tombol Clear (X) - Muncul saat ada teks */}
+                                    {searchQuery && (
+                                        <button
+                                            onClick={() => setSearchQuery("")}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-700 transition-colors"
+                                        >
+                                            <X className="w-[18px] h-[18px]" strokeWidth={2} />
+                                        </button>
+                                    )}
+
+                                    {/* --- DROPDOWN SUGGESTIONS --- */}
+                                    {isSuggestionOpen && suggestions.length > 0 && (
+                                        <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-white border border-gray-100 rounded-[14px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                            {/* Header */}
+                                            <div className="px-5 py-3 text-[11px] font-bold text-gray-400 uppercase tracking-wider bg-gray-50/80 border-b border-gray-100 flex items-center gap-1.5">
+                                                {searchQuery.trim() === "" ? (
+                                                    <><TrendingUp className="w-3.5 h-3.5 text-primary" /> Sering Dicari</>
+                                                ) : (
+                                                    <><Search className="w-3.5 h-3.5" /> Prediksi Pencarian</>
+                                                )}
+                                            </div>
+
+                                            {/* List */}
+                                            <ul className="max-h-64 overflow-y-auto no-scrollbar py-1.5">
+                                                {suggestions.map((suggestion, index) => (
+                                                    <li key={index}>
+                                                        <button
+                                                            onClick={() => {
+                                                                setSearchQuery(suggestion);
+                                                                setIsSuggestionOpen(false); // Tutup saat dipilih
+                                                            }}
+                                                            className="w-full text-left px-5 py-3 text-[14px] font-['Manrope'] font-medium text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors flex items-center gap-3"
+                                                        >
+                                                            <Search className="w-[15px] h-[15px] text-gray-400" strokeWidth={2} />
+                                                            {suggestion}
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                    {/* ---------------------------- */}
                                 </div>
+
+                                {/* Tombol Filter (Bawaan Kode Kakak) */}
                                 <button
                                     onClick={() => setIsFilterOpen(true)}
-                                    className="w-14 h-14 bg-gray-900 hover:bg-black text-white rounded-[14px] flex items-center justify-center transition-all shrink-0 shadow-md hover:-translate-y-0.5"
+                                    className="w-[58px] h-[58px] bg-gray-900 hover:bg-black text-white rounded-[14px] flex items-center justify-center transition-all shrink-0 shadow-md hover:-translate-y-0.5"
                                 >
-                                    <Filter
-                                        className="w-[18px] h-[18px]"
-                                        strokeWidth={2}
-                                    />
+                                    <Filter className="w-[18px] h-[18px]" strokeWidth={2} />
                                 </button>
                             </div>
                         </div>
@@ -368,11 +459,14 @@ export default function ExplorePage() {
                                                     type="text"
                                                     placeholder="Cari referensi (contoh: Logaritma Dasar)"
                                                     value={searchQuery}
-                                                    onChange={(e) =>
+                                                    onChange={(e) => {
                                                         setSearchQuery(
                                                             e.target.value,
-                                                        )
-                                                    }
+                                                        );
+                                                        setIsSuggestionOpen(true);
+                                                    }}
+                                                    onFocus={() => setIsSuggestionOpen(true)}
+                                                    onClick={() => setIsSuggestionOpen(true)}
                                                     className="w-full pl-11 pr-4 py-3.5 bg-white hover:bg-gray-50/50 focus:bg-white border border-gray-200 focus:border-primary/40 focus:shadow-[0_0_0_4px_rgba(93,92,230,0.08)] rounded-full font-['Manrope'] text-[15px] font-medium focus:outline-none transition-all placeholder:text-gray-400 text-gray-900"
                                                 />
                                             </div>
@@ -396,7 +490,7 @@ export default function ExplorePage() {
                         {/* Animated Feed Tab Navigation */}
                         <div className={`px-6 md:px-0 w-full mb-8 ${!isAuthenticated ? "border-b border-gray-100 mt-2" : "px-2"}`}>
                             <div className={`${!isAuthenticated ? "explore-reveal opacity-0 translate-y-4" : ""}`} style={{ transition: "all 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s" }}>
-                                
+
                                 <div className={`flex justify-between items-end ${isAuthenticated ? "border-b border-gray-100" : ""}`}>
 
                                     {/* Bagian Kiri: Tab Navigasi (Untuk Anda, Terpopuler, dsb) */}
@@ -405,9 +499,8 @@ export default function ExplorePage() {
                                             <button
                                                 key={tab.key}
                                                 onClick={() => setActiveSegment(tab.key)}
-                                                className={`pb-4 relative shrink-0 font-['Lexend_Deca'] text-[15px] transition-colors focus:outline-none flex items-center gap-2 group ${
-                                                    activeSegment === tab.key ? "text-gray-900 font-extrabold" : "text-gray-500 font-medium hover:text-gray-900"
-                                                }`}
+                                                className={`pb-4 relative shrink-0 font-['Lexend_Deca'] text-[15px] transition-colors focus:outline-none flex items-center gap-2 group ${activeSegment === tab.key ? "text-gray-900 font-extrabold" : "text-gray-500 font-medium hover:text-gray-900"
+                                                    }`}
                                             >
                                                 <tab.icon className={`w-[16px] h-[16px] transition-colors ${activeSegment === tab.key ? "text-gray-900" : "text-gray-400 group-hover:text-gray-600"}`} strokeWidth={activeSegment === tab.key ? 2.5 : 2} />
                                                 {tab.label}
@@ -456,8 +549,8 @@ export default function ExplorePage() {
                                             style={
                                                 !isAuthenticated
                                                     ? {
-                                                          transition: `opacity 0.6s ease ${i * 40}ms, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${i * 40}ms`,
-                                                      }
+                                                        transition: `opacity 0.6s ease ${i * 40}ms, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${i * 40}ms`,
+                                                    }
                                                     : undefined
                                             }
                                         >
@@ -489,7 +582,7 @@ export default function ExplorePage() {
                                                     </span>
                                                     <span className="text-gray-500 tracking-tight">
                                                         {note.jenjang ===
-                                                        "Kuliah"
+                                                            "Kuliah"
                                                             ? `S${note.kelas || "1"} Semester ${note.semester || 1}`
                                                             : `${note.jenjang} Kelas ${note.kelas}`}
                                                     </span>
@@ -698,14 +791,13 @@ export default function ExplorePage() {
                                                     onClick={() =>
                                                         handleFollowExpert(
                                                             expert._id ||
-                                                                expert.id,
+                                                            expert.id,
                                                         )
                                                     }
-                                                    className={`px-3.5 py-1.5 rounded-[10px] border font-['Manrope'] text-[12px] font-bold transition-all focus:outline-none ${
-                                                        expert.is_followed_by_me
+                                                    className={`px-3.5 py-1.5 rounded-[10px] border font-['Manrope'] text-[12px] font-bold transition-all focus:outline-none ${expert.is_followed_by_me
                                                             ? "border-gray-300 text-gray-600 bg-gray-100 hover:bg-gray-200"
                                                             : "border-gray-200 text-gray-600 hover:border-primary hover:text-primary hover:bg-primary/5"
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {expert.is_followed_by_me
                                                         ? "Mengikuti"
@@ -892,11 +984,10 @@ export default function ExplorePage() {
                                 <button
                                     key={jenjang}
                                     onClick={() => setSelectedJenjang(jenjang)}
-                                    className={`px-4 py-2.5 rounded-2xl font-['Manrope'] text-[13.5px] font-bold transition-all border ${
-                                        selectedJenjang === jenjang
+                                    className={`px-4 py-2.5 rounded-2xl font-['Manrope'] text-[13.5px] font-bold transition-all border ${selectedJenjang === jenjang
                                             ? "bg-primary text-white border-primary shadow-[0_4px_12px_rgb(93,92,230,0.3)]"
                                             : "bg-white text-gray-600 border-gray-200 hover:border-primary/40 hover:text-primary hover:bg-primary/5 hover:shadow-sm"
-                                    }`}
+                                        }`}
                                 >
                                     {jenjang}
                                 </button>
@@ -917,11 +1008,10 @@ export default function ExplorePage() {
                         <div className="flex flex-wrap gap-2.5">
                             <button
                                 onClick={() => setSelectedTopic("Semua")}
-                                className={`px-4 py-2.5 rounded-2xl font-['Manrope'] text-[13.5px] font-bold transition-all border flex items-center gap-2 ${
-                                    selectedTopic === "Semua"
+                                className={`px-4 py-2.5 rounded-2xl font-['Manrope'] text-[13.5px] font-bold transition-all border flex items-center gap-2 ${selectedTopic === "Semua"
                                         ? "bg-primary text-white border-primary shadow-[0_4px_12px_rgb(93,92,230,0.3)]"
                                         : "bg-white text-gray-600 border-gray-200 hover:border-primary/40 hover:text-primary hover:bg-primary/5 hover:shadow-sm"
-                                }`}
+                                    }`}
                             >
                                 ✨ Semua Topik
                             </button>
@@ -929,11 +1019,10 @@ export default function ExplorePage() {
                                 <button
                                     key={subject.id}
                                     onClick={() => setSelectedTopic(subject.id)}
-                                    className={`px-4 py-2.5 rounded-2xl font-['Manrope'] text-[13.5px] font-bold transition-all border flex items-center gap-2 ${
-                                        selectedTopic === subject.id
+                                    className={`px-4 py-2.5 rounded-2xl font-['Manrope'] text-[13.5px] font-bold transition-all border flex items-center gap-2 ${selectedTopic === subject.id
                                             ? "bg-primary text-white border-primary shadow-[0_4px_12px_rgb(93,92,230,0.3)]"
                                             : "bg-white text-gray-600 border-gray-200 hover:border-primary/40 hover:text-primary hover:bg-primary/5 hover:shadow-sm"
-                                    }`}
+                                        }`}
                                 >
                                     <span>{subject.icon}</span> {subject.name}
                                 </button>
