@@ -20,7 +20,7 @@ import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
 import { AuthModal } from "../components/auth-modal";
-
+import { TagList } from "../components/ui/TagList";
 export default function PublicProfilePage() {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
@@ -480,20 +480,7 @@ export default function PublicProfilePage() {
                                             </p>
 
                                             {/* Tags */}
-                                            {note.tags && note.tags.length > 0 && (
-                                                <div className="flex flex-wrap gap-2 mb-6 mt-auto">
-                                                    {note.tags.slice(0, 3).map((tag: string, idx: number) => (
-                                                        <span key={idx} className="px-2.5 py-1 bg-gradient-to-r from-primary/5 to-primary/10 text-primary border border-primary/10 rounded-lg text-[11px] font-['Manrope'] font-bold tracking-wide flex items-center shadow-sm">
-                                                            <span className="opacity-70 mr-0.5 text-[10px]">#</span>{tag}
-                                                        </span>
-                                                    ))}
-                                                    {note.tags.length > 3 && (
-                                                        <span className="px-2.5 py-1 bg-gray-50 text-gray-500 border border-gray-100 rounded-lg text-[11px] font-['Manrope'] font-semibold flex items-center shadow-sm">
-                                                            +{note.tags.length - 3} lainnya
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            )}
+                                            <TagList tags={note.tags} />
 
                                             <div className={`flex items-center justify-between ${!(note.tags && note.tags.length > 0) ? 'mt-auto' : ''}`}>
                                                 <div className="flex items-center gap-1.5 text-gray-500">

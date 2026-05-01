@@ -38,7 +38,7 @@ import "katex/dist/katex.min.css";
 import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
 import { ArticleSkeleton } from "../components/ui/skeletons";
-
+import { TagList } from "../components/ui/TagList";
 export default function NoteDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -683,7 +683,7 @@ export default function NoteDetailPage() {
                 </h1>
 
                 {/* Category & Tags (Substack / Medium style over title) */}
-                <div className="flex flex-wrap gap-2.5 mb-8 items-center">
+                <div className="flex flex-wrap gap-2.5 mb-4 items-center">
                     <span className="text-[12px] font-['Lexend_Deca'] font-bold text-primary uppercase tracking-widest bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
                         {note.mataPelajaran}
                     </span>
@@ -696,6 +696,9 @@ export default function NoteDetailPage() {
                         Semester {note.semester}
                     </span>
                 </div>
+                {note.tags && note.tags.length > 0 && (
+                    <TagList tags={note.tags} className="mb-8" />
+                )}
 
                 {/* Medium-style Author Info Bar */}
                 <div className="flex items-center gap-4 py-4 mb-6">
