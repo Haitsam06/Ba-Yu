@@ -316,37 +316,44 @@ export default function HomePage() {
                                         {/* Feed Text */}
                                         <div className="flex-1 min-w-0 flex flex-col w-full">
                                             {/* Author Header */}
-                                            <div className="flex items-center gap-2 mb-3 flex-wrap">
+                                            <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-700">
                                                 <Link
                                                     to={`/profile/${author?.id || author?._id}`}
-                                                    className="flex items-center gap-2 group/author outline-none"
+                                                    className="flex items-center gap-1.5 group/author outline-none cursor-pointer"
                                                 >
                                                     <img
                                                         src={author?.avatar}
                                                         alt={author?.name}
-                                                        className="w-[24px] h-[24px] rounded-full object-cover ring-2 ring-transparent group-hover/author:ring-primary/20 transition-all"
+                                                        className="w-[20px] h-[20px] rounded-full object-cover ring-2 ring-transparent group-hover/author:ring-primary/20 transition-all"
                                                     />
-                                                    <span className="text-[13px] font-medium text-gray-900 group-hover/author:underline">
+                                                    <span className="font-medium text-gray-900 group-hover/author:underline tracking-tight">
                                                         {author?.name}
                                                     </span>
                                                 </Link>
-                                                <span className="text-gray-300 text-[10px] hidden sm:inline-block">
-                                                    •
+                                                <span className="text-gray-400 px-0.5">
+                                                    di
                                                 </span>
-                                                <span className="text-[12px] font-semibold text-primary/80 bg-primary/5 px-2 py-0.5 rounded-md hidden sm:inline-block">
+                                                <span className="font-semibold text-gray-800 tracking-tight">
                                                     {note.mataPelajaran}
                                                 </span>
-                                                <span className="text-[12px] font-medium text-gray-500 bg-gray-50 px-2 py-0.5 rounded-md hidden sm:inline-block">
-                                                    {note.jenjang === "Kuliah"
-                                                        ? `${note.kelas} Semester ${note.semester || 1}`
-                                                        : `${note.jenjang} Kelas ${note.kelas}`}
-                                                </span>
+                                                {note.jenjang && note.jenjang !== "Umum" && (
+                                                    <>
+                                                        <span className="text-[10px] text-gray-400 mx-0.5">
+                                                            •
+                                                        </span>
+                                                        <span className="text-gray-500 tracking-tight">
+                                                            {note.jenjang === "Kuliah"
+                                                                ? `${note.kelas || "S1/D4"} Semester ${note.semester || 1}`
+                                                                : (note.kelas && note.kelas !== "Semua" ? `${note.jenjang} Kelas ${note.kelas}` : note.jenjang)}
+                                                        </span>
+                                                    </>
+                                                )}
 
                                                 {note.is_verified && (
-                                                <span className="flex items-center gap-1 text-[12px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md">
-                                                    <ShieldCheck className="w-3.5 h-3.5" />
-                                                </span>
-                                            )}
+                                                    <span className="flex items-center gap-1 text-[12px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md ml-1">
+                                                        <ShieldCheck className="w-3.5 h-3.5" />
+                                                    </span>
+                                                )}
                                             </div>
 
                                             {/* Title */}
@@ -360,16 +367,32 @@ export default function HomePage() {
                                             </Link>
 
                                             {/* Excerpt */}
-                                            <p className="text-[15px] font-['Manrope'] text-gray-500 line-clamp-2 leading-relaxed mb-6 pr-2">
+                                            <p className="text-[15px] font-['Manrope'] text-gray-500 line-clamp-2 leading-relaxed mb-4 pr-2">
                                                 {note.description}
                                             </p>
 
+                                            {/* Tags */}
+                                            {note.tags && note.tags.length > 0 && (
+                                                <div className="flex flex-wrap gap-2 mb-6 mt-auto">
+                                                    {note.tags.slice(0, 3).map((tag: string, idx: number) => (
+                                                        <span key={idx} className="px-2.5 py-1 bg-gradient-to-r from-primary/5 to-primary/10 text-primary border border-primary/10 rounded-lg text-[11px] font-['Manrope'] font-bold tracking-wide flex items-center shadow-sm">
+                                                            <span className="opacity-70 mr-0.5 text-[10px]">#</span>{tag}
+                                                        </span>
+                                                    ))}
+                                                    {note.tags.length > 3 && (
+                                                        <span className="px-2.5 py-1 bg-gray-50 text-gray-500 border border-gray-100 rounded-lg text-[11px] font-['Manrope'] font-semibold flex items-center shadow-sm">
+                                                            +{note.tags.length - 3} lainnya
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
+
                                             {/* Meta Footer (Medium Style) */}
-                                            <div className="flex items-center justify-between mt-auto">
+                                            <div className={`flex items-center justify-between ${!(note.tags && note.tags.length > 0) ? 'mt-auto' : ''}`}>
                                                 <div className="flex items-center gap-1.5 text-gray-500">
-                                                    <Star
-                                                        className="w-[14px] h-[14px] text-amber-500 fill-amber-500"
-                                                        strokeWidth={1}
+                                                    <Clock
+                                                        className="w-[14px] h-[14px] text-gray-400"
+                                                        strokeWidth={2}
                                                     />
                                                     <span className="text-[13px] font-['Manrope'] font-medium">
                                                         {new Date(

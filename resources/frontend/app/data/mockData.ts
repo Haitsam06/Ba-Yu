@@ -446,18 +446,109 @@ export const mockComments: Comment[] = [
 ];
 
 export const mataPelajaran = [
-  { id: 'matematika', name: 'Matematika', icon: '📐', color: '#FF9142' },
-  { id: 'ipa', name: 'IPA (Sains)', icon: '🔬', color: '#0087FF' },
-  { id: 'bahasa-indonesia', name: 'Bahasa Indonesia', icon: '📚', color: '#F478B8' },
-  { id: 'bahasa-inggris', name: 'Bahasa Inggris', icon: '🌍', color: '#8B5CF6' },
-  { id: 'fisika', name: 'Fisika', icon: '⚛️', color: '#0087FF' },
-  { id: 'kimia', name: 'Kimia', icon: '🧪', color: '#46F080' },
-  { id: 'biologi', name: 'Biologi', icon: '🧬', color: '#46F080' },
-  { id: 'sejarah', name: 'Sejarah', icon: '📜', color: '#FFD12E' },
-  { id: 'ekonomi', name: 'Ekonomi', icon: '💰', color: '#FFD166' },
-  { id: 'geografi', name: 'Geografi', icon: '🗺️', color: '#46F080' },
-  { id: 'algoritma', name: 'Algoritma & Pemrograman', icon: '💻', color: '#8B5CF6' },
-  { id: 'pkn', name: 'PKN', icon: '🏛️', color: '#F478B8' }
+  // Umum & Bahasa
+  { id: 'pendidikan-agama', name: 'Pendidikan Agama', icon: '🕌', color: '#46F080', category: 'Umum & Bahasa' },
+  { id: 'pendidikan-pancasila', name: 'Pendidikan Pancasila', icon: '🏛️', color: '#F478B8', category: 'Umum & Bahasa' },
+  { id: 'pkn', name: 'Pendidikan Kewarganegaraan', icon: '🇮🇩', color: '#F478B8', category: 'Umum & Bahasa' },
+  { id: 'bahasa-indonesia', name: 'Bahasa Indonesia', icon: '📚', color: '#F478B8', category: 'Umum & Bahasa' },
+  { id: 'bahasa-inggris', name: 'Bahasa Inggris', icon: '🇬🇧', color: '#8B5CF6', category: 'Umum & Bahasa' },
+  { id: 'bahasa-daerah', name: 'Bahasa Daerah', icon: '🗣️', color: '#FFD12E', category: 'Umum & Bahasa' },
+  { id: 'bahasa-asing', name: 'Bahasa Asing', icon: '🌍', color: '#0087FF', category: 'Umum & Bahasa' },
+  { id: 'muatan-lokal', name: 'Muatan Lokal', icon: '🏘️', color: '#FF9142', category: 'Umum & Bahasa' },
+  { id: 'bimbingan-konseling', name: 'Bimbingan Konseling', icon: '🤝', color: '#46F080', category: 'Umum & Bahasa' },
+
+  // Sains & Matematika
+  { id: 'ipa', name: 'Ilmu Pengetahuan Alam', icon: '🔬', color: '#0087FF', category: 'Sains & Matematika' },
+  { id: 'matematika', name: 'Matematika', icon: '📐', color: '#FF9142', category: 'Sains & Matematika' },
+  { id: 'fisika', name: 'Fisika', icon: '⚛️', color: '#0087FF', category: 'Sains & Matematika' },
+  { id: 'biologi', name: 'Biologi', icon: '🧬', color: '#46F080', category: 'Sains & Matematika' },
+  { id: 'kimia', name: 'Kimia', icon: '🧪', color: '#46F080', category: 'Sains & Matematika' },
+  { id: 'kalkulus', name: 'Kalkulus', icon: '🧮', color: '#FF9142', category: 'Sains & Matematika' },
+  { id: 'aljabar', name: 'Aljabar', icon: '🔢', color: '#FF9142', category: 'Sains & Matematika' },
+  { id: 'statistika', name: 'Statistika', icon: '📊', color: '#FFD12E', category: 'Sains & Matematika' },
+  { id: 'astronomi', name: 'Astronomi', icon: '🔭', color: '#8B5CF6', category: 'Sains & Matematika' },
+  { id: 'geofisika', name: 'Geofisika', icon: '🌍', color: '#0087FF', category: 'Sains & Matematika' },
+
+  // Sosial & Humaniora
+  { id: 'ips', name: 'Ilmu Pengetahuan Sosial', icon: '🌍', color: '#FFD12E', category: 'Sosial & Humaniora' },
+  { id: 'sejarah', name: 'Sejarah', icon: '📜', color: '#FFD12E', category: 'Sosial & Humaniora' },
+  { id: 'geografi', name: 'Geografi', icon: '🗺️', color: '#46F080', category: 'Sosial & Humaniora' },
+  { id: 'sosiologi', name: 'Sosiologi', icon: '🤝', color: '#F478B8', category: 'Sosial & Humaniora' },
+  { id: 'ekonomi', name: 'Ekonomi', icon: '💰', color: '#FFD166', category: 'Sosial & Humaniora' },
+  { id: 'antropologi', name: 'Antropologi', icon: '🗿', color: '#FF9142', category: 'Sosial & Humaniora' },
+  { id: 'psikologi', name: 'Psikologi', icon: '🧠', color: '#8B5CF6', category: 'Sosial & Humaniora' },
+  { id: 'filsafat-ilmu', name: 'Filsafat Ilmu', icon: '🤔', color: '#0087FF', category: 'Sosial & Humaniora' },
+  { id: 'linguistik', name: 'Linguistik Umum', icon: '💬', color: '#F478B8', category: 'Sosial & Humaniora' },
+  { id: 'ilmu-hukum', name: 'Ilmu Hukum', icon: '⚖️', color: '#46F080', category: 'Sosial & Humaniora' },
+
+  // Seni, Olahraga & Desain
+  { id: 'penjas', name: 'Pendidikan Jasmani', icon: '⚽', color: '#0087FF', category: 'Seni, Olahraga & Desain' },
+  { id: 'seni-budaya', name: 'Seni Budaya', icon: '🎨', color: '#FF9142', category: 'Seni, Olahraga & Desain' },
+  { id: 'seni-rupa', name: 'Seni Rupa', icon: '🖼️', color: '#F478B8', category: 'Seni, Olahraga & Desain' },
+  { id: 'seni-musik', name: 'Seni Musik', icon: '🎵', color: '#8B5CF6', category: 'Seni, Olahraga & Desain' },
+  { id: 'seni-tari', name: 'Seni Tari', icon: '💃', color: '#FFD12E', category: 'Seni, Olahraga & Desain' },
+  { id: 'seni-teater', name: 'Seni Teater', icon: '🎭', color: '#FFD166', category: 'Seni, Olahraga & Desain' },
+  { id: 'desain-grafis', name: 'Desain Grafis', icon: '✒️', color: '#0087FF', category: 'Seni, Olahraga & Desain' },
+  { id: 'fotografi', name: 'Fotografi', icon: '📸', color: '#FF9142', category: 'Seni, Olahraga & Desain' },
+  { id: 'sinematografi', name: 'Sinematografi', icon: '🎬', color: '#8B5CF6', category: 'Seni, Olahraga & Desain' },
+  { id: 'arsitektur', name: 'Arsitektur', icon: '🏛️', color: '#46F080', category: 'Seni, Olahraga & Desain' },
+
+  // Teknologi & Komputer
+  { id: 'informatika', name: 'Informatika', icon: '💻', color: '#8B5CF6', category: 'Teknologi & Komputer' },
+  { id: 'algoritma', name: 'Algoritma Pemrograman', icon: '⌨️', color: '#0087FF', category: 'Teknologi & Komputer' },
+  { id: 'rpl', name: 'Rekayasa Perangkat Lunak', icon: '🖥️', color: '#FF9142', category: 'Teknologi & Komputer' },
+  { id: 'basis-data', name: 'Sistem Basis Data', icon: '🗄️', color: '#FFD166', category: 'Teknologi & Komputer' },
+  { id: 'web', name: 'Pemrograman Web', icon: '🌐', color: '#46F080', category: 'Teknologi & Komputer' },
+  { id: 'mobile', name: 'Pemrograman Mobile', icon: '📱', color: '#F478B8', category: 'Teknologi & Komputer' },
+  { id: 'jaringan', name: 'Jaringan Komputer', icon: '🔌', color: '#FFD12E', category: 'Teknologi & Komputer' },
+  { id: 'os', name: 'Sistem Operasi', icon: '⚙️', color: '#8B5CF6', category: 'Teknologi & Komputer' },
+  { id: 'cyber', name: 'Keamanan Siber', icon: '🛡️', color: '#FF9142', category: 'Teknologi & Komputer' },
+  { id: 'ai', name: 'Kecerdasan Buatan', icon: '🤖', color: '#0087FF', category: 'Teknologi & Komputer' },
+  { id: 'ui-ux', name: 'Desain UI UX', icon: '✨', color: '#F478B8', category: 'Teknologi & Komputer' },
+  { id: 'data-science', name: 'Ilmu Data', icon: '📈', color: '#46F080', category: 'Teknologi & Komputer' },
+
+  // Kesehatan & Medis
+  { id: 'anatomi', name: 'Anatomi', icon: '🦴', color: '#FF9142', category: 'Kesehatan & Medis' },
+  { id: 'fisiologi', name: 'Fisiologi', icon: '🫀', color: '#F478B8', category: 'Kesehatan & Medis' },
+  { id: 'patologi', name: 'Patologi', icon: '🦠', color: '#46F080', category: 'Kesehatan & Medis' },
+  { id: 'farmakologi', name: 'Farmakologi', icon: '💊', color: '#0087FF', category: 'Kesehatan & Medis' },
+  { id: 'kedokteran-gigi', name: 'Kedokteran Gigi', icon: '🦷', color: '#FFD166', category: 'Kesehatan & Medis' },
+  { id: 'keperawatan', name: 'Ilmu Keperawatan', icon: '🏥', color: '#8B5CF6', category: 'Kesehatan & Medis' },
+  { id: 'kebidanan', name: 'Ilmu Kebidanan', icon: '🍼', color: '#F478B8', category: 'Kesehatan & Medis' },
+  { id: 'kesmas', name: 'Kesehatan Masyarakat', icon: '⚕️', color: '#46F080', category: 'Kesehatan & Medis' },
+  { id: 'ilmu-gizi', name: 'Ilmu Gizi', icon: '🥗', color: '#FFD12E', category: 'Kesehatan & Medis' },
+
+  // Teknik & Kejuruan (Vokasi)
+  { id: 'prakarya', name: 'Prakarya', icon: '✂️', color: '#FF9142', category: 'Teknik & Kejuruan' },
+  { id: 'gambar-teknik', name: 'Gambar Teknik', icon: '📐', color: '#0087FF', category: 'Teknik & Kejuruan' },
+  { id: 'mekanika', name: 'Mekanika Teknik', icon: '⚙️', color: '#8B5CF6', category: 'Teknik & Kejuruan' },
+  { id: 'termodinamika', name: 'Termodinamika', icon: '🔥', color: '#FFD166', category: 'Teknik & Kejuruan' },
+  { id: 'instalasi-listrik', name: 'Instalasi Listrik', icon: '⚡', color: '#F478B8', category: 'Teknik & Kejuruan' },
+  { id: 'otomotif', name: 'Otomotif', icon: '🚗', color: '#46F080', category: 'Teknik & Kejuruan' },
+  { id: 'tata-boga', name: 'Tata Boga', icon: '🍳', color: '#FF9142', category: 'Teknik & Kejuruan' },
+  { id: 'tata-busana', name: 'Tata Busana', icon: '👗', color: '#F478B8', category: 'Teknik & Kejuruan' },
+  { id: 'pariwisata', name: 'Pariwisata', icon: '✈️', color: '#0087FF', category: 'Teknik & Kejuruan' },
+  { id: 'pelayaran', name: 'Ilmu Pelayaran', icon: '🚢', color: '#8B5CF6', category: 'Teknik & Kejuruan' },
+
+  // Pertanian & Alam
+  { id: 'pertanian', name: 'Ilmu Pertanian', icon: '🌱', color: '#46F080', category: 'Pertanian & Alam' },
+  { id: 'agronomi', name: 'Agronomi', icon: '🌾', color: '#FFD12E', category: 'Pertanian & Alam' },
+  { id: 'ilmu-tanah', name: 'Ilmu Tanah', icon: '🟤', color: '#FF9142', category: 'Pertanian & Alam' },
+  { id: 'ekologi', name: 'Ekologi', icon: '🍃', color: '#46F080', category: 'Pertanian & Alam' },
+  { id: 'kehutanan', name: 'Ilmu Kehutanan', icon: '🌲', color: '#0087FF', category: 'Pertanian & Alam' },
+  { id: 'perikanan', name: 'Ilmu Perikanan', icon: '🐟', color: '#8B5CF6', category: 'Pertanian & Alam' },
+  { id: 'peternakan', name: 'Ilmu Peternakan', icon: '🐄', color: '#FFD166', category: 'Pertanian & Alam' },
+  { id: 'agribisnis', name: 'Agribisnis', icon: '🚜', color: '#FF9142', category: 'Pertanian & Alam' },
+
+  // Bisnis & Komunikasi
+  { id: 'kewirausahaan', name: 'Kewirausahaan', icon: '💡', color: '#FFD166', category: 'Bisnis & Komunikasi' },
+  { id: 'akuntansi', name: 'Akuntansi', icon: '📊', color: '#0087FF', category: 'Bisnis & Komunikasi' },
+  { id: 'manajemen', name: 'Manajemen', icon: '📋', color: '#8B5CF6', category: 'Bisnis & Komunikasi' },
+  { id: 'pemasaran', name: 'Pemasaran', icon: '📈', color: '#FF9142', category: 'Bisnis & Komunikasi' },
+  { id: 'komunikasi', name: 'Ilmu Komunikasi', icon: '📡', color: '#F478B8', category: 'Bisnis & Komunikasi' },
+  { id: 'humas', name: 'Hubungan Masyarakat', icon: '🗣️', color: '#46F080', category: 'Bisnis & Komunikasi' },
+  { id: 'hi', name: 'Hubungan Internasional', icon: '🌐', color: '#0087FF', category: 'Bisnis & Komunikasi' },
+  { id: 'jurnalistik', name: 'Jurnalistik', icon: '📰', color: '#FFD12E', category: 'Bisnis & Komunikasi' },
 ];
 
 export const getUserById = (id: string) => mockUsers.find(u => u.id === id);

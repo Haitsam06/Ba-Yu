@@ -690,6 +690,21 @@ export default function UploadPage() {
     ajukanPakar: false,
   });
   const [tagInput, setTagInput] = useState('');
+  const [mapelSearch, setMapelSearch] = useState('');
+  const [isMapelDropdownOpen, setIsMapelDropdownOpen] = useState(false);
+  const mapelDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (mapelDropdownRef.current && !mapelDropdownRef.current.contains(event.target as Node)) {
+        setIsMapelDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredMapel = mataPelajaran.filter(m => m.name.toLowerCase().includes(mapelSearch.toLowerCase()));
 
   const modules = {
     toolbar: false as const,
@@ -960,25 +975,69 @@ export default function UploadPage() {
                 <div className="w-full lg:w-[400px] shrink-0">
                   
                   {/* Mapel Row */}
-                  <div className="mb-8">
+                  <div className="mb-8" ref={mapelDropdownRef}>
                      <p className="font-['Lexend_Deca'] font-bold text-gray-900 text-[15px] mb-2">Kategori Mapel <span className="text-red-500">*</span></p>
-                     <p className="text-[13px] text-gray-500 font-['Manrope'] mb-3">Bantu pelajar menemukan catatan spesifik.</p>
+                     <p className="text-[13px] text-gray-500 font-['Manrope'] mb-3">Pilih satu kategori utama yang paling sesuai.</p>
                      
-                     {/* Horizontal Scroll for Mapel - cleaner UX */}
-                     <div className="flex overflow-x-auto no-scrollbar gap-2 pb-2 -mx-2 px-2">
-                      {mataPelajaran.map((m) => (
-                        <button
-                          key={m.id}
-                          onClick={() => setMeta({ ...meta, mataPelajaran: m.name })}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-['Manrope'] font-semibold border transition-all duration-200 shrink-0 ${
-                            meta.mataPelajaran === m.name
-                              ? 'bg-primary text-white border-primary shadow-md shadow-primary/25'
-                              : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                          }`}
+                     <div className="relative">
+                        <div 
+                           className={`flex items-center w-full px-4 py-3 bg-gray-50 border ${isMapelDropdownOpen ? 'border-primary/50 bg-white' : 'border-transparent hover:border-gray-200'} rounded-lg transition-all cursor-pointer`}
+                           onClick={() => setIsMapelDropdownOpen(true)}
                         >
-                          <span>{m.icon}</span> {m.name}
-                        </button>
-                      ))}
+                           <input
+                              type="text"
+                              value={isMapelDropdownOpen ? mapelSearch : (meta.mataPelajaran || '')}
+                              onChange={(e) => {
+                                 setMapelSearch(e.target.value);
+                                 setIsMapelDropdownOpen(true);
+                              }}
+                              placeholder="Cari kategori mapel..."
+                              className="w-full bg-transparent border-none outline-none text-[14px] font-['Manrope'] text-gray-900 placeholder:text-gray-400"
+                           />
+                           <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isMapelDropdownOpen ? 'rotate-180' : ''}`} />
+                        </div>
+
+                        {isMapelDropdownOpen && (
+                           <div className="absolute z-10 w-full mt-2 bg-white border border-gray-100 rounded-xl shadow-lg max-h-60 overflow-y-auto no-scrollbar animate-in fade-in zoom-in-95 duration-200">
+                              {filteredMapel.length > 0 ? (
+                                 Object.entries(filteredMapel.reduce((acc, current) => {
+                                     const category = current.category || 'Lainnya';
+                                     if (!acc[category]) { acc[category] = []; }
+                                     acc[category].push(current);
+                                     return acc;
+                                 }, {} as Record<string, typeof mataPelajaran[0][]>)).map(([category, items]) => (
+                                    <div key={category} className="pb-1 last:pb-0">
+                                       <div className="sticky top-0 bg-white/95 backdrop-blur-sm px-4 py-2 text-[11px] font-['Lexend_Deca'] font-bold text-gray-400 uppercase tracking-wider z-10 border-b border-gray-50">
+                                          {category}
+                                       </div>
+                                       <div className="py-1">
+                                          {items.map((m) => (
+                                             <div
+                                                key={m.id}
+                                                onClick={() => {
+                                                   setMeta({ ...meta, mataPelajaran: m.name });
+                                                   setMapelSearch('');
+                                                   setIsMapelDropdownOpen(false);
+                                                }}
+                                                className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors ${meta.mataPelajaran === m.name ? 'bg-primary/5' : 'hover:bg-gray-50'}`}
+                                             >
+                                                <span className="text-lg">{m.icon}</span>
+                                                <span className={`text-[14px] font-['Manrope'] ${meta.mataPelajaran === m.name ? 'font-bold text-primary' : 'font-medium text-gray-700'}`}>
+                                                   {m.name}
+                                                </span>
+                                             </div>
+                                          ))}
+                                       </div>
+                                    </div>
+                                 ))
+                              ) : (
+                                 <div className="px-4 py-4 text-center">
+                                    <p className="text-[13px] text-gray-500 font-['Manrope']">Kategori tidak ditemukan.</p>
+                                    <p className="text-[12px] text-gray-400 font-['Manrope'] mt-1">Silakan pilih kategori yang terdekat, lalu tambahkan detailnya di bagian Tags.</p>
+                                 </div>
+                              )}
+                           </div>
+                        )}
                      </div>
                   </div>
 
