@@ -32,6 +32,7 @@ export interface Note {
   rating?: number;
   createdAt: string;
   isPakar?: boolean;
+  read_time?: number;
 }
 
 export interface Comment {
@@ -134,7 +135,8 @@ export const mockNotes: Note[] = [
     validatedBy: '2',
     rating: 5,
     createdAt: '2026-02-20',
-    isPakar: false
+    isPakar: false,
+    read_time: 5
   },
   {
     id: '2',

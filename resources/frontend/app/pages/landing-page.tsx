@@ -303,7 +303,7 @@ export function LandingPage() {
                                    <DefaultThumbnail className="w-full h-full" />
                                  )}
                                  <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
-                                   <Clock className="w-3 h-3" /> 5m
+                                   <Clock className="w-3 h-3" /> {note.read_time || 1}m
                                  </div>
                                </Link>
                             </div>

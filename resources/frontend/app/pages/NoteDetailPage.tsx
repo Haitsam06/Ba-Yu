@@ -1420,8 +1420,13 @@ export default function NoteDetailPage() {
                                         ) : (
                                             <DefaultThumbnail className="w-full h-full" />
                                         )}
-                                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-xl text-[11px] uppercase tracking-wide font-['Lexend_Deca'] font-bold text-primary shadow-sm">
+                                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-xl text-[11px] uppercase tracking-wide font-['Lexend_Deca'] font-bold text-primary shadow-sm z-10">
                                             {recNote.mataPelajaran}
+                                        </div>
+                                        {/* Floating read time badge */}
+                                        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1 z-10">
+                                            <Clock className="w-3.5 h-3.5" />{" "}
+                                            {recNote.read_time || 1}m
                                         </div>
                                     </div>
                                     <div className="p-6 flex flex-col flex-1">

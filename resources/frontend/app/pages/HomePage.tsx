@@ -237,12 +237,11 @@ export default function HomePage() {
                                                         to={`/profile/${hAuthor?.id || hAuthor?._id}`}
                                                         className="flex items-center gap-3 group/hauth"
                                                     >
-                                                        <img
-                                                            src={
-                                                                hAuthor?.avatar
-                                                            }
+                                                        <AvatarImage
+                                                            src={hAuthor?.avatar}
                                                             alt={hAuthor?.name}
-                                                            className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-50 group-hover/hauth:ring-primary/30 transition-all"
+                                                            size={40}
+                                                            className="ring-2 ring-gray-50 group-hover/hauth:ring-primary/30 transition-all"
                                                         />
                                                         <div className="flex flex-col">
                                                             <span className="text-[14px] font-['Lexend_Deca'] font-bold text-gray-900 tracking-tight group-hover/hauth:underline">
@@ -276,21 +275,27 @@ export default function HomePage() {
                                     </div>
                                 </div>
 
-                                {/* Hero Image */}
-                                {heroNote.thumbnail && (
-                                    <div className="w-full md:w-[45%] h-[240px] md:h-[320px] overflow-hidden relative shrink-0 rounded-2xl">
-                                        <Link
-                                            to={`/note/${heroNote.id}`}
-                                            className="block w-full h-full"
-                                        >
+                                {/* Hero Image / Placeholder */}
+                                <div className="w-full md:w-[45%] h-[240px] md:h-[320px] overflow-hidden relative shrink-0 rounded-2xl bg-gray-50 shadow-sm border border-gray-100">
+                                    <Link
+                                        to={`/note/${heroNote.id}`}
+                                        className="block w-full h-full"
+                                    >
+                                        {heroNote.thumbnail ? (
                                             <img
                                                 src={heroNote.thumbnail}
                                                 alt={heroNote.title}
                                                 className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700 ease-out"
                                             />
-                                        </Link>
-                                    </div>
-                                )}
+                                        ) : (
+                                            <DefaultThumbnail className="w-full h-full" />
+                                        )}
+                                        {/* Floating badge */}
+                                        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-gray-800 text-[11px] font-['Lexend_Deca'] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1.5 z-20">
+                                            <Clock className="w-3.5 h-3.5" /> {heroNote.read_time || 1}m
+                                        </div>
+                                    </Link>
+                                </div>
                             </div>
                         )}
 
@@ -479,12 +484,16 @@ export default function HomePage() {
                                                 </Link>
                                             </div>
                                         ) : (
-                                            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden shadow-sm">
+                                            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden shadow-sm relative">
                                                 <Link
                                                     to={`/note/${note.id}`}
                                                     className="block w-full h-full outline-none"
                                                 >
                                                     <DefaultThumbnail className="w-full h-full rounded-2xl" />
+                                                    {/* Floating badge top right */}
+                                                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
+                                                        <Clock className="w-3 h-3" /> {note.read_time || 1}m
+                                                    </div>
                                                 </Link>
                                             </div>
                                         )}

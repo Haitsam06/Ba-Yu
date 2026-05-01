@@ -599,17 +599,22 @@ export default function PublicExplorePage() {
                                                         {/* Floating badge */}
                                                         <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
                                                             <Clock className="w-3 h-3" />{" "}
-                                                            5m
+                                                            {note.read_time || 1}m
                                                         </div>
                                                     </Link>
                                                 </div>
                                             ) : (
-                                                <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden shadow-sm">
+                                                <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden shadow-sm relative">
                                                     <Link
                                                         to={`/note/${note.id}`}
                                                         className="block w-full h-full outline-none cursor-pointer"
                                                     >
                                                         <DefaultThumbnail className="w-full h-full rounded-2xl" />
+                                                        {/* Floating badge */}
+                                                        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
+                                                            <Clock className="w-3 h-3" />{" "}
+                                                            {note.read_time || 1}m
+                                                        </div>
                                                     </Link>
                                                 </div>
                                             )}
