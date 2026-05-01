@@ -204,13 +204,55 @@ export default function ExplorePage() {
         }
     };
 
+    // Filter Modal & States
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [selectedJenjang, setSelectedJenjang] = useState<string>("Semua");
+    const [selectedKelas, setSelectedKelas] = useState<string>("Semua");
+    
+    // Tag Filter States
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [tagInput, setTagInput] = useState("");
+    const [isTagSuggestionsOpen, setIsTagSuggestionsOpen] = useState(false);
+    const filterTagInputRef = useRef<HTMLDivElement>(null);
+
+    // Dynamic Kelas List based on Jenjang
+    const getKelasList = (jenjang: string) => {
+        switch (jenjang) {
+            case "SD": return ["1", "2", "3", "4", "5", "6"];
+            case "SMP": return ["7", "8", "9"];
+            case "SMA": return ["10", "11", "12"];
+            case "Perguruan Tinggi": return ["D3", "D4", "S1", "S2", "S3"];
+            default: return [];
+        }
+    };
+
+    useEffect(() => {
+        setSelectedKelas("Semua");
+    }, [selectedJenjang]);
+
+    const filterTagSuggestions = useMemo(() => {
+        if (!tagInput.trim()) return [];
+        return searchData.uniqueKeywords
+            .filter(tag => String(tag).toLowerCase().includes(tagInput.toLowerCase()) && !selectedTags.includes(String(tag)))
+            .slice(0, 5);
+    }, [tagInput, searchData.uniqueKeywords, selectedTags]);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (filterTagInputRef.current && !filterTagInputRef.current.contains(event.target as Node)) {
+                setIsTagSuggestionsOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
     useEffect(() => {
         const fetchPosts = async () => {
             setIsLoadingNotes(true);
             try {
                 const keyword = searchTermFromUrl || debouncedSearchQuery;
 
-                // --- 2. UBAH BAGIAN PARAMETER API INI ---
                 const queryParamsAPI: any = {
                     sort: activeSegment,
                     order: sortOrder // <--- Kirim parameter asc/desc ke Backend
@@ -218,6 +260,18 @@ export default function ExplorePage() {
 
                 if (keyword !== "") {
                     queryParamsAPI.search = keyword;
+                }
+
+                if (selectedJenjang !== "Semua") {
+                    queryParamsAPI.jenjang = selectedJenjang;
+                }
+
+                if (selectedKelas !== "Semua") {
+                    queryParamsAPI.kelas = selectedKelas;
+                }
+
+                if (selectedTags.length > 0) {
+                    queryParamsAPI.tags = selectedTags.join(',');
                 }
 
                 const response = await axios.get("/api/v1/posts", {
@@ -235,10 +289,10 @@ export default function ExplorePage() {
 
         fetchPosts();
         // --- 3. TAMBAHKAN sortOrder KE DALAM KURUNG SIKU DI BAWAH INI ---
-    }, [debouncedSearchQuery, searchTermFromUrl, activeSegment, sortOrder]);
+    }, [debouncedSearchQuery, searchTermFromUrl, activeSegment, sortOrder, selectedJenjang, selectedKelas, selectedTags]);
 
     const formattedNotes = useMemo(() => {
-        return notes.map((note) => ({
+        let result = notes.map((note) => ({
             ...note,
             id: note._id || note.id,
             author: note.user
@@ -265,16 +319,32 @@ export default function ExplorePage() {
             likes: note.likes_count || 0,
             comments: note.comments_count || 0,
         }));
-    }, [notes]);
+
+        // Client-Side Local Filtering for strict matching
+        if (selectedJenjang !== "Semua") {
+            result = result.filter(note => note.jenjang === selectedJenjang);
+        }
+
+        if (selectedKelas !== "Semua") {
+            result = result.filter(note => String(note.kelas) === String(selectedKelas));
+        }
+
+        if (selectedTags.length > 0) {
+            result = result.filter(note => {
+                const mapelMatches = selectedTags.some(tag => tag.toLowerCase() === (note.mataPelajaran || "").toLowerCase());
+                const tagsMatches = (note.tags || []).some((tag: string) => selectedTags.some(t => t.toLowerCase() === tag.toLowerCase()));
+                return mapelMatches || tagsMatches;
+            });
+        }
+
+        return result;
+    }, [notes, selectedJenjang, selectedKelas, selectedTags]);
 
     // Auth modal for guest users
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authTab, setAuthTab] = useState<"login" | "register">("login");
 
-    // Filter Modal & States
-    const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const [selectedJenjang, setSelectedJenjang] = useState<string>("Semua");
-    const [selectedTopic, setSelectedTopic] = useState<string>("Semua");
+
 
     const jenjangList = [
         "Semua",
@@ -995,39 +1065,129 @@ export default function ExplorePage() {
                         </div>
                     </div>
 
-                    {/* Topik Pembelajaran */}
-                    <div>
-                        <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 mb-4 flex items-center justify-between">
-                            Topik Belajar
-                            {selectedTopic !== "Semua" && (
-                                <span className="text-[11px] font-['Lexend_Deca'] text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-md">
-                                    1 Dipilih
-                                </span>
-                            )}
-                        </h4>
-                        <div className="flex flex-wrap gap-2.5">
-                            <button
-                                onClick={() => setSelectedTopic("Semua")}
-                                className={`px-4 py-2.5 rounded-2xl font-['Manrope'] text-[13.5px] font-bold transition-all border flex items-center gap-2 ${selectedTopic === "Semua"
-                                        ? "bg-primary text-white border-primary shadow-[0_4px_12px_rgb(93,92,230,0.3)]"
-                                        : "bg-white text-gray-600 border-gray-200 hover:border-primary/40 hover:text-primary hover:bg-primary/5 hover:shadow-sm"
-                                    }`}
-                            >
-                                ✨ Semua Topik
-                            </button>
-                            {mataPelajaran.map((subject) => (
+                    {/* Tingkatan Kelas (Hanya Muncul Jika Jenjang Dipilih) */}
+                    {getKelasList(selectedJenjang).length > 0 && (
+                        <div>
+                            <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 mb-4 flex items-center justify-between">
+                                Tingkat / Kelas
+                                {selectedKelas !== "Semua" && (
+                                    <span className="text-[11px] font-['Lexend_Deca'] text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-md">
+                                        1 Dipilih
+                                    </span>
+                                )}
+                            </h4>
+                            <div className="flex flex-wrap gap-2.5">
                                 <button
-                                    key={subject.id}
-                                    onClick={() => setSelectedTopic(subject.id)}
-                                    className={`px-4 py-2.5 rounded-2xl font-['Manrope'] text-[13.5px] font-bold transition-all border flex items-center gap-2 ${selectedTopic === subject.id
+                                    onClick={() => setSelectedKelas("Semua")}
+                                    className={`px-4 py-2.5 rounded-2xl font-['Manrope'] text-[13.5px] font-bold transition-all border ${selectedKelas === "Semua"
                                             ? "bg-primary text-white border-primary shadow-[0_4px_12px_rgb(93,92,230,0.3)]"
                                             : "bg-white text-gray-600 border-gray-200 hover:border-primary/40 hover:text-primary hover:bg-primary/5 hover:shadow-sm"
                                         }`}
                                 >
-                                    <span>{subject.icon}</span> {subject.name}
+                                    Semua Kelas
                                 </button>
-                            ))}
+                                {getKelasList(selectedJenjang).map((kelas) => (
+                                    <button
+                                        key={kelas}
+                                        onClick={() => setSelectedKelas(kelas)}
+                                        className={`px-4 py-2.5 rounded-2xl font-['Manrope'] text-[13.5px] font-bold transition-all border ${selectedKelas === kelas
+                                                ? "bg-primary text-white border-primary shadow-[0_4px_12px_rgb(93,92,230,0.3)]"
+                                                : "bg-white text-gray-600 border-gray-200 hover:border-primary/40 hover:text-primary hover:bg-primary/5 hover:shadow-sm"
+                                            }`}
+                                    >
+                                        {selectedJenjang === "Perguruan Tinggi" ? kelas : `Kelas ${kelas}`}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
+                    )}
+
+                    {/* Topik Pembelajaran / Tags */}
+                    <div>
+                        <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 mb-4 flex items-center justify-between">
+                            Topik Belajar (Tags)
+                            {selectedTags.length > 0 && (
+                                <span className="text-[11px] font-['Lexend_Deca'] text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-md">
+                                    {selectedTags.length} Dipilih
+                                </span>
+                            )}
+                        </h4>
+                        
+                        {/* Selected Tags Pills */}
+                        {selectedTags.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-3">
+                                {selectedTags.map(tag => (
+                                    <span key={tag} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-[13px] font-bold font-['Manrope'] border border-primary/20">
+                                        {tag}
+                                        <button 
+                                            onClick={() => setSelectedTags(prev => prev.filter(t => t !== tag))}
+                                            className="hover:bg-primary/20 p-0.5 rounded-full transition-colors focus:outline-none"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Tag Input Autocomplete */}
+                        <div className="relative group" ref={filterTagInputRef}>
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors">
+                                <Search className="w-[18px] h-[18px]" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Cari atau ketik topik (Contoh: Logaritma)..."
+                                value={tagInput}
+                                onChange={(e) => {
+                                    setTagInput(e.target.value);
+                                    setIsTagSuggestionsOpen(true);
+                                }}
+                                onFocus={() => setIsTagSuggestionsOpen(true)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter" && tagInput.trim()) {
+                                        e.preventDefault();
+                                        if (!selectedTags.includes(tagInput.trim())) {
+                                            setSelectedTags(prev => [...prev, tagInput.trim()]);
+                                        }
+                                        setTagInput("");
+                                        setIsTagSuggestionsOpen(false);
+                                    }
+                                }}
+                                className="w-full pl-11 pr-4 py-3.5 bg-white border border-gray-200 rounded-[14px] font-['Manrope'] text-[14px] focus:outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/5 transition-all text-gray-900 placeholder:text-gray-400"
+                            />
+                            
+                            {/* Suggestions Dropdown */}
+                            {isTagSuggestionsOpen && filterTagSuggestions.length > 0 && (
+                                <div className="absolute w-full mt-2 bg-white rounded-[14px] border border-gray-100 shadow-xl overflow-hidden z-[110]">
+                                    <div className="px-3 py-2 text-[11px] font-bold text-gray-400 uppercase tracking-wider bg-gray-50/50">
+                                        Saran Topik
+                                    </div>
+                                    <ul className="max-h-48 overflow-y-auto no-scrollbar py-1">
+                                        {filterTagSuggestions.map(tag => (
+                                            <li key={String(tag)}>
+                                                <button
+                                                    onClick={() => {
+                                                        if (!selectedTags.includes(String(tag))) {
+                                                            setSelectedTags(prev => [...prev, String(tag)]);
+                                                        }
+                                                        setTagInput("");
+                                                        setIsTagSuggestionsOpen(false);
+                                                    }}
+                                                    className="w-full text-left px-4 py-2.5 text-[13.5px] font-medium text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors flex items-center gap-2"
+                                                >
+                                                    <div className="w-6 h-6 rounded-md bg-gray-100 flex items-center justify-center text-gray-400 shrink-0">
+                                                        <Search className="w-3.5 h-3.5" />
+                                                    </div>
+                                                    <span className="truncate">{String(tag)}</span>
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                        <p className="text-xs text-gray-400 mt-2 font-['Manrope']">Tekan <b>Enter</b> untuk menambahkan topik kustom jika tidak ada di saran.</p>
                     </div>
                 </div>
 
@@ -1036,7 +1196,9 @@ export default function ExplorePage() {
                         <button
                             onClick={() => {
                                 setSelectedJenjang("Semua");
-                                setSelectedTopic("Semua");
+                                setSelectedKelas("Semua");
+                                setSelectedTags([]);
+                                setTagInput("");
                             }}
                             className="px-5 py-3.5 rounded-xl font-['Lexend_Deca'] text-[14px] font-extrabold text-gray-500 bg-gray-50 hover:bg-gray-100 hover:text-gray-900 transition-colors w-1/3 border border-gray-200"
                         >
