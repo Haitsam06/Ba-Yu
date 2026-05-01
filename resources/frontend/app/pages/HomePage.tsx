@@ -203,8 +203,8 @@ export default function HomePage() {
                                         <span className="bg-primary/10 text-primary text-[11px] font-['Lexend_Deca'] font-bold px-2 py-1 rounded-[6px] uppercase tracking-wider">
                                             Fokus Utama
                                         </span>
-                                        <span className="text-gray-400 text-[12px] font-medium flex items-center gap-1.5">
-                                            • <Clock className="w-3 h-3" /> {heroNote.read_time || 1} min
+                                        <span className="text-gray-600 text-[12px] font-semibold flex items-center gap-1.5">
+                                            • <Clock className="w-3 h-3 text-gray-700" strokeWidth={2.5} /> {heroNote.read_time || 1} min
                                         </span>
 
                                         {/*Badge Verifikasi*/}
@@ -219,12 +219,12 @@ export default function HomePage() {
                                         to={`/note/${heroNote.id}`}
                                         className="block group/title"
                                     >
-                                        <h2 className="text-[28px] md:text-[36px] font-['Lexend_Deca'] font-black text-gray-900 leading-[1.1] mb-4 tracking-tight group-hover/title:text-primary transition-colors line-clamp-3">
+                                        <h2 className="text-[28px] md:text-[36px] font-['Lexend_Deca'] font-extrabold text-gray-900 leading-[1.1] mb-4 tracking-tight group-hover/title:text-primary transition-colors line-clamp-3">
                                             {heroNote.title}
                                         </h2>
                                     </Link>
 
-                                    <p className="text-[16px] font-['Manrope'] text-gray-500 leading-relaxed mb-8 line-clamp-3 md:line-clamp-2">
+                                    <p className="text-[16px] font-['Manrope'] text-gray-700 leading-relaxed mb-8 line-clamp-3 md:line-clamp-2">
                                         {heroNote.description}
                                     </p>
 
@@ -247,7 +247,7 @@ export default function HomePage() {
                                                             <span className="text-[14px] font-['Lexend_Deca'] font-bold text-gray-900 tracking-tight group-hover/hauth:underline">
                                                                 {hAuthor?.name}
                                                             </span>
-                                                            <span className="text-[12px] font-['Manrope'] text-gray-500">
+                                                            <span className="text-[12px] font-['Manrope'] text-gray-700 font-bold">
                                                                 {new Date(
                                                                     heroNote.createdAt,
                                                                 ).toLocaleDateString(
@@ -339,18 +339,18 @@ export default function HomePage() {
                                                         {author?.name}
                                                     </span>
                                                 </Link>
-                                                <span className="text-gray-400 px-0.5">
+                                                <span className="text-gray-700 px-0.5 font-bold">
                                                     di
                                                 </span>
-                                                <span className="font-semibold text-gray-800 tracking-tight">
+                                                <span className="font-bold text-gray-800 tracking-tight">
                                                     {note.mataPelajaran}
                                                 </span>
                                                 {note.jenjang && note.jenjang !== "Umum" && (
                                                     <>
-                                                        <span className="text-[10px] text-gray-400 mx-0.5">
+                                                        <span className="text-[10px] text-gray-700 mx-0.5 font-black">
                                                             •
                                                         </span>
-                                                        <span className="text-gray-500 tracking-tight">
+                                                        <span className="text-gray-800 font-bold tracking-tight">
                                                             {note.jenjang === "Kuliah"
                                                                 ? `${note.kelas || "S1/D4"} Semester ${note.semester || 1}`
                                                                 : (note.kelas && note.kelas !== "Semua" ? `${note.jenjang} Kelas ${note.kelas}` : note.jenjang)}
@@ -376,7 +376,7 @@ export default function HomePage() {
                                             </Link>
 
                                             {/* Excerpt */}
-                                            <p className="text-[15px] font-['Manrope'] text-gray-500 line-clamp-2 leading-relaxed mb-4 pr-2">
+                                            <p className="text-[15px] font-['Manrope'] text-gray-600 line-clamp-2 leading-relaxed mb-4 pr-2 font-medium">
                                                 {note.description}
                                             </p>
 
@@ -385,12 +385,12 @@ export default function HomePage() {
 
                                             {/* Meta Footer (Medium Style) */}
                                             <div className={`flex items-center justify-between ${!(note.tags && note.tags.length > 0) ? 'mt-auto' : ''}`}>
-                                                <div className="flex items-center gap-1.5 text-gray-500">
+                                                <div className="flex items-center gap-1.5 text-gray-600 font-bold">
                                                     <Clock
-                                                        className="w-[14px] h-[14px] text-gray-400"
-                                                        strokeWidth={2}
+                                                        className="w-[14px] h-[14px] text-gray-700"
+                                                        strokeWidth={2.5}
                                                     />
-                                                    <span className="text-[13px] font-['Manrope'] font-medium">
+                                                    <span className="text-[13px] font-['Manrope']">
                                                         {new Date(
                                                             note.createdAt,
                                                         ).toLocaleDateString(
@@ -406,9 +406,9 @@ export default function HomePage() {
 
                                                 <div className="flex items-center gap-3 shrink-0 ml-4">
                                                     {/* --- view --- */}
-                                                    <div className="flex items-center gap-1.5 text-gray-500" title={`${note.views} kali dilihat`}>
-                                                        <Eye className="w-[15px] h-[15px]" strokeWidth={2} />
-                                                        <span className="text-[13px] font-['Manrope'] font-medium">
+                                                    <div className="flex items-center gap-1.5 text-gray-600 font-bold" title={`${note.views} kali dilihat`}>
+                                                        <Eye className="w-[15px] h-[15px] text-gray-500" strokeWidth={2.5} />
+                                                        <span className="text-[13px] font-['Manrope']">
                                                             {note.views}
                                                         </span>
                                                     </div>
@@ -419,14 +419,14 @@ export default function HomePage() {
                                                                 note.id,
                                                             );
                                                         }}
-                                                        className={`flex items-center gap-1.5 transition-colors focus:outline-none ${note.is_liked ? "text-red-500" : "text-gray-500 hover:text-red-500"}`}
+                                                        className={`flex items-center gap-1.5 transition-colors focus:outline-none font-bold ${note.is_liked ? "text-red-500" : "text-gray-600 hover:text-red-500"}`}
                                                         title={`${note.likes} suka`}
                                                     >
                                                         <Heart
-                                                            className={`w-[15px] h-[15px] ${note.is_liked ? "fill-red-500" : ""}`}
-                                                            strokeWidth={2}
+                                                            className={`w-[15px] h-[15px] ${note.is_liked ? "fill-red-500" : "text-gray-500"}`}
+                                                            strokeWidth={2.5}
                                                         />
-                                                        <span className="text-[13px] font-['Manrope'] font-medium">
+                                                        <span className="text-[13px] font-['Manrope']">
                                                             {note.likes}
                                                         </span>
                                                     </button>
@@ -435,14 +435,14 @@ export default function HomePage() {
                                                         onClick={(e) =>
                                                             e.stopPropagation()
                                                         }
-                                                        className="flex items-center gap-1.5 text-gray-500 hover:text-gray-900 transition-colors focus:outline-none"
+                                                        className="flex items-center gap-1.5 text-gray-600 hover:text-gray-900 transition-colors focus:outline-none font-bold"
                                                         title={`${note.comments} komentar`}
                                                     >
                                                         <MessageCircle
-                                                            className="w-[15px] h-[15px]"
-                                                            strokeWidth={2}
+                                                            className="w-[15px] h-[15px] text-gray-500"
+                                                            strokeWidth={2.5}
                                                         />
-                                                        <span className="text-[13px] font-['Manrope'] font-medium">
+                                                        <span className="text-[13px] font-['Manrope']">
                                                             {note.comments}
                                                         </span>
                                                     </Link>
@@ -454,11 +454,11 @@ export default function HomePage() {
                                                                 note.id,
                                                             );
                                                         }}
-                                                        className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? "text-primary scale-110" : "opacity-0 md:opacity-100 text-gray-400 hover:text-primary md:group-hover:opacity-100"}`}
+                                                        className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? "text-primary scale-110" : "opacity-0 md:opacity-100 text-gray-500 hover:text-primary md:group-hover:opacity-100"}`}
                                                     >
                                                         <Bookmark
                                                             className={`w-[18px] h-[18px] transition-all duration-300 ${isBookmarked(note.id) ? "fill-primary" : ""}`}
-                                                            strokeWidth={1.5}
+                                                            strokeWidth={2}
                                                         />
                                                     </button>
                                                 </div>
@@ -546,7 +546,7 @@ export default function HomePage() {
                                             >
                                                 {/* Giant Watermark Number */}
                                                 <div className="w-[32px] shrink-0 mt-[-2px]">
-                                                    <span className="font-['Lexend_Deca'] font-black text-[28px] text-gray-200 group-hover:text-gray-300 transition-colors select-none">
+                                                    <span className="font-['Lexend_Deca'] font-black text-[28px] text-gray-300 group-hover:text-gray-400 transition-colors select-none">
                                                         0{idx + 1}
                                                     </span>
                                                 </div>
@@ -574,7 +574,7 @@ export default function HomePage() {
                                                             {trend.title}
                                                         </h4>
                                                     </Link>
-                                                    <div className="font-['Manrope'] text-[12px] text-gray-400 mt-2 font-medium">
+                                                    <div className="font-['Manrope'] text-[12px] text-gray-600 mt-2 font-bold">
                                                         {new Date(
                                                             trend.createdAt,
                                                         ).toLocaleDateString(

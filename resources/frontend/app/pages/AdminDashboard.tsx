@@ -291,7 +291,7 @@ export default function AdminDashboard() {
                             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-2 md:p-3">
                                 <div className="flex flex-col md:flex-row gap-3">
                                     <div className="flex-1 relative">
-                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" strokeWidth={2.5} />
                                         <input
                                             type="text"
                                             value={searchQuery}
@@ -340,11 +340,12 @@ export default function AdminDashboard() {
                                                     className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl font-['Lexend_Deca'] font-semibold text-sm whitespace-nowrap transition-all ${
                                                         isActive
                                                             ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
-                                                            : "bg-transparent text-gray-500 hover:bg-gray-100"
+                                                            : "bg-transparent text-gray-700 hover:bg-gray-100 font-bold"
                                                     }`}
                                                 >
                                                     <Icon
-                                                        className={`w-4 h-4 ${isActive ? "text-white" : "text-gray-400"}`}
+                                                        className={`w-4 h-4 ${isActive ? "text-white" : "text-gray-600"}`}
+                                                        strokeWidth={2.5}
                                                     />
                                                     {tab.label}
                                                     {tab.id === "sertifikasi" &&
@@ -382,7 +383,7 @@ export default function AdminDashboard() {
 
                                         {pendingCerts.length === 0 ? (
                                             <div className="py-16 text-center bg-gray-50 border border-gray-100 border-dashed rounded-3xl">
-                                                <ShieldCheck className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                                <ShieldCheck className="w-16 h-16 text-gray-500 mx-auto mb-4" strokeWidth={1} />
                                                 <h4 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 mb-1">
                                                     Semua Pengajuan Selesai
                                                 </h4>
@@ -412,7 +413,7 @@ export default function AdminDashboard() {
                                                                             cert.user_id
                                                                         }
                                                                     </h4>
-                                                                    <p className="font-['Manrope'] text-sm text-gray-500">
+                                                                    <p className="font-['Manrope'] text-sm text-gray-700 font-bold">
                                                                         Bidang:{" "}
                                                                         {
                                                                             cert.bidang_keahlian
@@ -426,7 +427,7 @@ export default function AdminDashboard() {
                                                         </div>
 
                                                         <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 mb-5 relative z-10">
-                                                            <div className="text-[11px] font-['Lexend_Deca'] font-bold text-gray-400 tracking-wider mb-2">
+                                                            <div className="text-[11px] font-['Lexend_Deca'] font-black text-gray-600 tracking-wider mb-2">
                                                                 DOKUMEN LAMPIRAN
                                                             </div>
                                                             <a
@@ -647,7 +648,7 @@ export default function AdminDashboard() {
                                                                         {report.type ||
                                                                             "CATATAN"}
                                                                     </span>
-                                                                    <span className="text-xs font-['Manrope'] text-gray-400">
+                                                                    <span className="text-xs font-['Manrope'] text-gray-600 font-bold">
                                                                         {report.date ||
                                                                             new Date(
                                                                                 report.created_at,
@@ -678,7 +679,7 @@ export default function AdminDashboard() {
                                                                     </p>
                                                                 </div>
                                                                 <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-50">
-                                                                    <span className="text-xs font-['Manrope'] font-medium text-gray-500">
+                                                                    <span className="text-xs font-['Manrope'] font-bold text-gray-700">
                                                                         Dilaporkan
                                                                         oleh:{" "}
                                                                         {report

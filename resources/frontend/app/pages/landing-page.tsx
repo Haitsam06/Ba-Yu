@@ -274,7 +274,7 @@ export function LandingPage() {
                                     <AvatarImage src={author?.avatar} alt={author?.name} size={28} className="ring-2 ring-transparent group-hover/author:ring-primary/20 transition-all" />
                                     <div className="flex flex-col">
                                        <span className="text-[13px] font-['Lexend_Deca'] font-bold text-gray-900 tracking-tight group-hover/author:underline">{author?.name}</span>
-                                       <span className="text-[11px] font-['Manrope'] font-semibold text-gray-400">{new Date(note.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+                                       <span className="text-[11px] font-['Manrope'] font-bold text-gray-700">{new Date(note.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
                                     </div>
                                   </Link>
                                   
@@ -339,7 +339,7 @@ export function LandingPage() {
                                       <AvatarImage src={recAuthor.avatar} alt={recAuthor.name} size={40} className="bg-gray-100 ring-2 ring-transparent group-hover:ring-primary/20 transition-all" />
                                       <div className="flex flex-col min-w-0">
                                          <span className="font-['Lexend_Deca'] font-bold text-[14px] text-gray-900 truncate group-hover:text-primary transition-colors">{recAuthor.name}</span>
-                                         <span className="font-['Manrope'] font-medium text-[12px] text-gray-500 truncate">{recAuthor.role === 'pakar' ? 'Pakar Edukasi' : 'Pelajar'}</span>
+                                         <span className="font-['Manrope'] font-bold text-[12px] text-gray-600 truncate">{recAuthor.role === 'pakar' ? 'Pakar Edukasi' : 'Pelajar'}</span>
                                       </div>
                                     </Link>
                                     <button className="px-3.5 py-1.5 rounded-[10px] border border-gray-200 text-gray-600 font-['Manrope'] text-[12px] font-bold hover:border-primary hover:text-primary hover:bg-primary/5 transition-all focus:outline-none">
@@ -359,7 +359,7 @@ export function LandingPage() {
                          <div className="flex flex-wrap gap-2.5">
                             {['Fisika Kuantum', 'Limit Trigonometri', 'Grammar IELTS', 'SBMPTN 2026', 'Sistem Pencernaan'].map((term) => (
                               <button key={term} className="px-3.5 py-2.5 bg-white border border-gray-100 hover:border-gray-300 hover:bg-gray-50 text-gray-600 rounded-[12px] font-['Manrope'] text-[13px] font-semibold transition-colors truncate max-w-full text-left focus:outline-none">
-                                <Search className="w-3.5 h-3.5 inline-block mr-1.5 text-gray-400" strokeWidth={2.5} /> {term}
+                                <Search className="w-3.5 h-3.5 inline-block mr-1.5 text-gray-600" strokeWidth={2.5} /> {term}
                               </button>
                             ))}
                          </div>

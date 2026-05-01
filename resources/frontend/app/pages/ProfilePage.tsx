@@ -24,6 +24,9 @@ import {
     Link as LinkIcon,
     Star,
     ShieldCheck,
+    MoreHorizontal,
+    Trash2,
+    Pencil,
 } from "lucide-react";
 import { Link, useSearchParams, useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
@@ -31,6 +34,12 @@ import { useBookmarks } from "../contexts/BookmarkContext";
 import { ApplyPakarModal } from "../components/ApplyPakarModal";
 import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
 
 export default function ProfilePage() {
     const navigate = useNavigate();
@@ -329,7 +338,7 @@ export default function ProfilePage() {
                             {currentUser.name}
                         </h1>
 
-                        <p className="font-['Manrope'] text-[15px] text-gray-500 font-medium mb-5">
+                        <p className="font-['Manrope'] text-[15px] text-gray-700 font-bold mb-5">
                             {currentUser.role === "pakar"
                                 ? "Pakar Pendidikan Tersertifikasi"
                                 : currentUser.role === "admin"
@@ -338,35 +347,35 @@ export default function ProfilePage() {
                         </p>
 
                         {/* Horizontal Minimalist Stats */}
-                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-6 gap-y-3 text-[15px] font-['Manrope'] mb-6 text-gray-600">
-                            <span className="flex items-center gap-1.5 hover:text-gray-900 cursor-pointer transition-colors">
-                                <strong className="text-gray-900 font-bold">
+                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-6 gap-y-3 text-[15px] font-['Manrope'] mb-6 text-gray-700 font-bold">
+                            <span className="flex items-center gap-1.5 hover:text-gray-950 cursor-pointer transition-colors">
+                                <strong className="text-gray-950 font-black">
                                     {currentUser.followers}
                                 </strong>{" "}
                                 Pengikut
                             </span>
-                            <span className="flex items-center gap-1.5 hover:text-gray-900 cursor-pointer transition-colors">
-                                <strong className="text-gray-900 font-bold">
+                            <span className="flex items-center gap-1.5 hover:text-gray-950 cursor-pointer transition-colors">
+                                <strong className="text-gray-950 font-black">
                                     {currentUser.following}
                                 </strong>{" "}
                                 Mengikuti
                             </span>
-                            <span className="w-1 h-1 rounded-full bg-gray-300 hidden sm:block"></span>
-                            <span className="flex items-center gap-1.5 text-gray-500">
-                                <Calendar className="w-4 h-4" /> Bergabung Okt
+                            <span className="w-1 h-1 rounded-full bg-gray-400 hidden sm:block"></span>
+                            <span className="flex items-center gap-1.5 text-gray-700">
+                                <Calendar className="w-4 h-4 text-gray-600" /> Bergabung Okt
                                 2023
                             </span>
                         </div>
 
                         {currentUser.bio ? (
-                            <div className="bg-gray-100 rounded-2xl p-4 sm:p-5 border border-gray-200 max-w-2xl mx-auto sm:mx-0 shadow-sm">
-                                <p className="font-['Manrope'] text-[15px] text-gray-800 leading-relaxed italic whitespace-pre-wrap">
+                            <div className="bg-gray-50 rounded-2xl p-4 sm:p-5 border border-gray-200 max-w-2xl mx-auto sm:mx-0 shadow-sm">
+                                <p className="font-['Manrope'] text-[15px] text-gray-950 leading-relaxed italic whitespace-pre-wrap font-medium">
                                     "{currentUser.bio}"
                                 </p>
                             </div>
                         ) : (
-                            <div className="bg-gray-100 rounded-2xl p-4 sm:p-5 border border-gray-200 max-w-2xl mx-auto sm:mx-0 shadow-sm">
-                                <p className="font-['Manrope'] text-[15px] text-gray-500 italic">
+                            <div className="bg-gray-50 rounded-2xl p-4 sm:p-5 border border-gray-200 max-w-2xl mx-auto sm:mx-0 shadow-sm">
+                                <p className="font-['Manrope'] text-[15px] text-gray-700 font-bold italic">
                                     Belum ada bio.
                                 </p>
                             </div>
@@ -384,7 +393,7 @@ export default function ProfilePage() {
                                     <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 mb-0.5">
                                         Berbagi Ilmu sebagai Pakar
                                     </h3>
-                                    <p className="font-['Manrope'] text-sm text-gray-600">
+                                    <p className="font-['Manrope'] text-sm text-gray-800 font-medium">
                                         Upload sertifikatmu dan jadilah
                                         kontributor tersertifikasi.
                                     </p>
@@ -409,7 +418,7 @@ export default function ProfilePage() {
                                     <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 mb-0.5">
                                         Ruang Kerja Pakar
                                     </h3>
-                                    <p className="font-['Manrope'] text-sm text-gray-600">
+                                    <p className="font-['Manrope'] text-sm text-gray-800 font-medium">
                                         Terima kasih atas kontribusi akademismu
                                         hari ini!
                                     </p>
@@ -434,7 +443,7 @@ export default function ProfilePage() {
                                     <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 mb-0.5">
                                         Ruang Kontrol Admin
                                     </h3>
-                                    <p className="font-['Manrope'] text-sm text-gray-600">
+                                    <p className="font-['Manrope'] text-sm text-gray-800 font-medium">
                                         Pantau pertumbuhan platform dan
                                         moderasi.
                                     </p>
@@ -482,15 +491,15 @@ export default function ProfilePage() {
                                     onClick={() =>
                                         handleTabChange(tab.id as any)
                                     }
-                                    className={`relative pb-4 font-['Lexend_Deca'] font-semibold text-[15px] whitespace-nowrap transition-colors flex items-center gap-2 ${
+                                    className={`relative pb-4 font-['Lexend_Deca'] font-bold text-[15px] whitespace-nowrap transition-colors flex items-center gap-2 ${
                                         activeTab === tab.id
-                                            ? "text-gray-900 border-b-2 border-primary"
-                                            : "text-gray-500 hover:text-gray-700"
+                                            ? "text-gray-950 border-b-2 border-primary"
+                                            : "text-gray-600 hover:text-gray-950"
                                     }`}
                                 >
                                     {tab.label}
                                     <span
-                                        className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${activeTab === tab.id ? "bg-primary/10 text-primary" : "bg-gray-100 text-gray-500"}`}
+                                        className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${activeTab === tab.id ? "bg-primary/10 text-primary" : "bg-gray-200/80 text-gray-700"}`}
                                     >
                                         {tab.count}
                                     </span>
@@ -520,7 +529,7 @@ export default function ProfilePage() {
                                         >
                                             <div className="flex-1 min-w-0 flex flex-col w-full h-full">
                                                 {/* Author Header */}
-                                                <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-700">
+                                                <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-800 font-bold">
                                                     <div className="flex items-center gap-1.5">
                                                         <AvatarImage
                                                             src={user?.avatar}
@@ -528,22 +537,22 @@ export default function ProfilePage() {
                                                             size={20}
                                                             className="ring-2 ring-transparent"
                                                         />
-                                                        <span className="font-medium text-gray-900 tracking-tight">
+                                                        <span className="font-bold text-gray-900 tracking-tight">
                                                             {user?.name}
                                                         </span>
                                                     </div>
-                                                    <span className="text-gray-400 px-0.5">
+                                                    <span className="text-gray-500 px-0.5">
                                                         di
                                                     </span>
-                                                    <span className="font-semibold text-gray-800 tracking-tight">
+                                                    <span className="font-extrabold text-gray-900 tracking-tight">
                                                         {note.mataPelajaran}
                                                     </span>
                                                     {note.jenjang && note.jenjang !== "Umum" && (
                                                         <>
-                                                            <span className="text-[10px] text-gray-400 mx-0.5">
+                                                            <span className="text-[10px] text-gray-500 mx-0.5">
                                                                 •
                                                             </span>
-                                                            <span className="text-gray-500 tracking-tight">
+                                                            <span className="text-gray-700 tracking-tight font-extrabold">
                                                                 {note.jenjang === "Kuliah"
                                                                     ? `${note.kelas || "S1/D4"} Semester ${note.semester || 1}`
                                                                     : (note.kelas && note.kelas !== "Semua" ? `${note.jenjang} Kelas ${note.kelas}` : note.jenjang)}
@@ -568,7 +577,7 @@ export default function ProfilePage() {
                                                 </Link>
 
                                                 {/* Excerpt */}
-                                                <p className="text-[15px] font-['Manrope'] text-gray-500 line-clamp-2 leading-relaxed mb-4 pr-2">
+                                                <p className="text-[15px] font-['Manrope'] text-gray-700 line-clamp-2 leading-relaxed mb-4 pr-2 font-medium">
                                                     {note.description}
                                                 </p>
 
@@ -579,8 +588,8 @@ export default function ProfilePage() {
                                                 <div className={`flex items-center justify-between ${!(note.tags && note.tags.length > 0) ? 'mt-auto' : ''}`}>
                                                     <div className="flex items-center gap-1.5 text-gray-500">
                                                         <Clock
-                                                            className="w-[14px] h-[14px] text-gray-400"
-                                                            strokeWidth={2}
+                                                            className="w-[14px] h-[14px] text-gray-600"
+                                                            strokeWidth={2.5}
                                                         />
                                                         <span className="text-[13px] font-['Manrope'] font-medium">
                                                             {note.createdAt}
@@ -588,9 +597,9 @@ export default function ProfilePage() {
                                                     </div>
 
                                                     <div className="flex items-center gap-3 shrink-0 ml-4">
-                                                        <div className="flex items-center gap-1.5 text-gray-500" title={`${note.views} kali dilihat`}>
-                                                            <Eye className="w-[15px] h-[15px]" strokeWidth={2} />
-                                                            <span className="text-[13px] font-['Manrope'] font-medium">
+                                                        <div className="flex items-center gap-1.5 text-gray-700 font-bold" title={`${note.views} kali dilihat`}>
+                                                            <Eye className="w-[15px] h-[15px] text-gray-600" strokeWidth={2.5} />
+                                                            <span className="text-[13px] font-['Manrope']">
                                                                 {note.views}
                                                             </span>
                                                         </div>
@@ -601,14 +610,14 @@ export default function ProfilePage() {
                                                                     note.id,
                                                                 );
                                                             }}
-                                                            className={`flex items-center gap-1.5 transition-colors focus:outline-none ${note.is_liked ? "text-red-500" : "text-gray-500 hover:text-red-500"}`}
+                                                            className={`flex items-center gap-1.5 transition-colors focus:outline-none font-bold ${note.is_liked ? "text-red-600" : "text-gray-700 hover:text-red-600"}`}
                                                             title={`${note.likes} suka`}
                                                         >
                                                             <Heart
-                                                                className={`w-[15px] h-[15px] ${note.is_liked ? "fill-red-500" : ""}`}
-                                                                strokeWidth={2}
+                                                                className={`w-[15px] h-[15px] ${note.is_liked ? "fill-red-600" : "text-gray-600"}`}
+                                                                strokeWidth={2.5}
                                                             />
-                                                            <span className="text-[13px] font-['Manrope'] font-medium">
+                                                            <span className="text-[13px] font-['Manrope']">
                                                                 {note.likes}
                                                             </span>
                                                         </button>
@@ -617,14 +626,14 @@ export default function ProfilePage() {
                                                             onClick={(e) =>
                                                                 e.stopPropagation()
                                                             }
-                                                            className="flex items-center gap-1.5 text-gray-500 hover:text-gray-900 transition-colors focus:outline-none"
+                                                            className="flex items-center gap-1.5 text-gray-700 hover:text-gray-950 transition-colors focus:outline-none font-bold"
                                                             title={`${note.comments} komentar`}
                                                         >
                                                             <MessageCircle
-                                                                className="w-[15px] h-[15px]"
-                                                                strokeWidth={2}
+                                                                className="w-[15px] h-[15px] text-gray-600"
+                                                                strokeWidth={2.5}
                                                             />
-                                                            <span className="text-[13px] font-['Manrope'] font-medium">
+                                                            <span className="text-[13px] font-['Manrope']">
                                                                 {note.comments}
                                                             </span>
                                                         </Link>
@@ -671,12 +680,12 @@ export default function ProfilePage() {
                                 ) : (
                                     <div className="col-span-full py-20 text-center bg-gray-50 rounded-3xl border border-gray-100 border-dashed flex flex-col items-center justify-center">
                                         <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center mb-5">
-                                            <FileText className="w-8 h-8 text-gray-300" />
+                                            <FileText className="w-8 h-8 text-gray-500" />
                                         </div>
                                         <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-[19px] mb-2">
                                             Belum Terdapat Rilisan
                                         </h3>
-                                        <p className="font-['Manrope'] text-[15px] text-gray-500 mb-8 max-w-sm mx-auto leading-relaxed">
+                                        <p className="font-['Manrope'] text-[15px] text-gray-700 font-bold mb-8 max-w-sm mx-auto leading-relaxed">
                                             Kamu belum mempublikasikan catatan
                                             apa pun. Mulai bagikan pengetahuanmu
                                             sekarang dan bantu pelajar lainnya!
@@ -720,7 +729,7 @@ export default function ProfilePage() {
                                                             {note.author?.name}
                                                         </span>
                                                     </div>
-                                                    <span className="text-gray-400 px-0.5">
+                                                    <span className="text-gray-700 px-0.5 font-bold">
                                                         di
                                                     </span>
                                                     <span className="font-semibold text-gray-800 tracking-tight">
@@ -728,7 +737,7 @@ export default function ProfilePage() {
                                                     </span>
                                                     {note.jenjang && note.jenjang !== "Umum" && (
                                                         <>
-                                                            <span className="text-[10px] text-gray-400 mx-0.5">
+                                                            <span className="text-[10px] text-gray-700 mx-0.5 font-black">
                                                                 •
                                                             </span>
                                                             <span className="text-gray-500 tracking-tight">
@@ -763,8 +772,8 @@ export default function ProfilePage() {
                                                 <div className={`flex items-center justify-between ${!(note.tags && note.tags.length > 0) ? 'mt-auto' : ''}`}>
                                                     <div className="flex items-center gap-1.5 text-gray-500">
                                                         <Clock
-                                                            className="w-[14px] h-[14px] text-gray-400"
-                                                            strokeWidth={2}
+                                                            className="w-[14px] h-[14px] text-gray-600"
+                                                            strokeWidth={2.5}
                                                         />
                                                         <span className="text-[13px] font-['Manrope'] font-medium">
                                                             {note.createdAt ||
@@ -817,7 +826,7 @@ export default function ProfilePage() {
                                                                     note.id,
                                                                 );
                                                             }}
-                                                            className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? "text-primary scale-110" : "opacity-0 md:opacity-100 text-gray-400 hover:text-primary md:group-hover:opacity-100"}`}
+                                                            className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? "text-primary scale-110" : "opacity-0 md:opacity-100 text-gray-600 hover:text-primary md:group-hover:opacity-100"}`}
                                                         >
                                                             <Bookmark
                                                                 className={`w-[18px] h-[18px] transition-all duration-300 ${isBookmarked(note.id) ? "fill-primary" : ""}`}
@@ -1010,68 +1019,141 @@ export default function ProfilePage() {
                         )}
 
                         {activeTab === "aktivitas" && (
-                            <div className="w-full">
+                            <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 {isLoadingActivities ? (
-                                    <div className="py-20 text-center text-gray-500 font-['Manrope'] animate-pulse">
-                                        Memuat jejak digitalmu...
+                                    <div className="flex flex-col gap-4">
+                                        {[...Array(3)].map((_, i) => (
+                                            <div key={i} className="p-5 border border-gray-100 rounded-3xl bg-white animate-pulse flex flex-col gap-4">
+                                                <div className="flex gap-3">
+                                                    <div className="w-16 h-5 bg-gray-100 rounded-full"></div>
+                                                    <div className="w-32 h-5 bg-gray-100 rounded-full"></div>
+                                                </div>
+                                                <div className="flex gap-4">
+                                                    <div className="w-10 h-10 bg-gray-100 rounded-full shrink-0"></div>
+                                                    <div className="flex-1 space-y-2">
+                                                        <div className="h-4 bg-gray-100 rounded w-full"></div>
+                                                        <div className="h-4 bg-gray-100 rounded w-4/5"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 ) : activities.length > 0 ? (
-                                    <div className="flex flex-col gap-4 mt-2">
+                                    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-3xl">
                                         {activities.map((activity: any) => (
-                                            <div
+                                            <article
                                                 key={activity.id}
                                                 onClick={() =>
                                                     navigate(
                                                         `/note/${activity.post_id}#comment-${activity.id}`,
                                                     )
                                                 }
-                                                className="p-5 border border-gray-200 rounded-2xl bg-white shadow-sm hover:shadow-md transition-all text-left cursor-pointer hover:border-primary/40 group"
+                                                className="group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 py-6 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors bg-transparent outline-none cursor-pointer"
                                             >
-                                                <div className="text-sm text-gray-500 mb-3 font-['Manrope']">
-                                                    {activity.parent_comment_id ? (
-                                                        <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-xs font-bold mr-2">
-                                                            Balasan
-                                                        </span>
-                                                    ) : (
-                                                        <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-bold mr-2">
-                                                            Komentar
-                                                        </span>
-                                                    )}
-                                                    di catatan:{" "}
-                                                    <span className="font-semibold text-primary group-hover:underline">
-                                                        {activity.post?.title ||
-                                                            "Catatan telah dihapus"}
-                                                    </span>
-                                                </div>
-                                                <div className="flex gap-4">
-                                                    <AvatarImage
-                                                        src={user?.avatar}
-                                                        alt={user?.name}
-                                                        size={40}
-                                                        className="border border-gray-100 shrink-0"
-                                                    />
-                                                    <div className="flex-1">
-                                                        <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl text-gray-700 text-[15px] font-['Manrope'] leading-relaxed">
+                                                <div className="flex-1 min-w-0 flex flex-col w-full h-full text-left">
+                                                    {/* Activity Header (Replacing Author Header) */}
+                                                    <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-950 font-bold">
+                                                         <div className="flex items-center gap-1.5">
+                                                             <AvatarImage
+                                                                 src={user?.avatar}
+                                                                 alt={user?.name}
+                                                                 size={20}
+                                                                 className="ring-2 ring-transparent"
+                                                             />
+                                                             <span className="font-black text-gray-950 tracking-tight">
+                                                                 {user?.name}
+                                                             </span>
+                                                         </div>
+                                                         <span className="text-gray-700 px-0.5">
+                                                             {activity.parent_comment_id ? "membalas komentar di" : "berkomentar di"}
+                                                         </span>
+                                                         <span className="font-black text-gray-950 tracking-tight line-clamp-1">
+                                                             {activity.post?.title || "Catatan"}
+                                                         </span>
+                                                    </div>
+
+                                                    {/* Comment Content */}
+                                                    <div className="block mb-3 font-['Lexend_Deca']">
+                                                        <h2 className="text-[17px] md:text-[19px] font-extrabold text-gray-950 leading-[1.5] tracking-tight group-hover:text-primary transition-colors line-clamp-3 italic">
                                                             "{activity.content}"
+                                                        </h2>
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between mt-auto">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="flex items-center gap-1.5 text-gray-600">
+                                                                <Clock
+                                                                    className="w-[14px] h-[14px] text-gray-500"
+                                                                    strokeWidth={2}
+                                                                />
+                                                                <span className="text-[13px] font-['Manrope'] font-semibold">
+                                                                    {new Date(activity.created_at).toLocaleDateString("id-ID", {
+                                                                        month: "short",
+                                                                        day: "numeric",
+                                                                        year: "numeric"
+                                                                    })}
+                                                                </span>
+                                                            </div>
+
+                                                            <div className="flex items-center gap-3 ml-2">
+                                                                <button className="flex items-center gap-1 text-gray-500 hover:text-red-500 transition-colors">
+                                                                    <Heart className="w-[14px] h-[14px]" />
+                                                                    <span className="text-[12px] font-bold">{activity.likes_count || 0}</span>
+                                                                </button>
+                                                                <button className="flex items-center gap-1 text-gray-500 hover:text-primary transition-colors">
+                                                                    <MessageCircle className="w-[14px] h-[14px]" />
+                                                                    <span className="text-[12px] font-bold">{activity.replies_count || 0}</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="flex items-center gap-1.5 text-[12px] font-['Lexend_Deca'] font-bold text-primary opacity-0 group-hover:opacity-100 transition-all mr-2">
+                                                                Buka Diskusi <ChevronRight className="w-3.5 h-3.5" />
+                                                            </div>
+                                                            
+
+                                                            <DropdownMenu>
+                                                                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                                                    <button className="p-2 hover:bg-gray-100 rounded-full text-gray-600 hover:text-gray-900 transition-all active:scale-95">
+                                                                        <MoreHorizontal className="w-5 h-5" />
+                                                                    </button>
+                                                                </DropdownMenuTrigger>
+                                                                <DropdownMenuContent align="end" className="w-36 font-['Manrope']">
+                                                                    <DropdownMenuItem className="cursor-pointer">
+                                                                        <Pencil className="w-4 h-4 mr-2" />
+                                                                        Edit
+                                                                    </DropdownMenuItem>
+                                                                    <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50" onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        // Logic delete here
+                                                                        showToast("Fitur hapus komentar akan segera hadir", "info");
+                                                                    }}>
+                                                                        <Trash2 className="w-4 h-4 mr-2" />
+                                                                        Hapus
+                                                                    </DropdownMenuItem>
+                                                                </DropdownMenuContent>
+                                                            </DropdownMenu>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="text-xs text-gray-400 mt-4 flex items-center gap-1.5 font-['Manrope']">
-                                                    <Clock className="w-3.5 h-3.5" />
-                                                    {new Date(
-                                                        activity.created_at,
-                                                    ).toLocaleDateString(
-                                                        "id-ID",
-                                                        {
-                                                            year: "numeric",
-                                                            month: "long",
-                                                            day: "numeric",
-                                                            hour: "2-digit",
-                                                            minute: "2-digit",
-                                                        },
+
+                                                {/* Post Thumbnail */}
+                                                <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-gray-100 relative shadow-sm border border-gray-100/50">
+                                                    {activity.post?.thumbnail ? (
+                                                        <img
+                                                            src={activity.post.thumbnail}
+                                                            alt={activity.post.title}
+                                                            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                                                        />
+                                                    ) : (
+                                                        <DefaultThumbnail className="w-full h-full transform group-hover:scale-110 transition-transform duration-500" />
                                                     )}
+                                                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1.5">
+                                                        <MessageCircle className="w-3 h-3" /> DISKUSI
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </article>
                                         ))}
                                     </div>
                                 ) : (

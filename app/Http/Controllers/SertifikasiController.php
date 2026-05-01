@@ -108,11 +108,12 @@ class SertifikasiController extends Controller
             : 'Mohon maaf, pengajuan sertifikasi pakarmu untuk bidang ' . $sertifikasi->bidang_keahlian . ' belum dapat disetujui saat ini.';
 
         Notification::create([
-            'user_id' => $sertifikasi->user_id,
-            'title'   => $title,
-            'message' => $message,
-            'type'    => 'sertifikasi',
-            'is_read' => false,
+            'user_id'  => $sertifikasi->user_id,
+            'actor_id' => Auth::id(),
+            'title'    => $title,
+            'message'  => $message,
+            'type'     => 'sertifikasi',
+            'is_read'  => false,
         ]);
 
         return response()->json([

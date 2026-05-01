@@ -440,7 +440,7 @@ export default function PublicProfilePage() {
                                                         {note.author.name}
                                                     </span>
                                                 </div>
-                                                <span className="text-gray-400 px-0.5">
+                                                <span className="text-gray-700 px-0.5 font-bold">
                                                     di
                                                 </span>
                                                 <span className="font-semibold text-gray-800 tracking-tight">
@@ -448,7 +448,7 @@ export default function PublicProfilePage() {
                                                 </span>
                                                 {note.jenjang && note.jenjang !== "Umum" && (
                                                     <>
-                                                        <span className="text-[10px] text-gray-400 mx-0.5">
+                                                        <span className="text-[10px] text-gray-700 mx-0.5 font-black">
                                                             •
                                                         </span>
                                                         <span className="text-gray-500 tracking-tight">
@@ -483,7 +483,7 @@ export default function PublicProfilePage() {
                                             <div className={`flex items-center justify-between ${!(note.tags && note.tags.length > 0) ? 'mt-auto' : ''}`}>
                                                 <div className="flex items-center gap-1.5 text-gray-500">
                                                     <Clock
-                                                        className="w-[14px] h-[14px] text-gray-400"
+                                                        className="w-[14px] h-[14px] text-gray-600"
                                                         strokeWidth={2}
                                                     />
                                                     <span className="text-[13px] font-['Manrope'] font-medium">

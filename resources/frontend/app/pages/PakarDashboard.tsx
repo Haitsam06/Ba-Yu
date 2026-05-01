@@ -238,7 +238,7 @@ export default function PakarDashboard() {
                             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-2 md:p-3">
                                 <div className="flex flex-col md:flex-row gap-3">
                                     <div className="flex-1 relative">
-                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" strokeWidth={2.5} />
                                         <input
                                             type="text"
                                             value={searchQuery}
@@ -310,7 +310,7 @@ export default function PakarDashboard() {
                                         <h4 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 mb-1">
                                             Tidak Ada Antrean
                                         </h4>
-                                        <p className="text-sm text-gray-500 font-['Manrope']">
+                                        <p className="text-sm text-gray-700 font-['Manrope'] font-bold">
                                             Saat ini antrean filter yang Anda
                                             pilih sedang kosong.
                                         </p>
@@ -483,7 +483,7 @@ export default function PakarDashboard() {
                                         <h3 className="font-['Lexend_Deca'] font-bold text-gray-900">
                                             Panduan Pakar
                                         </h3>
-                                        <p className="font-['Manrope'] text-[11px] text-gray-500">
+                                         <p className="font-['Manrope'] text-[11px] text-gray-700 font-bold">
                                             Standar Kurikulum 2026
                                         </p>
                                     </div>
@@ -511,14 +511,14 @@ export default function PakarDashboard() {
                                             key={rule.num}
                                             className="flex gap-3"
                                         >
-                                            <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 flex-shrink-0">
+                                            <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 flex-shrink-0">
                                                 {rule.num}
                                             </div>
                                             <div>
                                                 <h4 className="font-['Manrope'] font-bold text-sm text-gray-800">
                                                     {rule.title}
                                                 </h4>
-                                                <p className="font-['Manrope'] text-xs text-gray-500 mt-0.5 leading-relaxed">
+                                                 <p className="font-['Manrope'] text-xs text-gray-700 mt-0.5 leading-relaxed font-medium">
                                                     {rule.desc}
                                                 </p>
                                             </div>

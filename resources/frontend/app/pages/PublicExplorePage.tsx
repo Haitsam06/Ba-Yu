@@ -269,8 +269,8 @@ export default function PublicExplorePage() {
                                     "all 0.7s cubic-bezier(0.16, 1, 0.3, 1)",
                             }}
                         >
-                            <div className="inline-flex items-center gap-2 text-gray-400 text-xs font-bold tracking-widest uppercase mb-6">
-                                <BookOpen className="w-4 h-4 text-gray-300" />
+                            <div className="inline-flex items-center gap-2 text-gray-500 text-xs font-bold tracking-widest uppercase mb-6">
+                                <BookOpen className="w-4 h-4 text-gray-400" />
                                 Perpustakaan Digital
                             </div>
                             <h1 className="font-['Lexend_Deca'] font-extrabold text-5xl sm:text-6xl text-gray-900 tracking-tight mb-6 leading-[1.05]">
@@ -278,7 +278,7 @@ export default function PublicExplorePage() {
                                 <br className="hidden sm:block" />
                                 Catatan Belajar.
                             </h1>
-                            <p className="text-gray-500 font-['Manrope'] text-lg sm:text-xl max-w-2xl leading-relaxed mb-10">
+                            <p className="text-gray-700 font-['Manrope'] text-lg sm:text-xl max-w-2xl leading-relaxed mb-10">
                                 Temukan materi terkurasi dari pelajar dan pakar
                                 pendidikan <br className="hidden md:block" /> di
                                 seluruh Indonesia. Gratis selamanya.
@@ -296,7 +296,7 @@ export default function PublicExplorePage() {
                             <div className="flex gap-3">
                                 <div className="relative flex-1 group">
                                     <Search
-                                        className="absolute left-5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 group-focus-within:text-gray-800 transition-colors"
+                                        className="absolute left-5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-500 group-focus-within:text-gray-900 transition-colors"
                                         strokeWidth={2}
                                     />
                                     <input
@@ -306,7 +306,7 @@ export default function PublicExplorePage() {
                                         onChange={(e) =>
                                             setSearchQuery(e.target.value)
                                         }
-                                        className="w-full pl-12 pr-5 py-4 bg-gray-50 hover:bg-gray-100 focus:bg-white border text-gray-900 border-transparent focus:border-gray-300 rounded-[14px] font-['Manrope'] text-[15px] font-medium focus:outline-none transition-colors placeholder:text-gray-400 shadow-sm"
+                                        className="w-full pl-12 pr-5 py-4 bg-gray-50 hover:bg-gray-100 focus:bg-white border text-gray-950 border-transparent focus:border-gray-300 rounded-[14px] font-['Manrope'] text-[15px] font-medium focus:outline-none transition-all placeholder:text-gray-500 shadow-sm"
                                     />
                                 </div>
                                 <button
@@ -338,7 +338,7 @@ export default function PublicExplorePage() {
                                         <h1 className="text-[28px] sm:text-[32px] font-['Lexend_Deca'] font-extrabold text-gray-900 tracking-tight leading-tight">
                                             Eksplorasi Topik
                                         </h1>
-                                        <p className="text-gray-500 font-['Manrope'] text-[15px] mt-1.5 mb-6">
+                                        <p className="text-gray-700 font-['Manrope'] text-[15px] mt-1.5 mb-6">
                                             Temukan materi dan inspirasi terbaru
                                             pilihan.
                                         </p>
@@ -346,7 +346,7 @@ export default function PublicExplorePage() {
                                         <div className="flex gap-3">
                                             <div className="relative flex-1 group">
                                                 <Search
-                                                    className="absolute left-4 top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-gray-400 group-focus-within:text-primary transition-colors"
+                                                    className="absolute left-4 top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-gray-500 group-focus-within:text-primary transition-colors"
                                                     strokeWidth={2.5}
                                                 />
                                                 <input
@@ -358,7 +358,7 @@ export default function PublicExplorePage() {
                                                             e.target.value,
                                                         )
                                                     }
-                                                    className="w-full pl-11 pr-4 py-3.5 bg-white hover:bg-gray-50/50 focus:bg-white border border-gray-200 focus:border-primary/40 focus:shadow-[0_0_0_4px_rgba(93,92,230,0.08)] rounded-full font-['Manrope'] text-[15px] font-medium focus:outline-none transition-all placeholder:text-gray-400 text-gray-900"
+                                                    className="w-full pl-11 pr-4 py-3.5 bg-white hover:bg-gray-50/50 focus:bg-white border border-gray-200 focus:border-primary/40 focus:shadow-[0_0_0_4px_rgba(93,92,230,0.08)] rounded-full font-['Manrope'] text-[15px] font-medium focus:outline-none transition-all placeholder:text-gray-500 text-gray-950"
                                                 />
                                             </div>
                                             <button
@@ -405,15 +405,15 @@ export default function PublicExplorePage() {
                                             }`}
                                         >
                                             <tab.icon
-                                                className={`w-[16px] h-[16px] transition-colors ${activeSegment === tab.key ? "text-gray-900" : "text-gray-500 group-hover:text-gray-700"}`}
+                                                className={`w-[16px] h-[16px] transition-colors ${activeSegment === tab.key ? "text-gray-900" : "text-gray-600 group-hover:text-gray-900"}`}
                                                 strokeWidth={
                                                     activeSegment === tab.key
                                                         ? 2.5
-                                                        : 2
+                                                        : 2.2
                                                 }
                                             />
                                             <span
-                                                className={`font-['Lexend_Deca'] font-semibold text-[14px] transition-colors ${activeSegment === tab.key ? "text-gray-900" : "text-gray-500 group-hover:text-gray-700"}`}
+                                                className={`font-['Lexend_Deca'] font-semibold text-[14px] transition-colors ${activeSegment === tab.key ? "text-gray-900" : "text-gray-600 group-hover:text-gray-900"}`}
                                             >
                                                 {tab.label}
                                             </span>
@@ -454,7 +454,7 @@ export default function PublicExplorePage() {
                                             {/* Feed Text */}
                                             <div className="flex-1 min-w-0 flex flex-col w-full h-full">
                                                 {/* Author Header */}
-                                                <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-700">
+                                                <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-800">
                                                     <Link
                                                         to={`/profile/${author?.id || author?._id}`}
                                                         className="flex items-center gap-1.5 group/author outline-none cursor-pointer"
@@ -465,22 +465,22 @@ export default function PublicExplorePage() {
                                                             size={20}
                                                             className="ring-2 ring-transparent group-hover/author:ring-primary/20 transition-all"
                                                         />
-                                                        <span className="font-medium text-gray-900 group-hover/author:underline tracking-tight">
+                                                        <span className="font-bold text-gray-950 group-hover/author:underline tracking-tight">
                                                             {author?.name}
                                                         </span>
                                                     </Link>
-                                                    <span className="text-gray-400 px-0.5">
+                                                    <span className="text-gray-700 px-0.5 font-bold">
                                                         di
                                                     </span>
-                                                    <span className="font-semibold text-gray-800 tracking-tight">
+                                                    <span className="font-extrabold text-gray-900 tracking-tight">
                                                         {note.mataPelajaran}
                                                     </span>
                                                     {note.jenjang && note.jenjang !== "Umum" && (
                                                         <>
-                                                            <span className="text-[10px] text-gray-400 mx-0.5">
+                                                            <span className="text-[10px] text-gray-700 mx-0.5 font-bold">
                                                                 •
                                                             </span>
-                                                            <span className="text-gray-500 tracking-tight">
+                                                            <span className="text-gray-800 font-bold tracking-tight">
                                                                 {note.jenjang === "Kuliah"
                                                                     ? `${note.kelas || "S1/D4"} Semester ${note.semester || 1}`
                                                                     : (note.kelas && note.kelas !== "Semua" ? `${note.jenjang} Kelas ${note.kelas}` : note.jenjang)}
@@ -500,7 +500,7 @@ export default function PublicExplorePage() {
                                                 </Link>
 
                                                 {/* Excerpt */}
-                                                <p className="text-[15px] font-['Manrope'] text-gray-500 line-clamp-2 leading-relaxed mb-4 pr-2">
+                                                <p className="text-[15px] font-['Manrope'] text-gray-700 line-clamp-2 leading-relaxed mb-4 pr-2 font-medium">
                                                     {note.description}
                                                 </p>
 
@@ -509,12 +509,12 @@ export default function PublicExplorePage() {
 
                                                 {/* Meta Footer (Medium Style) */}
                                                 <div className={`flex items-center justify-between ${!(note.tags && note.tags.length > 0) ? 'mt-auto' : ''}`}>
-                                                    <div className="flex items-center gap-1.5 text-gray-500">
+                                                    <div className="flex items-center gap-1.5 text-gray-700 font-black">
                                                         <Clock
-                                                            className="w-[14px] h-[14px] text-gray-400"
-                                                            strokeWidth={2}
+                                                            className="w-[14px] h-[14px] text-gray-600"
+                                                            strokeWidth={2.5}
                                                         />
-                                                        <span className="text-[13px] font-['Manrope'] font-medium">
+                                                        <span className="text-[13px] font-['Manrope']">
                                                             {new Date(
                                                                 note.createdAt,
                                                             ).toLocaleDateString(
@@ -536,14 +536,14 @@ export default function PublicExplorePage() {
                                                                     note.id,
                                                                 );
                                                             }}
-                                                            className={`flex items-center gap-1.5 transition-colors focus:outline-none ${note.is_liked ? "text-red-500" : "text-gray-500 hover:text-red-500"}`}
+                                                            className={`flex items-center gap-1.5 transition-colors focus:outline-none font-bold ${note.is_liked ? "text-red-500" : "text-gray-600 hover:text-red-500"}`}
                                                             title={`${note.likes} suka`}
                                                         >
                                                             <Heart
-                                                                className={`w-[15px] h-[15px] ${note.is_liked ? "fill-red-500" : ""}`}
-                                                                strokeWidth={2}
+                                                                className={`w-[15px] h-[15px] ${note.is_liked ? "fill-red-600" : "text-gray-600"}`}
+                                                                strokeWidth={2.5}
                                                             />
-                                                            <span className="text-[13px] font-['Manrope'] font-medium">
+                                                            <span className="text-[13px] font-['Manrope']">
                                                                 {note.likes}
                                                             </span>
                                                         </button>
@@ -552,14 +552,14 @@ export default function PublicExplorePage() {
                                                             onClick={(e) =>
                                                                 e.stopPropagation()
                                                             }
-                                                            className="flex items-center gap-1.5 text-gray-500 hover:text-gray-900 transition-colors focus:outline-none"
+                                                            className="flex items-center gap-1.5 text-gray-600 hover:text-gray-950 transition-colors focus:outline-none font-bold"
                                                             title={`${note.comments} komentar`}
                                                         >
                                                             <MessageCircle
-                                                                className="w-[15px] h-[15px]"
-                                                                strokeWidth={2}
+                                                                className="w-[15px] h-[15px] text-gray-600"
+                                                                strokeWidth={2.5}
                                                             />
-                                                            <span className="text-[13px] font-['Manrope'] font-medium">
+                                                            <span className="text-[13px] font-['Manrope']">
                                                                 {note.comments}
                                                             </span>
                                                         </Link>
@@ -571,13 +571,11 @@ export default function PublicExplorePage() {
                                                                     note.id,
                                                                 );
                                                             }}
-                                                            className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? "text-primary scale-110" : "opacity-0 md:opacity-100 text-gray-400 hover:text-primary md:group-hover:opacity-100"}`}
+                                                            className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? "text-primary scale-110" : "opacity-0 md:opacity-100 text-gray-500 hover:text-primary md:group-hover:opacity-100"}`}
                                                         >
                                                             <Bookmark
                                                                 className={`w-[18px] h-[18px] transition-all duration-300 ${isBookmarked(note.id) ? "fill-primary" : ""}`}
-                                                                strokeWidth={
-                                                                    1.5
-                                                                }
+                                                                strokeWidth={2}
                                                             />
                                                         </button>
                                                     </div>
@@ -623,13 +621,13 @@ export default function PublicExplorePage() {
                                 })
                             ) : (
                                 <div className="flex flex-col items-center justify-center py-20 text-center">
-                                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                                        <BookOpen className="w-8 h-8 text-gray-300" />
+                                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                        <BookOpen className="w-8 h-8 text-gray-500" />
                                     </div>
-                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-lg mb-2">
+                                    <h3 className="font-['Lexend_Deca'] font-extrabold text-gray-900 text-lg mb-2">
                                         Pencarian Tidak Ditemukan
                                     </h3>
-                                    <p className="text-gray-500 font-['Manrope']">
+                                    <p className="text-gray-600 font-['Manrope'] font-medium">
                                         Coba gunakan kata kunci atau filter
                                         lain.
                                     </p>
@@ -679,10 +677,10 @@ export default function PublicExplorePage() {
                                                         className="rounded-full object-cover bg-gray-100 ring-2 ring-transparent group-hover:ring-primary/20 transition-all"
                                                     />
                                                     <div className="flex flex-col min-w-0">
-                                                        <span className="font-['Lexend_Deca'] font-bold text-[14px] text-gray-900 truncate group-hover:text-primary transition-colors">
+                                                        <span className="font-['Lexend_Deca'] font-extrabold text-[14px] text-gray-900 truncate group-hover:text-primary transition-colors">
                                                             {expert.name}
                                                         </span>
-                                                        <span className="font-['Manrope'] font-medium text-[12px] text-gray-500 truncate">
+                                                        <span className="font-['Manrope'] font-bold text-[12px] text-gray-600 truncate">
                                                             {expert.followers_count ||
                                                                 0}{" "}
                                                             pengikut
@@ -709,7 +707,7 @@ export default function PublicExplorePage() {
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-gray-400 font-['Manrope'] text-sm">
+                                        <p className="text-gray-600 font-['Manrope'] text-sm font-bold">
                                             Belum ada pakar terdaftar.
                                         </p>
                                     )}
@@ -735,11 +733,11 @@ export default function PublicExplorePage() {
                                     ].map((term) => (
                                         <button
                                             key={term}
-                                            className="px-3.5 py-2.5 bg-white border border-gray-100 hover:border-gray-300 hover:bg-gray-50 text-gray-600 rounded-2xl font-['Manrope'] text-[13px] font-semibold transition-colors truncate max-w-full text-left focus:outline-none"
+                                            className="px-3.5 py-2.5 bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 text-gray-700 rounded-2xl font-['Manrope'] text-[13px] font-bold transition-colors truncate max-w-full text-left focus:outline-none"
                                         >
                                             <Search
-                                                className="w-3.5 h-3.5 inline-block mr-1.5 text-gray-400"
-                                                strokeWidth={2.5}
+                                                className="w-3.5 h-3.5 inline-block mr-1.5 text-gray-500"
+                                                strokeWidth={2.8}
                                             />{" "}
                                             {term}
                                         </button>
@@ -748,40 +746,40 @@ export default function PublicExplorePage() {
                             </div>
 
                             {/* Quick Links */}
-                            <div className="pt-2 flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-['Manrope'] font-semibold text-gray-400">
+                             <div className="pt-2 flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-['Manrope'] font-bold text-gray-600">
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-900 transition-colors"
+                                    className="hover:text-gray-950 transition-colors"
                                 >
                                     Bantuan
                                 </Link>
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-900 transition-colors"
+                                    className="hover:text-gray-950 transition-colors"
                                 >
                                     Status
                                 </Link>
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-900 transition-colors"
+                                    className="hover:text-gray-950 transition-colors"
                                 >
                                     Tentang Kami
                                 </Link>
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-900 transition-colors"
+                                    className="hover:text-gray-950 transition-colors"
                                 >
                                     Karir
                                 </Link>
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-900 transition-colors"
+                                    className="hover:text-gray-950 transition-colors"
                                 >
                                     Privasi
                                 </Link>
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-900 transition-colors"
+                                    className="hover:text-gray-950 transition-colors"
                                 >
                                     Ketentuan
                                 </Link>

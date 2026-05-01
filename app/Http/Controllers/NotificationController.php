@@ -12,7 +12,31 @@ class NotificationController extends Controller
     {
         $userId = (string) Auth::id();
 
-        $notifikasi = Notification::where('user_id', $userId)->orderBy('created_at', 'desc')->get();
+        $notifikasi = Notification::where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Manual attach actor for stability (MongoDB relationship fix)
+        $actorIds = $notifikasi->pluck('actor_id')->filter()->unique()->map(fn($id) => (string)$id)->toArray();
+        
+        $actors = \App\Models\User::whereIn('_id', $actorIds)
+            ->get(['_id', 'name', 'avatar'])
+            ->mapWithKeys(fn($user) => [(string)$user->_id => $user]);
+
+        if ($actors->isEmpty()) {
+             $actors = \App\Models\User::whereIn('id', $actorIds)
+                ->get(['id', 'name', 'avatar'])
+                ->mapWithKeys(fn($user) => [(string)$user->id => $user]);
+        }
+
+        $notifikasi->each(function ($item) use ($actors) {
+            $actorId = (string) $item->actor_id;
+            if ($actors->has($actorId)) {
+                $item->setAttribute('actor', $actors->get($actorId));
+            } else {
+                $item->setAttribute('actor', null);
+            }
+        });
 
         return response()->json([
             'message' => 'Berhasil mengambil data notifikasi',

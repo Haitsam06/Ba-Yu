@@ -413,8 +413,8 @@ export default function ExplorePage() {
                                     "all 0.7s cubic-bezier(0.16, 1, 0.3, 1)",
                             }}
                         >
-                            <div className="inline-flex items-center gap-2 text-gray-400 text-xs font-bold tracking-widest uppercase mb-6">
-                                <BookOpen className="w-4 h-4 text-gray-300" />
+                            <div className="inline-flex items-center gap-2 text-gray-700 text-xs font-bold tracking-widest uppercase mb-6">
+                                <BookOpen className="w-4 h-4 text-gray-600" />
                                 Perpustakaan Digital
                             </div>
                             <h1 className="font-['Lexend_Deca'] font-extrabold text-5xl sm:text-6xl text-gray-900 tracking-tight mb-6 leading-[1.05]">
@@ -422,7 +422,7 @@ export default function ExplorePage() {
                                 <br className="hidden sm:block" />
                                 Catatan Belajar.
                             </h1>
-                            <p className="text-gray-500 font-['Manrope'] text-lg sm:text-xl max-w-2xl leading-relaxed mb-10">
+                            <p className="text-gray-700 font-['Manrope'] text-lg sm:text-xl max-w-2xl leading-relaxed mb-10">
                                 Temukan materi terkurasi dari pelajar dan pakar
                                 pendidikan <br className="hidden md:block" /> di
                                 seluruh Indonesia. Gratis selamanya.
@@ -440,7 +440,7 @@ export default function ExplorePage() {
 
                                     {/* Icon Search */}
                                     <Search
-                                        className={`absolute left-5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] transition-colors duration-300 ${isSuggestionOpen ? 'text-primary' : 'text-gray-400 group-focus-within:text-primary'}`}
+                                        className={`absolute left-5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] transition-colors duration-300 ${isSuggestionOpen ? 'text-primary' : 'text-gray-500 group-focus-within:text-primary'}`}
                                         strokeWidth={2}
                                     />
 
@@ -452,14 +452,14 @@ export default function ExplorePage() {
                                         onChange={(e) => {setSearchQuery(e.target.value); setIsSuggestionOpen(true);}}
                                         onFocus={() => setIsSuggestionOpen(true)}
                                         onClick={() => setIsSuggestionOpen(true)}
-                                        className="w-full pl-12 pr-12 py-4 bg-white hover:bg-gray-50 focus:bg-white border text-gray-900 border-gray-200 focus:border-primary/30 rounded-[14px] font-['Manrope'] text-[15px] font-medium focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all duration-300 shadow-sm"
+                                        className="w-full pl-12 pr-12 py-4 bg-white hover:bg-gray-50 focus:bg-white border text-gray-950 border-gray-200 focus:border-primary/30 rounded-[14px] font-['Manrope'] text-[15px] font-medium focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all duration-300 shadow-sm placeholder:text-gray-500"
                                     />
 
                                     {/* Tombol Clear (X) - Muncul saat ada teks */}
                                     {searchQuery && (
                                         <button
                                             onClick={() => setSearchQuery("")}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-700 transition-colors"
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-gray-800 transition-colors"
                                         >
                                             <X className="w-[18px] h-[18px]" strokeWidth={2} />
                                         </button>
@@ -469,7 +469,7 @@ export default function ExplorePage() {
                                     {isSuggestionOpen && suggestions.length > 0 && (
                                         <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-white border border-gray-100 rounded-[14px] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                                             {/* Header */}
-                                            <div className="px-5 py-3 text-[11px] font-bold text-gray-400 uppercase tracking-wider bg-gray-50/80 border-b border-gray-100 flex items-center gap-1.5">
+                                            <div className="px-5 py-3 text-[11px] font-bold text-gray-600 uppercase tracking-wider bg-gray-50/80 border-b border-gray-100 flex items-center gap-1.5">
                                                 {searchQuery.trim() === "" ? (
                                                     <><TrendingUp className="w-3.5 h-3.5 text-primary" /> Sering Dicari</>
                                                 ) : (
@@ -488,7 +488,7 @@ export default function ExplorePage() {
                                                             }}
                                                             className="w-full text-left px-5 py-3 text-[14px] font-['Manrope'] font-medium text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors flex items-center gap-3"
                                                         >
-                                                            <Search className="w-[15px] h-[15px] text-gray-400" strokeWidth={2} />
+                                                            <Search className="w-[15px] h-[15px] text-gray-600" strokeWidth={2} />
                                                             {suggestion}
                                                         </button>
                                                     </li>
@@ -526,7 +526,7 @@ export default function ExplorePage() {
                                         <h1 className="text-[28px] sm:text-[32px] font-['Lexend_Deca'] font-extrabold text-gray-900 tracking-tight leading-tight">
                                             Eksplorasi Topik
                                         </h1>
-                                        <p className="text-gray-500 font-['Manrope'] text-[15px] mt-1.5 mb-6">
+                                        <p className="text-gray-700 font-['Manrope'] text-[15px] mt-1.5 mb-6">
                                             Temukan materi dan inspirasi terbaru
                                             pilihan.
                                         </p>
@@ -534,7 +534,7 @@ export default function ExplorePage() {
                                         <div className="flex gap-3">
                                             <div className="relative flex-1 group">
                                                 <Search
-                                                    className="absolute left-4 top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-gray-400 group-focus-within:text-primary transition-colors"
+                                                    className="absolute left-4 top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-gray-500 group-focus-within:text-primary transition-colors"
                                                     strokeWidth={2.5}
                                                 />
                                                 <input
@@ -549,7 +549,7 @@ export default function ExplorePage() {
                                                     }}
                                                     onFocus={() => setIsSuggestionOpen(true)}
                                                     onClick={() => setIsSuggestionOpen(true)}
-                                                    className="w-full pl-11 pr-4 py-3.5 bg-white hover:bg-gray-50/50 focus:bg-white border border-gray-200 focus:border-primary/40 focus:shadow-[0_0_0_4px_rgba(93,92,230,0.08)] rounded-full font-['Manrope'] text-[15px] font-medium focus:outline-none transition-all placeholder:text-gray-400 text-gray-900"
+                                                    className="w-full pl-11 pr-4 py-3.5 bg-white hover:bg-gray-50/50 focus:bg-white border border-gray-200 focus:border-primary/40 focus:shadow-[0_0_0_4px_rgba(93,92,230,0.08)] rounded-full font-['Manrope'] text-[15px] font-medium focus:outline-none transition-all placeholder:text-gray-500 text-gray-950"
                                                 />
                                             </div>
                                             <button
@@ -584,7 +584,7 @@ export default function ExplorePage() {
                                                 className={`pb-4 relative shrink-0 font-['Lexend_Deca'] text-[15px] transition-colors focus:outline-none flex items-center gap-2 group ${activeSegment === tab.key ? "text-gray-900 font-extrabold" : "text-gray-500 font-medium hover:text-gray-900"
                                                     }`}
                                             >
-                                                <tab.icon className={`w-[16px] h-[16px] transition-colors ${activeSegment === tab.key ? "text-gray-900" : "text-gray-400 group-hover:text-gray-600"}`} strokeWidth={activeSegment === tab.key ? 2.5 : 2} />
+                                                <tab.icon className={`w-[16px] h-[16px] transition-colors ${activeSegment === tab.key ? "text-gray-900" : "text-gray-500 group-hover:text-gray-800"}`} strokeWidth={activeSegment === tab.key ? 2.5 : 2.2} />
                                                 {tab.label}
                                                 {activeSegment === tab.key && (
                                                     <div className="absolute -bottom-[1px] left-0 w-full h-[2px] bg-gray-900 rounded-t-full shadow-[0_-1px_6px_rgba(0,0,0,0.2)]"></div>
@@ -639,7 +639,7 @@ export default function ExplorePage() {
                                             {/* Feed Text */}
                                             <div className="flex-1 min-w-0 flex flex-col w-full h-full">
                                                 {/* Author Header */}
-                                                <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-700">
+                                                <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-800">
                                                     <Link
                                                         to={`/profile/${author?.id || author?._id}`}
                                                         className="flex items-center gap-1.5 group/author outline-none cursor-pointer"
@@ -650,22 +650,22 @@ export default function ExplorePage() {
                                                             size={20}
                                                             className="ring-2 ring-transparent group-hover/author:ring-primary/20 transition-all"
                                                         />
-                                                        <span className="font-medium text-gray-900 group-hover/author:underline tracking-tight">
+                                                        <span className="font-bold text-gray-950 group-hover/author:underline tracking-tight">
                                                             {author?.name}
                                                         </span>
                                                     </Link>
-                                                    <span className="text-gray-400 px-0.5">
+                                                    <span className="text-gray-700 px-0.5 font-bold">
                                                         di
                                                     </span>
-                                                    <span className="font-semibold text-gray-800 tracking-tight">
+                                                    <span className="font-extrabold text-gray-900 tracking-tight">
                                                         {note.mataPelajaran}
                                                     </span>
                                                     {note.jenjang && note.jenjang !== "Umum" && (
                                                         <>
-                                                            <span className="text-[10px] text-gray-400 mx-0.5">
+                                                            <span className="text-[10px] text-gray-700 mx-0.5 font-bold">
                                                                 •
                                                             </span>
-                                                            <span className="text-gray-500 tracking-tight">
+                                                            <span className="text-gray-800 font-bold tracking-tight">
                                                                 {note.jenjang === "Kuliah"
                                                                     ? `${note.kelas || "S1/D4"} Semester ${note.semester || 1}`
                                                                     : (note.kelas && note.kelas !== "Semua" ? `${note.jenjang} Kelas ${note.kelas}` : note.jenjang)}
@@ -692,7 +692,7 @@ export default function ExplorePage() {
                                                 </Link>
 
                                                 {/* Excerpt */}
-                                                <p className="text-[15px] font-['Manrope'] text-gray-500 line-clamp-2 leading-relaxed mb-4 pr-2">
+                                                <p className="text-[15px] font-['Manrope'] text-gray-700 line-clamp-2 leading-relaxed mb-4 pr-2 font-medium">
                                                     {note.description}
                                                 </p>
 
@@ -701,12 +701,12 @@ export default function ExplorePage() {
 
                                                 {/* Meta Footer (Medium Style) */}
                                                 <div className={`flex items-center justify-between ${!(note.tags && note.tags.length > 0) ? 'mt-auto' : ''}`}>
-                                                    <div className="flex items-center gap-1.5 text-gray-500">
+                                                    <div className="flex items-center gap-1.5 text-gray-700 font-bold">
                                                         <Clock
-                                                            className="w-[14px] h-[14px] text-gray-400"
-                                                            strokeWidth={2}
+                                                            className="w-[14px] h-[14px] text-gray-600"
+                                                            strokeWidth={2.5}
                                                         />
-                                                        <span className="text-[13px] font-['Manrope'] font-medium">
+                                                        <span className="text-[13px] font-['Manrope']">
                                                             {new Date(
                                                                 note.createdAt,
                                                             ).toLocaleDateString(
@@ -721,9 +721,9 @@ export default function ExplorePage() {
                                                     </div>
 
                                                     <div className="flex items-center gap-3 shrink-0 ml-4">
-                                                        <div className="flex items-center gap-1.5 text-gray-500" title={`${note.views} kali dilihat`}>
-                                                            <Eye className="w-[15px] h-[15px]" strokeWidth={2} />
-                                                            <span className="text-[13px] font-['Manrope'] font-medium">
+                                                        <div className="flex items-center gap-1.5 text-gray-700 font-bold" title={`${note.views} kali dilihat`}>
+                                                            <Eye className="w-[15px] h-[15px] text-gray-600" strokeWidth={2.5} />
+                                                            <span className="text-[13px] font-['Manrope']">
                                                                 {note.views}
                                                             </span>
                                                         </div>
@@ -734,14 +734,14 @@ export default function ExplorePage() {
                                                                     note.id,
                                                                 );
                                                             }}
-                                                            className={`flex items-center gap-1.5 transition-colors focus:outline-none ${note.is_liked ? "text-red-500" : "text-gray-500 hover:text-red-500"}`}
+                                                            className={`flex items-center gap-1.5 transition-colors focus:outline-none font-bold ${note.is_liked ? "text-red-500" : "text-gray-600 hover:text-red-500"}`}
                                                             title={`${note.likes} suka`}
                                                         >
                                                             <Heart
-                                                                className={`w-[15px] h-[15px] ${note.is_liked ? "fill-red-500" : ""}`}
-                                                                strokeWidth={2}
+                                                                className={`w-[15px] h-[15px] ${note.is_liked ? "fill-red-600" : "text-gray-600"}`}
+                                                                strokeWidth={2.5}
                                                             />
-                                                            <span className="text-[13px] font-['Manrope'] font-medium">
+                                                            <span className="text-[13px] font-['Manrope']">
                                                                 {note.likes}
                                                             </span>
                                                         </button>
@@ -750,14 +750,14 @@ export default function ExplorePage() {
                                                             onClick={(e) =>
                                                                 e.stopPropagation()
                                                             }
-                                                            className="flex items-center gap-1.5 text-gray-500 hover:text-gray-900 transition-colors focus:outline-none"
+                                                            className="flex items-center gap-1.5 text-gray-600 hover:text-gray-950 transition-colors focus:outline-none font-bold"
                                                             title={`${note.comments} komentar`}
                                                         >
                                                             <MessageCircle
-                                                                className="w-[15px] h-[15px]"
-                                                                strokeWidth={2}
+                                                                className="w-[15px] h-[15px] text-gray-600"
+                                                                strokeWidth={2.5}
                                                             />
-                                                            <span className="text-[13px] font-['Manrope'] font-medium">
+                                                            <span className="text-[13px] font-['Manrope']">
                                                                 {note.comments}
                                                             </span>
                                                         </Link>
@@ -769,13 +769,11 @@ export default function ExplorePage() {
                                                                     note.id,
                                                                 );
                                                             }}
-                                                            className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? "text-primary scale-110" : "opacity-0 md:opacity-100 text-gray-400 hover:text-primary md:group-hover:opacity-100"}`}
+                                                            className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? "text-primary scale-110" : "opacity-0 md:opacity-100 text-gray-500 hover:text-primary md:group-hover:opacity-100"}`}
                                                         >
                                                             <Bookmark
                                                                 className={`w-[18px] h-[18px] transition-all duration-300 ${isBookmarked(note.id) ? "fill-primary" : ""}`}
-                                                                strokeWidth={
-                                                                    1.5
-                                                                }
+                                                                strokeWidth={2}
                                                             />
                                                         </button>
                                                     </div>
@@ -906,7 +904,7 @@ export default function ExplorePage() {
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-gray-400 font-['Manrope'] text-sm">
+                                        <p className="text-gray-700 font-['Manrope'] text-sm font-bold">
                                             Belum ada pakar terdaftar.
                                         </p>
                                     )}
@@ -935,7 +933,7 @@ export default function ExplorePage() {
                                             className="px-3.5 py-2.5 bg-white border border-gray-100 hover:border-gray-300 hover:bg-gray-50 text-gray-600 rounded-2xl font-['Manrope'] text-[13px] font-semibold transition-colors truncate max-w-full text-left focus:outline-none"
                                         >
                                             <Search
-                                                className="w-3.5 h-3.5 inline-block mr-1.5 text-gray-400"
+                                                className="w-3.5 h-3.5 inline-block mr-1.5 text-gray-600"
                                                 strokeWidth={2.5}
                                             />{" "}
                                             {term}
@@ -945,7 +943,7 @@ export default function ExplorePage() {
                             </div>
 
                             {/* Quick Links */}
-                            <div className="pt-2 flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-['Manrope'] font-semibold text-gray-400">
+                            <div className="pt-2 flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-['Manrope'] font-bold text-gray-700">
                                 <Link
                                     to="#"
                                     className="hover:text-gray-900 transition-colors"
@@ -1162,8 +1160,8 @@ export default function ExplorePage() {
 
                         {/* Tag Input Autocomplete */}
                         <div className="relative group" ref={filterTagInputRef}>
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors">
-                                <Search className="w-[18px] h-[18px]" />
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-primary transition-colors">
+                                <Search className="w-5 h-5" strokeWidth={2.5} />
                             </div>
                             <input
                                 type="text"
@@ -1184,13 +1182,13 @@ export default function ExplorePage() {
                                         setIsTagSuggestionsOpen(false);
                                     }
                                 }}
-                                className="w-full pl-11 pr-4 py-3.5 bg-white border border-gray-200 rounded-[14px] font-['Manrope'] text-[14px] focus:outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/5 transition-all text-gray-900 placeholder:text-gray-400"
+                                className="w-full pl-11 pr-4 py-3.5 bg-white border border-gray-200 rounded-[14px] font-['Manrope'] text-[14px] focus:outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/5 transition-all text-gray-900 placeholder:text-gray-500"
                             />
                             
                             {/* Suggestions Dropdown */}
                             {isTagSuggestionsOpen && filterTagSuggestions.length > 0 && (
                                 <div className="absolute w-full mt-2 bg-white rounded-[14px] border border-gray-100 shadow-xl overflow-hidden z-[110]">
-                                    <div className="px-3 py-2 text-[11px] font-bold text-gray-400 uppercase tracking-wider bg-gray-50/50">
+                                    <div className="px-3 py-2 text-[11px] font-bold text-gray-600 uppercase tracking-wider bg-gray-100/50">
                                         Saran Topik
                                     </div>
                                     <ul className="max-h-48 overflow-y-auto no-scrollbar py-1">
@@ -1217,7 +1215,7 @@ export default function ExplorePage() {
                                 </div>
                             )}
                         </div>
-                        <p className="text-xs text-gray-400 mt-2 font-['Manrope']">Tekan <b>Enter</b> untuk menambahkan topik kustom jika tidak ada di saran.</p>
+                        <p className="text-xs text-gray-700 mt-2 font-['Manrope'] font-bold">Tekan <b>Enter</b> untuk menambahkan topik kustom jika tidak ada di saran.</p>
                     </div>
                 </div>
 

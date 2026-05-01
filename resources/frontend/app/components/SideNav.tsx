@@ -66,7 +66,7 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
                       : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200/60'
                   }`}
                 >
-                  <item.icon className={`shrink-0 transition-all duration-200 ${active ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-500 group-hover:text-gray-900'}`} strokeWidth={active ? 2.5 : 2} />
+                  <item.icon className={`shrink-0 transition-all duration-200 ${active ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-700 group-hover:text-gray-900'}`} strokeWidth={active ? 2.5 : 2} />
                   <span className={`font-['Manrope'] text-[14px] truncate mt-[1px] ${active ? 'font-bold' : 'font-medium'}`}>
                     {item.label}
                   </span>
@@ -76,7 +76,7 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
          </div>
 
          {/* Stats Section */}
-         <div className="mt-8 mb-2 px-6 text-[11px] font-['Lexend_Deca'] font-extrabold text-gray-400 tracking-wider">
+         <div className="mt-8 mb-2 px-6 text-[11px] font-['Lexend_Deca'] font-black text-gray-600 tracking-wider">
             WAWASAN
          </div>
          <div className="px-3 space-y-1">
@@ -86,14 +86,14 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
                 isActive('/stats') ? 'bg-primary/10 text-primary' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
               }`}
             >
-              <Hash className={`shrink-0 transition-all duration-200 ${isActive('/stats') ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-500 group-hover:text-gray-900'}`} strokeWidth={isActive('/stats') ? 2.5 : 2} />
+              <Hash className={`shrink-0 transition-all duration-200 ${isActive('/stats') ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-700 group-hover:text-gray-900'}`} strokeWidth={isActive('/stats') ? 2.5 : 2} />
               <span className={`font-['Manrope'] text-[14px] truncate mt-[1px] ${isActive('/stats') ? 'font-bold' : 'font-medium'}`}>Statistik Belajar</span>
             </Link>
          </div>
 
          {/* Curated / Pakar Choice */}
          <div className="mt-8 mb-2 px-6 flex items-center gap-1.5 selection-none">
-            <span className="text-[11px] font-['Lexend_Deca'] font-extrabold text-gray-400 tracking-wider">PAKAR CHOICE</span>
+            <span className="text-[11px] font-['Lexend_Deca'] font-black text-gray-600 tracking-wider">PAKAR CHOICE</span>
             <Star className="w-[10px] h-[10px] text-amber-500 fill-amber-500 mb-[1px]" />
          </div>
           {pakarChoiceNotes.length > 0 ? (
@@ -105,7 +105,7 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
                    className="flex items-start gap-3 px-3 py-[7px] rounded-[8px] transition-all duration-200 text-gray-600 hover:bg-gray-100 hover:text-gray-900 group w-full"
                  >
                    <div className="mt-[2.5px]">
-                     <FileText className="w-[16px] h-[16px] text-gray-300 group-hover:text-amber-500 transition-colors shrink-0" strokeWidth={2} />
+                     <FileText className="w-[16px] h-[16px] text-gray-500 group-hover:text-amber-500 transition-colors shrink-0" strokeWidth={2.5} />
                    </div>
                    <span className="font-['Manrope'] text-[14px] font-medium truncate overflow-hidden text-ellipsis w-full leading-tight">
                      {note.title}
@@ -114,7 +114,7 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
                ))}
             </div>
           ) : (
-            <div className="px-5 py-2 text-[12px] font-['Manrope'] text-gray-400">Belum ada pilihan pakar</div>
+            <div className="px-5 py-2 text-[12px] font-['Manrope'] text-gray-600 font-bold">Belum ada pilihan pakar</div>
           )}
       </div>
 

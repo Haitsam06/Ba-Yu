@@ -10,6 +10,7 @@ class Notification extends Model
 
     protected $fillable = [
         'user_id',   
+        'actor_id',
         'title',     
         'message',  
         'type',      
@@ -23,6 +24,11 @@ class Notification extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function actor()
+    {
+        return $this->belongsTo(User::class, 'actor_id');
     }
 }

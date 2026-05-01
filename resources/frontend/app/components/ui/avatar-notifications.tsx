@@ -27,6 +27,11 @@ interface NotificationItem {
     link?: string;
     is_read: boolean;
     created_at: string;
+    actor?: {
+        _id: string;
+        name: string;
+        avatar: string;
+    };
 }
 
 export default function AvatarNotifications() {
@@ -126,9 +131,9 @@ export default function AvatarNotifications() {
             (new Date().getTime() - new Date(dateStr).getTime()) / 60000,
         );
         if (diffMin < 1) return "Baru saja";
-        if (diffMin < 60) return `${diffMin} menit`;
+        if (diffMin < 60) return `${diffMin}m`;
         const diffHr = Math.floor(diffMin / 60);
-        if (diffHr < 24) return `${diffHr} jam`;
+        if (diffHr < 24) return `${diffHr}j`;
         return new Date(dateStr).toLocaleDateString("id-ID", {
             day: "numeric",
             month: "short",
@@ -175,38 +180,38 @@ export default function AvatarNotifications() {
                 sideOffset={8}
             >
                 <div className="max-h-[350px] overflow-y-auto scrollbar-hide">
-                    <div className="flex justify-between items-center px-4 py-3 bg-gray-50/90 backdrop-blur-md sticky top-0 z-10 border-b border-gray-100">
-                        <div>
-                            <h2 className="text-sm font-bold font-['Lexend_Deca'] text-gray-900">
+                    <div className="flex justify-between items-center px-5 py-4 bg-white sticky top-0 z-10 border-b border-gray-50">
+                        <div className="flex items-center gap-2">
+                            <h2 className="text-[16px] font-bold font-['Lexend_Deca'] text-gray-900 tracking-tight">
                                 Notifikasi
                             </h2>
-                            <p className="text-[11px] text-gray-500 font-['Manrope']">
-                                {hasNotifications
-                                    ? `${unreadCount} belum dibaca`
-                                    : "Semua sudah dibaca"}
-                            </p>
+                            {hasNotifications && (
+                                <span className="bg-primary text-white text-[10px] font-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                                    {unreadCount}
+                                </span>
+                            )}
                         </div>
                         {hasNotifications && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
+                            <button
                                 onClick={clearAll}
-                                className="h-7 w-7 rounded-full text-gray-500 hover:text-gray-900 bg-white shadow-sm border border-gray-200"
-                                title="Tandai semua dibaca"
+                                className="text-[12px] font-bold text-primary hover:text-indigo-800 transition-colors font-['Manrope']"
                             >
-                                <CheckCheck className="h-3.5 w-3.5" />
-                            </Button>
+                                Tandai dibaca
+                            </button>
                         )}
                     </div>
+                    
                     {notifications.length === 0 ? (
-                        <div className="p-8 text-sm text-gray-400 text-center font-['Manrope'] flex flex-col items-center gap-2">
-                            <Bell className="w-8 h-8 text-gray-200" />
-                            Tidak ada notifikasi
+                        <div className="py-12 px-6 text-sm text-gray-400 text-center font-['Manrope'] flex flex-col items-center gap-3">
+                            <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center">
+                                <Bell className="w-6 h-6 text-gray-300" />
+                            </div>
+                            <p className="font-medium">Belum ada kabar terbaru</p>
                         </div>
                     ) : (
-                        <ul className="divide-y divide-gray-50">
-                            {notifications.map((item) => (
-                                <li
+                        <div className="flex flex-col">
+                            {notifications.slice(0, 8).map((item) => (
+                                <div
                                     key={item._id}
                                     onClick={() =>
                                         handleMarkAsRead(
@@ -217,68 +222,86 @@ export default function AvatarNotifications() {
                                         )
                                     }
                                     className={cn(
-                                        "flex items-start gap-3 p-4 transition-colors cursor-pointer",
-                                        !item.is_read
-                                            ? "bg-primary/[0.03] hover:bg-primary/[0.05]"
-                                            : "hover:bg-gray-50/50",
+                                        "group relative flex items-start gap-4 p-4 hover:bg-gray-50 cursor-pointer transition-all duration-200 border-b border-gray-50 last:border-0",
+                                        !item.is_read && "bg-primary/[0.03]"
                                     )}
                                 >
-                                    <Avatar
-                                        className={cn(
-                                            "h-9 w-9 mt-0.5 border border-gray-100 shadow-sm",
-                                            item.type === "sertifikasi"
-                                                ? "bg-indigo-50"
-                                                : item.type === "report"
-                                                  ? "bg-rose-50"
-                                                  : item.type === "verifikasi"
-                                                    ? "bg-emerald-50"
-                                                    : item.type === "like"
-                                                      ? "bg-pink-50"
-                                                      : item.type === "comment"
-                                                        ? "bg-blue-50"
-                                                        : item.type === "follow"
-                                                          ? "bg-purple-50"
-                                                          : "bg-gray-50",
-                                        )}
-                                    >
-                                        <AvatarFallback className="bg-transparent">
-                                            {getIcon(item.type)}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div className="flex flex-col flex-1 min-w-0">
-                                        <div className="flex justify-between items-start mb-0.5">
-                                            <span
-                                                className={cn(
-                                                    "font-semibold text-[13px] font-['Lexend_Deca'] line-clamp-1",
-                                                    !item.is_read
-                                                        ? "text-gray-900"
-                                                        : "text-gray-700",
-                                                )}
-                                            >
-                                                {item.title}
-                                            </span>
-                                            <span className="ml-2 text-[10px] text-gray-400 font-['Manrope'] whitespace-nowrap shrink-0 mt-0.5">
-                                                {timeAgo(item.created_at)}
-                                            </span>
+                                    
+                                    <div className="relative shrink-0">
+                                        <div
+                                            className={cn(
+                                                "h-11 w-11 rounded-full flex items-center justify-center transition-transform group-hover:scale-105 shadow-sm border border-gray-100 overflow-hidden bg-gray-50",
+                                                !item.is_read && "ring-2 ring-primary ring-offset-1"
+                                            )}
+                                        >
+                                            {item.actor ? (
+                                                <img 
+                                                    src={item.actor.avatar || "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop"} 
+                                                    alt={item.actor.name}
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className={cn(
+                                                    "h-full w-full flex items-center justify-center",
+                                                    item.type === "sertifikasi" ? "bg-indigo-50" :
+                                                    item.type === "report" ? "bg-rose-50" :
+                                                    item.type === "verifikasi" ? "bg-emerald-50" :
+                                                    item.type === "like" ? "bg-pink-50" :
+                                                    item.type === "comment" ? "bg-blue-50" :
+                                                    item.type === "follow" ? "bg-purple-50" : "bg-gray-50"
+                                                )}>
+                                                    {getIcon(item.type)}
+                                                </div>
+                                            )}
                                         </div>
-                                        <span className="text-gray-500 font-['Manrope'] text-[11px] line-clamp-2 leading-relaxed">
-                                            {item.message}
+                                        {/* Mini Type Icon Badge */}
+                                        {item.actor && (
+                                            <div className={cn(
+                                                "absolute -right-0.5 -bottom-0.5 w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm scale-90",
+                                                item.type === "sertifikasi" ? "bg-indigo-500 text-white" :
+                                                item.type === "report" ? "bg-rose-500 text-white" :
+                                                item.type === "verifikasi" ? "bg-emerald-500 text-white" :
+                                                item.type === "like" ? "bg-pink-500 text-white" :
+                                                item.type === "comment" ? "bg-blue-500 text-white" :
+                                                item.type === "follow" ? "bg-purple-500 text-white" : "bg-gray-500 text-white"
+                                            )}>
+                                                {React.cloneElement(getIcon(item.type) as React.ReactElement, { className: "w-2.5 h-2.5 text-white" })}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <div className="flex items-center gap-1.5 min-w-0">
+                                                {!item.is_read && (
+                                                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0"></div>
+                                                )}
+                                                <p className={cn(
+                                                    "text-[13px] leading-snug line-clamp-2",
+                                                    !item.is_read ? "text-gray-900 font-bold" : "text-gray-600 font-medium"
+                                                )}>
+                                                    {item.message}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <span className="text-[11px] text-gray-400 font-medium">
+                                            {timeAgo(item.created_at)}
                                         </span>
                                     </div>
-                                </li>
+                                </div>
                             ))}
-                        </ul>
+                        </div>
                     )}
                 </div>
-                <div className="p-2 border-t border-gray-100 bg-white">
+                <div className="p-3 bg-gray-50/50 border-t border-gray-50">
                     <button
                         onClick={() => {
                             setOpen(false);
                             navigate("/notifications");
                         }}
-                        className="w-full py-2.5 text-[13px] font-semibold text-primary hover:bg-primary/5 hover:text-primary/90 rounded-xl transition-colors font-['Lexend_Deca']"
+                        className="w-full py-2.5 text-[12px] font-bold text-gray-600 hover:text-primary hover:bg-white hover:shadow-sm rounded-xl transition-all duration-200 font-['Lexend_Deca'] border border-transparent hover:border-gray-100"
                     >
-                        Lihat Semua
+                        Lihat Semua Aktivitas
                     </button>
                 </div>
             </PopoverContent>

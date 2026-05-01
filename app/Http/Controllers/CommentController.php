@@ -34,18 +34,19 @@ class CommentController extends Controller
              $post->update(['comments_count' => $count + 1]);
 
              if ($request->parent_comment_id) {
-                 $parentComment = \App\Models\Comment::find($request->parent_comment_id);
+                 $parentComment = Comment::find($request->parent_comment_id);
                  if ($parentComment && $parentComment->user_id && $parentComment->user_id !== Auth::id()) {
                      $parentUserIdStr = is_array($parentComment->user_id) ? (string) current($parentComment->user_id) : (string) $parentComment->user_id;
                      /** @var \App\Models\User $authUser */
                      $authUser = Auth::user();
                      \App\Models\Notification::create([
-                         'user_id' => $parentUserIdStr,
-                         'title'   => 'Seseorang membalas komentarmu',
-                         'message' => $authUser->name . ' membalas: "' . substr($request->input('content'), 0, 50) . '..."',
-                         'type'    => 'comment',
-                         'link'    => '/note/' . $postId . '#comment-' . $comment->_id,
-                         'is_read' => false,
+                         'user_id'  => $parentUserIdStr,
+                         'actor_id' => Auth::id(),
+                         'title'    => 'Seseorang membalas komentarmu',
+                         'message'  => $authUser->name . ' membalas: "' . substr($request->input('content'), 0, 50) . '..."',
+                         'type'     => 'comment',
+                         'link'     => '/note/' . $postId . '#comment-' . $comment->_id,
+                         'is_read'  => false,
                      ]);
                  }
              } else {
@@ -55,12 +56,13 @@ class CommentController extends Controller
                          /** @var \App\Models\User $authUser */
                          $authUser = Auth::user();
                          \App\Models\Notification::create([
-                             'user_id' => $postUserIdStr,
-                             'title'   => 'Komentar Baru di Catatanmu',
-                             'message' => $authUser->name . ' berkomentar: "' . substr($request->input('content'), 0, 50) . '..."',
-                             'type'    => 'comment',
-                             'link'    => '/note/' . $postId . '#comment-' . $comment->_id,
-                             'is_read' => false,
+                             'user_id'  => $postUserIdStr,
+                             'actor_id' => Auth::id(),
+                             'title'    => 'Komentar Baru di Catatanmu',
+                             'message'  => $authUser->name . ' berkomentar: "' . substr($request->input('content'), 0, 50) . '..."',
+                             'type'     => 'comment',
+                             'link'     => '/note/' . $postId . '#comment-' . $comment->_id,
+                             'is_read'  => false,
                          ]);
                      }
                  }
@@ -90,7 +92,7 @@ class CommentController extends Controller
         // Recursively find all descendant replies
         $idsToDelete = [$comment->_id];
         $findChildren = function($parentId) use (&$findChildren, &$idsToDelete) {
-            $children = \App\Models\Comment::where('parent_comment_id', (string)$parentId)->get(['_id']);
+            $children = Comment::where('parent_comment_id', (string)$parentId)->get(['_id']);
             foreach ($children as $child) {
                 $idsToDelete[] = $child->_id;
                 $findChildren($child->_id);
@@ -99,12 +101,12 @@ class CommentController extends Controller
         $findChildren($comment->_id);
 
         // Delete comment and all its nested replies
-        \App\Models\Comment::whereIn('_id', $idsToDelete)->delete();
+        Comment::whereIn('_id', $idsToDelete)->delete();
 
         if ($postId) {
              $post = Post::find($postId);
              if ($post) {
-                  $actualCount = \App\Models\Comment::where('post_id', $postId)->count();
+                  $actualCount = Comment::where('post_id', $postId)->count();
                   $post->update(['comments_count' => $actualCount]);
              }
         }

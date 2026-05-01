@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { MobileLayout } from '../components/MobileLayout';
 import { useNavigate, useSearchParams } from 'react-router';
-import { ArrowLeft, ChevronDown, Tag, Send, Calculator, Plus, X, Image, Film, Code, Minus, Quote, Bold, Italic, Underline, Strikethrough, Highlighter, Link as LinkIcon, Heading1, Heading2 } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Tag, Send, Calculator, Plus, X, Image, Film, Code, Minus, Quote, Bold, Italic, Underline, Strikethrough, Highlighter, Link as LinkIcon, Heading1, Heading2, Loader2, Clock, FileText } from 'lucide-react';
 import { mataPelajaran } from '../data/mockData';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -246,7 +246,7 @@ function FloatingToolbar({ quillRef }: { quillRef: React.RefObject<ReactQuill | 
   };
 
   const btnClass = (active: boolean) =>
-    `w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-200 ${active ? 'bg-primary text-white shadow-sm' : 'text-gray-400 hover:text-white hover:bg-white/10'}`;
+    `w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-200 ${active ? 'bg-primary text-white shadow-sm' : 'text-gray-600 hover:text-white hover:bg-white/10'}`;
 
   return (
     <div
@@ -287,7 +287,7 @@ function FloatingToolbar({ quillRef }: { quillRef: React.RefObject<ReactQuill | 
               <div className="w-px h-6 bg-white/10 mx-0.5" />
               <button
                 onClick={removeHighlight}
-                className="w-7 h-7 rounded-full border border-white/10 hover:border-red-500/50 bg-white/5 flex items-center justify-center text-gray-400 hover:text-red-400 transition-all hover:scale-110"
+                className="w-7 h-7 rounded-full border border-white/20 hover:border-red-500 bg-white/10 flex items-center justify-center text-gray-300 hover:text-red-400 transition-all hover:scale-110"
                 title="Hapus warna"
               >
                 <X className="w-3.5 h-3.5" strokeWidth={3} />
@@ -405,7 +405,7 @@ function FloatingImageToolbar({ quillRef, onEditAlt }: { quillRef: React.RefObje
   };
 
   const btnClass = (active: boolean) =>
-    `w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-200 ${active ? 'bg-primary text-white shadow-sm' : 'text-gray-400 hover:text-white hover:bg-white/10'}`;
+    `w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-200 ${active ? 'bg-primary text-white shadow-sm' : 'text-gray-600 hover:text-white hover:bg-white/10'}`;
 
   return (
     <div
@@ -618,7 +618,7 @@ function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<Re
     { id: 'video', icon: Film, label: 'Video', color: 'text-blue-500' },
     { id: 'code', icon: Code, label: 'Kode', color: 'text-orange-500' },
     { id: 'formula', icon: Calculator, label: 'Rumus', color: 'text-purple-500' },
-    { id: 'divider', icon: Minus, label: 'Pemisah', color: 'text-gray-400' },
+    { id: 'divider', icon: Minus, label: 'Pemisah', color: 'text-gray-600' },
     { id: 'quote', icon: Quote, label: 'Kutipan', color: 'text-amber-500' },
   ];
 
@@ -631,7 +631,7 @@ function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<Re
       <button
         onClick={() => setExpanded(!expanded)}
         className={`w-10 h-10 relative z-10 flex items-center justify-center rounded-full border transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.04)]
-          ${expanded ? 'border-gray-900 bg-gray-900 text-white rotate-45 shadow-lg shadow-gray-900/20' : 'border-gray-200 text-gray-400 hover:text-primary hover:border-primary/30 hover:bg-primary/5 bg-white group'}`}
+          ${expanded ? 'border-gray-900 bg-gray-900 text-white rotate-45 shadow-lg shadow-gray-900/20' : 'border-gray-300 text-gray-600 hover:text-primary hover:border-primary/40 hover:bg-primary/5 bg-white group'}`}
         title="Sisipkan blok"
       >
         <Plus className="w-6 h-6 outline-none transition-transform duration-300 group-hover:scale-110" strokeWidth={2.5} />
@@ -670,6 +670,7 @@ export default function UploadPage() {
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [isLoadingDraft, setIsLoadingDraft] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showFormulaModal, setShowFormulaModal] = useState(false);
   const [formulaInput, setFormulaInput] = useState('');
@@ -703,6 +704,7 @@ export default function UploadPage() {
   useEffect(() => {
     if (draftId) {
       const fetchDraft = async () => {
+        setIsLoadingDraft(true);
         try {
           const res = await axios.get(`/api/v1/posts/${draftId}`);
           const data = res.data.data;
@@ -724,6 +726,8 @@ export default function UploadPage() {
         } catch (error) {
           console.error('Failed to load draft:', error);
           showToast('Gagal memuat draf', 'error');
+        } finally {
+          setIsLoadingDraft(false);
         }
       };
       fetchDraft();
@@ -920,6 +924,24 @@ export default function UploadPage() {
 
   return (
     <MobileLayout showBottomNav={false}>
+      {isLoadingDraft && (
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-[100] flex flex-col items-center justify-center animate-in fade-in duration-300">
+          <div className="relative">
+            <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center animate-bounce">
+              <FileText className="w-8 h-8 text-emerald-600" />
+            </div>
+            <div className="absolute -bottom-1 -right-1">
+              <Loader2 className="w-6 h-6 text-emerald-500 animate-spin" />
+            </div>
+          </div>
+          <h3 className="mt-6 font-['Lexend_Deca'] font-extrabold text-gray-900 text-lg">
+            Menyiapkan Draf...
+          </h3>
+          <p className="mt-2 font-['Manrope'] text-gray-700 font-medium text-sm">
+            Tunggu sebentar, kami sedang mengambil catatan Anda.
+          </p>
+        </div>
+      )}
       <div className="min-h-screen bg-white">
 
         {/* Top Bar */}
@@ -962,9 +984,9 @@ export default function UploadPage() {
                 <h1 className="font-['Lexend_Deca'] font-extrabold text-2xl md:text-3xl text-gray-900 tracking-tight">Story Preview</h1>
                 <button 
                   onClick={() => setShowPreviewModal(false)}
-                  className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+                  className="p-2 text-gray-500 hover:text-gray-950 hover:bg-gray-100 rounded-full transition-colors"
                 >
-                  <X className="w-8 h-8" strokeWidth={2} />
+                  <X className="w-8 h-8" strokeWidth={2.5} />
                 </button>
               </div>
 
@@ -994,16 +1016,16 @@ export default function UploadPage() {
                       <img src={finalThumbnail || extractedThumbnail!} alt="Thumbnail" className={`absolute inset-0 w-full h-full ${thumbnailFit === 'cover' ? 'object-cover' : 'object-contain'}`} />
                     ) : (
                       <>
-                        <h4 className="font-['Manrope'] font-semibold text-gray-500 mb-2">Include a high-quality image in your story to make it more inviting to readers.</h4>
-                        <p className="text-xs text-gray-400 font-['Manrope']">Gambar yang kamu tambahkan di dalam tulisan otomatis akan tampil di sini.</p>
+                        <h4 className="font-['Manrope'] font-bold text-gray-600 mb-2">Include a high-quality image in your story to make it more inviting to readers.</h4>
+                        <p className="text-xs text-gray-500 font-['Manrope'] font-medium">Gambar yang kamu tambahkan di dalam tulisan otomatis akan tampil di sini.</p>
                       </>
                     )}
 
                     {!isCropping && extractedThumbnail && (
                       <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                          <div className="bg-white/95 backdrop-blur-md rounded-lg shadow-sm border border-gray-200 p-1 flex gap-1">
-                            <button onClick={() => { setFinalThumbnail(extractedThumbnail); setThumbnailFit('contain'); }} className={`px-2.5 py-1 text-[11px] font-bold rounded-md transition-colors ${thumbnailFit==='contain' && finalThumbnail === extractedThumbnail ? 'bg-gray-900 text-white':'text-gray-500 hover:bg-gray-100'}`}>Tampil Utuh</button>
-                            <button onClick={() => setIsCropping(true)} className="px-2.5 py-1 text-[11px] font-bold rounded-md bg-white text-gray-900 border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors">Sesuaikan Ruang Crop</button>
+                            <button onClick={() => { setFinalThumbnail(extractedThumbnail); setThumbnailFit('contain'); }} className={`px-2.5 py-1 text-[11px] font-bold rounded-md transition-colors ${thumbnailFit==='contain' && finalThumbnail === extractedThumbnail ? 'bg-gray-900 text-white':'text-gray-600 hover:bg-gray-100'}`}>Tampil Utuh</button>
+                            <button onClick={() => setIsCropping(true)} className="px-2.5 py-1 text-[11px] font-bold rounded-md bg-white text-gray-950 border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors">Sesuaikan Ruang Crop</button>
                          </div>
                       </div>
                     )}
@@ -1028,7 +1050,7 @@ export default function UploadPage() {
                     </div>
                   )}
 
-                  <div className="space-y-4 font-['Manrope'] text-gray-500 border-b border-gray-100 pb-6 group">
+                  <div className="space-y-4 font-['Manrope'] text-gray-700 border-b border-gray-100 pb-6 group">
                     <div className="relative">
                       <input 
                         type="text"
@@ -1044,12 +1066,12 @@ export default function UploadPage() {
                            setDescriptionEdited(true);
                         }}
                         placeholder="Tulis subjudul/ringkasan singkat yang menarik..."
-                        className="w-full text-sm leading-relaxed border-b border-transparent hover:border-gray-300 focus:border-primary focus:outline-none bg-transparent transition-colors resize-none overflow-hidden min-h-[60px]"
+                        className="w-full text-sm leading-relaxed border-b border-transparent hover:border-gray-300 focus:border-primary focus:outline-none bg-transparent transition-colors resize-none overflow-hidden min-h-[60px] text-gray-700 placeholder:text-gray-500 font-bold"
                         rows={3}
                       />
                     </div>
                   </div>
-                  <p className="text-[13px] text-gray-400 font-['Manrope'] font-medium mt-4">
+                  <p className="text-[13px] text-gray-500 font-['Manrope'] font-bold mt-4">
                     Note: Perubahan metadata di sini akan memengaruhi cara catatanmu ditemukan oleh pelajar lain di Ba-Yu.
                   </p>
                 </div>
@@ -1059,8 +1081,8 @@ export default function UploadPage() {
                   
                   {/* Mapel Row */}
                   <div className="mb-8" ref={mapelDropdownRef}>
-                     <p className="font-['Lexend_Deca'] font-bold text-gray-900 text-[15px] mb-2">Kategori Mapel <span className="text-red-500">*</span></p>
-                     <p className="text-[13px] text-gray-500 font-['Manrope'] mb-3">Pilih satu kategori utama yang paling sesuai.</p>
+                     <p className="font-['Lexend_Deca'] font-extrabold text-gray-900 text-[15px] mb-2">Kategori Mapel <span className="text-red-500">*</span></p>
+                     <p className="text-[13px] text-gray-600 font-['Manrope'] mb-3 font-bold">Pilih satu kategori utama yang paling sesuai.</p>
                      
                      <div className="relative">
                         <div 
@@ -1075,9 +1097,9 @@ export default function UploadPage() {
                                  setIsMapelDropdownOpen(true);
                               }}
                               placeholder="Cari kategori mapel..."
-                              className="w-full bg-transparent border-none outline-none text-[14px] font-['Manrope'] text-gray-900 placeholder:text-gray-400"
+                              className="w-full bg-transparent border-none outline-none text-[14px] font-['Manrope'] text-gray-950 placeholder:text-gray-500 font-bold"
                            />
-                           <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isMapelDropdownOpen ? 'rotate-180' : ''}`} />
+                           <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${isMapelDropdownOpen ? 'rotate-180' : ''}`} strokeWidth={2.5} />
                         </div>
 
                         {isMapelDropdownOpen && (
@@ -1090,7 +1112,7 @@ export default function UploadPage() {
                                      return acc;
                                  }, {} as Record<string, typeof mataPelajaran[0][]>)).map(([category, items]) => (
                                     <div key={category} className="pb-1 last:pb-0">
-                                       <div className="sticky top-0 bg-white/95 backdrop-blur-sm px-4 py-2 text-[11px] font-['Lexend_Deca'] font-bold text-gray-400 uppercase tracking-wider z-10 border-b border-gray-50">
+                                       <div className="sticky top-0 bg-white/95 backdrop-blur-sm px-4 py-2 text-[11px] font-['Lexend_Deca'] font-extrabold text-gray-500 uppercase tracking-wider z-10 border-b border-gray-100">
                                           {category}
                                        </div>
                                        <div className="py-1">
@@ -1115,8 +1137,8 @@ export default function UploadPage() {
                                  ))
                               ) : (
                                  <div className="px-4 py-4 text-center">
-                                    <p className="text-[13px] text-gray-500 font-['Manrope']">Kategori tidak ditemukan.</p>
-                                    <p className="text-[12px] text-gray-400 font-['Manrope'] mt-1">Silakan pilih kategori yang terdekat, lalu tambahkan detailnya di bagian Tags.</p>
+                                    <p className="text-[13px] text-gray-600 font-['Manrope'] font-bold">Kategori tidak ditemukan.</p>
+                                    <p className="text-[12px] text-gray-500 font-['Manrope'] mt-1 font-medium">Silakan pilih kategori yang terdekat, lalu tambahkan detailnya di bagian Tags.</p>
                                  </div>
                               )}
                            </div>
@@ -1126,18 +1148,18 @@ export default function UploadPage() {
 
                   {/* Pendidikan & Kelas Row */}
                   <div className="mb-8">
-                     <p className="font-['Lexend_Deca'] font-bold text-gray-900 text-[15px] mb-2">Tingkat Pendidikan</p>
-                     <p className="text-[13px] text-gray-500 font-['Manrope'] mb-3">Tentukan audiens kelas sasaran catatan ini.</p>
+                     <p className="font-['Lexend_Deca'] font-extrabold text-gray-900 text-[15px] mb-2">Tingkat Pendidikan</p>
+                     <p className="text-[13px] text-gray-600 font-['Manrope'] mb-3 font-bold">Tentukan audiens kelas sasaran catatan ini.</p>
                      
                      <div className="flex gap-2 flex-wrap mb-3">
                       {jenjangOptions.map((j) => (
                         <button
                           key={j.id}
                           onClick={() => setMeta({ ...meta, jenjang: j.id, kelas: j.kelas[0], semester: 1 })}
-                          className={`px-3 py-1 rounded-full text-[12px] font-['Lexend_Deca'] font-bold border transition-all duration-200 ${
+                          className={`px-3 py-1 rounded-full text-[12px] font-['Lexend_Deca'] font-black border transition-all duration-200 ${
                             meta.jenjang === j.id
                               ? 'bg-gray-900 text-white border-gray-900 shadow-md shadow-gray-900/10'
-                              : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:text-gray-700'
+                              : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400 hover:text-gray-900'
                           }`}
                         >
                           {j.label}
@@ -1170,8 +1192,8 @@ export default function UploadPage() {
 
                   {/* Tags Row */}
                   <div className="mb-10">
-                    <p className="font-['Lexend_Deca'] font-bold text-gray-900 text-[15px] mb-2">Tags / Keywords</p>
-                    <p className="text-[13px] text-gray-500 font-['Manrope'] mb-3">Tambahkan hingga 5 kata kunci agar mudah dicari.</p>
+                    <p className="font-['Lexend_Deca'] font-extrabold text-gray-900 text-[15px] mb-2">Tags / Keywords</p>
+                    <p className="text-[13px] text-gray-600 font-['Manrope'] mb-3 font-bold">Tambahkan hingga 5 kata kunci agar mudah dicari.</p>
                     
                     <input
                       type="text"
@@ -1179,15 +1201,15 @@ export default function UploadPage() {
                       onChange={(e) => setTagInput(e.target.value)}
                       onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddTag(); }}}
                       placeholder="Add a topic (press Enter)..."
-                      className="w-full px-4 py-3 bg-gray-50 border border-transparent hover:border-gray-200 rounded-lg text-[14px] font-['Manrope'] focus:outline-none focus:bg-white focus:border-primary/50 transition-all mb-3"
+                      className="w-full px-4 py-3 bg-gray-50 border border-transparent hover:border-gray-200 rounded-lg text-[14px] font-['Manrope'] focus:outline-none focus:bg-white focus:border-primary/50 transition-all mb-3 text-gray-950 placeholder:text-gray-500 font-bold"
                     />
                     
                     <div className="flex flex-wrap gap-2">
                        {meta.tags.map((tag) => (
-                        <span key={tag} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 text-gray-600 rounded text-[12px] font-['Manrope'] font-semibold shrink-0">
+                        <span key={tag} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 text-gray-700 rounded text-[12px] font-['Manrope'] font-bold shrink-0">
                           {tag}
                           <button onClick={() => handleRemoveTag(tag)} className="hover:text-red-500 transition-colors">
-                            <X className="w-3.5 h-3.5" strokeWidth={2.5} />
+                            <X className="w-3.5 h-3.5" strokeWidth={3} />
                           </button>
                         </span>
                       ))}
@@ -1206,8 +1228,8 @@ export default function UploadPage() {
                      <button
                         onClick={handleSaveDraft}
                         disabled={isSavingDraft || isSubmitting}
-                        className="text-[14px] font-['Manrope'] text-gray-500 hover:text-gray-900 transition-colors disabled:opacity-50"
-                     >
+                        className="text-[14px] font-['Manrope'] text-gray-600 font-bold hover:text-gray-950 transition-colors disabled:opacity-50"
+                      >
                         {isSavingDraft ? 'Menyimpan...' : 'Simpan draf'}
                      </button>
                   </div>
@@ -1227,14 +1249,14 @@ export default function UploadPage() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Judul Catatan..."
-            className="w-full text-[40px] md:text-[48px] font-['Lexend_Deca'] font-extrabold text-gray-900 placeholder:text-gray-100 focus:outline-none mt-12 mb-2 leading-[1.1] tracking-[-0.03em] transition-all"
+            className="w-full text-[40px] md:text-[48px] font-['Lexend_Deca'] font-extrabold text-gray-900 placeholder:text-gray-300 focus:outline-none mt-12 mb-2 leading-[1.1] tracking-[-0.03em] transition-all"
             maxLength={200}
           />
           <div className="flex items-center gap-3 mb-8">
             <div className="h-1 w-12 bg-primary/20 rounded-full overflow-hidden">
                <div className="h-full bg-primary transition-all duration-300" style={{ width: `${(title.length / 200) * 100}%` }}></div>
             </div>
-            <p className="text-[11px] font-['Lexend_Deca'] font-bold text-gray-300 uppercase tracking-widest">{title.length}/200 Karakter</p>
+            <p className="text-[11px] font-['Lexend_Deca'] font-extrabold text-gray-600 uppercase tracking-widest">({title.length}/200 Karakter)</p>
           </div>
 
           {/* Editor */}
@@ -1242,7 +1264,7 @@ export default function UploadPage() {
             <style dangerouslySetInnerHTML={{ __html: `
               .notion-editor .ql-container.ql-snow { border: none !important; font-family: 'Manrope', sans-serif; font-size: 17px; }
               .notion-editor .ql-editor { padding: 0 !important; min-height: 500px; line-height: 1.9; color: #1f2937; }
-              .notion-editor .ql-editor.ql-blank::before { color: #d1d5db; font-style: normal; font-family: 'Manrope', sans-serif; left: 0 !important; right: 0 !important; }
+              .notion-editor .ql-editor.ql-blank::before { color: #9ca3af; font-style: normal; font-family: 'Manrope', sans-serif; left: 0 !important; right: 0 !important; }
               .notion-editor .ql-editor h1 { font-family: 'Lexend Deca', sans-serif; font-size: 1.75em; font-weight: 700; margin: 1em 0 0.4em; color: #111827; }
               .notion-editor .ql-editor h2 { font-family: 'Lexend Deca', sans-serif; font-size: 1.35em; font-weight: 700; margin: 0.8em 0 0.3em; color: #1f2937; }
               .notion-editor .ql-editor h3 { font-family: 'Lexend Deca', sans-serif; font-size: 1.15em; font-weight: 600; margin: 0.6em 0 0.3em; color: #374151; }
@@ -1311,8 +1333,8 @@ export default function UploadPage() {
           <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setShowFormulaModal(false)}>
             <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl" onClick={(e) => e.stopPropagation()}>
               <div className="p-5 border-b border-gray-100">
-                <h3 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900">Sisipkan Rumus</h3>
-                <p className="text-sm font-['Manrope'] text-gray-400 mt-1">Pilih rumus cepat atau tulis sendiri pakai LaTeX</p>
+                <h3 className="font-['Lexend_Deca'] font-extrabold text-lg text-gray-900">Sisipkan Rumus</h3>
+                <p className="text-sm font-['Manrope'] text-gray-600 font-bold mt-1">Pilih rumus cepat atau tulis sendiri pakai LaTeX</p>
               </div>
 
               {/* Preset Tabs */}
@@ -1322,8 +1344,8 @@ export default function UploadPage() {
                     <button
                       key={cat}
                       onClick={() => setFormulaTab(cat)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-['Manrope'] font-semibold whitespace-nowrap transition-colors ${
-                        formulaTab === cat ? 'bg-primary text-white' : 'text-gray-500 hover:bg-gray-100'
+                      className={`px-3 py-1.5 rounded-lg text-xs font-['Manrope'] font-black whitespace-nowrap transition-colors ${
+                        formulaTab === cat ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100'
                       }`}
                     >
                       {cat}
@@ -1339,7 +1361,7 @@ export default function UploadPage() {
                       onClick={() => insertFormula(preset.latex)}
                       className="text-left p-3 rounded-xl border border-gray-200 hover:border-primary hover:bg-primary/5 transition-colors group overflow-hidden"
                     >
-                      <p className="text-xs font-['Manrope'] font-semibold text-gray-500 mb-1.5">{preset.label}</p>
+                      <p className="text-xs font-['Manrope'] font-bold text-gray-600 mb-1.5">{preset.label}</p>
                       <div className="text-sm overflow-x-auto overflow-y-hidden" dangerouslySetInnerHTML={{ __html: katex.renderToString(preset.latex, { throwOnError: false }) }} />
                     </button>
                   ))}
@@ -1348,7 +1370,7 @@ export default function UploadPage() {
 
               {/* Custom Input */}
               <div className="p-5 border-t border-gray-100 mt-3">
-                <label className="block text-xs font-['Manrope'] font-semibold text-gray-500 mb-2">Atau tulis LaTeX sendiri</label>
+                <label className="block text-xs font-['Manrope'] font-black text-gray-600 mb-2 uppercase">Atau tulis LaTeX sendiri</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -1368,7 +1390,7 @@ export default function UploadPage() {
                 </div>
                 {formulaInput.trim() && (
                   <div className="mt-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
-                    <p className="text-[10px] font-['Manrope'] text-gray-400 mb-1.5 uppercase tracking-wide">Preview</p>
+                    <p className="text-[10px] font-['Manrope'] text-gray-700 mb-1.5 uppercase tracking-wide font-black">Preview</p>
                     <div dangerouslySetInnerHTML={{ __html: katex.renderToString(formulaInput, { throwOnError: false }) }} />
                   </div>
                 )}
@@ -1376,7 +1398,7 @@ export default function UploadPage() {
 
               {/* Close */}
               <div className="p-4 border-t border-gray-100 flex justify-end">
-                <button onClick={() => setShowFormulaModal(false)} className="px-4 py-2 text-sm font-['Manrope'] font-medium text-gray-500 hover:text-gray-700 transition-colors">
+                <button onClick={() => setShowFormulaModal(false)} className="px-4 py-2 text-sm font-['Manrope'] font-bold text-gray-600 hover:text-gray-950 transition-colors">
                   Batal
                 </button>
               </div>
@@ -1390,8 +1412,8 @@ export default function UploadPage() {
             <div className="bg-white rounded-2xl w-full max-w-md shadow-xl" onClick={(e) => e.stopPropagation()}>
               <div className="p-5 border-b border-gray-100 flex items-center justify-between">
                 <div>
-                  <h3 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900">Alternative text</h3>
-                  <p className="text-[13px] font-['Manrope'] text-gray-400 mt-1">Deskripsikan gambar ini untuk pembaca dengan gangguan penglihatan</p>
+                  <h3 className="font-['Lexend_Deca'] font-extrabold text-lg text-gray-900">Alternative text</h3>
+                  <p className="text-[13px] font-['Manrope'] text-gray-600 font-bold mt-1">Deskripsikan gambar ini untuk pembaca dengan gangguan penglihatan</p>
                 </div>
                 <button onClick={() => setAltModalParams(null)} className="p-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors"><X className="w-5 h-5"/></button>
               </div>
@@ -1404,7 +1426,7 @@ export default function UploadPage() {
                 />
               </div>
               <div className="p-4 border-t border-gray-100 flex justify-end gap-2">
-                <button onClick={() => setAltModalParams(null)} className="px-5 py-2 text-sm font-['Manrope'] font-semibold text-gray-500 hover:bg-gray-50 rounded-xl transition-colors">Batal</button>
+                <button onClick={() => setAltModalParams(null)} className="px-5 py-2 text-sm font-['Manrope'] font-bold text-gray-600 hover:bg-gray-50 rounded-xl transition-colors">Batal</button>
                 <button onClick={() => {
                   const quill = quillRef.current?.getEditor();
                   if (quill) quill.formatText(altModalParams.index, 1, 'alt', altModalParams.text);
@@ -1418,7 +1440,7 @@ export default function UploadPage() {
         {/* Bottom hint — sticky so it respects sidebar layout */}
         {!canOpenPreview && (
           <div className="sticky bottom-0 bg-white/90 backdrop-blur-md border-t border-gray-100 py-3 z-10 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <p className="text-sm font-['Manrope'] text-gray-400 text-center px-4">
+            <p className="text-sm font-['Manrope'] text-gray-600 font-bold text-center px-4">
               {!title.trim() ? '✏️  Mulai dengan menulis judul' : !hasContent ? '📝  Tulis isi catatan' : ''}
             </p>
           </div>

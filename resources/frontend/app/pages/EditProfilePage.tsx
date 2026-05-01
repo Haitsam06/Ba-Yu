@@ -401,9 +401,9 @@ export default function EditProfilePage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-['Manrope'] font-bold text-gray-700 mb-2">
+                                <label className="block text-sm font-['Manrope'] font-black text-gray-900 mb-2">
                                     Nama Lengkap{" "}
-                                    <span className="text-red-500">*</span>
+                                    <span className="text-red-600 font-black">*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -421,7 +421,7 @@ export default function EditProfilePage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-['Manrope'] font-bold text-gray-700 mb-2">
+                                <label className="block text-sm font-['Manrope'] font-black text-gray-900 mb-2">
                                     Bio Singkat
                                 </label>
                                 <textarea
@@ -437,7 +437,7 @@ export default function EditProfilePage() {
                                     placeholder="Ceritakan minat belajarmu atau tujuanmu..."
                                     disabled={loading}
                                 />
-                                <p className="font-['Manrope'] text-xs text-gray-400 mt-2 text-right">
+                                <p className="font-['Manrope'] text-xs text-gray-600 font-bold mt-2 text-right">
                                     {formData.bio.length}/255 karakter
                                 </p>
                             </div>
@@ -453,7 +453,7 @@ export default function EditProfilePage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-['Manrope'] font-bold text-gray-700 mb-2">
+                                <label className="block text-sm font-['Manrope'] font-black text-gray-900 mb-2">
                                     Jenjang Pendidikan Terkini
                                 </label>
                                 <div className="relative">
@@ -489,7 +489,7 @@ export default function EditProfilePage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-['Manrope'] font-bold text-gray-700 mb-2">
+                                <label className="block text-sm font-['Manrope'] font-black text-gray-900 mb-2">
                                     Asal Sekolah / Universitas
                                 </label>
                                 <input
@@ -518,7 +518,7 @@ export default function EditProfilePage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-['Manrope'] font-bold text-gray-700 mb-2">
+                                <label className="block text-sm font-['Manrope'] font-bold text-gray-900 mb-2">
                                     Alamat Email
                                 </label>
                                 <input
@@ -527,14 +527,14 @@ export default function EditProfilePage() {
                                     readOnly
                                     className="w-full px-4 py-3.5 bg-gray-100/70 border border-transparent text-gray-500 rounded-2xl font-['Manrope'] text-[15px] cursor-not-allowed"
                                 />
-                                <p className="font-['Manrope'] text-xs text-gray-400 mt-2">
+                                <p className="font-['Manrope'] text-xs text-gray-600 font-bold mt-2">
                                     Email utama tidak dapat diubah dari panel
                                     ini.
                                 </p>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-['Manrope'] font-bold text-gray-700 mb-2">
+                                <label className="block text-sm font-['Manrope'] font-bold text-gray-900 mb-2">
                                     Nomor Handphone (Opsional)
                                 </label>
                                 <input

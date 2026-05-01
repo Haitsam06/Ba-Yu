@@ -24,7 +24,7 @@ export default function SettingsPage() {
           <h1 className="text-foreground font-['Lexend_Deca'] font-bold text-2xl mb-1">
             Pengaturan
           </h1>
-          <p className="text-muted-foreground font-['Manrope'] text-sm">
+          <p className="text-gray-700 font-['Manrope'] text-sm font-bold">
             Kelola akun dan preferensi kamu
           </p>
         </div>
@@ -58,7 +58,7 @@ export default function SettingsPage() {
 
           {/* Akun Section */}
           <div className="mb-6">
-            <h3 className="font-['Lexend_Deca'] font-semibold text-sm text-muted-foreground mb-3 px-1">
+            <h3 className="font-['Lexend_Deca'] font-black text-xs text-gray-950 uppercase tracking-widest mb-3 px-1">
               Akun
             </h3>
             <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden">
@@ -73,11 +73,11 @@ export default function SettingsPage() {
                   <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm">
                     Edit Profil
                   </h4>
-                  <p className="font-['Manrope'] text-xs text-muted-foreground">
+                  <p className="font-['Manrope'] text-xs text-gray-700">
                     Ubah nama, bio, dan foto profil
                   </p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                <ChevronRight className="w-5 h-5 text-gray-700" />
               </Link>
 
               <button className="w-full flex items-center gap-3 px-4 py-4 hover:bg-gray-50 transition-colors">
@@ -88,18 +88,18 @@ export default function SettingsPage() {
                   <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm">
                     Ubah Password
                   </h4>
-                  <p className="font-['Manrope'] text-xs text-muted-foreground">
+                  <p className="font-['Manrope'] text-xs text-gray-700">
                     Perbarui password akun kamu
                   </p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                <ChevronRight className="w-5 h-5 text-gray-700" />
               </button>
             </div>
           </div>
 
           {/* Preferensi Section */}
           <div className="mb-6">
-            <h3 className="font-['Lexend_Deca'] font-semibold text-sm text-muted-foreground mb-3 px-1">
+            <h3 className="font-['Lexend_Deca'] font-black text-xs text-gray-950 uppercase tracking-widest mb-3 px-1">
               Preferensi
             </h3>
             <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
@@ -111,11 +111,11 @@ export default function SettingsPage() {
                   <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm">
                     Notifikasi
                   </h4>
-                  <p className="font-['Manrope'] text-[13px] text-muted-foreground">
+                  <p className="font-['Manrope'] text-[13px] text-gray-700">
                     Atur preferensi notifikasi
                   </p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                <ChevronRight className="w-5 h-5 text-gray-700" />
               </button>
 
               <button className="w-full flex items-center gap-3 px-4 py-4 hover:bg-gray-50 transition-colors border-b border-gray-100">
@@ -126,31 +126,31 @@ export default function SettingsPage() {
                   <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm">
                     Tampilan
                   </h4>
-                  <p className="font-['Manrope'] text-[13px] text-muted-foreground">
+                  <p className="font-['Manrope'] text-[13px] text-gray-700">
                     Mode terang atau gelap
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-['Manrope'] text-[13px] text-muted-foreground">Terang</span>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                  <span className="font-['Manrope'] text-[13px] text-gray-700">Terang</span>
+                  <ChevronRight className="w-5 h-5 text-gray-700" />
                 </div>
               </button>
 
               <button className="w-full flex items-center gap-3 px-4 py-4 hover:bg-gray-50 transition-colors">
-                <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
                   <Globe className="w-5 h-5 text-green-600" />
                 </div>
                 <div className="flex-1 text-left">
                   <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm">
                     Bahasa
                   </h4>
-                  <p className="font-['Manrope'] text-[13px] text-muted-foreground">
+                  <p className="font-['Manrope'] text-[13px] text-gray-700">
                     Pilih bahasa aplikasi
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-['Manrope'] text-[13px] text-muted-foreground">Indonesia</span>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                  <span className="font-['Manrope'] text-[13px] text-gray-700">Indonesia</span>
+                  <ChevronRight className="w-5 h-5 text-gray-700" />
                 </div>
               </button>
             </div>
@@ -158,7 +158,7 @@ export default function SettingsPage() {
 
           {/* Bantuan & Info Section */}
           <div className="mb-6">
-            <h3 className="font-['Lexend_Deca'] font-semibold text-sm text-muted-foreground mb-3 px-1">
+            <h3 className="font-['Lexend_Deca'] font-semibold text-sm text-gray-700 mb-3 px-1">
               Bantuan & Info
             </h3>
             <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
@@ -170,11 +170,11 @@ export default function SettingsPage() {
                   <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm">
                     Pusat Bantuan
                   </h4>
-                  <p className="font-['Manrope'] text-[13px] text-muted-foreground">
+                  <p className="font-['Manrope'] text-[13px] text-gray-700">
                     FAQ dan panduan penggunaan
                   </p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                <ChevronRight className="w-5 h-5 text-gray-700" />
               </button>
 
               <button className="w-full flex items-center gap-3 px-4 py-4 hover:bg-gray-50 transition-colors border-b border-gray-100">
@@ -185,11 +185,11 @@ export default function SettingsPage() {
                   <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm">
                     Privasi & Keamanan
                   </h4>
-                  <p className="font-['Manrope'] text-[13px] text-muted-foreground">
+                  <p className="font-['Manrope'] text-[13px] text-gray-700">
                     Kebijakan privasi dan syarat layanan
                   </p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                <ChevronRight className="w-5 h-5 text-gray-700" />
               </button>
 
               <button className="w-full flex items-center gap-3 px-4 py-4 hover:bg-gray-50 transition-colors">
@@ -202,18 +202,18 @@ export default function SettingsPage() {
                   <h4 className="font-['Lexend_Deca'] font-semibold text-foreground text-sm">
                     Tentang Ba-Yu
                   </h4>
-                  <p className="font-['Manrope'] text-[13px] text-muted-foreground">
+                  <p className="font-['Manrope'] text-[13px] text-gray-700">
                     Versi aplikasi dan informasi
                   </p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                <ChevronRight className="w-5 h-5 text-gray-700" />
               </button>
             </div>
           </div>
 
           {/* Danger Zone */}
           <div className="mb-6">
-            <h3 className="font-['Lexend_Deca'] font-semibold text-sm text-muted-foreground mb-3 px-1">
+            <h3 className="font-['Lexend_Deca'] font-semibold text-sm text-gray-700 mb-3 px-1">
               Zona Berbahaya
             </h3>
             <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
@@ -225,7 +225,7 @@ export default function SettingsPage() {
                   <h4 className="font-['Lexend_Deca'] font-semibold text-red-600 text-sm">
                     Hapus Akun
                   </h4>
-                  <p className="font-['Manrope'] text-xs text-muted-foreground">
+                  <p className="font-['Manrope'] text-xs text-gray-700">
                     Hapus akun dan semua data secara permanen
                   </p>
                 </div>
@@ -243,7 +243,7 @@ export default function SettingsPage() {
                   <h4 className="font-['Lexend_Deca'] font-semibold text-red-600 text-sm">
                     Keluar
                   </h4>
-                  <p className="font-['Manrope'] text-xs text-muted-foreground">
+                  <p className="font-['Manrope'] text-xs text-gray-700">
                     Keluar dari akun kamu
                   </p>
                 </div>

@@ -48,12 +48,13 @@ class LikeController extends Controller
                 $postUserIdStr = is_array($post->user_id) ? (string) current($post->user_id) : (string) $post->user_id;
                 if ($postUserIdStr !== $userId) {
                     Notification::create([
-                        'user_id' => $postUserIdStr,
-                        'title'   => 'Seseorang Menyukai Catatanmu',
-                        'message' => Auth::user()->name . ' menyukai catatanmu "' . $post->title . '".',
-                        'type'    => 'like',
-                        'link'    => '/note/' . $postIdStr,
-                        'is_read' => false,
+                        'user_id'  => $postUserIdStr,
+                        'actor_id' => $userId,
+                        'title'    => 'Seseorang Menyukai Catatanmu',
+                        'message'  => Auth::user()->name . ' menyukai catatanmu "' . $post->title . '".',
+                        'type'     => 'like',
+                        'link'     => '/note/' . $postIdStr,
+                        'is_read'  => false,
                     ]);
                 }
             }
@@ -108,12 +109,13 @@ class LikeController extends Controller
                 $commentUserIdStr = is_array($comment->user_id) ? (string) current($comment->user_id) : (string) $comment->user_id;
                 if ($commentUserIdStr !== $userId) {
                     Notification::create([
-                        'user_id' => $commentUserIdStr,
-                        'title'   => 'Seseorang Menyukai Komentarmu',
-                        'message' => Auth::user()->name . ' menyukai komentarmu.',
-                        'type'    => 'like',
-                        'link'    => '/note/' . $comment->post_id . '#comment-' . $commentIdStr,
-                        'is_read' => false,
+                        'user_id'  => $commentUserIdStr,
+                        'actor_id' => $userId,
+                        'title'    => 'Seseorang Menyukai Komentarmu',
+                        'message'  => Auth::user()->name . ' menyukai komentarmu.',
+                        'type'     => 'like',
+                        'link'     => '/note/' . $comment->post_id . '#comment-' . $commentIdStr,
+                        'is_read'  => false,
                     ]);
                 }
             }

@@ -141,11 +141,13 @@ class PostController extends Controller
             $pakars = User::where('role', 'pakar')->get();
             foreach ($pakars as $pakar) {
                 Notification::create([
-                    'user_id' => $pakar->id,
-                    'title' => 'Verifikasi Catatan Baru',
-                    'message' => 'Catatan "' . $post->title . '" dipublikasikan dan menunggu ulasan pakar.',
-                    'type' => 'verifikasi',
-                    'is_read' => false,
+                    'user_id'  => $post->user_id,
+                    'actor_id' => Auth::id(),
+                    'title'    => 'Catatan Disetujui!',
+                    'message'  => 'Selamat! Catatanmu "' . $post->title . '" telah diverifikasi oleh pakar.',
+                    'type'     => 'verifikasi',
+                    'link'     => '/note/' . $post->id,
+                    'is_read'  => false,
                 ]);
             }
         }
@@ -214,11 +216,13 @@ class PostController extends Controller
 
                 if (!$exists) {
                     Notification::create([
-                        'user_id' => $pakar->id,
-                        'title' => 'Verifikasi Catatan Baru',
-                        'message' => 'Catatan "' . $post->title . '" dipublikasikan dan menunggu ulasan pakar.',
-                        'type' => 'verifikasi',
-                        'is_read' => false,
+                        'user_id'  => $post->user_id,
+                        'actor_id' => Auth::id(),
+                        'title'    => 'Catatan Perlu Perbaikan',
+                        'message'  => 'Catatanmu "' . $post->title . '" memerlukan perbaikan berdasarkan tinjauan pakar.',
+                        'type'     => 'report',
+                        'link'     => '/upload?edit=' . $id,
+                        'is_read'  => false,
                     ]);
                 }
             }

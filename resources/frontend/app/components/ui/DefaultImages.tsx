@@ -7,10 +7,10 @@ import { FileText, User } from 'lucide-react';
  */
 export function DefaultThumbnail({ className = "" }: { className?: string }) {
     return (
-        <div className={`flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 ${className}`}>
-            <div className="flex flex-col items-center gap-1.5 opacity-40">
-                <FileText className="w-8 h-8 text-gray-400" strokeWidth={1.5} />
-                <span className="text-[10px] font-['Manrope'] font-semibold text-gray-400 tracking-wide">Tanpa Gambar</span>
+        <div className={`flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300 ${className}`}>
+            <div className="flex flex-col items-center gap-1.5 opacity-60">
+                <FileText className="w-8 h-8 text-gray-600" strokeWidth={2} />
+                <span className="text-[10px] font-['Manrope'] font-bold text-gray-700 tracking-wide"></span>
             </div>
         </div>
     );
@@ -23,10 +23,10 @@ export function DefaultThumbnail({ className = "" }: { className?: string }) {
 export function DefaultAvatar({ size = 20, className = "" }: { size?: number; className?: string }) {
     return (
         <div 
-            className={`flex items-center justify-center rounded-full bg-gradient-to-br from-gray-200 to-gray-300 shrink-0 ${className}`}
+            className={`flex items-center justify-center rounded-full bg-gradient-to-br from-gray-300 to-gray-400 shrink-0 ${className}`}
             style={{ width: size, height: size }}
         >
-            <User className="text-gray-400" style={{ width: size * 0.55, height: size * 0.55 }} strokeWidth={2} />
+            <User className="text-gray-600" style={{ width: size * 0.55, height: size * 0.55 }} strokeWidth={2.5} />
         </div>
     );
 }
@@ -63,10 +63,10 @@ export function AvatarImage({
                 const parent = target.parentElement;
                 if (parent) {
                     const placeholder = document.createElement('div');
-                    placeholder.className = `flex items-center justify-center rounded-full bg-gradient-to-br from-gray-200 to-gray-300 shrink-0 ${className}`;
+                    placeholder.className = `flex items-center justify-center rounded-full bg-gradient-to-br from-gray-300 to-gray-400 shrink-0 ${className}`;
                     placeholder.style.width = `${size}px`;
                     placeholder.style.height = `${size}px`;
-                    placeholder.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${size * 0.55}" height="${size * 0.55}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+                    placeholder.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${size * 0.55}" height="${size * 0.55}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-600"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
                     parent.insertBefore(placeholder, target);
                 }
             }}

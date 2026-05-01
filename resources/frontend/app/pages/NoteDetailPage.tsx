@@ -21,6 +21,13 @@ import {
     ShieldCheck,
     MoreHorizontal,
     Trash2,
+    Facebook,
+    Twitter,
+    Link2,
+    Send,
+    Instagram,
+    FileText,
+    Loader2,
 } from "lucide-react";
 import {
     getNoteById,
@@ -84,26 +91,8 @@ export default function NoteDetailPage() {
         }, 100);
     };
 
-    const handleShare = async () => {
-        const shareData = {
-            title: note?.title || "Catatan Menarik di Ba-Yu",
-            text: `Eh, cek catatan keren ini deh: "${note?.title || "Materi Belajar"}" karya ${author?.name || "seseorang"}. Cuma di Ba-Yu! 🚀`,
-            url: window.location.href,
-        };
-
-        try {
-            if (navigator.share) {
-                await navigator.share(shareData);
-            } else {
-                await navigator.clipboard.writeText(shareData.url);
-                showToast(
-                    "Link catatan berhasil disalin ke clipboard!",
-                    "success",
-                );
-            }
-        } catch (error) {
-            console.log("Gagal share atau share dibatalkan:", error);
-        }
+    const handleShare = () => {
+        setShowShareModal(true);
     };
 
     const handleFollowToggle = async () => {
@@ -151,11 +140,58 @@ export default function NoteDetailPage() {
     };
 
     const [showReportModal, setShowReportModal] = useState(false);
+    const [showShareModal, setShowShareModal] = useState(false);
     const [reportTarget, setReportTarget] = useState<{
         type: "note" | "comment";
         id: string;
         title?: string;
     } | null>(null);
+
+    const [note, setNote] = useState<any>(null);
+    const [author, setAuthor] = useState<any>(null);
+    const [comments, setComments] = useState<any[]>([]);
+    const [validator, setValidator] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Update Meta Tags for Social Preview (Open Graph)
+    useEffect(() => {
+        if (!note) return;
+
+        const title = `${note.title} | Ba-Yu`;
+        const description = note.content?.replace(/<[^>]*>/g, '').substring(0, 160) || "Baca catatan belajar menarik di Ba-Yu!";
+        const url = window.location.href;
+        const image = note.thumbnail || '/logo.png'; // Fallback to logo
+
+        // Update document title
+        document.title = title;
+
+        // Helper to update or create meta tags
+        const updateMeta = (name: string, content: string, property = false) => {
+            const attr = property ? 'property' : 'name';
+            let el = document.querySelector(`meta[${attr}="${name}"]`);
+            if (!el) {
+                el = document.createElement('meta');
+                el.setAttribute(attr, name);
+                document.head.appendChild(el);
+            }
+            el.setAttribute('content', content);
+        };
+
+        updateMeta('description', description);
+        updateMeta('og:title', title, true);
+        updateMeta('og:description', description, true);
+        updateMeta('og:url', url, true);
+        updateMeta('og:image', image, true);
+        updateMeta('og:type', 'article', true);
+        updateMeta('twitter:card', 'summary_large_image');
+        updateMeta('twitter:title', title);
+        updateMeta('twitter:description', description);
+        updateMeta('twitter:image', image);
+
+        return () => {
+            // Optional: Reset meta tags on unmount if needed
+        };
+    }, [note]);
     const [reportReason, setReportReason] = useState("");
     const [reportDescription, setReportDescription] = useState("");
     const [isSubmittingReport, setIsSubmittingReport] = useState(false);
@@ -176,12 +212,6 @@ export default function NoteDetailPage() {
 
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authTab, setAuthTab] = useState<"login" | "register">("login");
-
-    const [note, setNote] = useState<any>(null);
-    const [author, setAuthor] = useState<any>(null);
-    const [comments, setComments] = useState<any[]>([]);
-    const [validator, setValidator] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const hash = window.location.hash;
@@ -630,7 +660,7 @@ export default function NoteDetailPage() {
                         onClick={() => navigate(-1)}
                         className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center group"
                     >
-                        <ArrowLeft className="w-5 h-5 text-gray-500 group-hover:text-gray-900 transition-colors" />
+                        <ArrowLeft className="w-5 h-5 text-gray-600 group-hover:text-gray-950 transition-colors" strokeWidth={2.5} />
                     </button>
 
                     <div className="flex items-center gap-1">
@@ -644,18 +674,19 @@ export default function NoteDetailPage() {
                         )}
                         <button
                             onClick={handleShare}
-                            className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-500 hover:text-gray-900"
+                            className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-600 hover:text-gray-950"
                         >
-                            <Share2 className="w-[18px] h-[18px]" />
+                            <Share2 className="w-[18px] h-[18px]" strokeWidth={2.5} />
                         </button>
                         <button
                             onClick={() =>
                                 requireAuth(() => toggleBookmark(note.id))
                             }
-                            className={`p-2 rounded-full transition-colors ${isBookmarked(note.id) ? "text-primary bg-primary/5 hover:bg-primary/10" : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"}`}
+                            className={`p-2 rounded-full transition-colors ${isBookmarked(note.id) ? "text-primary bg-primary/5 hover:bg-primary/10" : "text-gray-600 hover:text-gray-950 hover:bg-gray-50"}`}
                         >
                             <Bookmark
                                 className={`w-[18px] h-[18px] ${isBookmarked(note.id) ? "fill-primary" : ""}`}
+                                strokeWidth={2.5}
                             />
                         </button>
                         <button
@@ -669,9 +700,9 @@ export default function NoteDetailPage() {
                                     setShowReportModal(true);
                                 })
                             }
-                            className="p-2 hover:bg-red-50 rounded-full transition-colors text-gray-500 hover:text-red-500"
+                            className="p-2 hover:bg-red-50 rounded-full transition-colors text-gray-600 hover:text-red-500"
                         >
-                            <Flag className="w-[18px] h-[18px]" />
+                            <Flag className="w-[18px] h-[18px]" strokeWidth={2.5} />
                         </button>
                     </div>
                 </div>
@@ -688,12 +719,12 @@ export default function NoteDetailPage() {
                     <span className="text-[12px] font-['Lexend_Deca'] font-bold text-primary uppercase tracking-widest bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
                         {note.mataPelajaran}
                     </span>
-                    <span className="text-[14px] font-['Manrope'] font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    <span className="text-[14px] font-['Manrope'] font-bold text-gray-700 bg-gray-200/60 px-3 py-1 rounded-full border border-gray-300/30">
                         {note.jenjang === "Kuliah"
                             ? `${note.kelas || "1"}`
                             : `${note.jenjang} Kelas ${note.kelas}`}
                     </span>
-                    <span className="text-[14px] font-['Manrope'] font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full hidden sm:block">
+                    <span className="text-[14px] font-['Manrope'] font-bold text-gray-700 bg-gray-200/60 px-3 py-1 rounded-full border border-gray-300/30 hidden sm:block">
                         Semester {note.semester}
                     </span>
                 </div>
@@ -728,9 +759,9 @@ export default function NoteDetailPage() {
                                         onClick={() =>
                                             requireAuth(handleFollowToggle)
                                         }
-                                        className={`text-sm font-['Manrope'] font-semibold transition-colors ${
+                                        className={`text-sm font-['Manrope'] font-bold transition-colors ${
                                             isFollowing
-                                                ? "text-gray-500 hover:text-gray-700"
+                                                ? "text-gray-600 hover:text-gray-900"
                                                 : "text-emerald-600 hover:text-emerald-700"
                                         }`}
                                     >
@@ -740,26 +771,26 @@ export default function NoteDetailPage() {
                             {!isAuthenticated && (
                                 <button
                                     onClick={() => openAuthModal("login")}
-                                    className="text-sm font-['Manrope'] text-emerald-600 font-semibold hover:text-emerald-700 transition-colors"
+                                    className="text-sm font-['Manrope'] text-emerald-600 font-bold hover:text-emerald-700 transition-colors"
                                 >
                                     • Ikuti
                                 </button>
                             )}
                         </div>
-                        <div className="flex items-center gap-3 text-[13px] font-['Manrope'] text-gray-500 mt-0.5">
+                        <div className="flex items-center gap-3 text-[13px] font-['Manrope'] text-gray-600 mt-0.5 font-bold">
                             <div className="flex items-center gap-1.5">
                                 <span>{note.createdAt}</span>
                             </div>
-                            <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                            <span className="w-1 h-1 rounded-full bg-gray-400"></span>
                             <div className="flex items-center gap-1.5">
-                                <Clock className="w-3.5 h-3.5" />
+                                <Clock className="w-3.5 h-3.5" strokeWidth={2.5} />
                                 <span>5 mnt baca</span>
                             </div>
                             {author.role === "pakar" && (
                                 <>
-                                    <span className="w-1 h-1 rounded-full bg-gray-300 hidden sm:block"></span>
-                                    <span className="text-green-600 font-semibold flex items-center gap-1 hidden sm:flex">
-                                        <Check className="w-3.5 h-3.5" /> Pakar
+                                    <span className="w-1 h-1 rounded-full bg-gray-400 hidden sm:block"></span>
+                                    <span className="text-green-700 font-bold flex items-center gap-1 hidden sm:flex">
+                                        <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> Pakar
                                         Terverifikasi
                                     </span>
                                 </>
@@ -773,15 +804,16 @@ export default function NoteDetailPage() {
                     <div className="flex items-center gap-6">
                         <button
                             onClick={handleLikePost}
-                            className="flex items-center gap-2 text-[15px] font-['Manrope'] font-medium transition-colors group"
+                            className="flex items-center gap-2 text-[15px] font-['Manrope'] font-bold transition-colors group"
                             aria-label="Suka catatan"
                         >
                             <Heart
-                                className={`w-5 h-5 transition-transform group-hover:scale-110 ${liked ? "fill-red-500 text-red-500" : "text-gray-500 group-hover:text-red-500"}`}
+                                className={`w-5 h-5 transition-transform group-hover:scale-110 ${liked ? "fill-red-500 text-red-500" : "text-gray-600 group-hover:text-red-500"}`}
+                                strokeWidth={2.5}
                             />
                             <span
                                 className={
-                                    liked ? "text-red-500" : "text-gray-500"
+                                    liked ? "text-red-500" : "text-gray-600"
                                 }
                             >
                                 {note.likes}
@@ -798,14 +830,14 @@ export default function NoteDetailPage() {
                                     });
                                 }
                             }}
-                            className="flex items-center gap-2 text-[15px] font-['Manrope'] font-medium text-gray-500 hover:text-gray-800 transition-colors group"
+                            className="flex items-center gap-2 text-[15px] font-['Manrope'] font-bold text-gray-600 hover:text-gray-950 transition-colors group"
                         >
-                            <MessageCircle className="w-5 h-5 text-gray-500 group-hover:text-gray-700 transition-transform group-hover:scale-110" />
+                            <MessageCircle className="w-5 h-5 text-gray-600 group-hover:text-gray-950 transition-transform group-hover:scale-110" strokeWidth={2.5} />
                             <span>{comments.length}</span>
                         </button>
 
-                        <div className="flex items-center gap-2 text-[15px] font-['Manrope'] font-medium text-gray-500 ml-2 hidden sm:flex">
-                            <Eye className="w-5 h-5 text-gray-500" />
+                        <div className="flex items-center gap-2 text-[15px] font-['Manrope'] font-bold text-gray-600 ml-2 hidden sm:flex">
+                            <Eye className="w-5 h-5 text-gray-600" strokeWidth={2.5} />
                             <span>{note.views}</span>
                         </div>
                     </div>
@@ -834,10 +866,10 @@ export default function NoteDetailPage() {
 
                 {/* Paywall simulatiom if not logged in (Optional UI flair, matching mock design "Download PDF") */}
                 <div className="mt-14 bg-gray-50/80 rounded-3xl p-8 md:p-10 text-center border border-gray-100">
-                    <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 mb-3">
+                    <h3 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 mb-3">
                         Ingin membaca materi ini secara offline?
                     </h3>
-                    <p className="font-['Manrope'] text-[15px] text-gray-500 mb-8 max-w-md mx-auto leading-relaxed">
+                    <p className="font-['Manrope'] text-[15px] text-gray-700 mb-8 max-w-md mx-auto leading-relaxed font-medium">
                         Unduh file aslinya dalam format PDF untuk dipelajari
                         kapan saja tanpa koneksi internet.
                     </p>
@@ -860,10 +892,10 @@ export default function NoteDetailPage() {
                                 <Check className="w-8 h-8 text-primary" />
                             </div>
                             <div>
-                                <h4 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 mb-1.5">
+                                <h4 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 mb-1.5">
                                     Materi Terverifikasi
                                 </h4>
-                                <p className="font-['Manrope'] text-gray-600 text-[15px] leading-relaxed max-w-lg">
+                                <p className="font-['Manrope'] text-gray-800 text-[15px] leading-relaxed max-w-lg font-medium">
                                     Konten catatan ini telah melalui pemeriksaan
                                     kebenaran materi oleh pakar pendidikan
                                     terpercaya Ba-Yu.
@@ -879,7 +911,7 @@ export default function NoteDetailPage() {
                                 className="border-2 border-primary/20"
                             />
                             <div>
-                                <p className="text-[11px] font-['Manrope'] text-gray-500 uppercase tracking-wide mb-0.5">
+                                <p className="text-[11px] font-['Manrope'] text-gray-600 font-extrabold uppercase tracking-wide mb-0.5">
                                     Divalidasi Oleh
                                 </p>
                                 <p className="text-[15px] font-['Lexend_Deca'] font-bold text-primary">
@@ -901,11 +933,11 @@ export default function NoteDetailPage() {
                 )}
 
                 {/* Separator */}
-                <div className="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-16"></div>
+                <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-16"></div>
 
                 {/* Author Bottom Profile (Substack style) */}
                 <div className="mb-20">
-                    <h4 className="font-['Lexend_Deca'] font-bold text-[13px] text-gray-400 uppercase tracking-widest mb-6 text-center sm:text-left">
+                    <h4 className="font-['Lexend_Deca'] font-extrabold text-[13px] text-gray-500 uppercase tracking-widest mb-6 text-center sm:text-left">
                         DITULIS OLEH
                     </h4>
                     <div className="bg-transparent flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
@@ -930,13 +962,13 @@ export default function NoteDetailPage() {
                                 {author.role === "pakar" && (
                                     <div
                                         className="bg-green-500 text-white p-0.5 rounded-full"
-                                        title="Verified Expert"
+                                        title="Pakar Terverifikasi"
                                     >
-                                        <Check className="w-4 h-4" />
+                                        <ShieldCheck className="w-3.5 h-3.5" />
                                     </div>
                                 )}
                             </div>
-                            <p className="font-['Manrope'] text-[16px] text-gray-600 mb-6 max-w-xl leading-relaxed">
+                            <p className="font-['Manrope'] text-[16px] text-gray-800 mb-6 max-w-xl leading-relaxed font-medium">
                                 {author.role === "pakar"
                                     ? "Pakar Pendidikan tersertifikasi yang aktif membimbing siswa dan meninjau ribuan catatan."
                                     : `Siswa ${author.jenjang} yang aktif membagikan catatannya. Mari belajar bersama dan raih prestasi!`}
@@ -958,15 +990,15 @@ export default function NoteDetailPage() {
                                         : "Ikuti Penulis"}
                                 </button>
 
-                                <div className="flex items-center gap-6 mt-4 sm:mt-0 font-['Manrope'] text-[15px] text-gray-500 font-medium">
+                                <div className="flex items-center gap-6 mt-4 sm:mt-0 font-['Manrope'] text-[15px] text-gray-600 font-bold">
                                     <div className="flex items-center gap-1.5">
-                                        <span className="font-bold text-gray-900">
+                                        <span className="font-extrabold text-gray-900">
                                             {followerCount}
                                         </span>{" "}
                                         Pengikut
                                     </div>
                                     <div className="flex items-center gap-1.5">
-                                        <span className="font-bold text-gray-900">
+                                        <span className="font-extrabold text-gray-900">
                                             {author.totalCatatan || 0}
                                         </span>{" "}
                                         Tulisan
@@ -976,6 +1008,7 @@ export default function NoteDetailPage() {
                         </div>
                     </div>
                 </div>
+
 
                 {/* Comments Section (Bottom placement) */}
                 <div
@@ -1005,10 +1038,10 @@ export default function NoteDetailPage() {
                                         setCommentText(e.target.value)
                                     }
                                     placeholder="Apa pendapatmu? Jadilah yang pertama memulai diskusi."
-                                    className="w-full px-2 py-2 bg-transparent border-none font-['Manrope'] text-base text-left resize-none focus:outline-none focus:ring-0 min-h-[80px]"
+                                    className="w-full px-2 py-2 bg-transparent border-none font-['Manrope'] text-base text-left resize-none focus:outline-none focus:ring-0 min-h-[80px] text-gray-900 placeholder:text-gray-500 font-medium"
                                 />
                                 <div className="flex justify-between items-center mt-2 border-t border-gray-50 pt-3">
-                                    <p className="text-xs text-gray-400 font-['Manrope'] px-2">
+                                    <p className="text-xs text-gray-600 font-['Manrope'] px-2 font-bold">
                                         Format dengan Markdown didukung (segera)
                                     </p>
                                     <button
@@ -1028,11 +1061,11 @@ export default function NoteDetailPage() {
                         </div>
                     ) : (
                         <div className="mb-12 bg-gray-50 rounded-3xl p-8 border border-gray-100 flex flex-col items-center justify-center text-center">
-                            <MessageCircle className="w-8 h-8 text-gray-400 mb-3" />
+                            <MessageCircle className="w-8 h-8 text-gray-600 mb-3" strokeWidth={2.5} />
                             <h5 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 mb-1">
                                 Punya Pertanyaan?
                             </h5>
-                            <p className="font-['Manrope'] text-[15px] text-gray-500 mb-6">
+                            <p className="font-['Manrope'] text-[15px] text-gray-700 mb-6 font-medium">
                                 Gabung dengan diskusi dan tanyakan langsung ke
                                 penulis atau pakar.
                             </p>
@@ -1050,7 +1083,7 @@ export default function NoteDetailPage() {
                     <div className="space-y-6 sm:space-y-8">
                         {comments.length === 0 ? (
                             <div className="text-center py-12">
-                                <p className="font-['Manrope'] text-base text-gray-400">
+                                <p className="font-['Manrope'] text-base text-gray-600 font-bold">
                                     Belum ada komentar.
                                 </p>
                             </div>
@@ -1095,7 +1128,7 @@ export default function NoteDetailPage() {
                                                         className="shrink-0 border border-gray-100 hover:ring-2 hover:ring-primary/20 transition-all sm:w-12 sm:h-12 w-10 h-10"
                                                     />
                                                 </Link>
-                                                <div className="flex-1 w-full overflow-hidden">
+                                                <div className="flex-1 w-full">
                                                     <div className="flex items-center justify-between mb-1">
                                                         <div className="flex items-center gap-2 cursor-pointer">
                                                             <Link
@@ -1106,9 +1139,9 @@ export default function NoteDetailPage() {
                                                             </Link>
                                                             {cAuth.role ===
                                                                 "pakar" && (
-                                                                <Check className="w-3.5 h-3.5 bg-green-500 text-white rounded-full p-[2px]" />
+                                                                <Check className="w-3.5 h-3.5 bg-green-600 text-white rounded-full p-[2px]" strokeWidth={3} />
                                                             )}
-                                                            <span className="text-xs font-['Manrope'] text-gray-400">
+                                                            <span className="text-xs font-['Manrope'] text-gray-600 font-bold">
                                                                 {new Date(
                                                                     comment.created_at ||
                                                                         comment.createdAt ||
@@ -1133,9 +1166,9 @@ export default function NoteDetailPage() {
                                                                             : cid,
                                                                     )
                                                                 }
-                                                                className="p-1 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-900 transition-colors"
+                                                                className="p-1 rounded-full hover:bg-gray-100 text-gray-600 hover:text-gray-950 transition-colors"
                                                             >
-                                                                <MoreHorizontal className="w-5 h-5" />
+                                                                <MoreHorizontal className="w-5 h-5" strokeWidth={2.5} />
                                                             </button>
 
                                                             {activeCommentMenu ===
@@ -1149,7 +1182,7 @@ export default function NoteDetailPage() {
                                                                             )
                                                                         }
                                                                     />
-                                                                    <div className="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-50 overflow-hidden transform origin-top-right transition-all">
+                                                                    <div className="absolute right-0 mt-2 w-44 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 py-2 z-50 overflow-hidden transform origin-top-right transition-all animate-in fade-in zoom-in-95 duration-200">
                                                                         {isAuthenticated &&
                                                                             user &&
                                                                             (user._id ||
@@ -1202,11 +1235,11 @@ export default function NoteDetailPage() {
                                                             )}
                                                         </div>
                                                     </div>
-                                                    <p className="font-['Manrope'] text-[15.5px] text-gray-800 leading-relaxed mb-2.5 break-words">
+                                                    <p className="font-['Manrope'] text-[15.5px] text-gray-900 leading-relaxed mb-2.5 break-words font-medium">
                                                         {comment.content ||
                                                             comment.text}
                                                     </p>
-                                                    <div className="flex items-center gap-4 text-[13px] font-['Manrope'] font-semibold text-gray-500">
+                                                    <div className="flex items-center gap-4 text-[13px] font-['Manrope'] font-extrabold text-gray-600">
                                                         <button
                                                             onClick={async () => {
                                                                 if (
@@ -1300,9 +1333,9 @@ export default function NoteDetailPage() {
                                                                     "",
                                                                 );
                                                             }}
-                                                            className="flex items-center gap-1.5 hover:text-gray-900"
+                                                            className="flex items-center gap-1.5 hover:text-gray-950 transition-colors"
                                                         >
-                                                            <MessageCircle className="w-3.5 h-3.5" />{" "}
+                                                            <MessageCircle className="w-3.5 h-3.5" strokeWidth={2.5} />{" "}
                                                             Balas
                                                         </button>
                                                     </div>
@@ -1322,7 +1355,7 @@ export default function NoteDetailPage() {
                                                                             .value,
                                                                     )
                                                                 }
-                                                                className="w-full sm:flex-1 bg-transparent border-none text-[15px] font-['Manrope'] text-left focus:outline-none focus:ring-0 resize-none h-[40px] pt-2"
+                                                                className="w-full sm:flex-1 bg-transparent border-none text-[15px] font-['Manrope'] text-left focus:outline-none focus:ring-0 resize-none h-[40px] pt-2 text-gray-900 placeholder:text-gray-500 font-bold"
                                                                 onKeyDown={async (
                                                                     e,
                                                                 ) => {
@@ -1345,7 +1378,7 @@ export default function NoteDetailPage() {
                                                                             null,
                                                                         )
                                                                     }
-                                                                    className="px-3 py-1.5 text-gray-500 hover:text-gray-700 text-xs font-['Lexend_Deca'] font-bold bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+                                                                    className="px-3 py-1.5 text-gray-600 hover:text-gray-900 text-xs font-['Lexend_Deca'] font-extrabold bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                                                                 >
                                                                     Batal
                                                                 </button>
@@ -1441,13 +1474,13 @@ export default function NoteDetailPage() {
                                                     size={32}
                                                     className="border border-gray-100"
                                                 />
-                                                <span className="text-sm font-['Manrope'] font-bold text-gray-700">
+                                                <span className="text-sm font-['Manrope'] font-extrabold text-gray-800">
                                                     {recAuthor?.name}
                                                 </span>
                                             </div>
-                                            <div className="flex items-center gap-3 text-sm text-gray-500 font-medium">
+                                            <div className="flex items-center gap-3 text-sm text-gray-600 font-bold">
                                                 <div className="flex items-center gap-1.5">
-                                                    <Heart className="w-4 h-4 text-gray-400" />{" "}
+                                                    <Heart className="w-4 h-4 text-gray-500" strokeWidth={2.5} />{" "}
                                                     {recNote.likes}
                                                 </div>
                                             </div>
@@ -1481,79 +1514,240 @@ export default function NoteDetailPage() {
                 defaultTab={authTab}
             />
 
+            {/* Modal Share */}
+            {showShareModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-300">
+                    <div className="bg-white rounded-[32px] w-full max-w-md max-h-[90vh] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] overflow-hidden border border-white transform animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 flex flex-col">
+                        {/* Header with Icon - Identical to Report Modal */}
+                        <div className="bg-indigo-50 p-6 pb-5 text-center border-b border-indigo-100/50 shrink-0">
+                            <div className="w-14 h-14 bg-white text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm border border-indigo-200/30">
+                                <Share2 className="w-7 h-7" strokeWidth={2.5} />
+                            </div>
+                            <h3 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 mb-1">
+                                Bagikan Catatan
+                            </h3>
+                            <p className="font-['Manrope'] text-[13px] text-gray-600 font-bold px-6">
+                                Sebarkan ilmu bermanfaat ini ke teman-temanmu.
+                            </p>
+                        </div>
+
+                        <div className="p-6 pt-6 overflow-y-auto custom-scrollbar">
+                            {/* Social Preview Card - Enhanced Contrast */}
+                            <div className="bg-gray-50 border border-gray-100 rounded-2xl p-3 mb-6 flex gap-3 text-left">
+                                <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 shadow-sm border border-white">
+                                     {note.thumbnail ? (
+                                         <img src={note.thumbnail} alt={note.title} className="w-full h-full object-cover" />
+                                     ) : (
+                                         <div className="w-full h-full bg-indigo-100 flex items-center justify-center">
+                                             <FileText className="w-5 h-5 text-indigo-400" />
+                                         </div>
+                                     )}
+                                 </div>
+                                 <div className="flex-1 min-w-0 py-0.5">
+                                     <h4 className="font-['Lexend_Deca'] font-bold text-[12.5px] text-gray-900 truncate mb-0.5">
+                                         {note.title}
+                                     </h4>
+                                     <p className="font-['Manrope'] text-[10.5px] text-gray-600 font-bold line-clamp-2 leading-relaxed opacity-80">
+                                         {note.content?.replace(/<[^>]*>/g, '').substring(0, 80)}...
+                                     </p>
+                                 </div>
+                            </div>
+
+                            <div className="grid grid-cols-4 gap-y-6 gap-x-3 mb-6">
+                                <button 
+                                    onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`${note.title} - Baca di Ba-Yu: ${window.location.href}`)}`, '_blank')}
+                                    className="flex flex-col items-center gap-2 group"
+                                >
+                                    <div className="w-11 h-11 bg-[#25D366] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-green-100 group-hover:-translate-y-1 transition-all">
+                                        <MessageCircle className="w-5 h-5 fill-white" />
+                                    </div>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">WA</span>
+                                </button>
+                                <button 
+                                    onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Cek catatan seru ini: ${note.title}`)}&url=${encodeURIComponent(window.location.href)}`, '_blank')}
+                                    className="flex flex-col items-center gap-2 group"
+                                >
+                                    <div className="w-11 h-11 bg-black text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-gray-200 group-hover:-translate-y-1 transition-all">
+                                        <Twitter className="w-5 h-5 fill-white" />
+                                    </div>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">X</span>
+                                </button>
+                                <button 
+                                    onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank')}
+                                    className="flex flex-col items-center gap-2 group"
+                                >
+                                    <div className="w-11 h-11 bg-[#1877F2] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-blue-100 group-hover:-translate-y-1 transition-all">
+                                        <Facebook className="w-5 h-5 fill-white" />
+                                    </div>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">FB</span>
+                                </button>
+                                <button 
+                                    onClick={() => window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(note.title)}`, '_blank')}
+                                    className="flex flex-col items-center gap-2 group"
+                                >
+                                    <div className="w-11 h-11 bg-[#0088cc] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-sky-100 group-hover:-translate-y-1 transition-all">
+                                        <Send className="w-5 h-5 fill-white" />
+                                    </div>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">Tele</span>
+                                </button>
+                                <button 
+                                    onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`, '_blank')}
+                                    className="flex flex-col items-center gap-2 group"
+                                >
+                                    <div className="w-11 h-11 bg-[#0077b5] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-blue-100 group-hover:-translate-y-1 transition-all">
+                                        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                                    </div>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">LinkedIn</span>
+                                </button>
+                                <button 
+                                    onClick={() => window.open(`https://lineit.line.me/share/ui?url=${encodeURIComponent(window.location.href)}`, '_blank')}
+                                    className="flex flex-col items-center gap-2 group"
+                                >
+                                    <div className="w-11 h-11 bg-[#00b900] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-green-100 group-hover:-translate-y-1 transition-all">
+                                        <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M24 10.304c0-5.232-5.383-9.488-12-9.488s-12 4.256-12 9.488c0 4.69 4.27 8.604 10.046 9.351.391.084.924.258 1.057.592.121.304.079.78.039 1.088l-.171 1.026c-.052.311-.252 1.218 1.086.665 1.338-.553 7.211-4.248 9.842-7.272 1.775-1.954 2.046-3.791 2.101-5.45zm-14.779 4.394c0 .356-.289.646-.645.646h-1.638c-.356 0-.645-.29-.645-.646v-3.327h-1.638c-.356 0-.645-.29-.645-.646s.289-.646.645-.646h4.566c.356 0 .645.29.645.646s-.289.646-.645.646h-1.639v3.327zm2.427 0c0 .356-.289.646-.645.646s-.645-.29-.645-.646v-4.619c0-.356.289-.646.645-.646s.645.29.645.646v4.619zm5.351 0c0 .324-.131.62-.365.836l-.004.004-.004.003c-.074.068-.162.119-.257.149-.071.023-.146.035-.224.035-.045 0-.089-.004-.133-.013-.105-.021-.202-.068-.282-.132l-.004-.004-2.883-2.612v1.738c0 .356-.289.646-.645.646s-.645-.29-.645-.646v-4.619c0-.356.289-.646.645-.646.216 0 .408.107.526.271l2.977 2.696v-1.748c0-.356.289-.646.645-.646s.645.29.645.646v4.619zm3.504-1.287h-1.639v-1.042h1.639c.356 0 .645-.29.645-.646s-.289-.646-.645-.646h-1.639v-1.041h1.639c.356 0 .645-.29.645-.646s-.289-.646-.645-.646h-2.928c-.356 0-.645.29-.645.646v4.619c0 .356.289.646.645.646h2.928c.356 0 .645-.29.645-.646s-.289-.646-.645-.646z"/></svg>
+                                    </div>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">Line</span>
+                                </button>
+                                <button 
+                                    onClick={() => window.open(`https://www.pinterest.com/pin/create/button/?url=${encodeURIComponent(window.location.href)}&description=${encodeURIComponent(note.title)}`, '_blank')}
+                                    className="flex flex-col items-center gap-2 group"
+                                >
+                                    <div className="w-11 h-11 bg-[#bd081c] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-red-100 group-hover:-translate-y-1 transition-all">
+                                        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.017 0c-6.627 0-12 5.373-12 12 0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.261 7.929-7.261 4.162 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146 1.124.347 2.317.535 3.554.535 6.627 0 12-5.373 12-12 0-6.627-5.373-12-12-12z"/></svg>
+                                    </div>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">Pinterest</span>
+                                </button>
+                                <button 
+                                    onClick={() => window.open(`mailto:?subject=${encodeURIComponent(note.title)}&body=${encodeURIComponent(`Cek catatan bermanfaat ini: ${window.location.href}`)}`, '_blank')}
+                                    className="flex flex-col items-center gap-2 group"
+                                >
+                                    <div className="w-11 h-11 bg-gray-600 text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-gray-100 group-hover:-translate-y-1 transition-all">
+                                        <svg className="w-5 h-5 fill-none stroke-current" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                    </div>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">Email</span>
+                                </button>
+                            </div>
+
+                            <div className="relative group mb-2">
+                                <label className="block text-left text-[11px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">
+                                    Salin Tautan
+                                </label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400">
+                                        <Link2 className="w-4 h-4" />
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        readOnly 
+                                        value={window.location.href}
+                                        className="w-full pl-11 pr-24 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-[12.5px] font-bold text-gray-800 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-400 transition-all"
+                                    />
+                                    <button 
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(window.location.href);
+                                            showToast("Link berhasil disalin!", "success");
+                                        }}
+                                        className="absolute right-2 top-2 bottom-2 px-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 active:scale-95"
+                                    >
+                                        Salin
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-5 border-t border-gray-50 shrink-0">
+                            <button
+                                onClick={() => setShowShareModal(false)}
+                                className="w-full py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] text-gray-500 bg-gray-50 hover:bg-gray-100 transition-all active:scale-95"
+                            >
+                                Tutup Modal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Modal Report */}
             {showReportModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-                        <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 mb-2">
-                            Laporkan{" "}
-                            {reportTarget?.type === "note"
-                                ? "Catatan"
-                                : "Komentar"}
-                        </h3>
-                        <p className="font-['Manrope'] text-sm text-gray-500 mb-4">
-                            Bantu kami menjaga lingkungan belajar yang positif
-                            dan aman.
-                        </p>
-
-                        <div className="mb-4">
-                            <label className="block font-['Manrope'] text-sm font-semibold text-gray-700 mb-1.5">
-                                Alasan Pelaporan
-                            </label>
-                            <select
-                                value={reportReason}
-                                onChange={(e) =>
-                                    setReportReason(e.target.value)
-                                }
-                                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl font-['Manrope'] focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
-                            >
-                                <option value="">Pilih Alasan...</option>
-                                <option value="Spam">
-                                    Spam pemasaran/promosi
-                                </option>
-                                <option value="Informasi Palsu">
-                                    Informasi keliru / misinformasi
-                                </option>
-                                <option value="Kata Kasar">
-                                    Menggunakan kata kasar / ujaran kebencian
-                                </option>
-                                <option value="Pelecehan">
-                                    Pelecehan atau intimidasi
-                                </option>
-                                <option value="Lainnya">Lainnya...</option>
-                            </select>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-300">
+                    <div className="bg-white rounded-[32px] w-full max-w-md shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] overflow-hidden border border-white transform animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+                        {/* Header with Icon */}
+                        <div className="bg-rose-50 p-8 pb-5 text-center border-b border-rose-100/50">
+                            <div className="w-16 h-16 bg-white text-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-rose-200/30">
+                                <Flag className="w-8 h-8" strokeWidth={2.5} />
+                            </div>
+                            <h3 className="font-['Lexend_Deca'] font-extrabold text-2xl text-gray-900 mb-1">
+                                Laporkan{" "}
+                                {reportTarget?.type === "note"
+                                    ? "Catatan"
+                                    : "Komentar"}
+                            </h3>
+                            <p className="font-['Manrope'] text-[14px] text-gray-600 font-bold px-6">
+                                Bantu kami menjaga ekosistem Ba-Yu tetap edukatif, aman, dan nyaman.
+                            </p>
                         </div>
 
-                        <div className="mb-6">
-                            <label className="block font-['Manrope'] text-sm font-semibold text-gray-700 mb-1.5">
-                                Deskripsi Singkat
-                            </label>
-                            <textarea
-                                value={reportDescription}
-                                onChange={(e) =>
-                                    setReportDescription(e.target.value)
-                                }
-                                placeholder="Beritahu kami lebih detail tentang laporan ini..."
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl font-['Manrope'] text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none h-24"
-                            ></textarea>
-                        </div>
+                        <div className="p-8 pt-7">
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block font-['Manrope'] text-[12px] font-extrabold text-gray-500 uppercase tracking-[0.1em] mb-2 ml-1">
+                                        Alasan Utama
+                                    </label>
+                                    <div className="relative group">
+                                        <select
+                                            value={reportReason}
+                                            onChange={(e) => setReportReason(e.target.value)}
+                                            className="w-full px-5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl font-['Manrope'] font-bold text-gray-800 focus:outline-none focus:ring-4 focus:ring-rose-500/5 focus:border-rose-400 focus:bg-white transition-all appearance-none cursor-pointer hover:border-gray-300"
+                                        >
+                                            <option value="">Pilih alasan pelaporan...</option>
+                                            <option value="Spam">Spam pemasaran / Iklan mengganggu</option>
+                                            <option value="Informasi Palsu">Informasi keliru / Misinformasi materi</option>
+                                            <option value="Kata Kasar">Ujaran kebencian / Kata-kata kasar</option>
+                                            <option value="Pelecehan">Pelecehan / Intimidasi terhadap user</option>
+                                            <option value="Hak Cipta">Pelanggaran Hak Cipta / Plagiasi</option>
+                                            <option value="Lainnya">Alasan lainnya...</option>
+                                        </select>
+                                        <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 group-focus-within:text-rose-400 transition-colors">
+                                            <ArrowUp className="w-4 h-4 rotate-180" />
+                                        </div>
+                                    </div>
+                                </div>
 
-                        <div className="flex gap-3 justify-end">
-                            <button
-                                onClick={() => setShowReportModal(false)}
-                                className="px-5 py-2 rounded-xl font-['Manrope'] font-bold text-gray-600 hover:bg-gray-100 transition-colors"
-                            >
-                                Batal
-                            </button>
-                            <button
-                                onClick={handleReportSubmit}
-                                disabled={isSubmittingReport}
-                                className="px-5 py-2 rounded-xl font-['Lexend_Deca'] font-bold bg-red-500 text-white hover:bg-red-600 transition-colors shadow-sm disabled:opacity-50"
-                            >
-                                {isSubmittingReport
-                                    ? "Mengirim..."
-                                    : "Kirim Laporan"}
-                            </button>
+                                <div>
+                                    <label className="block font-['Manrope'] text-[12px] font-extrabold text-gray-500 uppercase tracking-[0.1em] mb-2 ml-1">
+                                        Detail Tambahan
+                                    </label>
+                                    <textarea
+                                        value={reportDescription}
+                                        onChange={(e) => setReportDescription(e.target.value)}
+                                        placeholder="Jelaskan secara singkat mengapa Anda melaporkan konten ini..."
+                                        className="w-full px-5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl font-['Manrope'] text-[14.5px] focus:outline-none focus:ring-4 focus:ring-rose-500/5 focus:border-rose-400 focus:bg-white transition-all resize-none h-32 text-gray-800 placeholder:text-gray-400 font-bold hover:border-gray-300"
+                                    ></textarea>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 mt-10">
+                                <button
+                                    onClick={() => setShowReportModal(false)}
+                                    className="px-6 py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] text-gray-500 bg-gray-50 hover:bg-gray-100 transition-all active:scale-95"
+                                >
+                                    Batalkan
+                                </button>
+                                <button
+                                    onClick={handleReportSubmit}
+                                    disabled={isSubmittingReport || !reportReason}
+                                    className="px-6 py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] bg-rose-500 text-white hover:bg-rose-600 transition-all shadow-lg shadow-rose-200 disabled:opacity-50 disabled:shadow-none hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2"
+                                >
+                                    {isSubmittingReport ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                            Mengirim...
+                                        </>
+                                    ) : (
+                                        "Kirim Laporan"
+                                    )}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
