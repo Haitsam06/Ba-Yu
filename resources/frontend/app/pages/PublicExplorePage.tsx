@@ -31,12 +31,27 @@ import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
 export default function PublicExplorePage() {
     const { isAuthenticated } = useAuth();
     const { isBookmarked, toggleBookmark } = useBookmarks();
-    const [activeSegment, setActiveSegment] = useState<
-        "kategori" | "populer" | "terbaru"
-    >("kategori");
-    const [searchQuery, setSearchQuery] = useState("");
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
+    const tabFromUrl = queryParams.get("tab") as "kategori" | "populer" | "terbaru" | null;
+
+    const [activeSegment, setActiveSegment] = useState<
+        "kategori" | "populer" | "terbaru"
+    >(() => {
+        if (tabFromUrl && ["kategori", "populer", "terbaru"].includes(tabFromUrl)) {
+            return tabFromUrl;
+        }
+        return "kategori";
+    });
+
+    // Update activeSegment when tab URL param changes
+    useEffect(() => {
+        if (tabFromUrl && ["kategori", "populer", "terbaru"].includes(tabFromUrl)) {
+            setActiveSegment(tabFromUrl);
+        }
+    }, [tabFromUrl]);
+
+    const [searchQuery, setSearchQuery] = useState("");
     const searchTermFromUrl = queryParams.get("q") || "";
     const [notes, setNotes] = useState<any[]>([]);
     const [isLoadingNotes, setIsLoadingNotes] = useState(true);

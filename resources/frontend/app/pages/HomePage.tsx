@@ -297,12 +297,15 @@ export default function HomePage() {
                         {/* VERTICAL FEED SECTION */}
                         <div className="mb-4 flex items-center justify-between px-2">
                             <h3 className="font-['Lexend_Deca'] font-extrabold text-[18px] text-gray-900 tracking-tight flex items-center gap-2">
-                                Terbaru{" "}
+                                Catatan{" "}
                                 <div className="w-2 h-2 rounded-full bg-green-500"></div>
                             </h3>
-                            <button className="text-[13px] font-['Lexend_Deca'] font-bold text-primary hover:text-indigo-800 transition-colors">
+                            <Link 
+                                to="/explore?tab=terbaru"
+                                className="text-[13px] font-['Lexend_Deca'] font-bold text-primary hover:text-indigo-800 transition-colors"
+                            >
                                 Lihat Semua
-                            </button>
+                            </Link>
                         </div>
 
                         <div className="flex flex-col">
@@ -579,9 +582,12 @@ export default function HomePage() {
                                     })}
                                 </div>
 
-                                <button className="w-full mt-6 bg-gray-50 hover:bg-primary/10 text-gray-600 hover:text-primary rounded-2xl py-3 text-[14px] font-['Lexend_Deca'] font-bold transition-colors">
+                                <Link 
+                                    to="/explore?tab=populer"
+                                    className="block w-full mt-6 bg-gray-50 hover:bg-primary/10 text-gray-600 hover:text-primary rounded-2xl py-3 text-[14px] font-['Lexend_Deca'] font-bold transition-colors text-center"
+                                >
                                     Lihat Semua
-                                </button>
+                                </Link>
                             </div>
 
                             {/* Discover Topics Section */}

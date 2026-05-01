@@ -33,9 +33,16 @@ import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
 export default function ExplorePage() {
     const { isAuthenticated } = useAuth();
     const { isBookmarked, toggleBookmark } = useBookmarks();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const tabFromUrl = queryParams.get("tab") as "kategori" | "populer" | "terbaru" | null;
+
     const [activeSegment, setActiveSegment] = useState<
         "kategori" | "populer" | "terbaru"
     >(() => {
+        if (tabFromUrl && ["kategori", "populer", "terbaru"].includes(tabFromUrl)) {
+            return tabFromUrl;
+        }
         return (
             (sessionStorage.getItem("exploreTab") as
                 | "kategori"
@@ -53,12 +60,17 @@ export default function ExplorePage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
 
+    // Update activeSegment when tab URL param changes
+    useEffect(() => {
+        if (tabFromUrl && ["kategori", "populer", "terbaru"].includes(tabFromUrl)) {
+            setActiveSegment(tabFromUrl);
+        }
+    }, [tabFromUrl]);
+
     // --- STATE UNTUK AUTOCOMPLETE SEARCH ---
     const searchInputRef = useRef<HTMLDivElement>(null);
     const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
     const [suggestions, setSuggestions] = useState<string[]>([]);
-    const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
     const searchTermFromUrl = queryParams.get("q") || "";
     const [notes, setNotes] = useState<any[]>([]);
     const [isLoadingNotes, setIsLoadingNotes] = useState(true);
