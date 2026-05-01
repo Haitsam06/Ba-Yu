@@ -38,10 +38,11 @@ export default function ProfilePage() {
     const tabParam = searchParams.get("tab") as
         | "catatan"
         | "bookmarks"
-        | "aktivitas";
+        | "aktivitas"
+        | "draf";
 
     const [activeTab, setActiveTab] = useState<
-        "catatan" | "bookmarks" | "aktivitas"
+        "catatan" | "bookmarks" | "aktivitas" | "draf"
     >(tabParam || "catatan");
     const [applyModalOpen, setApplyModalOpen] = useState(false);
     const { user } = useAuth();
@@ -95,7 +96,28 @@ export default function ProfilePage() {
 
     useEffect(() => {
         fetchActivities();
+        fetchDrafts();
     }, []);
+
+    const [drafts, setDrafts] = useState<any[]>([]);
+    const [isLoadingDrafts, setIsLoadingDrafts] = useState(false);
+
+    const fetchDrafts = async () => {
+        setIsLoadingDrafts(true);
+        try {
+            const token =
+                localStorage.getItem("bayu-token") ||
+                sessionStorage.getItem("bayu-token");
+            const res = await axios.get("/api/v1/drafts", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setDrafts(res.data.data);
+        } catch (error) {
+            console.error("Gagal ngambil draf", error);
+        } finally {
+            setIsLoadingDrafts(false);
+        }
+    };
     // 🔥 BATAS MESIN 🔥
 
     const [notes, setNotes] = useState<any[]>([]);
@@ -438,6 +460,11 @@ export default function ProfilePage() {
                                     id: "catatan",
                                     label: "Catatan Rilisan",
                                     count: userNotes.length,
+                                },
+                                {
+                                    id: "draf",
+                                    label: "Draf Saya",
+                                    count: drafts.length,
                                 },
                                 {
                                     id: "bookmarks",
@@ -847,6 +874,135 @@ export default function ProfilePage() {
                                             className="inline-flex bg-white text-gray-900 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 px-8 py-3 rounded-full font-['Lexend_Deca'] font-bold text-[14px] transition-all shadow-sm"
                                         >
                                             Mulai Eksplorasi
+                                        </Link>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {activeTab === "draf" && (
+                            <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-3xl">
+                                {isLoadingDrafts ? (
+                                    <div className="space-y-0">
+                                        {[...Array(2)].map((_, i) => (
+                                            <NoteCardSkeleton key={i} />
+                                        ))}
+                                    </div>
+                                ) : drafts.length > 0 ? (
+                                    drafts.map((draft: any) => (
+                                        <article
+                                            key={draft.id || draft._id}
+                                            onClick={() => navigate(`/upload?id=${draft._id || draft.id}`)}
+                                            className="group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 py-6 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors bg-transparent outline-none cursor-pointer"
+                                        >
+                                            <div className="flex-1 min-w-0 flex flex-col w-full h-full text-left">
+                                                {/* Author Header */}
+                                                <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-700">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <AvatarImage
+                                                            src={user?.avatar}
+                                                            alt={user?.name}
+                                                            size={20}
+                                                            className="ring-2 ring-transparent"
+                                                        />
+                                                        <span className="font-medium text-gray-900 tracking-tight">
+                                                            {user?.name}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-gray-400 px-0.5">
+                                                        di
+                                                    </span>
+                                                    <span className="font-semibold text-gray-800 tracking-tight">
+                                                        {draft.mapel || "Umum"}
+                                                    </span>
+                                                    {draft.jenjang && (
+                                                        <>
+                                                            <span className="text-[10px] text-gray-400 mx-0.5">
+                                                                •
+                                                            </span>
+                                                            <span className="text-gray-500 tracking-tight">
+                                                                {draft.jenjang === "Kuliah"
+                                                                    ? `${draft.kelas || "S1/D4"} Semester ${draft.semester || 1}`
+                                                                    : (draft.kelas ? `${draft.jenjang} Kelas ${draft.kelas}` : draft.jenjang)}
+                                                            </span>
+                                                        </>
+                                                    )}
+                                                    <span className="ml-1.5 px-2 py-0.5 rounded-md bg-amber-50 text-amber-600 border border-amber-100 text-[10px] font-bold uppercase tracking-wider">
+                                                        Draft
+                                                    </span>
+                                                </div>
+
+                                                {/* Title */}
+                                                <div className="block mb-2 font-['Lexend_Deca']">
+                                                    <h2 className="text-[20px] md:text-[22px] font-extrabold text-gray-900 leading-[1.25] tracking-tight group-hover:text-primary transition-colors line-clamp-2">
+                                                        {draft.title || "Draft Tanpa Judul"}
+                                                    </h2>
+                                                </div>
+
+                                                {/* Excerpt */}
+                                                <p className="text-[15px] font-['Manrope'] text-gray-500 line-clamp-2 leading-relaxed mb-4 pr-2">
+                                                    {String(draft.plain_content || draft.description || "Belum ada konten...").replace(/&nbsp;/g, ' ')}
+                                                </p>
+
+                                                {/* Tags */}
+                                                <TagList tags={draft.tags || []} />
+
+                                                {/* Meta Footer */}
+                                                <div className={`flex items-center justify-between mt-auto`}>
+                                                    <div className="flex items-center gap-1.5 text-gray-500">
+                                                        <Clock
+                                                            className="w-[14px] h-[14px] text-gray-400"
+                                                            strokeWidth={2}
+                                                        />
+                                                        <span className="text-[12px] font-['Manrope'] font-medium">
+                                                            Edit terakhir: {new Date(draft.updated_at || draft.created_at).toLocaleDateString("id-ID", { month: 'short', day: 'numeric', year: 'numeric'})}
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="flex items-center gap-3 shrink-0 ml-4">
+                                                        <button 
+                                                            className="flex items-center gap-1.5 text-[13px] font-['Lexend_Deca'] font-bold text-primary hover:text-indigo-700 transition-colors bg-primary/5 hover:bg-primary/10 px-4 py-1.5 rounded-xl border border-primary/10 shadow-sm"
+                                                        >
+                                                            <Edit className="w-3.5 h-3.5" />
+                                                            Lanjutkan Edit
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Thumbnail */}
+                                            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-gray-100 relative shadow-sm border border-gray-100/50">
+                                                {draft.thumbnail ? (
+                                                    <img
+                                                        src={draft.thumbnail}
+                                                        alt={draft.title}
+                                                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                                                    />
+                                                ) : (
+                                                    <DefaultThumbnail className="w-full h-full transform group-hover:scale-110 transition-transform duration-500" />
+                                                )}
+                                                <div className="absolute top-2 right-2 bg-gray-900/80 backdrop-blur-sm text-white text-[10px] font-['Lexend_Deca'] font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1.5">
+                                                    <FileText className="w-3 h-3" /> DRAF
+                                                </div>
+                                            </div>
+                                        </article>
+                                    ))
+                                ) : (
+                                    <div className="col-span-full py-20 text-center bg-gray-50 rounded-3xl border border-gray-100 border-dashed flex flex-col items-center justify-center">
+                                        <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center mb-5">
+                                            <FileText className="w-8 h-8 text-gray-300" />
+                                        </div>
+                                        <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-[19px] mb-2">
+                                            Belum Ada Draf
+                                        </h3>
+                                        <p className="font-['Manrope'] text-[15px] text-gray-500 mb-8 max-w-sm mx-auto leading-relaxed">
+                                            Semua catatan yang kamu simpan sebagai draf akan muncul di sini.
+                                        </p>
+                                        <Link
+                                            to="/upload"
+                                            className="inline-flex bg-primary text-white hover:bg-indigo-700 px-8 py-3 rounded-full font-['Lexend_Deca'] font-bold text-[14px] transition-all shadow-sm shadow-primary/20 hover:shadow-md hover:shadow-primary/30"
+                                        >
+                                            Buat Catatan Baru
                                         </Link>
                                     </div>
                                 )}

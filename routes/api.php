@@ -36,7 +36,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/v1/notifikasi/{id}/read', [NotificationController::class, 'markAsRead']);
 
     // Posts
+    Route::get('/v1/drafts', [PostController::class, 'drafts']);
     Route::post('/v1/posts', [PostController::class, 'store']);
+    Route::put('/v1/posts/{id}', [PostController::class, 'update']);
     Route::delete('/v1/posts/{id}', [PostController::class, 'destroy']);
 
     // Verify

@@ -102,9 +102,10 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
+        $isDraft = $request->visibility === 'draft';
         $request->validate([
             'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'content' => $isDraft ? 'nullable|string' : 'required|string',
             'description' => 'nullable|string',
             'mapel' => 'nullable|string',
             'jenjang' => 'nullable|string',
@@ -115,7 +116,7 @@ class PostController extends Controller
             'thumbnail_fit' => 'nullable|in:cover,contain',
             'topic_id' => 'nullable|string',
             'category_id' => 'nullable|string',
-            'visibility' => 'in:public,private',
+            'visibility' => 'in:public,private,draft',
         ]);
 
         $post = Post::create([
@@ -150,9 +151,102 @@ class PostController extends Controller
         }
 
         return response()->json([
-            'message' => 'Catatan berhasil masuk ke awan',
+            'message' => $post->visibility === 'draft' ? 'Draf berhasil disimpan' : 'Catatan berhasil masuk ke awan',
             'data' => $post
         ], 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $post = Post::find($id);
+
+        if (!$post) {
+            return response()->json(['message' => 'Post tidak ditemukan'], 404);
+        }
+
+        if ($post->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Akses ditolak'], 403);
+        }
+
+        $isDraft = $request->visibility === 'draft';
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => $isDraft ? 'nullable|string' : 'required|string',
+            'description' => 'nullable|string',
+            'mapel' => 'nullable|string',
+            'jenjang' => 'nullable|string',
+            'kelas' => 'nullable|string',
+            'semester' => 'nullable|string',
+            'tags' => 'nullable|array',
+            'thumbnail' => 'nullable|string',
+            'thumbnail_fit' => 'nullable|in:cover,contain',
+            'topic_id' => 'nullable|string',
+            'category_id' => 'nullable|string',
+            'visibility' => 'in:public,private,draft',
+        ]);
+
+        $post->update([
+            'title' => $request->title,
+            'content' => $request->input('content'),
+            'plain_content' => $request->input('content') ? strip_tags($request->input('content')) : '',
+            'description' => $request->description,
+            'mapel' => $request->mapel,
+            'jenjang' => $request->jenjang,
+            'kelas' => $request->kelas,
+            'semester' => $request->semester,
+            'tags' => $request->tags ?? [],
+            'thumbnail' => $request->thumbnail,
+            'thumbnail_fit' => $request->thumbnail_fit ?? 'cover',
+            'topic_id' => $request->topic_id,
+            'category_id' => $request->category_id,
+            'visibility' => $request->visibility ?? 'public',
+        ]);
+
+        // If transitioning to public, send notifications
+        if ($post->visibility === 'public' && !$post->is_verified) {
+            $pakars = User::where('role', 'pakar')->get();
+            foreach ($pakars as $pakar) {
+                // Check if notif already exists for this post to avoid spam
+                $exists = Notification::where('user_id', $pakar->id)
+                    ->where('type', 'verifikasi')
+                    ->where('message', 'like', '%"'.$post->title.'"%')
+                    ->exists();
+
+                if (!$exists) {
+                    Notification::create([
+                        'user_id' => $pakar->id,
+                        'title' => 'Verifikasi Catatan Baru',
+                        'message' => 'Catatan "' . $post->title . '" dipublikasikan dan menunggu ulasan pakar.',
+                        'type' => 'verifikasi',
+                        'is_read' => false,
+                    ]);
+                }
+            }
+        }
+
+        return response()->json([
+            'message' => $post->visibility === 'draft' ? 'Draf berhasil diperbarui' : 'Catatan berhasil diperbarui',
+            'data' => $post
+        ], 200);
+    }
+
+    public function drafts(Request $request)
+    {
+        $userId = Auth::id();
+        if (!$userId) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        $drafts = Post::with(['topic', 'category'])
+            ->where('user_id', $userId)
+            ->where('visibility', 'draft')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'message' => 'Berhasil mengambil daftar draf',
+            'data' => $drafts
+        ], 200);
     }
 
     public function show($id)

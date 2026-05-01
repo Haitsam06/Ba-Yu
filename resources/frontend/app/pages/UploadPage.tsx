@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { MobileLayout } from '../components/MobileLayout';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { ArrowLeft, ChevronDown, Tag, Send, Calculator, Plus, X, Image, Film, Code, Minus, Quote, Bold, Italic, Underline, Strikethrough, Highlighter, Link as LinkIcon, Heading1, Heading2 } from 'lucide-react';
 import { mataPelajaran } from '../data/mockData';
 import ReactQuill, { Quill } from 'react-quill';
@@ -659,15 +659,21 @@ function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<Re
 // ========== MAIN UPLOAD PAGE ==========
 export default function UploadPage() {
   const navigate = useNavigate();
-  const quillRef = useRef<ReactQuill>(null);
+  const [searchParams] = useSearchParams();
+  const initialDraftId = searchParams.get('id');
+  const [draftId, setDraftId] = useState<string | null>(initialDraftId);
   const { showToast } = useToast();
+  
+  const quillRef = useRef<ReactQuill>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [showFormulaModal, setShowFormulaModal] = useState(false);
   const [formulaInput, setFormulaInput] = useState('');
   const [formulaTab, setFormulaTab] = useState('Umum');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [extractedThumbnail, setExtractedThumbnail] = useState<string | null>(null);
   const [finalThumbnail, setFinalThumbnail] = useState<string | null>(null);
   const [thumbnailFit, setThumbnailFit] = useState<'cover' | 'contain'>('cover');
@@ -693,6 +699,36 @@ export default function UploadPage() {
   const [mapelSearch, setMapelSearch] = useState('');
   const [isMapelDropdownOpen, setIsMapelDropdownOpen] = useState(false);
   const mapelDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (draftId) {
+      const fetchDraft = async () => {
+        try {
+          const res = await axios.get(`/api/v1/posts/${draftId}`);
+          const data = res.data.data;
+          setTitle(data.title || '');
+          setContent(data.content || '');
+          setMeta({
+            mataPelajaran: data.mapel || '',
+            jenjang: data.jenjang || 'SMA',
+            kelas: data.kelas || '10',
+            semester: data.semester || 1,
+            tags: data.tags || [],
+            ajukanPakar: false,
+          });
+          if (data.thumbnail) {
+            setExtractedThumbnail(data.thumbnail);
+            setFinalThumbnail(data.thumbnail);
+            setThumbnailFit(data.thumbnail_fit || 'cover');
+          }
+        } catch (error) {
+          console.error('Failed to load draft:', error);
+          showToast('Gagal memuat draf', 'error');
+        }
+      };
+      fetchDraft();
+    }
+  }, [draftId]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -812,7 +848,7 @@ export default function UploadPage() {
     setIsSubmitting(true);
 
     try {
-      await axios.post('/api/v1/posts', {
+      const payload = {
         title: title.trim(),
         content: content,
         description: previewDescription,
@@ -824,7 +860,13 @@ export default function UploadPage() {
         semester: meta.semester.toString(),
         tags: meta.tags,
         visibility: 'public'
-      });
+      };
+
+      if (draftId) {
+        await axios.put(`/api/v1/posts/${draftId}`, payload);
+      } else {
+        await axios.post('/api/v1/posts', payload);
+      }
       showToast('Catatan berhasil dipublikasikan!', 'success');
       navigate(-1);
     } catch (error) {
@@ -832,6 +874,47 @@ export default function UploadPage() {
       showToast('Terjadi kesalahan saat menyimpan catatan.', 'error');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleSaveDraft = async () => {
+    if (!title.trim()) {
+      showToast('Judul draf harus diisi', 'warning');
+      return;
+    }
+    setIsSavingDraft(true);
+
+    try {
+      const payload = {
+        title: title.trim(),
+        content: content,
+        description: previewDescription,
+        thumbnail: finalThumbnail || extractedThumbnail,
+        thumbnail_fit: thumbnailFit,
+        mapel: meta.mataPelajaran,
+        jenjang: meta.jenjang,
+        kelas: meta.kelas.toString(),
+        semester: meta.semester.toString(),
+        tags: meta.tags,
+        visibility: 'draft'
+      };
+
+      if (draftId) {
+        await axios.put(`/api/v1/posts/${draftId}`, payload);
+        showToast('Draf berhasil diperbarui!', 'success');
+      } else {
+        const res = await axios.post('/api/v1/posts', payload);
+        const newDraftId = res.data.data._id || res.data.data.id;
+        setDraftId(newDraftId);
+        window.history.replaceState(null, '', `?id=${newDraftId}`);
+        showToast('Draf berhasil disimpan!', 'success');
+      }
+      setShowPreviewModal(false);
+    } catch (error) {
+      console.error('Gagal menyimpan draf:', error);
+      showToast('Terjadi kesalahan saat menyimpan draf.', 'error');
+    } finally {
+      setIsSavingDraft(false);
     }
   };
 
@@ -1120,8 +1203,12 @@ export default function UploadPage() {
                      >
                         {isSubmitting ? 'Publishing...' : 'Publish now'}
                      </button>
-                     <button className="text-[14px] font-['Manrope'] text-gray-500 hover:text-gray-900 transition-colors">
-                        Simpan draf
+                     <button
+                        onClick={handleSaveDraft}
+                        disabled={isSavingDraft || isSubmitting}
+                        className="text-[14px] font-['Manrope'] text-gray-500 hover:text-gray-900 transition-colors disabled:opacity-50"
+                     >
+                        {isSavingDraft ? 'Menyimpan...' : 'Simpan draf'}
                      </button>
                   </div>
                 </div>
