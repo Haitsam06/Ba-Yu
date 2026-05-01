@@ -28,6 +28,7 @@ import { useBookmarks } from "../contexts/BookmarkContext";
 import { AuthModal } from "../components/auth-modal";
 import { NoteCardSkeleton } from "../components/ui/skeletons";
 import { TagList } from "../components/ui/TagList";
+import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
 
 export default function ExplorePage() {
     const { isAuthenticated } = useAuth();
@@ -299,13 +300,11 @@ export default function ExplorePage() {
             author: note.user
                 ? {
                     ...note.user,
-                    avatar:
-                        note.user.avatar ||
-                        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+                    avatar: note.user.avatar || null,
                 }
                 : {
                     name: "Anonim",
-                    avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+                    avatar: null,
                 },
             createdAt: note.created_at,
             thumbnail: note.thumbnail || null,
@@ -633,10 +632,11 @@ export default function ExplorePage() {
                                                         to={`/profile/${author?.id || author?._id}`}
                                                         className="flex items-center gap-1.5 group/author outline-none cursor-pointer"
                                                     >
-                                                        <img
+                                                        <AvatarImage
                                                             src={author?.avatar}
                                                             alt={author?.name}
-                                                            className="w-[20px] h-[20px] rounded-full object-cover ring-2 ring-transparent group-hover/author:ring-primary/20 transition-all"
+                                                            size={20}
+                                                            className="ring-2 ring-transparent group-hover/author:ring-primary/20 transition-all"
                                                         />
                                                         <span className="font-medium text-gray-900 group-hover/author:underline tracking-tight">
                                                             {author?.name}
@@ -790,7 +790,14 @@ export default function ExplorePage() {
                                                     </Link>
                                                 </div>
                                             ) : (
-                                                <div className="hidden sm:block sm:w-[160px] md:w-[200px] shrink-0 pointer-events-none"></div>
+                                                <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden shadow-sm">
+                                                    <Link
+                                                        to={`/note/${note.id}`}
+                                                        className="block w-full h-full outline-none cursor-pointer"
+                                                    >
+                                                        <DefaultThumbnail className="w-full h-full rounded-2xl" />
+                                                    </Link>
+                                                </div>
                                             )}
                                         </article>
                                     );
@@ -846,13 +853,11 @@ export default function ExplorePage() {
                                                     to={`/profile/${expert._id || expert.id}`}
                                                     className="flex items-center gap-3 min-w-0 pr-4 outline-none"
                                                 >
-                                                    <img
-                                                        src={
-                                                            expert.avatar ||
-                                                            "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400"
-                                                        }
+                                                    <AvatarImage
+                                                        src={expert.avatar}
                                                         alt={expert.name}
-                                                        className="w-10 h-10 rounded-full object-cover bg-gray-100 ring-2 ring-transparent group-hover:ring-primary/20 transition-all"
+                                                        size={40}
+                                                        className="rounded-full object-cover bg-gray-100 ring-2 ring-transparent group-hover:ring-primary/20 transition-all"
                                                     />
                                                     <div className="flex flex-col min-w-0">
                                                         <span className="font-['Lexend_Deca'] font-bold text-[14px] text-gray-900 truncate group-hover:text-primary transition-colors">

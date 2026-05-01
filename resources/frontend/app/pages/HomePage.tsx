@@ -20,6 +20,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useBookmarks } from "../contexts/BookmarkContext";
 import { useToast } from "../contexts/ToastContext";
 import { TagList } from "../components/ui/TagList";
+import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
 
 export default function HomePage() {
     const { user } = useAuth();
@@ -92,13 +93,11 @@ export default function HomePage() {
         author: note.user
             ? {
                   ...note.user,
-                  avatar:
-                      note.user.avatar ||
-                      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+                  avatar: note.user.avatar || null,
               }
             : {
                   name: "Anonim",
-                  avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+                  avatar: null,
               },
         createdAt: note.created_at,
         thumbnail: note.thumbnail || null,
@@ -322,10 +321,11 @@ export default function HomePage() {
                                                     to={`/profile/${author?.id || author?._id}`}
                                                     className="flex items-center gap-1.5 group/author outline-none cursor-pointer"
                                                 >
-                                                    <img
+                                                    <AvatarImage
                                                         src={author?.avatar}
                                                         alt={author?.name}
-                                                        className="w-[20px] h-[20px] rounded-full object-cover ring-2 ring-transparent group-hover/author:ring-primary/20 transition-all"
+                                                        size={20}
+                                                        className="ring-2 ring-transparent group-hover/author:ring-primary/20 transition-all"
                                                     />
                                                     <span className="font-medium text-gray-900 group-hover/author:underline tracking-tight">
                                                         {author?.name}
@@ -476,7 +476,14 @@ export default function HomePage() {
                                                 </Link>
                                             </div>
                                         ) : (
-                                            <div className="hidden sm:block sm:w-[160px] md:w-[200px] shrink-0 pointer-events-none"></div>
+                                            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden shadow-sm">
+                                                <Link
+                                                    to={`/note/${note.id}`}
+                                                    className="block w-full h-full outline-none"
+                                                >
+                                                    <DefaultThumbnail className="w-full h-full rounded-2xl" />
+                                                </Link>
+                                            </div>
                                         )}
                                     </article>
                                 );
@@ -537,10 +544,11 @@ export default function HomePage() {
                                                         to={`/profile/${tAuth?.id || tAuth?._id}`}
                                                         className="flex items-center gap-1.5 mb-2 hover:opacity-80 transition-opacity"
                                                     >
-                                                        <img
+                                                        <AvatarImage
                                                             src={tAuth?.avatar}
                                                             alt={tAuth?.name}
-                                                            className="w-[20px] h-[20px] rounded-[6px] object-cover"
+                                                            size={20}
+                                                            className="rounded-[6px]"
                                                         />
                                                         <span className="font-['Lexend_Deca'] font-bold text-[13px] text-gray-700 truncate tracking-tight">
                                                             {tAuth?.name}

@@ -2,6 +2,7 @@ import { MobileLayout } from '../components/MobileLayout';
 import { ChevronRight, User, Bell, Lock, HelpCircle, Shield, LogOut, Moon, Globe, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
+import { AvatarImage } from '../components/ui/DefaultImages';
 
 export default function SettingsPage() {
   const { user, logout } = useAuth();
@@ -32,10 +33,11 @@ export default function SettingsPage() {
           {/* Profile Summary Card */}
           <div className="bg-gradient-to-br from-primary to-secondary rounded-3xl p-5 mb-6 shadow-lg">
             <div className="flex items-center gap-4">
-              <img
-                src={user.avatar || 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100'}
+              <AvatarImage
+                src={user.avatar}
                 alt={user.name}
-                className="w-16 h-16 rounded-2xl border-2 border-white/50 object-cover shadow-xl bg-white/20"
+                size={64}
+                className="border-2 border-white/50 shadow-xl bg-white/20"
               />
               <div className="flex-1">
                 <h2 className="font-['Lexend_Deca'] font-bold text-white text-lg mb-1">

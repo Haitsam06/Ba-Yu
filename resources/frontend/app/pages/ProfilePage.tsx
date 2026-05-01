@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import { NoteCardSkeleton } from "../components/ui/skeletons";
 import { TagList } from "../components/ui/TagList";
+import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
 import {
     Settings,
     Edit,
@@ -142,9 +143,7 @@ export default function ProfilePage() {
     const currentUser = {
         id: user?.id || user?._id || "",
         name: user?.name || "Pengguna",
-        avatar:
-            user?.avatar ||
-            "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+        avatar: user?.avatar || null,
         role: user?.role || "siswa",
         jenjang: user?.jenjang_pendidikan || "-",
         bio: user?.bio || "",
@@ -200,13 +199,11 @@ export default function ProfilePage() {
         author: note.user
             ? {
                   ...note.user,
-                  avatar:
-                      note.user.avatar ||
-                      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+                  avatar: note.user.avatar || null,
               }
             : {
                   name: "Anonim",
-                  avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+                  avatar: null,
               },
     }));
 
@@ -239,13 +236,11 @@ export default function ProfilePage() {
                         author: n.user
                             ? {
                                   ...n.user,
-                                  avatar:
-                                      n.user.avatar ||
-                                      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+                                  avatar: n.user.avatar || null,
                               }
                             : {
                                   name: "Anonim",
-                                  avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+                                  avatar: null,
                               },
                     })),
                 );
@@ -273,10 +268,11 @@ export default function ProfilePage() {
                     {/* Avatar & Top Actions */}
                     <div className="flex flex-col sm:flex-row items-center sm:items-end justify-between gap-4 -mt-16 sm:-mt-20 mb-6 relative z-10">
                         <div className="relative">
-                            <img
+                            <AvatarImage
                                 src={currentUser.avatar}
                                 alt={currentUser.name}
-                                className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-white object-cover bg-white shadow-sm"
+                                size={160}
+                                className="border-4 border-white bg-white shadow-sm sm:!w-40 sm:!h-40 !w-32 !h-32"
                             />
                             {currentUser.role !== "siswa" && (
                                 <div
@@ -499,13 +495,11 @@ export default function ProfilePage() {
                                                 {/* Author Header */}
                                                 <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-700">
                                                     <div className="flex items-center gap-1.5">
-                                                        <img
-                                                            src={
-                                                                user?.avatar ||
-                                                                "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100"
-                                                            }
+                                                        <AvatarImage
+                                                            src={user?.avatar}
                                                             alt={user?.name}
-                                                            className="w-[20px] h-[20px] rounded-full object-cover ring-2 ring-transparent"
+                                                            size={20}
+                                                            className="ring-2 ring-transparent"
                                                         />
                                                         <span className="font-medium text-gray-900 tracking-tight">
                                                             {user?.name}
@@ -631,7 +625,14 @@ export default function ProfilePage() {
                                                     </Link>
                                                 </div>
                                             ) : (
-                                                <div className="hidden sm:block sm:w-[160px] md:w-[200px] shrink-0 pointer-events-none"></div>
+                                                <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden shadow-sm">
+                                                    <Link
+                                                        to={`/note/${note.id}`}
+                                                        className="block w-full h-full outline-none cursor-pointer"
+                                                    >
+                                                        <DefaultThumbnail className="w-full h-full rounded-2xl" />
+                                                    </Link>
+                                                </div>
                                             )}
                                         </article>
                                     ))
@@ -677,17 +678,11 @@ export default function ProfilePage() {
                                                 {/* Author Header */}
                                                 <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-700">
                                                     <div className="flex items-center gap-1.5 outline-none">
-                                                        <img
-                                                            src={
-                                                                note.author
-                                                                    ?.avatar ||
-                                                                "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100"
-                                                            }
-                                                            alt={
-                                                                note.author
-                                                                    ?.name
-                                                            }
-                                                            className="w-[20px] h-[20px] rounded-full object-cover ring-2 ring-transparent"
+                                                        <AvatarImage
+                                                            src={note.author?.avatar}
+                                                            alt={note.author?.name}
+                                                            size={20}
+                                                            className="ring-2 ring-transparent"
                                                         />
                                                         <span className="font-medium text-gray-900 tracking-tight">
                                                             {note.author?.name}
@@ -818,7 +813,14 @@ export default function ProfilePage() {
                                                     </Link>
                                                 </div>
                                             ) : (
-                                                <div className="hidden sm:block sm:w-[150px] md:w-[180px] shrink-0 pointer-events-none"></div>
+                                                <div className="w-full sm:w-[150px] md:w-[180px] h-[160px] sm:h-[120px] md:h-[135px] shrink-0 rounded-2xl overflow-hidden shadow-sm">
+                                                    <Link
+                                                        to={`/note/${note.id}`}
+                                                        className="block w-full h-full outline-none cursor-pointer"
+                                                    >
+                                                        <DefaultThumbnail className="w-full h-full rounded-2xl" />
+                                                    </Link>
+                                                </div>
                                             )}
                                         </article>
                                     ))
@@ -880,8 +882,18 @@ export default function ProfilePage() {
                                                             "Catatan telah dihapus"}
                                                     </span>
                                                 </div>
-                                                <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl text-gray-700 text-[15px] font-['Manrope'] leading-relaxed">
-                                                    "{activity.content}"
+                                                <div className="flex gap-4">
+                                                    <AvatarImage
+                                                        src={user?.avatar}
+                                                        alt={user?.name}
+                                                        size={40}
+                                                        className="border border-gray-100 shrink-0"
+                                                    />
+                                                    <div className="flex-1">
+                                                        <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl text-gray-700 text-[15px] font-['Manrope'] leading-relaxed">
+                                                            "{activity.content}"
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div className="text-xs text-gray-400 mt-4 flex items-center gap-1.5 font-['Manrope']">
                                                     <Clock className="w-3.5 h-3.5" />

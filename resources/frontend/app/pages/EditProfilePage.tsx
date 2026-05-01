@@ -20,6 +20,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
+import { AvatarImage } from "../components/ui/DefaultImages";
 
 export default function EditProfilePage() {
     const { user, updateUserSession } = useAuth();
@@ -368,14 +369,11 @@ export default function EditProfilePage() {
                             className="relative mb-4 cursor-pointer group"
                             onClick={() => setShowSourceSelector(true)}
                         >
-                            <img
-                                src={
-                                    avatarPreview ||
-                                    user?.avatar ||
-                                    "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400"
-                                }
+                            <AvatarImage
+                                src={avatarPreview || user?.avatar}
                                 alt={user?.name}
-                                className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-gray-50 shadow-sm transition-transform group-hover:scale-105"
+                                size={112}
+                                className="sm:!w-28 sm:!h-28 !w-24 !h-24 border-4 border-gray-50 shadow-sm transition-transform group-hover:scale-105"
                             />
                             <button
                                 type="button"

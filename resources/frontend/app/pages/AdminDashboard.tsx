@@ -24,6 +24,7 @@ import { mataPelajaran } from "../data/mockData";
 import { Link, useLocation } from "react-router";
 import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
+import { AvatarImage } from "../components/ui/DefaultImages";
 
 type TabType = "catatan" | "laporan" | "users" | "sertifikasi";
 
@@ -223,10 +224,11 @@ export default function AdminDashboard() {
                     <div className="relative z-10">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b border-white/10 pb-6">
                             <div className="flex items-center gap-4">
-                                <img
+                                <AvatarImage
                                     src={user?.avatar}
                                     alt={user?.name}
-                                    className="w-16 h-16 rounded-2xl object-cover border-2 border-white/20 shadow-lg bg-white/10"
+                                    size={64}
+                                    className="rounded-2xl border-2 border-white/20 shadow-lg bg-white/10"
                                 />
                                 <div>
                                     <p className="text-white/70 font-['Manrope'] text-sm tracking-wide uppercase">
@@ -548,14 +550,10 @@ export default function AdminDashboard() {
                                                                                 </span>
                                                                             </div>
                                                                             <div className="flex items-center gap-2">
-                                                                                <img
-                                                                                    src={
-                                                                                        author?.avatar
-                                                                                    }
-                                                                                    alt={
-                                                                                        author?.name
-                                                                                    }
-                                                                                    className="w-5 h-5 rounded-full object-cover"
+                                                                                <AvatarImage
+                                                                                    src={author?.avatar}
+                                                                                    alt={author?.name}
+                                                                                    size={20}
                                                                                 />
                                                                                 <span className="text-xs font-['Manrope'] font-medium text-gray-500 truncate">
                                                                                     {
@@ -770,13 +768,11 @@ export default function AdminDashboard() {
                                                             key={u.id || u._id}
                                                             className="bg-white rounded-3xl border border-gray-100 p-5 hover:border-indigo-100 hover:shadow-md transition-all flex items-center gap-4"
                                                         >
-                                                            <img
-                                                                src={
-                                                                    u.avatar ||
-                                                                    "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400"
-                                                                }
+                                                            <AvatarImage
+                                                                src={u.avatar}
                                                                 alt={u.name}
-                                                                className="w-14 h-14 rounded-2xl object-cover bg-gray-50 border border-gray-100"
+                                                                size={56}
+                                                                className="rounded-2xl object-cover bg-gray-50 border border-gray-100"
                                                             />
                                                             <div className="flex-1 min-w-0">
                                                                 <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 text-sm mb-0.5 truncate">

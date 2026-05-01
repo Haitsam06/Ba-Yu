@@ -21,6 +21,7 @@ import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
 import { AuthModal } from "../components/auth-modal";
 import { TagList } from "../components/ui/TagList";
+import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
 export default function PublicProfilePage() {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
@@ -265,11 +266,9 @@ export default function PublicProfilePage() {
         author: note.user
             ? {
                   ...note.user,
-                  avatar:
-                      note.user.avatar ||
-                      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+                  avatar: note.user.avatar || null,
               }
-            : { name: targetUser.name, avatar: targetUser.avatar },
+            : { name: targetUser.name, avatar: targetUser.avatar || null },
     }));
 
     const mainContent = (
@@ -293,13 +292,11 @@ export default function PublicProfilePage() {
                 {/* Avatar & Top Actions */}
                 <div className="flex flex-col sm:flex-row items-center sm:items-end justify-between gap-4 -mt-16 sm:-mt-20 mb-6 relative z-10">
                     <div className="relative">
-                        <img
-                            src={
-                                targetUser.avatar ||
-                                "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400"
-                            }
+                        <AvatarImage
+                            src={targetUser.avatar}
                             alt={targetUser.name}
-                            className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-white object-cover bg-white shadow-sm"
+                            size={160}
+                            className="border-4 border-white bg-white shadow-sm sm:!w-[160px] sm:!h-[160px] !w-[128px] !h-[128px]"
                         />
                         {targetUser.role !== "siswa" && (
                             <div
@@ -433,11 +430,12 @@ export default function PublicProfilePage() {
                                         <div className="flex-1 min-w-0 flex flex-col w-full h-full">
                                             <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-700">
                                                 <div className="flex items-center gap-1.5">
-                                                    <img
-                                                        src={note.author.avatar}
-                                                        alt={note.author.name}
-                                                        className="w-[20px] h-[20px] rounded-full object-cover ring-2 ring-transparent"
-                                                    />
+                                                    <AvatarImage
+                                                         src={note.author.avatar}
+                                                         alt={note.author.name}
+                                                         size={20}
+                                                         className="ring-2 ring-transparent"
+                                                     />
                                                     <span className="font-medium text-gray-900 tracking-tight">
                                                         {note.author.name}
                                                     </span>
@@ -558,7 +556,14 @@ export default function PublicProfilePage() {
                                                     </Link>
                                                 </div>
                                             ) : (
-                                                <div className="hidden sm:block sm:w-[160px] md:w-[200px] shrink-0 pointer-events-none"></div>
+                                                <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden shadow-sm">
+                                                    <Link
+                                                        to={`/note/${note.id}`}
+                                                        className="block w-full h-full outline-none cursor-pointer"
+                                                    >
+                                                        <DefaultThumbnail className="w-full h-full rounded-2xl" />
+                                                    </Link>
+                                                </div>
                                             )}
                                     </article>
                                 ))
@@ -619,11 +624,12 @@ export default function PublicProfilePage() {
                                             </div>
 
                                             <div className="flex gap-4">
-                                                <img
-                                                    src={targetUser.avatar}
-                                                    alt="Avatar"
-                                                    className="w-10 h-10 rounded-full border border-gray-100 shrink-0"
-                                                />
+                                                <AvatarImage
+                                                     src={targetUser.avatar}
+                                                     alt={targetUser.name}
+                                                     size={40}
+                                                     className="border border-gray-100 shrink-0"
+                                                 />
                                                 <div>
                                                     <div className="flex items-center gap-2 mb-1">
                                                         <span className="font-['Manrope'] font-bold text-[15px]">

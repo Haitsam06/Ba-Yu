@@ -8,6 +8,7 @@ import { BookOpen, Shield, CheckCircle, Zap, Star, Sparkles, Type, ImageIcon, Bo
 import { mockNotes, getUserById } from '../data/mockData';
 import { AuthModal } from '../components/auth-modal';
 import { FeatureCarousel } from '../components/feature-carousel';
+import { DefaultThumbnail, AvatarImage } from '../components/ui/DefaultImages';
 
 export function LandingPage() {
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -270,7 +271,7 @@ export function LandingPage() {
                                {/* Meta & Author Footer */}
                                <div className="flex items-center justify-between mt-auto">
                                   <Link to={`/profile/${author?.id}`} className="flex items-center gap-2.5 group/author outline-none cursor-pointer">
-                                    <img src={author?.avatar} alt={author?.name} className="w-[28px] h-[28px] rounded-full object-cover ring-2 ring-transparent group-hover/author:ring-primary/20 transition-all" />
+                                    <AvatarImage src={author?.avatar} alt={author?.name} size={28} className="ring-2 ring-transparent group-hover/author:ring-primary/20 transition-all" />
                                     <div className="flex flex-col">
                                        <span className="text-[13px] font-['Lexend_Deca'] font-bold text-gray-900 tracking-tight group-hover/author:underline">{author?.name}</span>
                                        <span className="text-[11px] font-['Manrope'] font-semibold text-gray-400">{new Date(note.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
@@ -294,9 +295,13 @@ export function LandingPage() {
                             </div>
 
                             {/* Thumbnail */}
-                            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-[12px] overflow-hidden bg-gray-100 relative shadow-sm">
+                            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-[12px] overflow-hidden shadow-sm relative">
                                <Link to={`/note/${note.id}`} className="block w-full h-full outline-none cursor-pointer">
-                                 <img src={note.thumbnail} alt={note.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
+                                 {note.thumbnail ? (
+                                   <img src={note.thumbnail} alt={note.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
+                                 ) : (
+                                   <DefaultThumbnail className="w-full h-full" />
+                                 )}
                                  <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
                                    <Clock className="w-3 h-3" /> 5m
                                  </div>
@@ -331,7 +336,7 @@ export function LandingPage() {
                               return (
                                  <div key={recAuthor.id} className="flex items-center justify-between group">
                                     <Link to={`/profile/${recAuthor.id}`} className="flex items-center gap-3 min-w-0 pr-4 outline-none">
-                                      <img src={recAuthor.avatar} alt={recAuthor.name} className="w-10 h-10 rounded-full object-cover bg-gray-100 ring-2 ring-transparent group-hover:ring-primary/20 transition-all" />
+                                      <AvatarImage src={recAuthor.avatar} alt={recAuthor.name} size={40} className="bg-gray-100 ring-2 ring-transparent group-hover:ring-primary/20 transition-all" />
                                       <div className="flex flex-col min-w-0">
                                          <span className="font-['Lexend_Deca'] font-bold text-[14px] text-gray-900 truncate group-hover:text-primary transition-colors">{recAuthor.name}</span>
                                          <span className="font-['Manrope'] font-medium text-[12px] text-gray-500 truncate">{recAuthor.role === 'pakar' ? 'Pakar Edukasi' : 'Pelajar'}</span>

@@ -39,6 +39,7 @@ import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
 import { ArticleSkeleton } from "../components/ui/skeletons";
 import { TagList } from "../components/ui/TagList";
+import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
 export default function NoteDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -703,10 +704,11 @@ export default function NoteDetailPage() {
                 {/* Medium-style Author Info Bar */}
                 <div className="flex items-center gap-4 py-4 mb-6">
                     <Link to={`/profile/${author._id || author.id}`}>
-                        <img
+                        <AvatarImage
                             src={author.avatar}
                             alt={author.name}
-                            className="w-12 h-12 rounded-full object-cover shadow-sm border border-gray-100 bg-gray-50 hover:ring-2 hover:ring-primary/20 transition-all cursor-pointer"
+                            size={48}
+                            className="shadow-sm border border-gray-100 bg-gray-50 hover:ring-2 hover:ring-primary/20 transition-all cursor-pointer"
                         />
                     </Link>
                     <div className="flex-1">
@@ -870,10 +872,11 @@ export default function NoteDetailPage() {
                         </div>
 
                         <div className="bg-white/80 rounded-2xl p-4 border border-indigo-50 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex items-center gap-4 shrink-0 shrink-0 w-full sm:w-auto relative z-10 backdrop-blur-sm">
-                            <img
+                            <AvatarImage
                                 src={validator.avatar}
                                 alt={validator.name}
-                                className="w-12 h-12 rounded-full border-2 border-primary/20 object-cover"
+                                size={48}
+                                className="border-2 border-primary/20"
                             />
                             <div>
                                 <p className="text-[11px] font-['Manrope'] text-gray-500 uppercase tracking-wide mb-0.5">
@@ -907,10 +910,11 @@ export default function NoteDetailPage() {
                     </h4>
                     <div className="bg-transparent flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
                         <Link to={`/profile/${author._id || author.id}`}>
-                            <img
+                            <AvatarImage
                                 src={author.avatar}
                                 alt={author.name}
-                                className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover shrink-0 border border-gray-100 hover:ring-4 hover:ring-primary/20 transition-all cursor-pointer"
+                                size={96}
+                                className="sm:!w-28 sm:!h-28 !w-24 !h-24 shrink-0 border border-gray-100 hover:ring-4 hover:ring-primary/20 transition-all cursor-pointer"
                             />
                         </Link>
                         <div className="flex-1">
@@ -985,14 +989,14 @@ export default function NoteDetailPage() {
                     {/* Comment Input */}
                     {isAuthenticated ? (
                         <div className="mb-12 flex gap-4 bg-white p-2 rounded-3xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-                            <img
-                                src={
-                                    user?.avatar ||
-                                    "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop"
-                                }
-                                alt="Your avatar"
-                                className="w-10 h-10 rounded-full border border-gray-200 object-cover shrink-0 hidden sm:block m-4"
-                            />
+                            <div className="hidden sm:block m-4">
+                                <AvatarImage
+                                    src={user?.avatar}
+                                    alt="Your avatar"
+                                    size={40}
+                                    className="border border-gray-200"
+                                />
+                            </div>
                             <div className="flex-1 p-2">
                                 <textarea
                                     dir="ltr"
@@ -1084,13 +1088,11 @@ export default function NoteDetailPage() {
                                                 <Link
                                                     to={`/profile/${cAuth._id || cAuth.id}`}
                                                 >
-                                                    <img
-                                                        src={
-                                                            cAuth.avatar ||
-                                                            "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400"
-                                                        }
+                                                    <AvatarImage
+                                                        src={cAuth.avatar}
                                                         alt={cAuth.name}
-                                                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shrink-0 border border-gray-100 hover:ring-2 hover:ring-primary/20 transition-all"
+                                                        size={48}
+                                                        className="shrink-0 border border-gray-100 hover:ring-2 hover:ring-primary/20 transition-all sm:w-12 sm:h-12 w-10 h-10"
                                                     />
                                                 </Link>
                                                 <div className="flex-1 w-full overflow-hidden">
@@ -1409,11 +1411,15 @@ export default function NoteDetailPage() {
                                     className="group bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 flex flex-col"
                                 >
                                     <div className="relative h-48 overflow-hidden bg-gray-50">
-                                        <img
-                                            src={recNote.thumbnail}
-                                            alt={recNote.title}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        />
+                                        {recNote.thumbnail ? (
+                                            <img
+                                                src={recNote.thumbnail}
+                                                alt={recNote.title}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                        ) : (
+                                            <DefaultThumbnail className="w-full h-full" />
+                                        )}
                                         <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-xl text-[11px] uppercase tracking-wide font-['Lexend_Deca'] font-bold text-primary shadow-sm">
                                             {recNote.mataPelajaran}
                                         </div>
@@ -1424,10 +1430,11 @@ export default function NoteDetailPage() {
                                         </h3>
                                         <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
                                             <div className="flex items-center gap-3">
-                                                <img
+                                                <AvatarImage
                                                     src={recAuthor?.avatar}
                                                     alt={recAuthor?.name}
-                                                    className="w-8 h-8 rounded-full border border-gray-100 object-cover"
+                                                    size={32}
+                                                    className="border border-gray-100"
                                                 />
                                                 <span className="text-sm font-['Manrope'] font-bold text-gray-700">
                                                     {recAuthor?.name}

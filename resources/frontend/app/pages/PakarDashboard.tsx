@@ -17,6 +17,7 @@ import { mataPelajaran } from "../data/mockData";
 import { Link } from "react-router";
 import { useToast } from "../contexts/ToastContext";
 import axios from "axios";
+import { AvatarImage } from "../components/ui/DefaultImages";
 
 type VerificationStatus = "pending" | "approved" | "all";
 
@@ -45,13 +46,11 @@ export default function PakarDashboard() {
                     author: note.user
                         ? {
                               ...note.user,
-                              avatar:
-                                  note.user.avatar ||
-                                  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+                              avatar: note.user.avatar || null,
                           }
                         : {
                               name: "Anonim",
-                              avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+                              avatar: null,
                           },
                     createdAt: note.created_at || note.createdAt,
                     // KODINGAN BARU (MESIN CUCI DOUBLE):
@@ -169,13 +168,11 @@ export default function PakarDashboard() {
                     <div className="relative z-10 max-w-7xl mx-auto">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b border-white/10 pb-6">
                             <div className="flex items-center gap-4">
-                                <img
-                                    src={
-                                        user?.avatar ||
-                                        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"
-                                    }
+                                <AvatarImage
+                                    src={user?.avatar}
                                     alt={user?.name}
-                                    className="w-16 h-16 rounded-2xl object-cover border-2 border-white/20 shadow-lg bg-white/10"
+                                    size={64}
+                                    className="rounded-2xl border-2 border-white/20 shadow-lg bg-white/10"
                                 />
                                 <div>
                                     <div className="flex items-center gap-2">
@@ -377,14 +374,11 @@ export default function PakarDashboard() {
                                                                 }
                                                             </p>
                                                             <div className="flex items-center gap-3 mt-4 md:pl-[60px]">
-                                                                <img
-                                                                    src={
-                                                                        author?.avatar
-                                                                    }
-                                                                    alt={
-                                                                        author?.name
-                                                                    }
-                                                                    className="w-6 h-6 rounded-full object-cover border border-gray-200"
+                                                                <AvatarImage
+                                                                    src={author?.avatar}
+                                                                    alt={author?.name}
+                                                                    size={24}
+                                                                    className="border border-gray-200"
                                                                 />
                                                                 <span className="text-xs font-['Manrope'] font-medium text-gray-500">
                                                                     Oleh{" "}
