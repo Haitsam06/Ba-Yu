@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import { BottomNav } from './BottomNav';
 import { SideNav } from './SideNav';
 
 interface MobileLayoutProps {
@@ -41,7 +40,7 @@ export function MobileLayout({ children, showBottomNav = true }: MobileLayoutPro
         {/* Bottom Navigation for Mobile */}
         {showBottomNav && (
             <div className="md:hidden">
-                <BottomNav />
+               
             </div>
         )}
       </div>

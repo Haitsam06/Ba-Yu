@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { MobileLayout } from '../components/MobileLayout';
 import { useNavigate, useSearchParams } from 'react-router';
-import { ArrowLeft, ChevronDown, Tag, Send, Calculator, Plus, X, Image, Film, Code, Minus, Quote, Bold, Italic, Underline, Strikethrough, Highlighter, Link as LinkIcon, Heading1, Heading2, Loader2, Clock, FileText } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Tag, Send, Calculator, Plus, X, Image, Film, Code, Terminal, Minus, Quote, Bold, Italic, Underline, Strikethrough, Highlighter, Link as LinkIcon, Heading1, Heading2, Loader2, Clock, FileText, Trash2 } from 'lucide-react';
 import { mataPelajaran } from '../data/mockData';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -145,59 +145,251 @@ const formulaPresets: Record<string, { label: string; latex: string }[]> = {
   ],
 };
 
-// ========== FLOATING TOOLBAR COMPONENT ==========
-function FloatingToolbar({ quillRef }: { quillRef: React.RefObject<ReactQuill | null> }) {
+// DELETED FloatingToolbar
+
+// ========== FLOATING BLOCK TOOLBAR ==========
+function FloatingBlockToolbar({ quillRef, onEditAlt }: { quillRef: React.RefObject<ReactQuill | null>; onEditAlt: (index: number, currentAlt: string) => void }) {
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
-  const [formats, setFormats] = useState<Record<string, any>>({});
-  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [activeBlot, setActiveBlot] = useState<{ index: number; type: string } | null>(null);
+  const [currentLayout, setCurrentLayout] = useState('inline');
   const toolbarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const quill = quillRef.current?.getEditor();
     if (!quill) return;
 
-    const handleSelectionChange = (range: any) => {
-      if (range && range.length > 0) {
-        // Block text toolbar if an image is selected
-        const [blot] = quill.getLeaf(range.index);
-        if (blot && blot.domNode && blot.domNode.tagName === 'IMG') {
-          setPosition(null);
-          setShowColorPicker(false);
-          return;
+    const evaluateTarget = (target: HTMLElement) => {
+        const block = target.closest('img, iframe, .ql-video, .ql-formula, pre.ql-syntax, blockquote') as HTMLElement;
+        if (block) {
+            const tagName = block.tagName;
+            const type = tagName === 'IMG' ? 'image' : 
+                         (tagName === 'IFRAME' || block.classList?.contains('ql-video') ? 'video' : 
+                         block.classList?.contains('ql-formula') ? 'formula' : 
+                         tagName === 'PRE' ? 'code-block' : 'blockquote');
+                         
+            const rect = block.getBoundingClientRect();
+            const editorRect = (quill.root.parentElement as HTMLElement).getBoundingClientRect();
+            
+            const blot = Quill.find(block);
+            if (!blot) return false;
+            
+            const index = quill.getIndex(blot);
+            
+            if (type === 'image' || type === 'video' || type === 'formula') {
+                let left = editorRect.left + (rect.left - editorRect.left) + (rect.width / 2) - 60;
+                setPosition({
+                    top: rect.top - 52,
+                    left: Math.max(8, Math.min(left, window.innerWidth - 120)),
+                });
+                if (type === 'image') setCurrentLayout(block.getAttribute('data-layout') || 'inline');
+            } else {
+                setPosition({
+                    top: rect.top - 16,
+                    left: Math.min(editorRect.right - 50, window.innerWidth - 60),
+                });
+            }
+            
+            setActiveBlot({ index, type });
+            return true;
         }
+        return false;
+    };
 
-        const quillBounds = quill.getBounds(range.index, range.length);
-        const editorRect = (quill.root.parentElement as HTMLElement).getBoundingClientRect();
-        const toolbarWidth = 380;
-        let left = editorRect.left + quillBounds.left + (quillBounds.width / 2) - (toolbarWidth / 2);
-        // Keep within viewport bounds
-        left = Math.max(8, Math.min(left, window.innerWidth - toolbarWidth - 8));
-        setPosition({
-          top: editorRect.top + quillBounds.top - 52,
-          left,
-        });
-        setFormats(quill.getFormat(range.index, range.length));
-      } else {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+        if (toolbarRef.current && toolbarRef.current.contains(e.target as Node)) {
+            return;
+        }
+        
+        if (quill.root.contains(e.target as Node)) {
+            const isHandled = evaluateTarget(e.target as HTMLElement);
+            if (isHandled) return;
+        }
+        
+        const range = quill.getSelection();
+        if (range) {
+             const [line] = quill.getLine(range.index);
+             if (line && line.domNode && (line.domNode.tagName === 'PRE' || line.domNode.tagName === 'BLOCKQUOTE')) {
+                 evaluateTarget(line.domNode as HTMLElement);
+                 return;
+             }
+             if (range.length === 1) {
+                 const [leaf] = quill.getLeaf(range.index);
+                 if (leaf && leaf.domNode && (leaf.domNode.tagName === 'IMG' || leaf.domNode.tagName === 'IFRAME' || leaf.domNode.classList?.contains('ql-formula') || leaf.domNode.classList?.contains('ql-video'))) {
+                     evaluateTarget(leaf.domNode as HTMLElement);
+                     return;
+                 }
+             }
+        }
+        
         setPosition(null);
-        setShowColorPicker(false);
-      }
+        setActiveBlot(null);
     };
 
     const updatePosition = () => {
-      const range = quill.getSelection();
-      if (range) handleSelectionChange(range);
+      if (activeBlot !== null) {
+        const [blot] = quill.getLine(activeBlot.index);
+        const [leaf] = quill.getLeaf(activeBlot.index);
+        if (blot && blot.domNode && (blot.domNode.tagName === 'PRE' || blot.domNode.tagName === 'BLOCKQUOTE')) {
+             evaluateTarget(blot.domNode as HTMLElement);
+        } else if (leaf && leaf.domNode) {
+             evaluateTarget(leaf.domNode as HTMLElement);
+        }
+      }
     };
 
-    quill.on('selection-change', handleSelectionChange);
+    document.addEventListener('mousemove', handleGlobalMouseMove);
     window.addEventListener('scroll', updatePosition, true);
     window.addEventListener('resize', updatePosition);
     
+    return () => { 
+        document.removeEventListener('mousemove', handleGlobalMouseMove);
+        window.removeEventListener('scroll', updatePosition, true);
+        window.removeEventListener('resize', updatePosition);
+    };
+  }, [quillRef, activeBlot]);
+
+  if (!position || activeBlot === null) return null;
+
+  const setLayout = (layout: string) => {
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+    quill.formatText(activeBlot.index, 1, 'layout', layout);
+    setCurrentLayout(layout);
+  };
+
+  const handleAltClick = () => {
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+    const [blot] = quill.getLeaf(activeBlot.index);
+    if (blot && blot.domNode) {
+        const currentAlt = blot.domNode.getAttribute('alt') || '';
+        onEditAlt(activeBlot.index, currentAlt);
+    }
+  };
+
+  const handleDelete = () => {
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+    
+    if (activeBlot.type === 'image' || activeBlot.type === 'video' || activeBlot.type === 'formula') {
+       quill.deleteText(activeBlot.index, 1, 'user');
+    } else {
+       // It's a block like code-block
+       const [line] = quill.getLine(activeBlot.index);
+       if (line) {
+         const len = line.length();
+         quill.deleteText(activeBlot.index, len, 'user');
+       }
+    }
+    
+    // Fallback: If editor is completely empty, insert a newline so it doesn't break
+    if (quill.getLength() <= 1) {
+      quill.insertText(0, '\n', 'user');
+    }
+    
+    setPosition(null);
+    setActiveBlot(null);
+  };
+
+  const btnClass = (active: boolean) =>
+    `w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-200 ${active ? 'bg-primary text-white shadow-sm' : 'text-gray-600 hover:text-white hover:bg-white/10'}`;
+
+  return (
+    <div
+      ref={toolbarRef}
+      className="fixed z-50 animate-in fade-in zoom-in-95 duration-150"
+      style={{ top: position.top, left: position.left }}
+      onMouseDown={(e) => e.preventDefault()}
+    >
+      <div className="bg-gray-900/95 backdrop-blur-md rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] px-1.5 py-1.5 flex items-center gap-1 border border-white/10 relative">
+        {activeBlot.type === 'image' && (
+          <>
+            <button className={btnClass(currentLayout === 'inline')} onClick={() => setLayout('inline')} title="Standard / Center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-80"><rect x="7" y="5" width="10" height="14" rx="2"/><line x1="10" y1="9" x2="14" y2="9"/><line x1="10" y1="13" x2="14" y2="13"/></svg>
+            </button>
+            <button className={btnClass(currentLayout === 'wide')} onClick={() => setLayout('wide')} title="Lebar (Wide)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-90"><rect x="4" y="5" width="16" height="14" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="17" y2="13"/></svg>
+            </button>
+            <button className={btnClass(currentLayout === 'fullBleed')} onClick={() => setLayout('fullBleed')} title="Penuh (Full Bleed)">
+               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="5" width="22" height="14" rx="2"/><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="13" x2="20" y2="13"/></svg>
+            </button>
+            
+            <div className="w-px h-5 bg-white/20 mx-1.5"></div>
+            
+            <button onClick={handleAltClick} className="px-3 h-8 text-[12px] font-semibold text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+              Alt text
+            </button>
+
+            <div className="w-px h-5 bg-white/20 mx-1.5"></div>
+          </>
+        )}
+        
+        <button onClick={handleDelete} className="w-8 h-8 flex items-center justify-center rounded-lg text-rose-400 hover:text-white hover:bg-rose-500 transition-colors" title="Hapus Blok">
+           <Trash2 className="w-4 h-4" strokeWidth={2.5} />
+        </button>
+        
+        <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-gray-900/95 border-b border-r border-white/10 rotate-45" />
+      </div>
+    </div>
+  );
+}
+
+// ========== SIDE TOOLBAR (WYSIWYG + BLOCK INSERTER) ==========
+function SideToolbar({ quillRef, onFormulaClick }: { quillRef: React.RefObject<ReactQuill | null>; onFormulaClick: () => void }) {
+  const [position, setPosition] = useState<{ top: number } | null>(null);
+  const [formats, setFormats] = useState<Record<string, any>>({});
+  const [expandedPlus, setExpandedPlus] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+
+    const updatePositionAndFormats = () => {
+      const range = quill.getSelection();
+      if (range) {
+        // Sembunyikan jika yang dipilih adalah gambar
+        const [blot] = quill.getLeaf(range.index);
+        if (blot && blot.domNode && blot.domNode.tagName === 'IMG') {
+          setPosition(null);
+          return;
+        }
+
+        const bounds = quill.getBounds(range.index);
+        const editorRect = (quill.root.parentElement as HTMLElement).getBoundingClientRect();
+        
+        setPosition({
+          top: editorRect.top + bounds.top,
+        });
+        
+        setFormats(quill.getFormat(range.index, range.length));
+      }
+    };
+
+    quill.on('selection-change', updatePositionAndFormats);
+    quill.on('text-change', updatePositionAndFormats);
+    window.addEventListener('scroll', updatePositionAndFormats, true);
+    window.addEventListener('resize', updatePositionAndFormats);
+    
     return () => {
-      quill.off('selection-change', handleSelectionChange);
-      window.removeEventListener('scroll', updatePosition, true);
-      window.removeEventListener('resize', updatePosition);
+      quill.off('selection-change', updatePositionAndFormats);
+      quill.off('text-change', updatePositionAndFormats);
+      window.removeEventListener('scroll', updatePositionAndFormats, true);
+      window.removeEventListener('resize', updatePositionAndFormats);
     };
   }, [quillRef]);
+
+  // Close on click outside
+  useEffect(() => {
+    const handle = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setExpandedPlus(false);
+      }
+    };
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, []);
 
   if (!position) return null;
 
@@ -205,7 +397,7 @@ function FloatingToolbar({ quillRef }: { quillRef: React.RefObject<ReactQuill | 
   if (!quill) return null;
 
   const toggle = (format: string, value?: any) => {
-    const range = quill.getSelection();
+    const range = quill.getSelection(true);
     if (!range) return;
     const current = quill.getFormat(range.index, range.length);
     if (format === 'header') {
@@ -220,16 +412,14 @@ function FloatingToolbar({ quillRef }: { quillRef: React.RefObject<ReactQuill | 
     } else {
       quill.format(format, !current[format]);
     }
-    // Refresh formats
     const newRange = quill.getSelection();
     if (newRange) setFormats(quill.getFormat(newRange.index, newRange.length));
   };
 
   const applyHighlight = (color: string) => {
-    const range = quill.getSelection();
+    const range = quill.getSelection(true);
     if (!range) return;
     const current = quill.getFormat(range.index, range.length);
-    // Toggle off if same color
     quill.format('background', current.background === color ? false : color);
     setShowColorPicker(false);
     const newRange = quill.getSelection();
@@ -237,273 +427,13 @@ function FloatingToolbar({ quillRef }: { quillRef: React.RefObject<ReactQuill | 
   };
 
   const removeHighlight = () => {
-    const range = quill.getSelection();
+    const range = quill.getSelection(true);
     if (!range) return;
     quill.format('background', false);
     setShowColorPicker(false);
     const newRange = quill.getSelection();
     if (newRange) setFormats(quill.getFormat(newRange.index, newRange.length));
   };
-
-  const btnClass = (active: boolean) =>
-    `w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-200 ${active ? 'bg-primary text-white shadow-sm' : 'text-gray-600 hover:text-white hover:bg-white/10'}`;
-
-  return (
-    <div
-      ref={toolbarRef}
-      className="fixed z-50 animate-in fade-in zoom-in-95 duration-150"
-      style={{ top: position.top, left: position.left }}
-      onMouseDown={(e) => e.preventDefault()} // Prevent losing selection
-    >
-      <div className="bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] px-2 py-2 flex items-center gap-1 border border-white/10">
-        <button className={btnClass(!!formats.bold)} onClick={() => toggle('bold')} title="Bold">
-          <Bold className="w-[18px] h-[18px]" strokeWidth={2.5} />
-        </button>
-        <button className={btnClass(!!formats.italic)} onClick={() => toggle('italic')} title="Italic">
-          <Italic className="w-[18px] h-[18px]" strokeWidth={2.5} />
-        </button>
-        <button className={btnClass(!!formats.underline)} onClick={() => toggle('underline')} title="Underline">
-          <Underline className="w-[18px] h-[18px]" strokeWidth={2.5} />
-        </button>
-        <button className={btnClass(!!formats.strike)} onClick={() => toggle('strike')} title="Strikethrough">
-          <Strikethrough className="w-[18px] h-[18px]" strokeWidth={2.5} />
-        </button>
-        <div className="relative">
-          <button className={btnClass(!!formats.background)} onClick={() => setShowColorPicker(!showColorPicker)} title="Highlight">
-            <Highlighter className="w-[18px] h-[18px]" strokeWidth={2.5} />
-            {formats.background && <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full" style={{ background: formats.background }}></div>}
-          </button>
-          {showColorPicker && (
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl p-2.5 flex items-center gap-2 border border-white/10 animate-in fade-in zoom-in-95 duration-200" onMouseDown={(e) => e.preventDefault()}>
-              {HIGHLIGHT_COLORS.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => applyHighlight(c.color)}
-                  className={`w-7 h-7 rounded-full border-2 transition-all hover:scale-125 ${formats.background === c.color ? 'border-white scale-110 shadow-[0_0_10px_rgba(255,255,255,0.3)]' : 'border-transparent'}`}
-                  style={{ background: c.color }}
-                  title={c.label}
-                />
-              ))}
-              <div className="w-px h-6 bg-white/10 mx-0.5" />
-              <button
-                onClick={removeHighlight}
-                className="w-7 h-7 rounded-full border border-white/20 hover:border-red-500 bg-white/10 flex items-center justify-center text-gray-300 hover:text-red-400 transition-all hover:scale-110"
-                title="Hapus warna"
-              >
-                <X className="w-3.5 h-3.5" strokeWidth={3} />
-              </button>
-            </div>
-          )}
-        </div>
-
-        <div className="w-px h-6 bg-white/10 mx-1.5"></div>
-
-        <button className={btnClass(formats.header === 1)} onClick={() => toggle('header', 1)} title="Heading 1">
-          <Heading1 className="w-[18px] h-[18px]" strokeWidth={2.5} />
-        </button>
-        <button className={btnClass(formats.header === 2)} onClick={() => toggle('header', 2)} title="Heading 2">
-          <Heading2 className="w-[18px] h-[18px]" strokeWidth={2.5} />
-        </button>
-
-        <div className="w-px h-6 bg-white/10 mx-1.5"></div>
-
-        <button className={btnClass(!!formats.link)} onClick={() => toggle('link')} title="Link">
-          <LinkIcon className="w-[18px] h-[18px]" strokeWidth={2.5} />
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ========== FLOATING IMAGE TOOLBAR ==========
-function FloatingImageToolbar({ quillRef, onEditAlt }: { quillRef: React.RefObject<ReactQuill | null>; onEditAlt: (index: number, currentAlt: string) => void }) {
-  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
-  const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
-  const [currentLayout, setCurrentLayout] = useState('inline');
-  const toolbarRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const quill = quillRef.current?.getEditor();
-    if (!quill) return;
-
-    const handleSelectionChange = (range: any) => {
-      if (range && range.length === 1) {
-        const [blot] = quill.getLeaf(range.index);
-        if (blot && blot.domNode && blot.domNode.tagName === 'IMG') {
-          const imgRect = blot.domNode.getBoundingClientRect();
-          const editorRect = (quill.root.parentElement as HTMLElement).getBoundingClientRect();
-          
-          const toolbarWidth = 220;
-          let left = editorRect.left + (imgRect.left - editorRect.left) + (imgRect.width / 2) - (toolbarWidth / 2);
-          left = Math.max(8, Math.min(left, window.innerWidth - toolbarWidth - 8));
-          
-          setPosition({
-            top: imgRect.top - 52,
-            left,
-          });
-          setActiveImageIndex(range.index);
-          const layout = blot.domNode.getAttribute('data-layout') || 'inline';
-          setCurrentLayout(layout);
-          return;
-        }
-      }
-      setPosition(null);
-      setActiveImageIndex(null);
-    };
-
-    const handleEditorClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target && target.tagName === 'IMG') {
-        const blot = Quill.find(target);
-        if (blot) {
-          const index = quill.getIndex(blot);
-          const currentSelection = quill.getSelection();
-          if (!currentSelection || currentSelection.index !== index || currentSelection.length !== 1) {
-            quill.setSelection(index, 1, 'user');
-          }
-        }
-      }
-    };
-
-    const updatePosition = () => {
-      if (activeImageIndex !== null) {
-        const range = quill.getSelection();
-        if (range) handleSelectionChange(range);
-      }
-    };
-
-    quill.root.addEventListener('click', handleEditorClick);
-    quill.on('selection-change', handleSelectionChange);
-    window.addEventListener('scroll', updatePosition, true);
-    window.addEventListener('resize', updatePosition);
-    
-    return () => { 
-        quill.root.removeEventListener('click', handleEditorClick);
-        quill.off('selection-change', handleSelectionChange); 
-        window.removeEventListener('scroll', updatePosition, true);
-        window.removeEventListener('resize', updatePosition);
-    };
-  }, [quillRef]);
-
-  if (!position || activeImageIndex === null) return null;
-
-  const setLayout = (layout: string) => {
-    const quill = quillRef.current?.getEditor();
-    if (!quill) return;
-    quill.formatText(activeImageIndex, 1, 'layout', layout);
-    setCurrentLayout(layout);
-  };
-
-  const handleAltClick = () => {
-    const quill = quillRef.current?.getEditor();
-    if (!quill) return;
-    const [blot] = quill.getLeaf(activeImageIndex);
-    if (blot && blot.domNode) {
-        const currentAlt = blot.domNode.getAttribute('alt') || '';
-        onEditAlt(activeImageIndex, currentAlt);
-    }
-  };
-
-  const btnClass = (active: boolean) =>
-    `w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-200 ${active ? 'bg-primary text-white shadow-sm' : 'text-gray-600 hover:text-white hover:bg-white/10'}`;
-
-  return (
-    <div
-      ref={toolbarRef}
-      className="fixed z-50 animate-in fade-in zoom-in-95 duration-150"
-      style={{ top: position.top, left: position.left }}
-      onMouseDown={(e) => e.preventDefault()}
-    >
-      <div className="bg-gray-900/95 backdrop-blur-md rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] px-1.5 py-1.5 flex items-center gap-1 border border-white/10 relative">
-        <button className={btnClass(currentLayout === 'inline')} onClick={() => setLayout('inline')} title="Standard / Center">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-80"><rect x="7" y="5" width="10" height="14" rx="2"/><line x1="10" y1="9" x2="14" y2="9"/><line x1="10" y1="13" x2="14" y2="13"/></svg>
-        </button>
-        <button className={btnClass(currentLayout === 'wide')} onClick={() => setLayout('wide')} title="Lebar (Wide)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-90"><rect x="4" y="5" width="16" height="14" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="17" y2="13"/></svg>
-        </button>
-        <button className={btnClass(currentLayout === 'fullBleed')} onClick={() => setLayout('fullBleed')} title="Penuh (Full Bleed)">
-           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="5" width="22" height="14" rx="2"/><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="13" x2="20" y2="13"/></svg>
-        </button>
-        
-        <div className="w-px h-5 bg-white/20 mx-1.5"></div>
-        
-        <button onClick={handleAltClick} className="px-3 h-8 text-[12px] font-semibold text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
-          Alt text
-        </button>
-        
-        <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-gray-900/95 border-b border-r border-white/10 rotate-45" />
-      </div>
-    </div>
-  );
-}
-
-// ========== PLUS BUTTON (BLOCK INSERTER) ==========
-function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<ReactQuill | null>; onFormulaClick: () => void }) {
-  const [position, setPosition] = useState<{ top: number } | null>(null);
-  const [expanded, setExpanded] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const quill = quillRef.current?.getEditor();
-    if (!quill) return;
-
-    const handleSelectionChange = (range: any) => {
-      setExpanded(false);
-      if (range && range.length === 0) {
-        // Cursor is at a position, check if line is empty
-        const [line] = quill.getLine(range.index);
-        if (line && line.length() <= 1) {
-          const bounds = quill.getBounds(range.index);
-          const editorRect = (quill.root.parentElement as HTMLElement).getBoundingClientRect();
-          setPosition({
-            top: editorRect.top + bounds.top,
-          });
-        } else {
-          setPosition(null);
-        }
-      } else {
-        setPosition(null);
-      }
-    };
-
-    const handleTextChange = () => {
-      const range = quill.getSelection();
-      if (range) handleSelectionChange(range);
-    };
-
-    const updatePosition = () => {
-      const range = quill.getSelection();
-      if (range) handleSelectionChange(range);
-    };
-
-    quill.on('selection-change', handleSelectionChange);
-    quill.on('text-change', handleTextChange);
-    window.addEventListener('scroll', updatePosition, true);
-    window.addEventListener('resize', updatePosition);
-    
-    return () => {
-      quill.off('selection-change', handleSelectionChange);
-      quill.off('text-change', handleTextChange);
-      window.removeEventListener('scroll', updatePosition, true);
-      window.removeEventListener('resize', updatePosition);
-    };
-  }, [quillRef]);
-
-  // Close on click outside
-  useEffect(() => {
-    const handle = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setExpanded(false);
-      }
-    };
-    document.addEventListener('mousedown', handle);
-    return () => document.removeEventListener('mousedown', handle);
-  }, []);
-
-  if (!position) return null;
-
-  const quill = quillRef.current?.getEditor();
-  if (!quill) return null;
 
   const insertBlock = (type: string) => {
     const range = quill.getSelection(true);
@@ -518,26 +448,16 @@ function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<Re
             const reader = new FileReader();
             reader.onload = () => {
               const captionText = "Ketik caption gambar di sini...";
-              
-              // 1. Sisipkan Gambar
               quill.insertEmbed(range.index, 'image', reader.result, 'user');
               quill.formatText(range.index, 1, 'layout', 'inline');
-              
-              // 2. Buat baris baru dan teks caption
               quill.insertText(range.index + 1, '\n' + captionText, 'user');
-              quill.formatLine(range.index + 2, 1, 'align', 'center'); // Rata tengah
-              
-              // 3. Beri warna abu-abu & miring (italic) pada caption
+              quill.formatLine(range.index + 2, 1, 'align', 'center');
               quill.formatText(range.index + 2, captionText.length, 'color', '#9ca3af');
               quill.formatText(range.index + 2, captionText.length, 'italic', true);
-              
-              // 4. Siapkan baris normal di bawahnya
               quill.insertText(range.index + 2 + captionText.length, '\n', 'user');
               quill.formatLine(range.index + 3 + captionText.length, 1, 'align', false);
               quill.formatText(range.index + 3 + captionText.length, 1, 'color', false);
               quill.formatText(range.index + 3 + captionText.length, 1, 'italic', false);
-              
-              // 5. Highlight teks caption agar bisa langsung diketik/ditimpa
               quill.setSelection(range.index + 2, captionText.length, 'user');
             };
             reader.readAsDataURL(file);
@@ -547,45 +467,33 @@ function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<Re
         break;
       }
       case 'video': {
-            const rawUrl = prompt('Masukkan URL video (YouTube/Vimeo):');
-            if (rawUrl) {
-                let finalUrl = rawUrl;
-                
-                if (rawUrl.includes('youtu.be/')) {
-                    const videoId = rawUrl.split('youtu.be/')[1].split('?')[0];
-                    finalUrl = `https://www.youtube.com/embed/${videoId}`;
-                } 
-                else if (rawUrl.includes('youtube.com/watch')) {
-                    const safeUrl = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`; 
-                    const urlParams = new URLSearchParams(new URL(safeUrl).search);
-                    const videoId = urlParams.get('v');
-                    if (videoId) finalUrl = `https://www.youtube.com/embed/${videoId}`;
-                }
-
-                const captionText = "Ketik caption video di sini...";
-
-                // 1. Sisipkan Video
-                quill.insertEmbed(range.index, 'video', finalUrl, 'user');
-                
-                // 2. Buat baris baru dan teks caption
-                quill.insertText(range.index + 1, '\n' + captionText, 'user');
-                quill.formatLine(range.index + 2, 1, 'align', 'center');
-                
-                // 3. Format caption (abu-abu, miring)
-                quill.formatText(range.index + 2, captionText.length, 'color', '#9ca3af');
-                quill.formatText(range.index + 2, captionText.length, 'italic', true);
-                
-                // 4. Siapkan baris normal di bawahnya
-                quill.insertText(range.index + 2 + captionText.length, '\n', 'user');
-                quill.formatLine(range.index + 3 + captionText.length, 1, 'align', false);
-                quill.formatText(range.index + 3 + captionText.length, 1, 'color', false);
-                quill.formatText(range.index + 3 + captionText.length, 1, 'italic', false);
-                
-                // 5. Highlight teks caption
-                quill.setSelection(range.index + 2, captionText.length, 'user');
+        const rawUrl = prompt('Masukkan URL video (YouTube/Vimeo):');
+        if (rawUrl) {
+            let finalUrl = rawUrl;
+            if (rawUrl.includes('youtu.be/')) {
+                const videoId = rawUrl.split('youtu.be/')[1].split('?')[0];
+                finalUrl = `https://www.youtube.com/embed/${videoId}`;
+            } 
+            else if (rawUrl.includes('youtube.com/watch')) {
+                const safeUrl = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`; 
+                const urlParams = new URLSearchParams(new URL(safeUrl).search);
+                const videoId = urlParams.get('v');
+                if (videoId) finalUrl = `https://www.youtube.com/embed/${videoId}`;
             }
-            break;
+            const captionText = "Ketik caption video di sini...";
+            quill.insertEmbed(range.index, 'video', finalUrl, 'user');
+            quill.insertText(range.index + 1, '\n' + captionText, 'user');
+            quill.formatLine(range.index + 2, 1, 'align', 'center');
+            quill.formatText(range.index + 2, captionText.length, 'color', '#9ca3af');
+            quill.formatText(range.index + 2, captionText.length, 'italic', true);
+            quill.insertText(range.index + 2 + captionText.length, '\n', 'user');
+            quill.formatLine(range.index + 3 + captionText.length, 1, 'align', false);
+            quill.formatText(range.index + 3 + captionText.length, 1, 'color', false);
+            quill.formatText(range.index + 3 + captionText.length, 1, 'italic', false);
+            quill.setSelection(range.index + 2, captionText.length, 'user');
         }
+        break;
+      }
       case 'code': {
         quill.insertText(range.index, '\n', 'user');
         quill.formatLine(range.index, 1, 'code-block', true);
@@ -607,7 +515,7 @@ function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<Re
         break;
       }
     }
-    setExpanded(false);
+    setExpandedPlus(false);
   };
 
   const editorEl = quill.root.parentElement as HTMLElement;
@@ -616,41 +524,99 @@ function PlusButton({ quillRef, onFormulaClick }: { quillRef: React.RefObject<Re
   const actions = [
     { id: 'image', icon: Image, label: 'Gambar', color: 'text-emerald-500' },
     { id: 'video', icon: Film, label: 'Video', color: 'text-blue-500' },
-    { id: 'code', icon: Code, label: 'Kode', color: 'text-orange-500' },
+    { id: 'code', icon: Terminal, label: 'Kode', color: 'text-orange-500' },
     { id: 'formula', icon: Calculator, label: 'Rumus', color: 'text-purple-500' },
-    { id: 'divider', icon: Minus, label: 'Pemisah', color: 'text-gray-600' },
+    { id: 'divider', icon: Minus, label: 'Pemisah', color: 'text-slate-600' },
     { id: 'quote', icon: Quote, label: 'Kutipan', color: 'text-amber-500' },
   ];
+
+  const btnClass = (active: boolean) =>
+    `w-8 h-8 flex items-center justify-center rounded-[10px] transition-all duration-200 ${active ? 'bg-indigo-100 text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-100'}`;
+
+  // Hide on mobile (can be too wide), or adapt left position
+  const isMobile = window.innerWidth < 640;
+  // If mobile, we stick it at left 8px. Else, use the proper offset.
+  const leftPos = isMobile ? 8 : editorRect.left - 52;
 
   return (
     <div
       ref={containerRef}
-      className="fixed z-40 flex items-center"
-      style={{ top: position.top - 8, left: editorRect.left - 48 }}
+      className="fixed z-40 flex flex-col items-center gap-2 transition-all duration-150 ease-out"
+      style={{ top: position.top - 16, left: leftPos }}
+      onMouseDown={(e) => e.preventDefault()}
     >
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className={`w-10 h-10 relative z-10 flex items-center justify-center rounded-full border transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.04)]
-          ${expanded ? 'border-gray-900 bg-gray-900 text-white rotate-45 shadow-lg shadow-gray-900/20' : 'border-gray-300 text-gray-600 hover:text-primary hover:border-primary/40 hover:bg-primary/5 bg-white group'}`}
-        title="Sisipkan blok"
-      >
-        <Plus className="w-6 h-6 outline-none transition-transform duration-300 group-hover:scale-110" strokeWidth={2.5} />
-      </button>
-
-      <div 
-        className={`flex items-center gap-1 bg-white border border-gray-100 rounded-2xl shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] px-2 py-1.5 absolute left-8 pl-4 transition-all duration-300 origin-left 
-          ${expanded ? 'opacity-100 scale-100 translate-x-0 pointer-events-auto' : 'opacity-0 scale-50 -translate-x-6 pointer-events-none'}`}
-      >
-        {actions.map((action) => (
-          <button
-            key={action.id}
-            onClick={() => insertBlock(action.id)}
-            className={`w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-50 active:scale-95 transition-all group ${action.color}`}
-            title={action.label}
-          >
-                <action.icon className="w-5 h-5 group-hover:scale-110 transition-transform" strokeWidth={2.5} />
+      <div className="bg-white/90 backdrop-blur-xl rounded-[18px] shadow-[0_8px_30px_rgba(0,0,0,0.06)] p-1.5 flex flex-col items-center gap-1 border border-slate-200/60">
+         <button className={btnClass(!!formats.bold)} onClick={() => toggle('bold')} title="Bold"><Bold className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
+         <button className={btnClass(!!formats.italic)} onClick={() => toggle('italic')} title="Italic"><Italic className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
+         <button className={btnClass(!!formats.underline)} onClick={() => toggle('underline')} title="Underline"><Underline className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
+         <button className={btnClass(!!formats.code)} onClick={() => toggle('code')} title="Inline Code"><Code className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
+         
+         <div className="relative">
+          <button className={btnClass(!!formats.background)} onClick={() => setShowColorPicker(!showColorPicker)} title="Highlight">
+            <Highlighter className="w-[16px] h-[16px]" strokeWidth={2.5} />
+            {formats.background && <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full" style={{ background: formats.background }}></div>}
+          </button>
+          {showColorPicker && (
+            <div className="absolute left-full top-0 ml-2 bg-white/95 backdrop-blur-xl rounded-[14px] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] p-2 flex flex-col gap-2 border border-slate-200/60 animate-in fade-in zoom-in-95 duration-200" onMouseDown={(e) => e.preventDefault()}>
+              <div className="flex items-center gap-1.5">
+                  {HIGHLIGHT_COLORS.map((c) => (
+                    <button
+                      key={c.id}
+                      onClick={() => applyHighlight(c.color)}
+                      className={`w-6 h-6 rounded-full border-2 transition-all hover:scale-125 ${formats.background === c.color ? 'border-indigo-500 scale-110 shadow-sm' : 'border-transparent'}`}
+                      style={{ background: c.color }}
+                      title={c.label}
+                    />
+                  ))}
+              </div>
+              <div className="h-px w-full bg-slate-100" />
+              <button
+                onClick={removeHighlight}
+                className="w-full py-1 rounded-lg border border-slate-200 hover:border-red-500 bg-slate-50 flex items-center justify-center gap-1 text-slate-500 hover:text-red-500 hover:bg-red-50 transition-all text-[11px] font-bold"
+                title="Hapus warna"
+              >
+                <X className="w-3 h-3" strokeWidth={3} />
+                Hapus Warna
               </button>
-            ))}
+            </div>
+          )}
+         </div>
+
+         <div className="w-5 h-px bg-slate-200 my-0.5"></div>
+         
+         <button className={btnClass(formats.header === 1)} onClick={() => toggle('header', 1)} title="Heading 1"><Heading1 className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
+         <button className={btnClass(formats.header === 2)} onClick={() => toggle('header', 2)} title="Heading 2"><Heading2 className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
+         <button className={btnClass(!!formats.link)} onClick={() => toggle('link')} title="Link"><LinkIcon className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
+         
+         <div className="w-5 h-px bg-slate-200 my-1"></div>
+
+         <div className="relative flex justify-center w-full">
+            <button
+              onClick={() => setExpandedPlus(!expandedPlus)}
+              className={`w-8 h-8 relative z-10 flex items-center justify-center rounded-[10px] transition-all duration-300
+                ${expandedPlus ? 'bg-indigo-600 text-white rotate-45 shadow-md shadow-indigo-600/30' : 'text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 bg-transparent group'}`}
+              title="Sisipkan blok"
+            >
+              <Plus className="w-[18px] h-[18px] outline-none transition-transform duration-300 group-hover:scale-110" strokeWidth={2.5} />
+            </button>
+
+            {/* Expanded actions popping out to the right */}
+            <div 
+              className={`flex items-center gap-1 bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-[14px] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] px-2 py-1.5 absolute left-8 top-1/2 -translate-y-1/2 ml-2 transition-all duration-300 origin-left 
+                ${expandedPlus ? 'opacity-100 scale-100 translate-x-0 pointer-events-auto' : 'opacity-0 scale-50 -translate-x-4 pointer-events-none'}`}
+            >
+              {actions.map((action) => (
+                <button
+                  key={action.id}
+                  onClick={() => insertBlock(action.id)}
+                  className={`w-9 h-9 flex items-center justify-center rounded-xl hover:bg-slate-50 active:scale-95 transition-all group ${action.color}`}
+                  title={action.label}
+                >
+                      <action.icon className="w-[18px] h-[18px] group-hover:scale-110 transition-transform" strokeWidth={2.5} />
+                </button>
+              ))}
+            </div>
+         </div>
       </div>
     </div>
   );
@@ -754,7 +720,7 @@ export default function UploadPage() {
   const formats = [
     'header', 'bold', 'italic', 'underline', 'strike', 'background',
     'list', 'bullet', 'link', 'image', 'video', 'formula',
-    'blockquote', 'code-block', 'divider', 'layout', 'alt', 'align'
+    'blockquote', 'code-block', 'divider', 'layout', 'alt', 'align', 'code'
   ];
 
   const currentJenjang = jenjangOptions.find(j => j.id === meta.jenjang);
@@ -1304,6 +1270,7 @@ export default function UploadPage() {
               .notion-editor .ql-editor blockquote { border-left: 4px solid #4f46e5; margin: 1.2em 0; padding: 0.8em 1.2em; color: #4b5563; background: #f8fafc; border-radius: 0 12px 12px 0; font-style: italic; font-size: 1.05em; }
               .notion-editor .ql-editor pre.ql-syntax { background: #1e1e2e !important; color: #cdd6f4 !important; border-radius: 12px; padding: 20px 24px; margin: 1.2em 0; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 14px; line-height: 1.7; overflow-x: auto; border: 1px solid #313244; }
               .notion-editor .ql-editor .ql-video { border-radius: 12px; margin: 1.5em 0; width: 100%; aspect-ratio: 16/9; }
+              .notion-editor .ql-editor code { background: #f1f5f9; color: #e11d48; padding: 0.2em 0.4em; border-radius: 6px; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.9em; font-weight: 600; }
               .notion-editor .ql-snow .ql-tooltip { border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 8px 24px rgba(0,0,0,0.08); padding: 8px 14px; z-index: 100; }
               .notion-editor .ql-snow .ql-tooltip input[type=text] { border-radius: 8px; border: 1px solid #d1d5db; padding: 6px 10px; font-family: 'Manrope', sans-serif; font-size: 13px; }
             `}} />
@@ -1318,14 +1285,11 @@ export default function UploadPage() {
             />
           </div>
 
-          {/* Floating Toolbar (appears on text selection) */}
-          <FloatingToolbar quillRef={quillRef} />
+          {/* Floating Block Toolbar (Image controls + Delete action) */}
+          <FloatingBlockToolbar quillRef={quillRef} onEditAlt={(index, text) => setAltModalParams({ index, text })} />
 
-          {/* Floating Image Toolbar */}
-          <FloatingImageToolbar quillRef={quillRef} onEditAlt={(index, text) => setAltModalParams({ index, text })} />
-
-          {/* Plus Button (appears on empty lines) */}
-          <PlusButton quillRef={quillRef} onFormulaClick={() => setShowFormulaModal(true)} />
+          {/* Unified Side Toolbar (Text Formatting + Blocks) */}
+          <SideToolbar quillRef={quillRef} onFormulaClick={() => setShowFormulaModal(true)} />
         </div>
 
         {/* Formula Modal */}
