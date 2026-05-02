@@ -28,6 +28,7 @@ import {
     Instagram,
     FileText,
     Loader2,
+    MessageSquare,
 } from "lucide-react";
 import {
     getNoteById,
@@ -297,6 +298,8 @@ export default function NoteDetailPage() {
                     likes: n.likes_count || 0,
                     comments: n.comments_count || 0,
                     views: n.views || 0,
+                    verify_reason: n.verify_reason || n.reason || "",
+                    rating: n.rating || 0,
                     description: n.content
                         ? n.content
                               .replace(/<[^>]*>?/gm, "")
@@ -339,9 +342,11 @@ export default function NoteDetailPage() {
                 }
 
                 if (n.is_verified) {
+                    const v = n.verified_by_user || n.validator || {};
                     setValidator({
-                        name: "Tim Pakar Ba-Yu",
-                        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+                        id: v._id || v.id || null,
+                        name: v.name || "Tim Pakar Ba-Yu",
+                        avatar: v.avatar || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
                     });
                 }
             } catch (err) {
@@ -844,8 +849,8 @@ export default function NoteDetailPage() {
 
                     <div className="flex items-center gap-3">
                         {note.isValidated && (
-                            <div className="flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-[11px] uppercase tracking-wide font-['Manrope'] font-bold border border-green-100/50">
-                                <Check className="w-3 h-3" />
+                            <div className="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest border border-emerald-100 shadow-sm animate-in fade-in duration-700">
+                                <ShieldCheck className="w-3.5 h-3.5" />
                                 Review Pakar
                             </div>
                         )}
@@ -864,71 +869,104 @@ export default function NoteDetailPage() {
                 </div>
                 {/* 🔥 KURUNG TUTUPNYA PINDAH KE SINI YA DER! 🔥 */}
 
-                {/* Paywall simulatiom if not logged in (Optional UI flair, matching mock design "Download PDF") */}
-                <div className="mt-14 bg-gray-50/80 rounded-3xl p-8 md:p-10 text-center border border-gray-100">
-                    <h3 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 mb-3">
-                        Ingin membaca materi ini secara offline?
-                    </h3>
-                    <p className="font-['Manrope'] text-[15px] text-gray-700 mb-8 max-w-md mx-auto leading-relaxed font-medium">
-                        Unduh file aslinya dalam format PDF untuk dipelajari
-                        kapan saja tanpa koneksi internet.
-                    </p>
-                    <button
-                        onClick={handleDownloadPDF}
-                        className="mx-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-gray-900 hover:bg-black text-white rounded-xl text-sm font-['Lexend_Deca'] font-semibold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
-                    >
-                        <DownloadCloud className="w-5 h-5" /> Download PDF
-                        Materi
-                    </button>
+                {/* PREMIUM DOWNLOAD CARD */}
+                <div className="mt-16 mb-16 bg-gradient-to-br from-indigo-50/40 via-white to-white rounded-[40px] p-10 md:p-14 text-center border border-indigo-50 shadow-[0_10px_30px_rgba(0,0,0,0.02)] relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-100/20 rounded-bl-[100px] pointer-events-none transition-transform group-hover:scale-110 duration-700" />
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-violet-100/10 rounded-tr-[80px] pointer-events-none" />
+                    
+                    <div className="relative z-10">
+                        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-md border border-indigo-50 group-hover:rotate-12 transition-transform">
+                            <DownloadCloud className="w-8 h-8 text-indigo-600" />
+                        </div>
+                        <h3 className="font-['Lexend_Deca'] font-extrabold text-2xl text-slate-900 mb-4">
+                            Materi Lengkap dalam Genggaman
+                        </h3>
+                        <p className="font-['Manrope'] text-[16px] text-slate-500 mb-10 max-w-md mx-auto leading-relaxed font-medium">
+                            Unduh versi PDF asli untuk dipelajari kapan saja, 
+                            bahkan saat Anda sedang tidak terhubung ke internet.
+                        </p>
+                        <button
+                            onClick={handleDownloadPDF}
+                            className="mx-auto flex items-center justify-center gap-3 px-10 py-5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-[13px] font-['Lexend_Deca'] font-black uppercase tracking-widest transition-all shadow-xl shadow-slate-900/10 hover:-translate-y-1 active:scale-95"
+                        >
+                            <FileText className="w-5 h-5 opacity-50" /> 
+                            Download PDF Materi
+                        </button>
+                    </div>
                 </div>
 
-                {/* Bottom Banner Validation (Minimalist Bright Style) */}
+                {/* PREMIUM VERIFIED CARD */}
                 {note.isValidated && validator && (
-                    <div className="bg-gradient-to-br from-blue-50/80 to-indigo-50/50 rounded-3xl p-6 md:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 mb-16 shadow-sm border border-indigo-100/60 w-full relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
-
-                        <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-5 flex-1 relative z-10">
-                            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center border border-indigo-100 shadow-sm shrink-0">
-                                <Check className="w-8 h-8 text-primary" />
+                    <div className="bg-white rounded-[40px] p-8 md:p-12 flex flex-col lg:flex-row items-center justify-between gap-10 mb-24 shadow-[0_20px_50px_-12px_rgba(93,92,230,0.12)] border border-emerald-50 relative overflow-hidden group mt-12">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50/50 rounded-full blur-[80px] pointer-events-none -translate-y-1/2 translate-x-1/4" />
+                        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-indigo-50/30 rounded-full blur-[60px] pointer-events-none" />
+                        
+                        <div className="flex flex-col md:flex-row items-center text-center md:text-left gap-8 flex-1 relative z-10">
+                            <div className="w-24 h-24 bg-emerald-500 rounded-[36px] flex items-center justify-center shadow-lg shadow-emerald-500/25 group-hover:rotate-6 transition-transform duration-700">
+                                <ShieldCheck className="w-12 h-12 text-white" />
                             </div>
-                            <div>
-                                <h4 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 mb-1.5">
-                                    Materi Terverifikasi
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
+                                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.25em] bg-emerald-50 px-4 py-1.5 rounded-full border border-emerald-100/50 shadow-sm">
+                                        Expert Verified
+                                    </span>
+                                </div>
+                                <h4 className="font-['Lexend_Deca'] font-black text-3xl text-slate-900 tracking-tight">
+                                    Kurasi Materi Pakar
                                 </h4>
-                                <p className="font-['Manrope'] text-gray-800 text-[15px] leading-relaxed max-w-lg font-medium">
-                                    Konten catatan ini telah melalui pemeriksaan
-                                    kebenaran materi oleh pakar pendidikan
-                                    terpercaya Ba-Yu.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="bg-white/80 rounded-2xl p-4 border border-indigo-50 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex items-center gap-4 shrink-0 shrink-0 w-full sm:w-auto relative z-10 backdrop-blur-sm">
-                            <AvatarImage
-                                src={validator.avatar}
-                                alt={validator.name}
-                                size={48}
-                                className="border-2 border-primary/20"
-                            />
-                            <div>
-                                <p className="text-[11px] font-['Manrope'] text-gray-600 font-extrabold uppercase tracking-wide mb-0.5">
-                                    Divalidasi Oleh
-                                </p>
-                                <p className="text-[15px] font-['Lexend_Deca'] font-bold text-primary">
-                                    {validator.name}
-                                </p>
-                                {note.rating && (
-                                    <div className="flex items-center gap-1 mt-1">
-                                        {[...Array(5)].map((_, i) => (
-                                            <Star
-                                                key={i}
-                                                className={`w-3.5 h-3.5 ${i < note.rating! ? "fill-yellow-400 text-yellow-500" : "fill-gray-200 text-gray-200"}`}
-                                            />
-                                        ))}
+                                {note.verify_reason ? (
+                                    <div className="relative">
+                                        <MessageSquare className="absolute -left-2 -top-2 w-10 h-10 text-emerald-100 opacity-50" />
+                                        <p className="font-['Manrope'] text-slate-600 text-[16px] leading-relaxed max-w-xl font-bold italic relative z-10 pl-2">
+                                            "{note.verify_reason}"
+                                        </p>
                                     </div>
+                                ) : (
+                                    <p className="font-['Manrope'] text-slate-400 text-[15px] leading-relaxed max-w-lg font-medium italic">
+                                        Pakar memberikan rating tinggi untuk akurasi materi ini tanpa catatan tambahan.
+                                    </p>
                                 )}
                             </div>
                         </div>
+
+                        <Link 
+                            to={validator.id ? `/profile/${validator.id}` : "#"}
+                            className="bg-slate-50/80 backdrop-blur-md rounded-[32px] p-8 border border-slate-100 shadow-sm flex items-center gap-6 shrink-0 w-full lg:w-auto relative z-10 group/pakar hover:bg-white hover:border-indigo-100 transition-all duration-500 cursor-pointer"
+                        >
+                            <div className="relative">
+                                <AvatarImage
+                                    src={validator.avatar}
+                                    alt={validator.name}
+                                    size={64}
+                                    className="rounded-2xl border-4 border-white shadow-lg"
+                                />
+                                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center shadow-sm">
+                                    <Check className="w-3.5 h-3.5 text-white" strokeWidth={4} />
+                                </div>
+                            </div>
+                            <div>
+                                <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.25em] mb-1.5">
+                                    Verified By
+                                </p>
+                                <p className="text-[18px] font-['Lexend_Deca'] font-black text-slate-900 group-hover/pakar:text-indigo-600 transition-colors leading-none mb-2">
+                                    {validator.name}
+                                </p>
+                                <div className="flex items-center gap-2 mt-3 bg-white px-3 py-1.5 rounded-xl border border-slate-100 w-fit shadow-sm">
+                                    <div className="flex items-center gap-1">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star
+                                                key={i}
+                                                size={13}
+                                                fill={i < (note.rating || 5) ? "#f59e0b" : "transparent"}
+                                                className={i < (note.rating || 5) ? "text-amber-500" : "text-slate-200"}
+                                            />
+                                        ))}
+                                    </div>
+                                    <div className="w-[1px] h-3 bg-slate-200 mx-1" />
+                                    <span className="text-[11px] font-black text-slate-900">{(note.rating || 5).toFixed(1)}</span>
+                                </div>
+                            </div>
+                        </Link>
                     </div>
                 )}
 

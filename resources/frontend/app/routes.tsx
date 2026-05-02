@@ -16,6 +16,7 @@ import SettingsPage from './pages/SettingsPage';
 import EditProfilePage from './pages/EditProfilePage';
 import PakarDashboard from './pages/PakarDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import LearningStatisticsPage from './pages/LearningStatisticsPage';
 import NotFound from './pages/NotFound';
 
 export const router = createBrowserRouter([
@@ -86,6 +87,10 @@ export const router = createBrowserRouter([
           {
             path: 'admin',
             element: <AdminDashboard />,
+          },
+          {
+            path: 'stats',
+            element: <LearningStatisticsPage />,
           },
         ]
       },

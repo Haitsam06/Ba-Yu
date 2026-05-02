@@ -12,7 +12,24 @@ import {
     Map,
     BookOpen,
     ChevronRight,
+    TrendingUp,
+    Zap,
+    Activity,
+    ArrowUpRight,
+    LayoutGrid,
+    ListFilter,
+    Sparkles,
+    FileText,
+    Star,
+    MessageSquare,
+    Send,
+    X
 } from "lucide-react";
+import { 
+  AreaChart, 
+  Area, 
+  ResponsiveContainer 
+} from 'recharts';
 import { mataPelajaran } from "../data/mockData";
 import { Link } from "react-router";
 import { useToast } from "../contexts/ToastContext";
@@ -21,51 +38,158 @@ import { AvatarImage } from "../components/ui/DefaultImages";
 
 type VerificationStatus = "pending" | "approved" | "all";
 
+interface FeedbackModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (rating: number, reason: string) => void;
+    type: "approve" | "reject";
+    noteTitle: string;
+}
+
+const FeedbackModal = ({ isOpen, onClose, onSubmit, type, noteTitle }: FeedbackModalProps) => {
+    const [rating, setRating] = useState(5);
+    const [reason, setReason] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    if (!isOpen) return null;
+
+    const handleFormSubmit = async () => {
+        setIsSubmitting(true);
+        await onSubmit(rating, reason);
+        setIsSubmitting(false);
+        setReason("");
+        setRating(5);
+    };
+
+    return (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
+            <div className="bg-white w-full max-w-lg rounded-[24px] shadow-xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-100">
+                {/* Modal Header */}
+                <div className={`p-6 md:p-8 pb-4 flex justify-between items-start ${type === 'approve' ? 'bg-indigo-50/50' : 'bg-rose-50/50'}`}>
+                    <div className="flex gap-4">
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-sm ${type === 'approve' ? 'bg-indigo-600 text-white' : 'bg-rose-600 text-white'}`}>
+                            {type === 'approve' ? <CheckCircle size={24} /> : <XCircle size={24} />}
+                        </div>
+                        <div>
+                            <h3 className="font-['Lexend_Deca'] text-xl font-bold text-slate-800">
+                                {type === 'approve' ? 'Validasi Materi' : 'Tolak Materi'}
+                            </h3>
+                            <p className="text-slate-500 text-sm font-medium line-clamp-1 mt-0.5">{noteTitle}</p>
+                        </div>
+                    </div>
+                    <button onClick={onClose} className="p-2 hover:bg-white rounded-full transition-colors">
+                        <X size={20} className="text-slate-400" />
+                    </button>
+                </div>
+
+                <div className="p-6 md:p-8 space-y-8">
+                    {/* Rating Section */}
+                    {type === 'approve' && (
+                        <div className="space-y-6">
+                            <div className="flex justify-between items-end">
+                                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                    <Sparkles size={14} className="text-amber-500" /> Kualitas Materi
+                                </label>
+                                <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-md ${
+                                    rating <= 2 ? 'bg-orange-50 text-orange-600' : 
+                                    rating <= 3 ? 'bg-indigo-50 text-indigo-600' : 
+                                    'bg-emerald-50 text-emerald-600'
+                                }`}>
+                                    {rating === 1 && "Perlu Perbaikan"}
+                                    {rating === 2 && "Cukup Baik"}
+                                    {rating === 3 && "Bagus & Akurat"}
+                                    {rating === 4 && "Sangat Rekomendasi"}
+                                    {rating === 5 && "Luar Biasa / Sempurna"}
+                                </span>
+                            </div>
+
+                            <div className="relative bg-slate-50/50 p-6 md:p-8 rounded-[20px] border border-slate-100 flex flex-col items-center group/stars">
+                                <div className="absolute inset-0 bg-gradient-to-r from-amber-200/5 via-amber-300/10 to-amber-200/5 opacity-0 group-hover/stars:opacity-100 transition-opacity duration-1000 blur-2xl pointer-events-none" />
+                                <div className="flex gap-4 relative z-10">
+                                    {[1, 2, 3, 4, 5].map((s) => (
+                                        <button
+                                            key={s}
+                                            onClick={() => setRating(s)}
+                                            className={`group/star transition-all duration-500 transform hover:scale-110 active:scale-95 ${rating >= s ? 'scale-105' : 'scale-100 grayscale opacity-30 hover:grayscale-0 hover:opacity-100'}`}
+                                        >
+                                            <div className="relative">
+                                                <Star
+                                                    size={40}
+                                                    fill={rating >= s ? "#f59e0b" : "transparent"}
+                                                    className={`${rating >= s ? "text-amber-500 drop-shadow-md" : "text-slate-300"} transition-all duration-300`}
+                                                    strokeWidth={rating >= s ? 1.5 : 2}
+                                                />
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="mt-6 w-full h-1.5 bg-slate-100 rounded-full overflow-hidden relative">
+                                    <div 
+                                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-700 ease-out rounded-full shadow-sm"
+                                        style={{ width: `${(rating / 5) * 100}%` }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Feedback Textarea */}
+                    <div className="space-y-3">
+                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                            <MessageSquare size={14} className="text-indigo-500" /> 
+                            {type === 'approve' ? 'Feedback untuk Penulis' : 'Alasan Penolakan'}
+                        </label>
+                        <textarea
+                            value={reason}
+                            onChange={(e) => setReason(e.target.value)}
+                            placeholder={type === 'approve' ? 'Berikan saran yang membangun...' : 'Jelaskan kekurangan materi ini...'}
+                            className="w-full h-28 p-4 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all resize-none shadow-sm"
+                        />
+                    </div>
+
+                    <div className="flex gap-3">
+                        <button onClick={onClose} className="flex-1 py-3.5 bg-slate-50 border border-slate-100 text-slate-600 rounded-xl font-['Lexend_Deca'] font-bold text-[12px] uppercase tracking-wider hover:bg-slate-100 transition-all shadow-sm">Batal</button>
+                        <button onClick={handleFormSubmit} disabled={isSubmitting || (type === 'reject' && !reason.trim())} className={`flex-[2] py-3.5 rounded-xl font-['Lexend_Deca'] font-bold text-[12px] uppercase tracking-wider text-white shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 ${type === 'approve' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-rose-600 hover:bg-rose-700'}`}>
+                            {isSubmitting ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Send size={14} />{type === 'approve' ? 'Konfirmasi Validasi' : 'Konfirmasi Tolak'}</>}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 export default function PakarDashboard() {
     const { user } = useAuth();
     const [filter, setFilter] = useState<VerificationStatus>("pending");
     const [searchQuery, setSearchQuery] = useState("");
     const { showToast } = useToast();
-
     const [notes, setNotes] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        fetchPosts();
-    }, []);
+    const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+    const [selectedNoteForFeedback, setSelectedNoteForFeedback] = useState<any>(null);
+    const [feedbackType, setFeedbackType] = useState<"approve" | "reject">("approve");
+
+    const sparkData = [{ v: 40 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 55 }, { v: 85 }, { v: 75 }];
+
+    useEffect(() => { fetchPosts(); }, []);
 
     const fetchPosts = async () => {
         setIsLoading(true);
         try {
             const response = await axios.get("/api/v1/posts?sort=terbaru");
-            console.log("CCTV BACKEND:", response.data.data);
-            const formattedNotes = (response.data.data || []).map(
-                (note: any) => ({
-                    ...note,
-                    id: note._id || note.id,
-                    author: note.user
-                        ? {
-                              ...note.user,
-                              avatar: note.user.avatar || null,
-                          }
-                        : {
-                              name: "Anonim",
-                              avatar: null,
-                          },
-                    createdAt: note.created_at || note.createdAt,
-                    // KODINGAN BARU (MESIN CUCI DOUBLE):
-                    description: note.content
-                        ? note.content
-                            .replace(/<[^>]*>?/gm, "") // Ngebunuh tag HTML (<p>, <b>, dll)
-                            .replace(/&nbsp;/g, " ")   // Ngebunuh entitas spasi (&nbsp;) jadi spasi biasa
-                            .substring(0, 150) + "..."
-                        : "Tidak ada deskripsi",
-                    mataPelajaran: note.mapel || "Lainnya",
-                    kelas: note.kelas || "-",
-                    isValidated: note.is_verified || false,
-                    isRejected: note.is_rejected || false,
-                }),
-            );
+            const formattedNotes = (response.data.data || []).map((note: any) => ({
+                ...note,
+                id: note._id || note.id,
+                author: note.user ? { ...note.user, avatar: note.user.avatar || null } : { name: "Anonim", avatar: null },
+                createdAt: note.created_at || note.createdAt,
+                description: note.content ? note.content.replace(/<[^>]*>?/gm, "").replace(/&nbsp;/g, " ").substring(0, 150) + "..." : "Tidak ada deskripsi",
+                mataPelajaran: note.mapel || "Lainnya",
+                kelas: note.kelas || "-",
+                isValidated: note.is_verified || false,
+                isRejected: note.is_rejected || false,
+            }));
             setNotes(formattedNotes);
         } catch (error) {
             console.error("Error fetching posts:", error);
@@ -75,394 +199,204 @@ export default function PakarDashboard() {
         }
     };
 
-    const handleVerify = async (
-        noteId: string,
-        status: "approve" | "reject",
-    ) => {
+    const handleActionClick = (note: any, type: "approve" | "reject") => {
+        setSelectedNoteForFeedback(note);
+        setFeedbackType(type);
+        setIsFeedbackModalOpen(true);
+    };
+
+    const handleVerifySubmit = async (rating: number, reason: string) => {
+        if (!selectedNoteForFeedback) return;
         try {
             const tk = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
             const config = { headers: { Authorization: `Bearer ${tk}` } };
-
-            if (status === "approve") {
-                await axios.put(`/api/v1/posts/${noteId}/verify`, {}, config);
-                showToast("Catatan berhasil disetujui!", "success");
-
-                setNotes((prev) =>
-                    prev.map((note) =>
-                        note.id === noteId
-                            ? { ...note, isValidated: true, is_verified: true }
-                            : note,
-                    )
-                );
-            } else if (status === "reject") {
-                await axios.put(`/api/v1/posts/${noteId}/reject`, {}, config);
-                showToast("Catatan ditolak! Tetap aman di profil pengguna.", "success");
-
-                setNotes((prev) =>
-                    prev.map((note) =>
-                        note.id === noteId
-                            ? { ...note, isRejected: true }
-                            : note,
-                    )
-                );
+            const noteId = selectedNoteForFeedback.id;
+            if (feedbackType === "approve") {
+                await axios.put(`/api/v1/posts/${noteId}/verify`, { rating, reason }, config);
+                showToast("Catatan berhasil divalidasi!", "success");
+                setNotes(prev => prev.map(n => n.id === noteId ? { ...n, isValidated: true } : n));
+            } else {
+                await axios.put(`/api/v1/posts/${noteId}/reject`, { reason }, config);
+                showToast("Catatan ditolak dengan alasan.", "success");
+                setNotes(prev => prev.map(n => n.id === noteId ? { ...n, isRejected: true } : n));
             }
+            setIsFeedbackModalOpen(false);
         } catch (error) {
-            console.error("Verification error:", error);
-            showToast("Gagal memverifikasi catatan", "error");
+            showToast("Gagal memproses verifikasi", "error");
         }
     };
 
-    const pendingNotes = notes.filter((note) => !note.isValidated && !note.isRejected);
-    const verifiedNotes = notes.filter((note) => note.isValidated);
-
-    const filteredNotes = (
-        filter === "all"
-            ? notes.filter((note) => !note.isRejected)
-            : filter === "pending"
-            ? pendingNotes
-            : filter === "approved"
-            ? verifiedNotes
-            : []
-    ).filter((note) => {
-        if (!searchQuery) return true;
-        const q = searchQuery.toLowerCase();
-        return (
-            note.title?.toLowerCase().includes(q) ||
-            note.mataPelajaran?.toLowerCase().includes(q) ||
-            note.author?.name?.toLowerCase().includes(q)
-        );
-    });
+    const pendingNotes = notes.filter((n) => !n.isValidated && !n.isRejected);
+    const verifiedNotes = notes.filter((n) => n.isValidated);
 
     const stats = [
-        {
-            label: "Perlu Verifikasi",
-            value: pendingNotes.length,
-            color: "bg-orange-500",
-            icon: Clock,
-            extra: "Urgent",
-        },
-        {
-            label: "Telah Disetujui",
-            value: verifiedNotes.length,
-            color: "bg-emerald-500",
-            icon: CheckCircle,
-            extra: "Bulan ini",
-        },
-        {
-            label: "Total Database",
-            value: notes.length,
-            color: "bg-blue-500",
-            icon: Eye,
-            extra: "Keseluruhan",
-        },
+        { label: "Menunggu Validasi", value: pendingNotes.length, color: "text-amber-600", icon: Clock, sparkColor: "#f59e0b" },
+        { label: "Materi Disetujui", value: verifiedNotes.length, color: "text-indigo-600", icon: CheckCircle, sparkColor: "#6366f1" },
+        { label: "Total Kontrol", value: notes.length, color: "text-slate-600", icon: Activity, sparkColor: "#64748b" },
     ];
+
+    const filteredNotes = (filter === "all" ? notes.filter(n => !n.isRejected) : filter === "pending" ? pendingNotes : verifiedNotes).filter(n => {
+        const q = searchQuery.toLowerCase();
+        return n.title?.toLowerCase().includes(q) || n.mataPelajaran?.toLowerCase().includes(q) || n.author?.name?.toLowerCase().includes(q);
+    });
 
     return (
         <MobileLayout>
-            <div className="pb-8 bg-gray-50/50 min-h-screen">
-                {/* Widescreen Header & Stats Ribbon */}
-                <div className="bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 px-6 md:px-10 pt-8 pb-16 shadow-inner relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/connected.png')] opacity-10 pointer-events-none"></div>
-                    <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none"></div>
-
+            <div className="pb-12 bg-slate-50/50 min-h-screen font-['Manrope']">
+                <FeedbackModal isOpen={isFeedbackModalOpen} onClose={() => setIsFeedbackModalOpen(false)} onSubmit={handleVerifySubmit} type={feedbackType} noteTitle={selectedNoteForFeedback?.title || ""} />
+                
+                <div className="bg-gradient-to-b from-indigo-50/50 via-white to-transparent px-4 sm:px-6 md:px-10 pt-10 pb-12 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-100/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/4 pointer-events-none" />
+                    
                     <div className="relative z-10 max-w-7xl mx-auto">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b border-white/10 pb-6">
-                            <div className="flex items-center gap-4">
-                                <AvatarImage
-                                    src={user?.avatar}
-                                    alt={user?.name}
-                                    size={64}
-                                    className="rounded-2xl border-2 border-white/20 shadow-lg bg-white/10"
-                                />
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <p className="text-white/80 font-['Manrope'] text-sm tracking-wide uppercase">
-                                            Workspace Pakar
-                                        </p>
-                                        <ShieldCheck className="w-4 h-4 text-yellow-300" />
+                        <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
+                            <div className="flex items-center gap-6">
+                                <div className="relative group shrink-0">
+                                    <AvatarImage src={user?.avatar} alt={user?.name} size={76} className="relative rounded-[24px] border-4 border-white shadow-sm" />
+                                    <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-white rounded-lg shadow-sm flex items-center justify-center border border-slate-100"><Sparkles className="w-3.5 h-3.5 text-indigo-600 animate-pulse" /></div>
+                                </div>
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2.5 mb-1.5">
+                                        <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-100">Verified Expert</span>
+                                        <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">• Level 4 Pakar</span>
                                     </div>
-                                    <h2 className="text-white font-['Lexend_Deca'] font-bold text-2xl mt-0.5">
-                                        {user?.name || "Pakar Sistem"}
-                                    </h2>
+                                    <h1 className="font-['Lexend_Deca'] text-3xl font-bold text-slate-800 tracking-tight leading-none">{user?.name || "Pakar Ba-Yu"}</h1>
+                                    <p className="text-slate-500 font-medium text-[14px]">Siap mengkurasi <span className="text-indigo-600 font-bold">{pendingNotes.length} materi</span> berkualitas hari ini.</p>
                                 </div>
                             </div>
-
                             <div className="flex items-center gap-3">
-                                <button className="px-5 py-2.5 bg-white text-teal-700 hover:bg-teal-50 rounded-xl font-['Lexend_Deca'] font-semibold text-sm transition-all shadow-md flex items-center justify-center gap-2">
-                                    <BookOpen className="w-4 h-4" /> Mode Baca
-                                    Massal
-                                </button>
+                                <button className="bg-white border border-slate-200 rounded-xl px-5 py-3 text-slate-600 font-bold text-[13px] flex items-center gap-2 hover:bg-slate-50 shadow-sm transition-all"><LayoutGrid size={16} className="text-indigo-600" />Tag</button>
+                                <button className="bg-slate-800 text-white rounded-xl px-5 py-3 text-[13px] font-bold flex items-center gap-2 hover:bg-slate-900 shadow-md shadow-slate-200 transition-all"><BookOpen size={16} />Baca Massal</button>
                             </div>
-                        </div>
+                        </header>
 
-                        {/* Stats Grid - 3 Columns on Desktop */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
-                            {stats.map((stat, index) => {
-                                const Icon = stat.icon;
-                                return (
-                                    <div
-                                        key={index}
-                                        className="bg-white/10 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-lg hover:bg-white/15 transition-all group"
-                                    >
-                                        <div className="flex justify-between items-start mb-4">
-                                            <div
-                                                className={`w-12 h-12 ${stat.color} rounded-2xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300`}
-                                            >
-                                                <Icon className="w-5 h-5 text-white" />
-                                            </div>
-                                            <span className="text-[11px] font-['Lexend_Deca'] font-bold text-white/90 bg-white/10 px-2 py-1 rounded-md border border-white/5 tracking-wider uppercase">
-                                                {stat.extra}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <p className="text-3xl font-['Lexend_Deca'] font-bold text-white mb-1">
-                                                {isLoading ? "-" : stat.value}
-                                            </p>
-                                            <p className="text-sm font-['Manrope'] text-white/80 font-medium tracking-wide">
-                                                {stat.label}
-                                            </p>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                            {stats.map((stat, idx) => (
+                                <div key={idx} className="bg-white rounded-[24px] p-6 border border-slate-200 shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex flex-col justify-between min-h-[160px]">
+                                   <div className="absolute inset-x-0 bottom-0 z-0 opacity-[0.15] group-hover:opacity-[0.25] transition-opacity h-1/2 pointer-events-none">
+                                      <ResponsiveContainer width="100%" height="100%">
+                                         <AreaChart data={sparkData}>
+                                            <Area type="monotone" dataKey="v" stroke={stat.sparkColor} strokeWidth={3} fill={stat.sparkColor} fillOpacity={0.2} animationDuration={2000} />
+                                         </AreaChart>
+                                      </ResponsiveContainer>
+                                   </div>
+                                   <div className="relative z-10">
+                                      <div className="flex justify-between items-center mb-4">
+                                        <div className={`w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 group-hover:scale-105 transition-transform duration-300`}><stat.icon className={`w-5 h-5 ${stat.color}`} /></div>
+                                        <div className="px-2.5 py-1 bg-emerald-50 rounded-lg flex items-center gap-1.5"><TrendingUp size={12} className="text-emerald-600" /><span className="text-[10px] font-bold text-emerald-700 tracking-wider">AKTIF</span></div>
+                                      </div>
+                                      <div className="flex flex-col">
+                                        <div className="flex items-baseline gap-2"><span className="text-3xl font-['Lexend_Deca'] font-bold text-slate-800 tracking-tight">{isLoading ? ".." : stat.value}</span></div>
+                                        <p className="text-[12px] font-semibold text-slate-500 mt-1 uppercase tracking-wider">{stat.label}</p>
+                                      </div>
+                                   </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
 
-                {/* Main Dashboard Workspace */}
-                <div className="max-w-7xl mx-auto px-6 md:px-10 -mt-8 relative z-20">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 -mt-2 relative z-20">
                     <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-                        {/* Left Column (Main Data Area) */}
                         <div className="xl:col-span-3 space-y-6">
-                            {/* Search & Tabs Controls */}
-                            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-2 md:p-3">
-                                <div className="flex flex-col md:flex-row gap-3">
-                                    <div className="flex-1 relative">
-                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" strokeWidth={2.5} />
-                                        <input
-                                            type="text"
-                                            value={searchQuery}
-                                            onChange={(e) =>
-                                                setSearchQuery(e.target.value)
-                                            }
-                                            placeholder="Cari mata pelajaran, judul, atau author..."
-                                            className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent hover:border-gray-200 rounded-2xl font-['Manrope'] text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white transition-all"
-                                        />
-                                    </div>
-                                    {/* Filter Tabs */}
-                                    <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-hide py-1">
-                                        {[
-                                            {
-                                                id: "pending",
-                                                label: "Perlu Verifikasi (Pending)",
-                                            },
-                                            {
-                                                id: "approved",
-                                                label: "Telah Disetujui",
-                                            },
-                                            {
-                                                id: "all",
-                                                label: "Semua Antrean",
-                                            },
-                                        ].map((tab) => {
-                                            const isActive = filter === tab.id;
-                                            return (
-                                                <button
-                                                    key={tab.id}
-                                                    onClick={() =>
-                                                        setFilter(tab.id as any)
-                                                    }
-                                                    className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl font-['Lexend_Deca'] font-semibold text-sm whitespace-nowrap transition-all ${
-                                                        isActive
-                                                            ? "bg-teal-600 text-white shadow-md shadow-teal-500/20"
-                                                            : "bg-transparent text-gray-500 hover:bg-gray-100"
-                                                    }`}
-                                                >
-                                                    {tab.label}
-                                                    {tab.id === "pending" &&
-                                                        pendingNotes.length >
-                                                            0 &&
-                                                        !isLoading && (
-                                                            <span
-                                                                className={`ml-1.5 text-[10px] px-1.5 py-0.5 rounded-md font-bold ${isActive ? "bg-white/20 text-white" : "bg-orange-100 text-orange-600"}`}
-                                                            >
-                                                                {
-                                                                    pendingNotes.length
-                                                                }
-                                                            </span>
-                                                        )}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
+                            <div className="flex flex-col lg:flex-row items-center gap-4">
+                                <div className="flex-1 relative w-full group">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><Search className="h-5 w-5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" /></div>
+                                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Cari materi berdasarkan judul..." className="block w-full pl-12 pr-6 py-3.5 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all shadow-sm" />
+                                </div>
+                                <div className="flex gap-1.5 p-1 bg-slate-100 rounded-xl">
+                                    {[
+                                        { id: "pending", label: "Antrean", icon: ListFilter },
+                                        { id: "approved", label: "Verif", icon: CheckCircle },
+                                        { id: "all", label: "Semua", icon: LayoutGrid },
+                                    ].map((tab) => {
+                                        const active = filter === tab.id;
+                                        return (
+                                            <button key={tab.id} onClick={() => setFilter(tab.id as any)} className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-wider transition-all ${active ? "bg-white text-slate-800 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-700"}`}>
+                                                <tab.icon size={14} />{tab.label}
+                                                {tab.id === 'pending' && pendingNotes.length > 0 && <span className={`ml-1 px-1.5 py-0.5 rounded-md flex items-center justify-center text-[9px] font-bold ${active ? "bg-indigo-50 text-indigo-600" : "bg-slate-200 text-slate-500"}`}>{pendingNotes.length}</span>}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
 
-                            {/* Content Area */}
-                            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 min-h-[500px]">
+                            <div className="grid grid-cols-1 gap-4">
                                 {isLoading ? (
-                                    <div className="flex items-center justify-center py-16">
-                                        <div className="animate-spin w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full"></div>
+                                    <div className="flex flex-col items-center justify-center py-20">
+                                        <div className="w-10 h-10 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin mb-4" />
+                                        <span className="text-slate-400 font-semibold text-[13px] animate-pulse">Menghubungkan Server Pakar...</span>
                                     </div>
                                 ) : filteredNotes.length === 0 ? (
-                                    <div className="py-16 text-center bg-gray-50 border border-gray-100 border-dashed rounded-3xl">
-                                        <CheckCircle className="w-16 h-16 text-teal-300 mx-auto mb-4" />
-                                        <h4 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 mb-1">
-                                            Tidak Ada Antrean
-                                        </h4>
-                                        <p className="text-sm text-gray-700 font-['Manrope'] font-bold">
-                                            Saat ini antrean filter yang Anda
-                                            pilih sedang kosong.
-                                        </p>
+                                    <div className="bg-white rounded-[24px] py-20 border border-slate-200 border-dashed text-center flex flex-col items-center shadow-sm">
+                                        <div className="w-20 h-20 bg-slate-50 rounded-[20px] flex items-center justify-center mb-5"><CheckCircle className="w-10 h-10 text-slate-300" /></div>
+                                        <h3 className="font-['Lexend_Deca'] text-xl font-bold text-slate-800 mb-1.5">Tugas Selesai!</h3>
+                                        <p className="text-slate-500 font-medium text-[14px]">Antrean materi verifikasi kamu kosong hari ini.</p>
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
                                         {filteredNotes.map((note) => {
-                                            const author = note.author;
-                                            const subject = mataPelajaran.find(
-                                                (m) =>
-                                                    m.name ===
-                                                    note.mataPelajaran,
-                                            );
+                                            const subject = mataPelajaran.find(m => m.name === note.mataPelajaran);
                                             return (
-                                                <div
-                                                    key={note.id}
-                                                    className="bg-white rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 p-5 md:p-6 group relative overflow-hidden"
-                                                >
-                                                    {!note.isValidated && (
-                                                        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-400/10 to-red-400/10 rounded-bl-full pointer-events-none transition-transform group-hover:scale-110"></div>
-                                                    )}
-
-                                                    <div className="flex flex-col md:flex-row gap-6 relative z-10">
-                                                        <div className="flex-1 min-w-0">
-                                                            <div className="flex items-center gap-3 mb-3">
-                                                                <div
-                                                                    className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
-                                                                    style={{
-                                                                        backgroundColor: `${subject?.color || "#eee"}15`,
-                                                                    }}
-                                                                >
-                                                                    <span className="text-2xl">
-                                                                        {subject?.icon ||
-                                                                            "📚"}
-                                                                    </span>
-                                                                </div>
-                                                                <div>
-                                                                    <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 text-base md:text-lg mb-0.5 line-clamp-1">
-                                                                        {
-                                                                            note.title
-                                                                        }
-                                                                    </h4>
-                                                                    <div className="flex items-center gap-2">
-                                                                        <span className="text-[10px] font-['Lexend_Deca'] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg border border-gray-200">
-                                                                            {
-                                                                                note.mataPelajaran
-                                                                            }
-                                                                        </span>
-                                                                        <span className="text-[10px] font-['Lexend_Deca'] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg border border-gray-200">
-                                                                            Kelas{" "}
-                                                                            {
-                                                                                note.kelas
-                                                                            }
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
+                                                <article key={note.id} className="group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-8 border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors bg-transparent outline-none px-4 sm:px-6 rounded-[24px]">
+                                                    {/* Feed Text */}
+                                                    <div className="flex-1 min-w-0 flex flex-col w-full h-full">
+                                                        {/* Author Header */}
+                                                        <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-slate-800">
+                                                            <div className="flex items-center gap-1.5 group/author">
+                                                                <AvatarImage src={note.author?.avatar} size={20} className="ring-2 ring-transparent group-hover/author:ring-indigo-500/20 transition-all" />
+                                                                <span className="font-bold text-slate-950 group-hover/author:underline tracking-tight">{note.author?.name}</span>
                                                             </div>
-                                                            <p className="font-['Manrope'] text-sm text-gray-600 line-clamp-2 md:pl-[60px] opacity-90">
-                                                                {
-                                                                    note.description
-                                                                }
-                                                            </p>
-                                                            <div className="flex items-center gap-3 mt-4 md:pl-[60px]">
-                                                                <AvatarImage
-                                                                    src={author?.avatar}
-                                                                    alt={author?.name}
-                                                                    size={24}
-                                                                    className="border border-gray-200"
-                                                                />
-                                                                <span className="text-xs font-['Manrope'] font-medium text-gray-500">
-                                                                    Oleh{" "}
-                                                                    <span className="font-bold text-gray-700">
-                                                                        {
-                                                                            author?.name
-                                                                        }
-                                                                    </span>
-                                                                </span>
-                                                                <span className="text-gray-300 mx-1">
-                                                                    •
-                                                                </span>
-                                                                <span className="text-xs font-['Manrope'] text-gray-500">
-                                                                    {new Date(
-                                                                        note.createdAt,
-                                                                    ).toLocaleDateString(
-                                                                        "id-ID",
-                                                                        {
-                                                                            day: "numeric",
-                                                                            month: "short",
-                                                                            year: "numeric",
-                                                                        },
-                                                                    )}
-                                                                </span>
-                                                            </div>
+                                                            <span className="text-slate-700 px-0.5 font-bold">di</span>
+                                                            <span className="font-extrabold text-slate-900 tracking-tight">{note.mataPelajaran}</span>
+                                                            {note.kelas && note.kelas !== "-" && note.kelas !== "Semua" && (
+                                                                <>
+                                                                    <span className="text-[10px] text-slate-400 mx-0.5 font-bold">•</span>
+                                                                    <span className="text-slate-800 font-bold tracking-tight">Kelas {note.kelas}</span>
+                                                                </>
+                                                            )}
+                                                            <span className="text-[10px] text-slate-400 mx-0.5 font-bold">•</span>
+                                                            <span className="text-[12px] text-slate-500 font-bold">{new Date(note.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
                                                         </div>
 
-                                                        <div className="w-full md:w-48 lg:w-56 flex flex-col justify-center gap-2 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6">
+                                                        {/* Title */}
+                                                        <h2 className="text-[20px] md:text-[22px] font-extrabold text-slate-900 leading-[1.25] tracking-tight group-hover:text-indigo-600 transition-colors line-clamp-2 mb-2 font-['Lexend_Deca']">
+                                                            {note.title}
+                                                        </h2>
+
+                                                        {/* Excerpt */}
+                                                        <p className="text-[15px] font-['Manrope'] text-slate-600 line-clamp-2 leading-relaxed mb-5 pr-2 font-medium">
+                                                            {note.description}
+                                                        </p>
+
+                                                        {/* Action Buttons for Pakar */}
+                                                        <div className="flex items-center gap-3 mt-auto flex-wrap">
                                                             {note.isValidated ? (
                                                                 <>
-                                                                    <div className="bg-emerald-50 text-emerald-600 rounded-xl py-3 px-4 font-['Lexend_Deca'] font-bold text-sm text-center border border-emerald-100 flex items-center justify-center gap-2">
-                                                                        <CheckCircle className="w-4 h-4" />{" "}
-                                                                        Telah
-                                                                        Dinilai
-                                                                    </div>
-                                                                    <Link
-                                                                        to={`/note/${note.id}`}
-                                                                        className="py-2.5 bg-white text-gray-600 rounded-xl font-['Lexend_Deca'] font-semibold text-sm text-center hover:bg-gray-50 transition-colors border border-gray-200"
-                                                                    >
-                                                                        Baca
-                                                                        Detail
-                                                                    </Link>
+                                                                    <div className="bg-emerald-50 text-emerald-600 rounded-full px-4 py-2 border border-emerald-100 font-['Lexend_Deca'] font-bold text-[11px] flex items-center gap-2 uppercase tracking-widest"><ShieldCheck size={16} /> Verified</div>
+                                                                    <Link to={`/note/${note.id}`} className="px-5 py-2 bg-white border border-slate-200 text-slate-600 rounded-full font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest flex items-center gap-1.5 hover:bg-slate-50 hover:border-indigo-200 hover:text-indigo-600 transition-all shadow-sm group/btn">Detail<ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" /></Link>
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <button
-                                                                        onClick={() =>
-                                                                            handleVerify(
-                                                                                note.id,
-                                                                                "approve",
-                                                                            )
-                                                                        }
-                                                                        className="w-full py-2.5 bg-emerald-500 text-white rounded-xl font-['Lexend_Deca'] font-semibold text-sm shadow-sm transition-colors hover:bg-emerald-600 flex items-center justify-center gap-2"
-                                                                    >
-                                                                        <CheckCircle className="w-4 h-4" />{" "}
-                                                                        Validasi
-                                                                        Layak
-                                                                    </button>
-                                                                    <div className="flex gap-2">
-                                                                        <button
-                                                                            onClick={() =>
-                                                                                handleVerify(
-                                                                                    note.id,
-                                                                                    "reject",
-                                                                                )
-                                                                            }
-                                                                            className="flex-1 py-2.5 bg-white text-red-500 border border-gray-200 hover:border-red-200 hover:bg-red-50 rounded-xl font-['Lexend_Deca'] font-semibold text-sm transition-colors flex items-center justify-center"
-                                                                            title="Tolak Catatan"
-                                                                        >
-                                                                            <XCircle className="w-4 h-4" />
-                                                                        </button>
-                                                                        <Link
-                                                                            to={`/note/${note.id}`}
-                                                                            className="flex-[2] py-2.5 bg-gray-50 text-gray-700 rounded-xl font-['Lexend_Deca'] font-semibold text-sm text-center hover:bg-gray-100 transition-colors border border-gray-200"
-                                                                        >
-                                                                            Baca
-                                                                            Detail
-                                                                        </Link>
-                                                                    </div>
+                                                                    <button onClick={() => handleActionClick(note, "approve")} className="px-5 py-2 bg-indigo-600 text-white rounded-full font-['Lexend_Deca'] font-bold text-[11px] shadow-sm hover:bg-indigo-700 transition-all flex items-center gap-1.5 uppercase tracking-widest"><CheckCircle size={14} /> Setuju</button>
+                                                                    <button onClick={() => handleActionClick(note, "reject")} className="px-4 py-2 bg-white border border-slate-200 text-rose-500 rounded-full hover:bg-rose-50 hover:border-rose-200 transition-all flex items-center shadow-sm"><XCircle size={16} /></button>
+                                                                    <Link to={`/note/${note.id}`} className="px-5 py-2 bg-slate-50 text-slate-600 rounded-full font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest flex items-center hover:bg-slate-100 border border-slate-200 transition-all shadow-sm">Detail</Link>
                                                                 </>
                                                             )}
                                                         </div>
                                                     </div>
-                                                </div>
+
+                                                    {/* Thumbnail */}
+                                                    <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-slate-50 relative shadow-sm border border-slate-100 flex items-center justify-center">
+                                                        {note.thumbnail ? (
+                                                            <img src={note.thumbnail} alt={note.title} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${subject?.color || "#5D5CE6"}10` }}>
+                                                                <span className="text-5xl transform group-hover:scale-110 transition-transform duration-500">{subject?.icon || "📘"}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </article>
                                             );
                                         })}
                                     </div>
@@ -470,66 +404,34 @@ export default function PakarDashboard() {
                             </div>
                         </div>
 
-                        {/* Right Column (Sidebar) */}
                         <div className="xl:col-span-1 space-y-6">
-                            {/* Guidelines Panel */}
-                            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 relative overflow-hidden">
-                                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-teal-400 to-cyan-500"></div>
-                                <div className="flex items-center gap-3 mb-5">
-                                    <div className="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center border border-teal-100">
-                                        <Map className="w-6 h-6 text-teal-600" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-['Lexend_Deca'] font-bold text-gray-900">
-                                            Panduan Pakar
-                                        </h3>
-                                         <p className="font-['Manrope'] text-[11px] text-gray-700 font-bold">
-                                            Standar Kurikulum 2026
-                                        </p>
-                                    </div>
+                            <div className="bg-white rounded-[24px] p-6 border border-slate-200 shadow-sm relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-16 h-16 bg-indigo-50/50 rounded-bl-[24px]" />
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="w-10 h-10 bg-indigo-50 rounded-[12px] flex items-center justify-center"><Map className="w-5 h-5 text-indigo-600" /></div>
+                                    <div><h3 className="font-['Lexend_Deca'] font-bold text-slate-800 text-[15px] uppercase tracking-tight">Pedoman</h3><p className="text-[10px] text-indigo-500 font-semibold uppercase tracking-widest">Pakar 2026</p></div>
                                 </div>
-
-                                <div className="space-y-4">
+                                <div className="space-y-5">
                                     {[
-                                        {
-                                            title: "Akurasi Teori",
-                                            desc: "Pastikan rumus dan teori pendukung sesuai materi resmi.",
-                                            num: 1,
-                                        },
-                                        {
-                                            title: "Tidak Plagiat",
-                                            desc: "Konten harus merupakan pemikiran riil atau rangkuman mandiri pengguna.",
-                                            num: 2,
-                                        },
-                                        {
-                                            title: "Kerapian Visual",
-                                            desc: "Tolak bila tulisan tangan tidak dapat dibaca sama sekali.",
-                                            num: 3,
-                                        },
+                                        { title: "Verifikasi Teori", desc: "Pastikan rumus standar.", num: 1, c: "bg-blue-500" },
+                                        { title: "Originalitas", desc: "Bukan copy-paste murni.", num: 2, c: "bg-indigo-500" },
+                                        { title: "Kualitas Visual", desc: "Tulisan/gambar harus jelas.", num: 3, c: "bg-amber-500" },
                                     ].map((rule) => (
-                                        <div
-                                            key={rule.num}
-                                            className="flex gap-3"
-                                        >
-                                            <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 flex-shrink-0">
-                                                {rule.num}
-                                            </div>
-                                            <div>
-                                                <h4 className="font-['Manrope'] font-bold text-sm text-gray-800">
-                                                    {rule.title}
-                                                </h4>
-                                                 <p className="font-['Manrope'] text-xs text-gray-700 mt-0.5 leading-relaxed font-medium">
-                                                    {rule.desc}
-                                                </p>
-                                            </div>
+                                        <div key={rule.num} className="flex gap-4 group">
+                                            <div className={`w-1.5 h-1.5 rounded-full ${rule.c} mt-1.5 shrink-0`} />
+                                            <div><h4 className="text-[12px] font-bold text-slate-800 mb-0.5">{rule.title}</h4><p className="text-[12px] text-slate-500 font-medium leading-snug">{rule.desc}</p></div>
                                         </div>
                                     ))}
                                 </div>
-
-                                <button className="w-full mt-6 py-3 bg-teal-50 text-teal-700 rounded-xl text-sm font-['Lexend_Deca'] font-semibold transition-colors hover:bg-teal-100 flex items-center justify-center gap-2">
-                                    Unduh Pedoman Lengkap{" "}
-                                    <ChevronRight className="w-4 h-4" />
-                                </button>
+                                <button className="w-full mt-6 py-3.5 bg-slate-800 text-white rounded-xl font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-wider shadow-md hover:bg-slate-900 transition-all flex items-center justify-center gap-2">E-Pedoman<ChevronRight size={14} /></button>
+                            </div>
+                            
+                            <div className="bg-indigo-600 rounded-[24px] p-6 text-white relative overflow-hidden shadow-lg shadow-indigo-600/20 group">
+                                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
+                                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-1000" />
+                                <ShieldCheck className="w-10 h-10 mb-4 opacity-80 group-hover:rotate-12 transition-transform duration-500" />
+                                <h4 className="font-['Lexend_Deca'] font-bold text-[17px] mb-2 leading-tight tracking-tight">Kualitas Segalanya.</h4>
+                                <p className="text-indigo-100 text-[13px] font-medium leading-relaxed">Terima kasih telah kurasi materi berkualitas untuk Ba-Yu.</p>
                             </div>
                         </div>
                     </div>
