@@ -1,4 +1,4 @@
-import { Home, Search, Plus, Bell, User } from 'lucide-react';
+import { Home, Search, Plus, Bell, User, LayoutGrid } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -7,188 +7,55 @@ export function BottomNav() {
   const { user } = useAuth();
   
   const isActive = (path: string) => {
-    return location.pathname === path;
+    if (path === '/home' && (location.pathname === '/' || location.pathname === '/home')) return true;
+    return location.pathname.startsWith(path);
   };
 
-  // Admin navigation - no upload
-  if (user?.role === 'admin') {
-    return (
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-bottom z-50">
-        <div className="max-w-[430px] mx-auto">
-          <div className="flex items-center justify-around h-16 px-4">
-            <Link
-              to="/home"
-              className={`flex flex-col items-center justify-center flex-1 ${
-                isActive('/home') ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              <Home className={`w-6 h-6 ${isActive('/home') ? 'fill-primary' : ''}`} />
-              <span className="text-xs mt-0.5">Home</span>
-            </Link>
+  const renderNavItems = () => {
+    const isPakar = user?.role === 'pakar';
+    const isAdmin = user?.role === 'admin';
 
-            <Link
-              to="/explore"
-              className={`flex flex-col items-center justify-center flex-1 ${
-                isActive('/explore') ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              <Search className="w-6 h-6" />
-              <span className="text-xs mt-0.5">Jelajah</span>
-            </Link>
+    // Role-based navigation config
+    const items = [
+      { path: '/home', icon: Home, label: 'Beranda' },
+      { path: '/explore', icon: Search, label: 'Eksplor' },
+      isPakar 
+          ? { path: '/pakar', icon: LayoutGrid, label: 'Dashboard' }
+          : { path: '/notifications', icon: Bell, label: 'Notifikasi' },
+      { path: '/profile', icon: User, label: 'Profil' },
+    ].filter(Boolean) as any[];
 
-            <Link
-              to="/notifications"
-              className={`flex flex-col items-center justify-center flex-1 ${
-                isActive('/notifications') ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              <div className="relative">
-                <Bell className="w-6 h-6" />
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></div>
-              </div>
-              <span className="text-xs mt-0.5">Notifikasi</span>
-            </Link>
+    return items.map((item, idx) => {
+      const active = isActive(item.path);
 
-            <Link
-              to="/profile"
-              className={`flex flex-col items-center justify-center flex-1 ${
-                isActive('/profile') ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              <User className="w-6 h-6" />
-              <span className="text-xs mt-0.5">Profil</span>
-            </Link>
+      // Standard Nav Item
+      return (
+        <Link
+          key={item.path}
+          to={item.path}
+          className={`flex flex-col items-center justify-center flex-1 transition-all duration-300 outline-none ${
+            active ? 'text-indigo-600' : 'text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          <div className={`relative flex items-center justify-center w-14 h-9 rounded-2xl transition-all duration-300 ${active ? 'bg-indigo-50/80' : 'bg-transparent'}`}>
+             <item.icon className={`w-[22px] h-[22px] transition-all duration-300 ${active ? 'scale-110' : 'scale-100'}`} strokeWidth={active ? 2.5 : 2} />
+             {item.path === '/notifications' && !active && (
+               <div className="absolute top-2 right-3.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></div>
+             )}
           </div>
-        </div>
-      </div>
-    );
-  }
+          <span className={`text-[10px] mt-1 font-['Manrope'] font-bold tracking-wide transition-all duration-300 ${active ? 'opacity-100 scale-100' : 'opacity-70 scale-95'}`}>
+            {item.label}
+          </span>
+        </Link>
+      );
+    });
+  };
 
-  // Pakar navigation - sama seperti user (bisa upload)
-  if (user?.role === 'pakar') {
-    return (
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-bottom z-50">
-        <div className="max-w-[430px] mx-auto">
-          <div className="flex items-center justify-around h-16 px-4 relative">
-            <Link
-              to="/home"
-              className={`flex flex-col items-center justify-center flex-1 ${
-                isActive('/home') ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              <Home className={`w-6 h-6 ${isActive('/home') ? 'fill-primary' : ''}`} />
-              <span className="text-xs mt-0.5">Home</span>
-            </Link>
-
-            <Link
-              to="/explore"
-              className={`flex flex-col items-center justify-center flex-1 ${
-                isActive('/explore') ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              <Search className="w-6 h-6" />
-              <span className="text-xs mt-0.5">Jelajah</span>
-            </Link>
-
-            {/* Upload FAB */}
-            <Link
-              to="/upload"
-              className="flex flex-col items-center justify-center flex-1 -mt-8"
-            >
-              <div className="bg-primary rounded-full p-4 shadow-lg shadow-primary/50">
-                <Plus className="w-7 h-7 text-white" />
-              </div>
-            </Link>
-
-            <Link
-              to="/notifications"
-              className={`flex flex-col items-center justify-center flex-1 ${
-                isActive('/notifications') ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              <div className="relative">
-                <Bell className="w-6 h-6" />
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></div>
-              </div>
-              <span className="text-xs mt-0.5">Notifikasi</span>
-            </Link>
-
-            <Link
-              to="/profile"
-              className={`flex flex-col items-center justify-center flex-1 ${
-                isActive('/profile') ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              <User className="w-6 h-6" />
-              <span className="text-xs mt-0.5">Profil</span>
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // User navigation (default)
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-bottom z-50">
+    <div className="w-full h-full bg-transparent">
       <div className="max-w-[430px] mx-auto">
-        <div className="flex items-center justify-around h-16 px-4 relative">
-          {/* Home */}
-          <Link
-            to="/home"
-            className={`flex flex-col items-center justify-center flex-1 ${
-              isActive('/home') ? 'text-primary' : 'text-muted-foreground'
-            }`}
-          >
-            <Home className={`w-6 h-6 ${isActive('/home') ? 'fill-primary' : ''}`} />
-            <span className="text-xs mt-0.5">Home</span>
-          </Link>
-
-          {/* Explore */}
-          <Link
-            to="/explore"
-            className={`flex flex-col items-center justify-center flex-1 ${
-              isActive('/explore') ? 'text-primary' : 'text-muted-foreground'
-            }`}
-          >
-            <Search className="w-6 h-6" />
-            <span className="text-xs mt-0.5">Jelajah</span>
-          </Link>
-
-          {/* Upload FAB */}
-          <Link
-            to="/upload"
-            className="flex flex-col items-center justify-center flex-1 -mt-8"
-          >
-            <div className="bg-primary rounded-full p-4 shadow-lg shadow-primary/50">
-              <Plus className="w-7 h-7 text-white" />
-            </div>
-          </Link>
-
-          {/* Notifications */}
-          <Link
-            to="/notifications"
-            className={`flex flex-col items-center justify-center flex-1 ${
-              isActive('/notifications') ? 'text-primary' : 'text-muted-foreground'
-            }`}
-          >
-            <div className="relative">
-              <Bell className="w-6 h-6" />
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></div>
-            </div>
-            <span className="text-xs mt-0.5">Notifikasi</span>
-          </Link>
-
-          {/* Profile */}
-          <Link
-            to="/profile"
-            className={`flex flex-col items-center justify-center flex-1 ${
-              isActive('/profile') ? 'text-primary' : 'text-muted-foreground'
-            }`}
-          >
-            <User className="w-6 h-6" />
-            <span className="text-xs mt-0.5">Profil</span>
-          </Link>
+        <div className="flex items-center justify-around h-[70px] px-2 relative pt-1">
+          {renderNavItems()}
         </div>
       </div>
     </div>

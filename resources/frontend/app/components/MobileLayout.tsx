@@ -2,6 +2,11 @@ import { ReactNode, useState, useEffect } from 'react';
 import { BottomNav } from './BottomNav';
 import { SideNav } from './SideNav';
 import { TopNav } from './TopNav';
+import ApplicationLogo from './ApplicationLogo';
+import AvatarNotifications from './ui/avatar-notifications';
+import { Edit3, Search } from 'lucide-react';
+import { Link, useNavigate } from 'react-router';
+import { useAuth } from '../contexts/AuthContext';
 
 interface MobileLayoutProps {
   children: ReactNode;
@@ -11,6 +16,8 @@ interface MobileLayoutProps {
 export function MobileLayout({ children, showBottomNav = true }: MobileLayoutProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => {
@@ -26,12 +33,14 @@ export function MobileLayout({ children, showBottomNav = true }: MobileLayoutPro
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const isAdmin = user?.role === 'admin';
+
   return (
     // Base layout: Full column structure.
-    <div className="h-screen w-full flex flex-col bg-white text-gray-900 overflow-hidden selection:bg-primary/20 selection:text-primary">
+    <div className="h-screen w-full flex flex-col bg-white text-slate-900 overflow-hidden selection:bg-indigo-600/20 selection:text-indigo-600">
       
       {/* 1. DESKTOP & TABLET TOP REGION */}
-      <div className="hidden md:block w-full border-b border-gray-100/60 z-50 bg-white shrink-0 shadow-[0_2px_10px_rgb(0,0,0,0.02)] relative">
+      <div className="hidden md:block w-full border-b border-slate-100/60 z-50 bg-white shrink-0 shadow-[0_2px_10px_rgb(0,0,0,0.02)] relative">
          <TopNav 
            isSidebarExpanded={isSidebarExpanded} 
            toggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)} 
@@ -39,12 +48,21 @@ export function MobileLayout({ children, showBottomNav = true }: MobileLayoutPro
       </div>
 
       {/* 2. MOBILE TOP BAR */}
-      <div className="md:hidden w-full bg-white h-[60px] border-b border-gray-100 flex items-center justify-between px-5 z-40 shadow-sm shrink-0">
-         <div className="flex items-center gap-2">
-            <div className="w-[28px] h-[28px] bg-primary/10 rounded-[8px] flex items-center justify-center">
-              <span className="text-[14px]">📚</span>
+      <div className="md:hidden w-full bg-white/90 backdrop-blur-md h-[60px] border-b border-slate-100 flex items-center justify-between px-5 z-40 shadow-sm shrink-0">
+         <Link to="/home" className="flex items-center gap-2 shrink-0 group outline-none">
+            <ApplicationLogo className="w-7 h-7" />
+            <span className="font-['Lexend_Deca'] font-extrabold text-[20px] tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-indigo-800">
+               Ba-Yu
+            </span>
+         </Link>
+         
+         <div className="flex items-center gap-4">
+            <button onClick={() => navigate('/explore')} className="text-slate-500 hover:text-indigo-600 transition-colors rounded-full hover:bg-indigo-50 outline-none">
+              <Search className="w-[22px] h-[22px]" strokeWidth={2} />
+            </button>
+            <div className="mt-1">
+              <AvatarNotifications />
             </div>
-            <span className="font-['Lexend_Deca'] font-extrabold text-[20px] text-gray-900 tracking-tight">Ba-Yu.</span>
          </div>
       </div>
 
@@ -54,7 +72,7 @@ export function MobileLayout({ children, showBottomNav = true }: MobileLayoutPro
         {/* SIDEBAR (Only desktop/tablet) */}
         <div 
           style={{ width: isSidebarExpanded ? '240px' : '0px', minWidth: isSidebarExpanded ? '240px' : '0px' }}
-          className={`hidden md:flex flex-col flex-shrink-0 z-40 bg-white border-r transition-all duration-300 ease-in-out h-full overflow-hidden ${isSidebarExpanded ? 'border-gray-100/100 opacity-100' : 'border-gray-100/0 opacity-0'}`}
+          className={`hidden md:flex flex-col flex-shrink-0 z-40 bg-white border-r transition-all duration-300 ease-in-out h-full overflow-hidden ${isSidebarExpanded ? 'border-slate-100/100 opacity-100' : 'border-slate-100/0 opacity-0'}`}
         >
            <SideNav 
              isExpanded={isSidebarExpanded} 
@@ -71,9 +89,19 @@ export function MobileLayout({ children, showBottomNav = true }: MobileLayoutPro
 
       </div>
 
-      {/* 4. MOBILE BOTTOM NAV */}
+      {/* 4. MOBILE BOTTOM NAV & FAB */}
+      {/* FLOATING ACTION BUTTON (Upload) - Hidden for admins */}
+      {!isAdmin && (
+        <Link 
+          to="/upload" 
+          className={`md:hidden fixed right-5 z-50 flex items-center justify-center w-[54px] h-[54px] bg-indigo-600 text-white rounded-[20px] shadow-lg shadow-indigo-600/30 hover:bg-indigo-700 hover:scale-105 active:scale-95 transition-all outline-none border border-indigo-500/50 ${showBottomNav ? 'bottom-[90px]' : 'bottom-6'}`}
+        >
+          <Edit3 className="w-[24px] h-[24px]" strokeWidth={2.5} />
+        </Link>
+      )}
+
       {showBottomNav && (
-        <div className="md:hidden fixed bottom-0 left-0 w-full z-50 bg-white border-t border-gray-200 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] pb-safe">
+        <div className="md:hidden fixed bottom-0 left-0 w-full z-40 bg-white border-t border-slate-200 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] pb-safe">
            <BottomNav />
         </div>
       )}
