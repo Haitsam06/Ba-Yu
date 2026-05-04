@@ -159,35 +159,42 @@ export default function NoteDetailPage() {
         if (!note) return;
 
         const title = `${note.title} | Ba-Yu`;
-        const description = note.content?.replace(/<[^>]*>/g, '').substring(0, 160) || "Baca catatan belajar menarik di Ba-Yu!";
+        const description =
+            note.content?.replace(/<[^>]*>/g, "").substring(0, 160) ||
+            "Baca catatan belajar menarik di Ba-Yu!";
         const url = window.location.href;
-        const image = note.thumbnail || '/logo.png'; // Fallback to logo
+        const image = note.thumbnail || "/logo.png"; // Fallback to logo
 
         // Update document title
         document.title = title;
 
         // Helper to update or create meta tags
-        const updateMeta = (name: string, content: string, property = false) => {
-            const attr = property ? 'property' : 'name';
+        const updateMeta = (
+            name: string,
+            content: string,
+            property = false,
+        ) => {
+            const attr = property ? "property" : "name";
             let el = document.querySelector(`meta[${attr}="${name}"]`);
             if (!el) {
-                el = document.createElement('meta');
+                el = document.createElement("meta");
                 el.setAttribute(attr, name);
                 document.head.appendChild(el);
             }
-            el.setAttribute('content', content);
+            el.setAttribute("content", content);
         };
 
-        updateMeta('description', description);
-        updateMeta('og:title', title, true);
-        updateMeta('og:description', description, true);
-        updateMeta('og:url', url, true);
-        updateMeta('og:image', image, true);
-        updateMeta('og:type', 'article', true);
-        updateMeta('twitter:card', 'summary_large_image');
-        updateMeta('twitter:title', title);
-        updateMeta('twitter:description', description);
-        updateMeta('twitter:image', image);
+        updateMeta("description", description);
+        updateMeta("og:title", title, true);
+        updateMeta("og:description", description, true);
+        updateMeta("og:url", url, true);
+        updateMeta("og:image", image, true);
+        updateMeta("og:type", "article", true);
+        updateMeta("twitter:card", "summary_large_image");
+        updateMeta("twitter:title", title);
+        updateMeta("twitter:description", description);
+        updateMeta("twitter:image", image);
+
 
         return () => {
             // Optional: Reset meta tags on unmount if needed
@@ -198,6 +205,39 @@ export default function NoteDetailPage() {
     const [isSubmittingReport, setIsSubmittingReport] = useState(false);
     const [isSubmittingComment, setIsSubmittingComment] = useState(false);
     const [isSubmittingReply, setIsSubmittingReply] = useState(false);
+
+    useEffect(() => {
+        if (!note || !note.id || !isAuthenticated) return;
+
+        const startTime = Date.now();
+        console.log("Mulai baca catatan:", note.title);
+
+        return () => {
+            const endTime = Date.now();
+            
+            const timeSpentInSeconds = Math.floor((endTime - startTime) / 1000);
+            const timeSpentInMinutes = Math.ceil(timeSpentInSeconds / 60);
+
+            console.log(`Selesai baca. Durasi: ${timeSpentInMinutes} menit`);
+
+            if (timeSpentInMinutes > 0) {
+                const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+                
+                fetch('http://192.168.1.186:8000/api/v1/learn/history', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        post_id: note.id,
+                        duration: timeSpentInMinutes
+                    }),
+                    keepalive: true
+                }).catch(err => console.error("Gagal nyimpen histori:", err));
+            }
+        };
+    }, [note, isAuthenticated]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -346,7 +386,9 @@ export default function NoteDetailPage() {
                     setValidator({
                         id: v._id || v.id || null,
                         name: v.name || "Tim Pakar Ba-Yu",
-                        avatar: v.avatar || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+                        avatar:
+                            v.avatar ||
+                            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
                     });
                 }
             } catch (err) {
@@ -654,7 +696,6 @@ export default function NoteDetailPage() {
         .notion-reader .ql-editor iframe { width: 100% !important; aspect-ratio: 16 / 9; height: auto !important; border-radius: 12px; margin: 2em 0; box-shadow: 0 4px 20px rgba(0,0,0,0.08);}
         .notion-reader .ql-editor .ql-video { display: block; max-width: 100%;}
         `,
-      
                 }}
             />
 
@@ -665,7 +706,10 @@ export default function NoteDetailPage() {
                         onClick={() => navigate(-1)}
                         className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center group"
                     >
-                        <ArrowLeft className="w-5 h-5 text-gray-600 group-hover:text-gray-950 transition-colors" strokeWidth={2.5} />
+                        <ArrowLeft
+                            className="w-5 h-5 text-gray-600 group-hover:text-gray-950 transition-colors"
+                            strokeWidth={2.5}
+                        />
                     </button>
 
                     <div className="flex items-center gap-1">
@@ -681,7 +725,10 @@ export default function NoteDetailPage() {
                             onClick={handleShare}
                             className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-600 hover:text-gray-950"
                         >
-                            <Share2 className="w-[18px] h-[18px]" strokeWidth={2.5} />
+                            <Share2
+                                className="w-[18px] h-[18px]"
+                                strokeWidth={2.5}
+                            />
                         </button>
                         <button
                             onClick={() =>
@@ -707,7 +754,10 @@ export default function NoteDetailPage() {
                             }
                             className="p-2 hover:bg-red-50 rounded-full transition-colors text-gray-600 hover:text-red-500"
                         >
-                            <Flag className="w-[18px] h-[18px]" strokeWidth={2.5} />
+                            <Flag
+                                className="w-[18px] h-[18px]"
+                                strokeWidth={2.5}
+                            />
                         </button>
                     </div>
                 </div>
@@ -788,15 +838,21 @@ export default function NoteDetailPage() {
                             </div>
                             <span className="w-1 h-1 rounded-full bg-gray-400"></span>
                             <div className="flex items-center gap-1.5">
-                                <Clock className="w-3.5 h-3.5" strokeWidth={2.5} />
+                                <Clock
+                                    className="w-3.5 h-3.5"
+                                    strokeWidth={2.5}
+                                />
                                 <span>5 mnt baca</span>
                             </div>
                             {author.role === "pakar" && (
                                 <>
                                     <span className="w-1 h-1 rounded-full bg-gray-400 hidden sm:block"></span>
                                     <span className="text-green-700 font-bold flex items-center gap-1 hidden sm:flex">
-                                        <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> Pakar
-                                        Terverifikasi
+                                        <Check
+                                            className="w-3.5 h-3.5"
+                                            strokeWidth={2.5}
+                                        />{" "}
+                                        Pakar Terverifikasi
                                     </span>
                                 </>
                             )}
@@ -837,12 +893,18 @@ export default function NoteDetailPage() {
                             }}
                             className="flex items-center gap-2 text-[15px] font-['Manrope'] font-bold text-gray-600 hover:text-gray-950 transition-colors group"
                         >
-                            <MessageCircle className="w-5 h-5 text-gray-600 group-hover:text-gray-950 transition-transform group-hover:scale-110" strokeWidth={2.5} />
+                            <MessageCircle
+                                className="w-5 h-5 text-gray-600 group-hover:text-gray-950 transition-transform group-hover:scale-110"
+                                strokeWidth={2.5}
+                            />
                             <span>{comments.length}</span>
                         </button>
 
                         <div className="flex items-center gap-2 text-[15px] font-['Manrope'] font-bold text-gray-600 ml-2 hidden sm:flex">
-                            <Eye className="w-5 h-5 text-gray-600" strokeWidth={2.5} />
+                            <Eye
+                                className="w-5 h-5 text-gray-600"
+                                strokeWidth={2.5}
+                            />
                             <span>{note.views}</span>
                         </div>
                     </div>
@@ -873,7 +935,7 @@ export default function NoteDetailPage() {
                 <div className="mt-16 mb-16 bg-gradient-to-br from-indigo-50/40 via-white to-white rounded-[40px] p-10 md:p-14 text-center border border-indigo-50 shadow-[0_10px_30px_rgba(0,0,0,0.02)] relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-100/20 rounded-bl-[100px] pointer-events-none transition-transform group-hover:scale-110 duration-700" />
                     <div className="absolute bottom-0 left-0 w-24 h-24 bg-violet-100/10 rounded-tr-[80px] pointer-events-none" />
-                    
+
                     <div className="relative z-10">
                         <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-md border border-indigo-50 group-hover:rotate-12 transition-transform">
                             <DownloadCloud className="w-8 h-8 text-indigo-600" />
@@ -882,14 +944,14 @@ export default function NoteDetailPage() {
                             Materi Lengkap dalam Genggaman
                         </h3>
                         <p className="font-['Manrope'] text-[16px] text-slate-500 mb-10 max-w-md mx-auto leading-relaxed font-medium">
-                            Unduh versi PDF asli untuk dipelajari kapan saja, 
+                            Unduh versi PDF asli untuk dipelajari kapan saja,
                             bahkan saat Anda sedang tidak terhubung ke internet.
                         </p>
                         <button
                             onClick={handleDownloadPDF}
                             className="mx-auto flex items-center justify-center gap-3 px-10 py-5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-[13px] font-['Lexend_Deca'] font-black uppercase tracking-widest transition-all shadow-xl shadow-slate-900/10 hover:-translate-y-1 active:scale-95"
                         >
-                            <FileText className="w-5 h-5 opacity-50" /> 
+                            <FileText className="w-5 h-5 opacity-50" />
                             Download PDF Materi
                         </button>
                     </div>
@@ -900,7 +962,7 @@ export default function NoteDetailPage() {
                     <div className="bg-white rounded-[40px] p-8 md:p-12 flex flex-col lg:flex-row items-center justify-between gap-10 mb-24 shadow-[0_20px_50px_-12px_rgba(93,92,230,0.12)] border border-emerald-50 relative overflow-hidden group mt-12">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50/50 rounded-full blur-[80px] pointer-events-none -translate-y-1/2 translate-x-1/4" />
                         <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-indigo-50/30 rounded-full blur-[60px] pointer-events-none" />
-                        
+
                         <div className="flex flex-col md:flex-row items-center text-center md:text-left gap-8 flex-1 relative z-10">
                             <div className="w-24 h-24 bg-emerald-500 rounded-[36px] flex items-center justify-center shadow-lg shadow-emerald-500/25 group-hover:rotate-6 transition-transform duration-700">
                                 <ShieldCheck className="w-12 h-12 text-white" />
@@ -923,13 +985,15 @@ export default function NoteDetailPage() {
                                     </div>
                                 ) : (
                                     <p className="font-['Manrope'] text-slate-400 text-[15px] leading-relaxed max-w-lg font-medium italic">
-                                        Pakar memberikan rating tinggi untuk akurasi materi ini tanpa catatan tambahan.
+                                        Pakar memberikan rating tinggi untuk
+                                        akurasi materi ini tanpa catatan
+                                        tambahan.
                                     </p>
                                 )}
                             </div>
                         </div>
 
-                        <Link 
+                        <Link
                             to={validator.id ? `/profile/${validator.id}` : "#"}
                             className="bg-slate-50/80 backdrop-blur-md rounded-[32px] p-8 border border-slate-100 shadow-sm flex items-center gap-6 shrink-0 w-full lg:w-auto relative z-10 group/pakar hover:bg-white hover:border-indigo-100 transition-all duration-500 cursor-pointer"
                         >
@@ -941,7 +1005,10 @@ export default function NoteDetailPage() {
                                     className="rounded-2xl border-4 border-white shadow-lg"
                                 />
                                 <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center shadow-sm">
-                                    <Check className="w-3.5 h-3.5 text-white" strokeWidth={4} />
+                                    <Check
+                                        className="w-3.5 h-3.5 text-white"
+                                        strokeWidth={4}
+                                    />
                                 </div>
                             </div>
                             <div>
@@ -957,13 +1024,25 @@ export default function NoteDetailPage() {
                                             <Star
                                                 key={i}
                                                 size={13}
-                                                fill={i < (note.rating || 5) ? "#f59e0b" : "transparent"}
-                                                className={i < (note.rating || 5) ? "text-amber-500" : "text-slate-200"}
+                                                fill={
+                                                    i <
+                                                    (note.expert_rating || 5)
+                                                        ? "#f59e0b"
+                                                        : "transparent"
+                                                }
+                                                className={
+                                                    i <
+                                                    (note.expert_rating || 5)
+                                                        ? "text-amber-500"
+                                                        : "text-slate-200"
+                                                }
                                             />
                                         ))}
                                     </div>
                                     <div className="w-[1px] h-3 bg-slate-200 mx-1" />
-                                    <span className="text-[11px] font-black text-slate-900">{(note.rating || 5).toFixed(1)}</span>
+                                    <span className="text-[11px] font-black text-slate-900">
+                                        {(note.expert_rating || 5).toFixed(1)}
+                                    </span>
                                 </div>
                             </div>
                         </Link>
@@ -1047,7 +1126,6 @@ export default function NoteDetailPage() {
                     </div>
                 </div>
 
-
                 {/* Comments Section (Bottom placement) */}
                 <div
                     id="comments-section"
@@ -1099,7 +1177,10 @@ export default function NoteDetailPage() {
                         </div>
                     ) : (
                         <div className="mb-12 bg-gray-50 rounded-3xl p-8 border border-gray-100 flex flex-col items-center justify-center text-center">
-                            <MessageCircle className="w-8 h-8 text-gray-600 mb-3" strokeWidth={2.5} />
+                            <MessageCircle
+                                className="w-8 h-8 text-gray-600 mb-3"
+                                strokeWidth={2.5}
+                            />
                             <h5 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 mb-1">
                                 Punya Pertanyaan?
                             </h5>
@@ -1177,7 +1258,12 @@ export default function NoteDetailPage() {
                                                             </Link>
                                                             {cAuth.role ===
                                                                 "pakar" && (
-                                                                <Check className="w-3.5 h-3.5 bg-green-600 text-white rounded-full p-[2px]" strokeWidth={3} />
+                                                                <Check
+                                                                    className="w-3.5 h-3.5 bg-green-600 text-white rounded-full p-[2px]"
+                                                                    strokeWidth={
+                                                                        3
+                                                                    }
+                                                                />
                                                             )}
                                                             <span className="text-xs font-['Manrope'] text-gray-600 font-bold">
                                                                 {new Date(
@@ -1206,7 +1292,12 @@ export default function NoteDetailPage() {
                                                                 }
                                                                 className="p-1 rounded-full hover:bg-gray-100 text-gray-600 hover:text-gray-950 transition-colors"
                                                             >
-                                                                <MoreHorizontal className="w-5 h-5" strokeWidth={2.5} />
+                                                                <MoreHorizontal
+                                                                    className="w-5 h-5"
+                                                                    strokeWidth={
+                                                                        2.5
+                                                                    }
+                                                                />
                                                             </button>
 
                                                             {activeCommentMenu ===
@@ -1373,7 +1464,12 @@ export default function NoteDetailPage() {
                                                             }}
                                                             className="flex items-center gap-1.5 hover:text-gray-950 transition-colors"
                                                         >
-                                                            <MessageCircle className="w-3.5 h-3.5" strokeWidth={2.5} />{" "}
+                                                            <MessageCircle
+                                                                className="w-3.5 h-3.5"
+                                                                strokeWidth={
+                                                                    2.5
+                                                                }
+                                                            />{" "}
                                                             Balas
                                                         </button>
                                                     </div>
@@ -1518,7 +1614,10 @@ export default function NoteDetailPage() {
                                             </div>
                                             <div className="flex items-center gap-3 text-sm text-gray-600 font-bold">
                                                 <div className="flex items-center gap-1.5">
-                                                    <Heart className="w-4 h-4 text-gray-500" strokeWidth={2.5} />{" "}
+                                                    <Heart
+                                                        className="w-4 h-4 text-gray-500"
+                                                        strokeWidth={2.5}
+                                                    />{" "}
                                                     {recNote.likes}
                                                 </div>
                                             </div>
@@ -1573,96 +1672,184 @@ export default function NoteDetailPage() {
                             {/* Social Preview Card - Enhanced Contrast */}
                             <div className="bg-gray-50 border border-gray-100 rounded-2xl p-3 mb-6 flex gap-3 text-left">
                                 <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 shadow-sm border border-white">
-                                     {note.thumbnail ? (
-                                         <img src={note.thumbnail} alt={note.title} className="w-full h-full object-cover" />
-                                     ) : (
-                                         <div className="w-full h-full bg-indigo-100 flex items-center justify-center">
-                                             <FileText className="w-5 h-5 text-indigo-400" />
-                                         </div>
-                                     )}
-                                 </div>
-                                 <div className="flex-1 min-w-0 py-0.5">
-                                     <h4 className="font-['Lexend_Deca'] font-bold text-[12.5px] text-gray-900 truncate mb-0.5">
-                                         {note.title}
-                                     </h4>
-                                     <p className="font-['Manrope'] text-[10.5px] text-gray-600 font-bold line-clamp-2 leading-relaxed opacity-80">
-                                         {note.content?.replace(/<[^>]*>/g, '').substring(0, 80)}...
-                                     </p>
-                                 </div>
+                                    {note.thumbnail ? (
+                                        <img
+                                            src={note.thumbnail}
+                                            alt={note.title}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full bg-indigo-100 flex items-center justify-center">
+                                            <FileText className="w-5 h-5 text-indigo-400" />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex-1 min-w-0 py-0.5">
+                                    <h4 className="font-['Lexend_Deca'] font-bold text-[12.5px] text-gray-900 truncate mb-0.5">
+                                        {note.title}
+                                    </h4>
+                                    <p className="font-['Manrope'] text-[10.5px] text-gray-600 font-bold line-clamp-2 leading-relaxed opacity-80">
+                                        {note.content
+                                            ?.replace(/<[^>]*>/g, "")
+                                            .substring(0, 80)}
+                                        ...
+                                    </p>
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-4 gap-y-6 gap-x-3 mb-6">
-                                <button 
-                                    onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`${note.title} - Baca di Ba-Yu: ${window.location.href}`)}`, '_blank')}
+                                <button
+                                    onClick={() =>
+                                        window.open(
+                                            `https://wa.me/?text=${encodeURIComponent(`${note.title} - Baca di Ba-Yu: ${window.location.href}`)}`,
+                                            "_blank",
+                                        )
+                                    }
                                     className="flex flex-col items-center gap-2 group"
                                 >
                                     <div className="w-11 h-11 bg-[#25D366] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-green-100 group-hover:-translate-y-1 transition-all">
                                         <MessageCircle className="w-5 h-5 fill-white" />
                                     </div>
-                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">WA</span>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">
+                                        WA
+                                    </span>
                                 </button>
-                                <button 
-                                    onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Cek catatan seru ini: ${note.title}`)}&url=${encodeURIComponent(window.location.href)}`, '_blank')}
+                                <button
+                                    onClick={() =>
+                                        window.open(
+                                            `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Cek catatan seru ini: ${note.title}`)}&url=${encodeURIComponent(window.location.href)}`,
+                                            "_blank",
+                                        )
+                                    }
                                     className="flex flex-col items-center gap-2 group"
                                 >
                                     <div className="w-11 h-11 bg-black text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-gray-200 group-hover:-translate-y-1 transition-all">
                                         <Twitter className="w-5 h-5 fill-white" />
                                     </div>
-                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">X</span>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">
+                                        X
+                                    </span>
                                 </button>
-                                <button 
-                                    onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank')}
+                                <button
+                                    onClick={() =>
+                                        window.open(
+                                            `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`,
+                                            "_blank",
+                                        )
+                                    }
                                     className="flex flex-col items-center gap-2 group"
                                 >
                                     <div className="w-11 h-11 bg-[#1877F2] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-blue-100 group-hover:-translate-y-1 transition-all">
                                         <Facebook className="w-5 h-5 fill-white" />
                                     </div>
-                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">FB</span>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">
+                                        FB
+                                    </span>
                                 </button>
-                                <button 
-                                    onClick={() => window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(note.title)}`, '_blank')}
+                                <button
+                                    onClick={() =>
+                                        window.open(
+                                            `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(note.title)}`,
+                                            "_blank",
+                                        )
+                                    }
                                     className="flex flex-col items-center gap-2 group"
                                 >
                                     <div className="w-11 h-11 bg-[#0088cc] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-sky-100 group-hover:-translate-y-1 transition-all">
                                         <Send className="w-5 h-5 fill-white" />
                                     </div>
-                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">Tele</span>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">
+                                        Tele
+                                    </span>
                                 </button>
-                                <button 
-                                    onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`, '_blank')}
+                                <button
+                                    onClick={() =>
+                                        window.open(
+                                            `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`,
+                                            "_blank",
+                                        )
+                                    }
                                     className="flex flex-col items-center gap-2 group"
                                 >
                                     <div className="w-11 h-11 bg-[#0077b5] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-blue-100 group-hover:-translate-y-1 transition-all">
-                                        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                                        <svg
+                                            className="w-5 h-5 fill-current"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                                        </svg>
                                     </div>
-                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">LinkedIn</span>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">
+                                        LinkedIn
+                                    </span>
                                 </button>
-                                <button 
-                                    onClick={() => window.open(`https://lineit.line.me/share/ui?url=${encodeURIComponent(window.location.href)}`, '_blank')}
+                                <button
+                                    onClick={() =>
+                                        window.open(
+                                            `https://lineit.line.me/share/ui?url=${encodeURIComponent(window.location.href)}`,
+                                            "_blank",
+                                        )
+                                    }
                                     className="flex flex-col items-center gap-2 group"
                                 >
                                     <div className="w-11 h-11 bg-[#00b900] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-green-100 group-hover:-translate-y-1 transition-all">
-                                        <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M24 10.304c0-5.232-5.383-9.488-12-9.488s-12 4.256-12 9.488c0 4.69 4.27 8.604 10.046 9.351.391.084.924.258 1.057.592.121.304.079.78.039 1.088l-.171 1.026c-.052.311-.252 1.218 1.086.665 1.338-.553 7.211-4.248 9.842-7.272 1.775-1.954 2.046-3.791 2.101-5.45zm-14.779 4.394c0 .356-.289.646-.645.646h-1.638c-.356 0-.645-.29-.645-.646v-3.327h-1.638c-.356 0-.645-.29-.645-.646s.289-.646.645-.646h4.566c.356 0 .645.29.645.646s-.289.646-.645.646h-1.639v3.327zm2.427 0c0 .356-.289.646-.645.646s-.645-.29-.645-.646v-4.619c0-.356.289-.646.645-.646s.645.29.645.646v4.619zm5.351 0c0 .324-.131.62-.365.836l-.004.004-.004.003c-.074.068-.162.119-.257.149-.071.023-.146.035-.224.035-.045 0-.089-.004-.133-.013-.105-.021-.202-.068-.282-.132l-.004-.004-2.883-2.612v1.738c0 .356-.289.646-.645.646s-.645-.29-.645-.646v-4.619c0-.356.289-.646.645-.646.216 0 .408.107.526.271l2.977 2.696v-1.748c0-.356.289-.646.645-.646s.645.29.645.646v4.619zm3.504-1.287h-1.639v-1.042h1.639c.356 0 .645-.29.645-.646s-.289-.646-.645-.646h-1.639v-1.041h1.639c.356 0 .645-.29.645-.646s-.289-.646-.645-.646h-2.928c-.356 0-.645.29-.645.646v4.619c0 .356.289.646.645.646h2.928c.356 0 .645-.29.645-.646s-.289-.646-.645-.646z"/></svg>
+                                        <svg
+                                            className="w-6 h-6 fill-current"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path d="M24 10.304c0-5.232-5.383-9.488-12-9.488s-12 4.256-12 9.488c0 4.69 4.27 8.604 10.046 9.351.391.084.924.258 1.057.592.121.304.079.78.039 1.088l-.171 1.026c-.052.311-.252 1.218 1.086.665 1.338-.553 7.211-4.248 9.842-7.272 1.775-1.954 2.046-3.791 2.101-5.45zm-14.779 4.394c0 .356-.289.646-.645.646h-1.638c-.356 0-.645-.29-.645-.646v-3.327h-1.638c-.356 0-.645-.29-.645-.646s.289-.646.645-.646h4.566c.356 0 .645.29.645.646s-.289.646-.645.646h-1.639v3.327zm2.427 0c0 .356-.289.646-.645.646s-.645-.29-.645-.646v-4.619c0-.356.289-.646.645-.646s.645.29.645.646v4.619zm5.351 0c0 .324-.131.62-.365.836l-.004.004-.004.003c-.074.068-.162.119-.257.149-.071.023-.146.035-.224.035-.045 0-.089-.004-.133-.013-.105-.021-.202-.068-.282-.132l-.004-.004-2.883-2.612v1.738c0 .356-.289.646-.645.646s-.645-.29-.645-.646v-4.619c0-.356.289-.646.645-.646.216 0 .408.107.526.271l2.977 2.696v-1.748c0-.356.289-.646.645-.646s.645.29.645.646v4.619zm3.504-1.287h-1.639v-1.042h1.639c.356 0 .645-.29.645-.646s-.289-.646-.645-.646h-1.639v-1.041h1.639c.356 0 .645-.29.645-.646s-.289-.646-.645-.646h-2.928c-.356 0-.645.29-.645.646v4.619c0 .356.289.646.645.646h2.928c.356 0 .645-.29.645-.646s-.289-.646-.645-.646z" />
+                                        </svg>
                                     </div>
-                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">Line</span>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">
+                                        Line
+                                    </span>
                                 </button>
-                                <button 
-                                    onClick={() => window.open(`https://www.pinterest.com/pin/create/button/?url=${encodeURIComponent(window.location.href)}&description=${encodeURIComponent(note.title)}`, '_blank')}
+                                <button
+                                    onClick={() =>
+                                        window.open(
+                                            `https://www.pinterest.com/pin/create/button/?url=${encodeURIComponent(window.location.href)}&description=${encodeURIComponent(note.title)}`,
+                                            "_blank",
+                                        )
+                                    }
                                     className="flex flex-col items-center gap-2 group"
                                 >
                                     <div className="w-11 h-11 bg-[#bd081c] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-red-100 group-hover:-translate-y-1 transition-all">
-                                        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.017 0c-6.627 0-12 5.373-12 12 0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.261 7.929-7.261 4.162 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146 1.124.347 2.317.535 3.554.535 6.627 0 12-5.373 12-12 0-6.627-5.373-12-12-12z"/></svg>
+                                        <svg
+                                            className="w-5 h-5 fill-current"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path d="M12.017 0c-6.627 0-12 5.373-12 12 0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.261 7.929-7.261 4.162 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146 1.124.347 2.317.535 3.554.535 6.627 0 12-5.373 12-12 0-6.627-5.373-12-12-12z" />
+                                        </svg>
                                     </div>
-                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">Pinterest</span>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">
+                                        Pinterest
+                                    </span>
                                 </button>
-                                <button 
-                                    onClick={() => window.open(`mailto:?subject=${encodeURIComponent(note.title)}&body=${encodeURIComponent(`Cek catatan bermanfaat ini: ${window.location.href}`)}`, '_blank')}
+                                <button
+                                    onClick={() =>
+                                        window.open(
+                                            `mailto:?subject=${encodeURIComponent(note.title)}&body=${encodeURIComponent(`Cek catatan bermanfaat ini: ${window.location.href}`)}`,
+                                            "_blank",
+                                        )
+                                    }
                                     className="flex flex-col items-center gap-2 group"
                                 >
                                     <div className="w-11 h-11 bg-gray-600 text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-gray-100 group-hover:-translate-y-1 transition-all">
-                                        <svg className="w-5 h-5 fill-none stroke-current" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                        <svg
+                                            className="w-5 h-5 fill-none stroke-current"
+                                            strokeWidth="2.5"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                            />
+                                        </svg>
                                     </div>
-                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">Email</span>
+                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">
+                                        Email
+                                    </span>
                                 </button>
                             </div>
 
@@ -1674,16 +1861,21 @@ export default function NoteDetailPage() {
                                     <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400">
                                         <Link2 className="w-4 h-4" />
                                     </div>
-                                    <input 
-                                        type="text" 
-                                        readOnly 
+                                    <input
+                                        type="text"
+                                        readOnly
                                         value={window.location.href}
                                         className="w-full pl-11 pr-24 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-[12.5px] font-bold text-gray-800 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-400 transition-all"
                                     />
-                                    <button 
+                                    <button
                                         onClick={() => {
-                                            navigator.clipboard.writeText(window.location.href);
-                                            showToast("Link berhasil disalin!", "success");
+                                            navigator.clipboard.writeText(
+                                                window.location.href,
+                                            );
+                                            showToast(
+                                                "Link berhasil disalin!",
+                                                "success",
+                                            );
                                         }}
                                         className="absolute right-2 top-2 bottom-2 px-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 active:scale-95"
                                     >
@@ -1721,7 +1913,8 @@ export default function NoteDetailPage() {
                                     : "Komentar"}
                             </h3>
                             <p className="font-['Manrope'] text-[14px] text-gray-600 font-bold px-6">
-                                Bantu kami menjaga ekosistem Ba-Yu tetap edukatif, aman, dan nyaman.
+                                Bantu kami menjaga ekosistem Ba-Yu tetap
+                                edukatif, aman, dan nyaman.
                             </p>
                         </div>
 
@@ -1734,16 +1927,36 @@ export default function NoteDetailPage() {
                                     <div className="relative group">
                                         <select
                                             value={reportReason}
-                                            onChange={(e) => setReportReason(e.target.value)}
+                                            onChange={(e) =>
+                                                setReportReason(e.target.value)
+                                            }
                                             className="w-full px-5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl font-['Manrope'] font-bold text-gray-800 focus:outline-none focus:ring-4 focus:ring-rose-500/5 focus:border-rose-400 focus:bg-white transition-all appearance-none cursor-pointer hover:border-gray-300"
                                         >
-                                            <option value="">Pilih alasan pelaporan...</option>
-                                            <option value="Spam">Spam pemasaran / Iklan mengganggu</option>
-                                            <option value="Informasi Palsu">Informasi keliru / Misinformasi materi</option>
-                                            <option value="Kata Kasar">Ujaran kebencian / Kata-kata kasar</option>
-                                            <option value="Pelecehan">Pelecehan / Intimidasi terhadap user</option>
-                                            <option value="Hak Cipta">Pelanggaran Hak Cipta / Plagiasi</option>
-                                            <option value="Lainnya">Alasan lainnya...</option>
+                                            <option value="">
+                                                Pilih alasan pelaporan...
+                                            </option>
+                                            <option value="Spam">
+                                                Spam pemasaran / Iklan
+                                                mengganggu
+                                            </option>
+                                            <option value="Informasi Palsu">
+                                                Informasi keliru / Misinformasi
+                                                materi
+                                            </option>
+                                            <option value="Kata Kasar">
+                                                Ujaran kebencian / Kata-kata
+                                                kasar
+                                            </option>
+                                            <option value="Pelecehan">
+                                                Pelecehan / Intimidasi terhadap
+                                                user
+                                            </option>
+                                            <option value="Hak Cipta">
+                                                Pelanggaran Hak Cipta / Plagiasi
+                                            </option>
+                                            <option value="Lainnya">
+                                                Alasan lainnya...
+                                            </option>
                                         </select>
                                         <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 group-focus-within:text-rose-400 transition-colors">
                                             <ArrowUp className="w-4 h-4 rotate-180" />
@@ -1757,7 +1970,9 @@ export default function NoteDetailPage() {
                                     </label>
                                     <textarea
                                         value={reportDescription}
-                                        onChange={(e) => setReportDescription(e.target.value)}
+                                        onChange={(e) =>
+                                            setReportDescription(e.target.value)
+                                        }
                                         placeholder="Jelaskan secara singkat mengapa Anda melaporkan konten ini..."
                                         className="w-full px-5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl font-['Manrope'] text-[14.5px] focus:outline-none focus:ring-4 focus:ring-rose-500/5 focus:border-rose-400 focus:bg-white transition-all resize-none h-32 text-gray-800 placeholder:text-gray-400 font-bold hover:border-gray-300"
                                     ></textarea>
@@ -1773,7 +1988,9 @@ export default function NoteDetailPage() {
                                 </button>
                                 <button
                                     onClick={handleReportSubmit}
-                                    disabled={isSubmittingReport || !reportReason}
+                                    disabled={
+                                        isSubmittingReport || !reportReason
+                                    }
                                     className="px-6 py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] bg-rose-500 text-white hover:bg-rose-600 transition-all shadow-lg shadow-rose-200 disabled:opacity-50 disabled:shadow-none hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2"
                                 >
                                     {isSubmittingReport ? (

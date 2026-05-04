@@ -30,6 +30,9 @@ class Post extends Model
         'likes_count',
         'comments_count',
         'is_rejected',
+        'verify_reason',
+        'expert_rating',
+        'verified_by',
     ];
 
     protected $attributes = [

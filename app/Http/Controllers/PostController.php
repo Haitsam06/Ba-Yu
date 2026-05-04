@@ -123,7 +123,7 @@ class PostController extends Controller
             'user_id' => Auth::id(),
             'title' => $request->title,
             'content' => $request->input('content'),
-            'plain_content' => strip_tags($request->input('content')),
+            'plain_content' => html_entity_decode(str_replace('&nbsp;', ' ', strip_tags($request->input('content')))),
             'description' => $request->description,
             'mapel' => $request->mapel,
             'jenjang' => $request->jenjang,
@@ -137,19 +137,12 @@ class PostController extends Controller
             'visibility' => $request->visibility ?? 'public',
         ]);
 
-        if ($post->visibility === 'public') {
-            $pakars = User::where('role', 'pakar')->get();
-            foreach ($pakars as $pakar) {
-                Notification::create([
-                    'user_id'  => $post->user_id,
-                    'actor_id' => Auth::id(),
-                    'title'    => 'Catatan Disetujui!',
-                    'message'  => 'Selamat! Catatanmu "' . $post->title . '" telah diverifikasi oleh pakar.',
-                    'type'     => 'verifikasi',
-                    'link'     => '/note/' . $post->id,
-                    'is_read'  => false,
-                ]);
-            }
+        if ($post->visibility !== 'draft') {
+            \App\Models\LearningHistory::create([
+                'user_id' => Auth::id(),
+                'post_id' => $post->id,
+                'duration' => 0,
+            ]);
         }
 
         return response()->json([
@@ -314,7 +307,7 @@ class PostController extends Controller
         ], 200);
     }
 
-    public function verify($id)
+    public function verify(Request $request, $id)
     {
         $post = Post::find($id);
 
@@ -326,27 +319,42 @@ class PostController extends Controller
             return response()->json(['message' => 'Akses ditolak'], 403);
         }
 
-        $post->update(['is_verified' => true]);
+        $rating = $request->input('rating', 5);
+        $feedback = $request->input('reason', 'Sangat direkomendasikan!');
+
+        $post->update([
+            'is_verified' => true,
+            'verify_reason' => $feedback,    
+            'expert_rating' => $rating, 
+            'verified_by' => Auth::id()     
+        ]);
+
+        Notification::create([
+            'user_id'  => $post->user_id, 
+            'actor_id' => Auth::id(), 
+            'title'    => 'Catatan Disetujui Pakar! 🎉',
+            'message'  => 'Selamat! Catatan "' . $post->title . '" telah diverifikasi. Rating: ' . $rating . ' Bintang. Pesan: "' . $feedback . '"',
+            'type'     => 'verifikasi',
+            'link'     => '/note/' . $post->id, 
+            'is_read'  => false,
+        ]);
 
         return response()->json(['message' => 'Catatan berhasil diverifikasi!'], 200);
     }
 
     public function reject($id)
     {
-        // 1. Kita intip dulu datanya buat nyari tau "Siapa yang bikin" dan "Apa judulnya"
         $post = Post::find($id);
 
         if (!$post) {
             return response()->json(['message' => 'Catatan tidak ditemukan'], 404);
         }
 
-        // 2. Jurus barbar nembak MongoDB (Tetep kita pake biar manjur!)
         Post::where('_id', $id)->update(['is_rejected' => true]);
         
-        // 3. TUKANG POS BERAKSI: Kirim surat penolakan
         Notification::create([
-            'user_id' => $post->user_id, // Alamat pengiriman (si pembuat catatan)
-            'title'   => 'Catatan Ditolak Pakar 😔', // Bebas lu mau ganti judul notifnya apa
+            'user_id' => $post->user_id,
+            'title'   => 'Catatan Ditolak Pakar 😔',
             'message' => 'Maaf, catatan kamu yang berjudul "' . $post->title . '" belum memenuhi standar dan ditolak oleh Pakar.',
             'type'    => 'system',
             'is_read' => false,
@@ -370,5 +378,30 @@ class PostController extends Controller
         $post->delete();
 
         return response()->json(['message' => 'Post berhasil dihapus'], 200);
+    }
+
+    public function ajukanVerifikasi($id)
+    {
+        $post = Post::find($id);
+
+        if (!$post) {
+            return response()->json(['message' => 'Catatan tidak ditemukan'], 404);
+        }
+
+        $pakars = User::where('role', 'pakar')->get();
+
+        foreach ($pakars as $pakar) {
+            Notification::create([
+                'user_id'  => $pakar->id,
+                'actor_id' => Auth::id(), 
+                'title'    => 'Pengajuan Verifikasi Baru! 📝',
+                'message'  => 'Ada catatan baru berjudul "' . $post->title . '" yang butuh direview nih!',
+                'type'     => 'sistem',
+                'link'     => '/pakar',
+                'is_read'  => false,
+            ]);
+        }
+
+        return response()->json(['message' => 'Catatan berhasil diajukan ke Pakar!'], 200);
     }
 }

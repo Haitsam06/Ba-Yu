@@ -42,62 +42,88 @@ const LearningStatisticsPage = () => {
   const [notes, setNotes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [chartView, setChartView] = useState<'weekly' | 'monthly'>('weekly');
-  const [goalHours, setGoalHours] = useState(4);
-  const [goalMinutes, setGoalMinutes] = useState(0);
+  const [goalHours, setGoalHours] = useState(() => {
+    const savedHours = localStorage.getItem("bayu_goal_hours");
+    return savedHours !== null ? parseInt(savedHours) : 4;
+  });
+  const [goalMinutes, setGoalMinutes] = useState(() => {
+    const savedMinutes = localStorage.getItem("bayu_goal_minutes");
+    return savedMinutes !== null ? parseInt(savedMinutes) : 0;
+  });
   const [tempHours, setTempHours] = useState(4);
   const [tempMinutes, setTempMinutes] = useState(0);
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [currentProgressHours, setCurrentProgressHours] = useState(2.8);
   const navigate = useNavigate();
 
+  // 1. Tambahin state baru buat nampung statistik dari API
+  const [stats, setStats] = useState<any>(null);
+  const [dynamicWeeklyData, setDynamicWeeklyData] = useState<any[]>([]);
+
+  // 2. Kita ganti fetch-nya pake API Super lu!
   useEffect(() => {
-    const fetchRecentNotes = async () => {
+    const fetchStatistics = async () => {
       try {
-        const response = await axios.get("/api/v1/posts");
-        const sortedNotes = (response.data.data || []).sort((a: any, b: any) => 
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-        setNotes(sortedNotes.slice(0, 5));
+        const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+        
+        // Panggil API yang baru lu bikin
+        const response = await axios.get("http://192.168.1.186:8000/api/v1/learn/statistics", {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const apiData = response.data.data;
+        setStats(apiData);
+
+        // 3. Ubah format grafik dari Backend biar cocok sama Recharts Frontend
+        // Backend ngirim: { Sen: 4, Sel: 0, ... }
+        // Frontend butuh: [{ label: 'Sen', value: 4 }, ...]
+        const formattedChart = Object.keys(apiData.weekly_chart).map(key => ({
+            label: key,
+            value: apiData.weekly_chart[key] // Ini dalam menit ya!
+        }));
+        setDynamicWeeklyData(formattedChart);
+
+        // 4. Ekstrak data 'post' dari riwayat terakhir buat ditampilin di list bawah
+        if (apiData.recent_history && apiData.recent_history.length > 0) {
+            const recentPosts = apiData.recent_history.map((history: any) => history.post);
+            // Hapus data yang null (jaga-jaga kalo postnya udah dihapus)
+            setNotes(recentPosts.filter((post: any) => post !== null));
+        }
+
       } catch (error) {
-        console.error("Error fetching recent notes:", error);
+        console.error("Error fetching statistics:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchRecentNotes();
+    fetchStatistics();
   }, []);
 
-  const weeklyData = [
-    { label: 'Sen', hours: 2.5 },
-    { label: 'Sel', hours: 4.2 },
-    { label: 'Rab', hours: 1.8 },
-    { label: 'Kam', hours: 3.5 },
-    { label: 'Jum', hours: 5.0 },
-    { label: 'Sab', hours: 2.2 },
-    { label: 'Min', hours: 3.8 },
-  ];
-
+  // Biarin aja yang bulanan mock data dulu, nanti gampang kalo mau dibikin
   const monthlyData = [
-    { label: 'W1', hours: 18.5 },
-    { label: 'W2', hours: 22.4 },
-    { label: 'W3', hours: 15.8 },
-    { label: 'W4', hours: 23.5 },
+    { label: 'W1', value: 18.5 },
+    { label: 'W2', value: 22.4 },
+    { label: 'W3', value: 15.8 },
+    { label: 'W4', value: 23.5 },
   ];
 
-  const activeChartData = chartView === 'weekly' ? weeklyData : monthlyData;
+  // Kalo view-nya weekly, pake data dari API. Kalo monthly pake data bohong-bohongan dulu
+  const activeChartData = chartView === 'weekly' ? dynamicWeeklyData : monthlyData;
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-slate-900 text-white p-3 rounded-xl shadow-2xl border border-slate-800 animate-in fade-in zoom-in duration-200">
           <p className="text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">{payload[0].payload.label}</p>
-          <p className="text-sm font-black">{payload[0].value} <span className="font-medium text-xs text-slate-400 ml-1">Jam</span></p>
+          {/* Gua ganti dari 'Jam' ke 'Menit' biar sesuai sama data aslinya */}
+          <p className="text-sm font-black">{payload[0].value} <span className="font-medium text-xs text-slate-400 ml-1">Menit</span></p>
         </div>
       );
     }
     return null;
   };
+
 
   return (
     <MobileLayout>
@@ -145,20 +171,18 @@ const LearningStatisticsPage = () => {
                           <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
                              <Target size={20} />
                           </div>
-                          <span className="text-[13px] font-bold text-slate-500">{Math.round((currentProgressHours / (goalHours + goalMinutes/60)) * 100)}% Selesai</span>
+                          <span className="text-[13px] font-bold text-slate-500">{Math.round(((stats?.summary?.today_duration || 0) / ((goalHours * 60) + goalMinutes)) * 100) || 0}% Selesai</span>
                        </div>
                        
                        <div className="mb-4">
-                          <h3 className="text-3xl font-['Lexend_Deca'] font-bold text-slate-800 tracking-tight">
-                             {currentProgressHours} <span className="text-sm font-medium text-slate-500">/ {goalHours}j {goalMinutes}m</span>
-                          </h3>
+                          {stats?.summary?.today_duration || 0} mnt <span className="text-sm font-medium text-slate-500">/ {goalHours}j {goalMinutes}m</span>
                           <p className="text-[13px] font-medium text-slate-500 mt-1">Target belajar harian</p>
                        </div>
 
                        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-2">
                           <div 
                             className="h-full bg-indigo-600 rounded-full transition-all duration-1000" 
-                            style={{ width: `${Math.min((currentProgressHours / (goalHours + goalMinutes/60)) * 100, 100)}%` }}
+                            style={{ width: `${Math.min(((stats?.summary?.today_duration || 0) / ((goalHours * 60) + goalMinutes)) * 100, 100) || 0}%` }}
                           />
                        </div>
                     </div>
@@ -179,7 +203,7 @@ const LearningStatisticsPage = () => {
                        
                        <div className="relative z-10 mt-auto">
                           <h3 className="text-4xl font-['Lexend_Deca'] font-bold tracking-tight">
-                             05 <span className="text-lg font-medium text-orange-100">Hari</span>
+                             {stats?.summary?.current_streak || 0} <span className="text-lg font-medium text-orange-100">Hari</span>
                           </h3>
                           <p className="text-[13px] text-orange-50 font-medium mt-1">
                              Pertahankan semangat belajarmu!
@@ -227,7 +251,7 @@ const LearningStatisticsPage = () => {
                           />
                           <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f8fafc' }} />
                           <Bar 
-                            dataKey="hours" 
+                            dataKey="value" 
                             fill="#4f46e5" 
                             radius={[6, 6, 0, 0]} 
                             barSize={chartView === 'weekly' ? 32 : 48}
@@ -328,7 +352,7 @@ const LearningStatisticsPage = () => {
                        </div>
                        <div>
                           <p className="text-[11px] font-medium text-slate-500 mb-0.5">Catatan</p>
-                          <h4 className="text-[14px] font-bold text-slate-800 leading-none">5 Catatan dibuat</h4>
+                          <h4 className="text-[14px] font-bold text-slate-800 leading-none">{stats?.achievements?.notes_created || 0} Catatan dibuat</h4>
                        </div>
                     </div>
                     <div className="flex items-center gap-4 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
@@ -337,7 +361,7 @@ const LearningStatisticsPage = () => {
                        </div>
                        <div>
                           <p className="text-[11px] font-medium text-slate-500 mb-0.5">Total Materi</p>
-                          <h4 className="text-[14px] font-bold text-slate-800 leading-none">128 Selesai</h4>
+                          <h4 className="text-[14px] font-bold text-slate-800 leading-none">{stats?.achievements?.materials_completed || 0} Selesai</h4>
                        </div>
                     </div>
                  </div>
@@ -463,8 +487,10 @@ const LearningStatisticsPage = () => {
                       onClick={() => {
                         setGoalHours(tempHours);
                         setGoalMinutes(tempMinutes);
+                           localStorage.setItem("bayu_goal_hours", tempHours.toString());
+                           localStorage.setItem("bayu_goal_minutes", tempMinutes.toString());
                         setIsGoalModalOpen(false);
-                      }}
+                                       }}
                       className="w-full py-5 bg-indigo-600 text-white rounded-[24px] text-[13px] font-bold uppercase tracking-widest shadow-xl shadow-indigo-100 hover:-translate-y-1 hover:bg-indigo-700 transition-all duration-300"
                    >
                       Simpan Target Belajar
@@ -484,6 +510,6 @@ const LearningStatisticsPage = () => {
   
     </MobileLayout>
   );
-};
+}
 
 export default LearningStatisticsPage;

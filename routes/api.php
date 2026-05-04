@@ -44,7 +44,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Verify
     Route::put('/v1/posts/{id}/verify', [PostController::class, 'verify']);
     Route::put('/v1/posts/{id}/reject', [PostController::class, 'reject']);
-
+    Route::post('/v1/posts/{id}/ajukan', [PostController::class, 'ajukanVerifikasi']);
+    
     // Comments
     Route::post('/v1/posts/{postId}/comments', [CommentController::class, 'store']);
     Route::delete('/v1/comments/{id}', [CommentController::class, 'destroy']);
@@ -76,6 +77,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Activities
     Route::get('/profile/activities', [\App\Http\Controllers\ProfileController::class, 'myActivities']);
+
+    //History
+    Route::post('/v1/learn/history', [\App\Http\Controllers\LearningHistoryController::class, 'logAktivitas']);
+
+    //Statistik Belajar
+    Route::get('/v1/learn/statistics', [\App\Http\Controllers\LearningHistoryController::class, 'getStatistics']);
 
     Route::get('/user', function (Request $request) {
         $user = clone $request->user();

@@ -85,9 +85,7 @@ class LikeController extends Controller
         $commentIdStr = (string) $commentId;
 
         // 🔥 JURUS PAMUNGKAS: Langsung coba hapus.
-        $deleted = Like::where('comment_id', $commentIdStr)
-                       ->where('user_id', $userId)
-                       ->delete();
+        $deleted = Like::where('comment_id', $commentIdStr)->where('user_id', $userId)->delete();
 
         if ($deleted) {
             // UNLIKE KOMENTAR

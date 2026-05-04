@@ -32,9 +32,9 @@ class NotificationController extends Controller
         $notifikasi->each(function ($item) use ($actors) {
             $actorId = (string) $item->actor_id;
             if ($actors->has($actorId)) {
-                $item->setAttribute('actor', $actors->get($actorId));
+                $item->actor = $actors->get($actorId);
             } else {
-                $item->setAttribute('actor', null);
+                $item->actor = null;
             }
         });
 
