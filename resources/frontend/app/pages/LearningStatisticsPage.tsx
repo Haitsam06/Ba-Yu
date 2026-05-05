@@ -42,14 +42,6 @@ const LearningStatisticsPage = () => {
   const [notes, setNotes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [chartView, setChartView] = useState<'weekly' | 'monthly'>('weekly');
-  const [goalHours, setGoalHours] = useState(() => {
-    const savedHours = localStorage.getItem("bayu_goal_hours");
-    return savedHours !== null ? parseInt(savedHours) : 4;
-  });
-  const [goalMinutes, setGoalMinutes] = useState(() => {
-    const savedMinutes = localStorage.getItem("bayu_goal_minutes");
-    return savedMinutes !== null ? parseInt(savedMinutes) : 0;
-  });
   const [tempHours, setTempHours] = useState(4);
   const [tempMinutes, setTempMinutes] = useState(0);
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
@@ -171,19 +163,19 @@ const LearningStatisticsPage = () => {
                           <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
                              <Target size={20} />
                           </div>
-                          <span className="text-[13px] font-bold text-slate-500">{Math.round(((stats?.summary?.today_duration || 0) / ((goalHours * 60) + goalMinutes)) * 100) || 0}% Selesai</span>
+                          <span className="text-[13px] font-bold text-slate-500">{Math.round(((stats?.summary?.today_duration || 0) / (stats?.daily_target || 1)) * 100) || 0}% Selesai</span>
                        </div>
                        
                        <div className="mb-4">
-                          {stats?.summary?.today_duration || 0} mnt <span className="text-sm font-medium text-slate-500">/ {goalHours}j {goalMinutes}m</span>
+                          {stats?.summary?.today_duration || 0} mnt <span className="text-sm font-medium text-slate-500">/ {Math.floor((stats?.daily_target || 0) / 60)}j {(stats?.daily_target || 0) % 60}m</span>
                           <p className="text-[13px] font-medium text-slate-500 mt-1">Target belajar harian</p>
                        </div>
 
                        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-2">
                           <div 
                             className="h-full bg-indigo-600 rounded-full transition-all duration-1000" 
-                            style={{ width: `${Math.min(((stats?.summary?.today_duration || 0) / ((goalHours * 60) + goalMinutes)) * 100, 100) || 0}%` }}
-                          />
+                            style={{ width: `${Math.min(((stats?.summary?.today_duration || 0) / (stats?.daily_target || 1)) * 100, 100) || 0}%` }}                          
+                            />
                        </div>
                     </div>
 
@@ -484,13 +476,29 @@ const LearningStatisticsPage = () => {
                 
                 <div className="pt-2">
                    <button 
-                      onClick={() => {
-                        setGoalHours(tempHours);
-                        setGoalMinutes(tempMinutes);
-                           localStorage.setItem("bayu_goal_hours", tempHours.toString());
-                           localStorage.setItem("bayu_goal_minutes", tempMinutes.toString());
-                        setIsGoalModalOpen(false);
-                                       }}
+                      onClick={async () => {
+    const totalMenitTarget = (tempHours * 60) + tempMinutes;
+
+    try {
+        const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+        
+        await axios.post("/api/v1/user/target", { 
+            target: totalMenitTarget 
+        }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+       setStats((prevStats: any) => ({
+            ...prevStats,
+            daily_target: totalMenitTarget
+        }));
+
+        setIsGoalModalOpen(false);
+
+    } catch (error) {
+        console.error("Gagal nyimpen target:", error);
+    }
+}}
                       className="w-full py-5 bg-indigo-600 text-white rounded-[24px] text-[13px] font-bold uppercase tracking-widest shadow-xl shadow-indigo-100 hover:-translate-y-1 hover:bg-indigo-700 transition-all duration-300"
                    >
                       Simpan Target Belajar

@@ -118,6 +118,7 @@ class LearningHistoryController extends Controller
         return response()->json([
             'message' => 'Berhasil mengambil statistik belajar',
             'data' => [
+                'daily_target' => Auth::user()->target_belajar ?? 0,
                 'summary' => [
                     'today_duration' => $durasiHariIni,
                     'current_streak' => $streak,

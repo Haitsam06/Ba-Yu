@@ -134,4 +134,22 @@ class UserController extends Controller
             'data' => $experts
         ], 200);
     }
+    public function updateTarget(Request $request)
+   {
+       $request->validate([
+           'target' => 'required|numeric'
+       ]);
+
+       $user = Auth::user();
+       $user->target_belajar = $request->target;
+       $user->save();
+
+       return response()->json([
+           'success' => true,
+           'message' => 'Target berhasil disimpan ke Database!',
+           'target' => $user->target_belajar
+       ]);
+   }
+
+    
 }

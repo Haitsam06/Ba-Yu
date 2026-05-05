@@ -83,6 +83,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Statistik Belajar
     Route::get('/v1/learn/statistics', [\App\Http\Controllers\LearningHistoryController::class, 'getStatistics']);
+    Route::post('/v1/user/target', [App\Http\Controllers\UserController::class, 'updateTarget']);
 
     Route::get('/user', function (Request $request) {
         $user = clone $request->user();
