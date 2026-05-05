@@ -223,7 +223,7 @@ export default function NoteDetailPage() {
             if (timeSpentInMinutes > 0) {
                 const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
                 
-                fetch('http://192.168.1.186:8000/api/v1/learn/history', {
+                fetch('/api/v1/learn/history', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

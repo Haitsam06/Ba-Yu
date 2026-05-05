@@ -67,7 +67,7 @@ const LearningStatisticsPage = () => {
         const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
         
         // Panggil API yang baru lu bikin
-        const response = await axios.get("http://192.168.1.186:8000/api/v1/learn/statistics", {
+        const response = await axios.get("/api/v1/learn/statistics", {
             headers: { Authorization: `Bearer ${token}` }
         });
 

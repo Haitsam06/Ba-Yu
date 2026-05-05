@@ -123,7 +123,7 @@ class PostController extends Controller
             'user_id' => Auth::id(),
             'title' => $request->title,
             'content' => $request->input('content'),
-            'plain_content' => html_entity_decode(str_replace('&nbsp;', ' ', strip_tags($request->input('content')))),
+            'plain_content' => html_entity_decode(str_replace('&nbsp;', ' ', strip_tags($request->input('content')))),+
             'description' => $request->description,
             'mapel' => $request->mapel,
             'jenjang' => $request->jenjang,
