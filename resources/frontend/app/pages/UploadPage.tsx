@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router';
 import { ArrowLeft, ChevronDown, Tag, Send, Calculator, Plus, X, Image, Film, Code, Terminal, Minus, Quote, Bold, Italic, Underline, Strikethrough, Highlighter, Link as LinkIcon, Heading1, Heading2, Loader2, Clock, FileText, Trash2 } from 'lucide-react';
 import { mataPelajaran } from '../data/mockData';
 import ReactQuill, { Quill } from 'react-quill';
+// @ts-ignore
 import 'react-quill/dist/quill.snow.css';
 import axios from 'axios';
 import Cropper from 'react-easy-crop';
@@ -308,10 +309,10 @@ export default function UploadPage() {
         const res = await axios.post('/api/v1/posts', payload);
         const newDraftId = res.data.data._id || res.data.data.id;
         setDraftId(newDraftId);
-        window.history.replaceState(null, '', `?id=${newDraftId}`);
         showToast('Draf berhasil disimpan!', 'success');
       }
       setShowPreviewModal(false);
+      navigate('/home');
     } catch (error) {
       console.error('Gagal menyimpan draf:', error);
       showToast('Terjadi kesalahan saat menyimpan draf.', 'error');

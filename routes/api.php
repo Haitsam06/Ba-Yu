@@ -86,11 +86,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/v1/user/target', [App\Http\Controllers\UserController::class, 'updateTarget']);
 
     Route::get('/user', function (Request $request) {
-        $user = clone $request->user();
-        if ($user) {
-            $user->setAttribute('followers_count', is_array($user->follower_ids) ? count($user->follower_ids) : 0);
-            $user->setAttribute('following_count', is_array($user->following_ids) ? count($user->following_ids) : 0);
-        }
-        return $user;
-    });
+    $user = clone $request->user();
+    if ($user) {
+        // Ngitung langsung dari tabel Follow tempat kita nyimpen datanya!
+        $followers = \App\Models\Follow::where('following_id', (string)$user->id)->count();
+        $following = \App\Models\Follow::where('follower_id', (string)$user->id)->count();
+
+        $user->setAttribute('followers_count', $followers);
+        $user->setAttribute('following_count', $following);
+    }
+    return $user;
+});
 });

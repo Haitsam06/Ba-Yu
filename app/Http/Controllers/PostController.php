@@ -123,7 +123,8 @@ class PostController extends Controller
             'user_id' => Auth::id(),
             'title' => $request->title,
             'content' => $request->input('content'),
-            'plain_content' => html_entity_decode(str_replace('&nbsp;', ' ', strip_tags($request->input('content')))),+
+            // FIX ERROR 500: Cek dulu content-nya ada isinya nggak sebelum di-strip_tags
+            'plain_content' => $request->input('content') ? html_entity_decode(str_replace('&nbsp;', ' ', strip_tags($request->input('content')))) : '',
             'description' => $request->description,
             'mapel' => $request->mapel,
             'jenjang' => $request->jenjang,
@@ -180,10 +181,15 @@ class PostController extends Controller
             'visibility' => 'in:public,private,draft',
         ]);
 
+        if ($post->visibility === 'draft' && $request->visibility !== 'draft') {
+            $post->created_at = now();
+            $post->save();
+        }
+
         $post->update([
             'title' => $request->title,
             'content' => $request->input('content'),
-            'plain_content' => $request->input('content') ? strip_tags($request->input('content')) : '',
+            'plain_content' => $request->input('content') ? html_entity_decode(str_replace('&nbsp;', ' ', strip_tags($request->input('content')))) : '',
             'description' => $request->description,
             'mapel' => $request->mapel,
             'jenjang' => $request->jenjang,
