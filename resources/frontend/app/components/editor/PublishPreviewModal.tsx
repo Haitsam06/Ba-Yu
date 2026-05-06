@@ -46,7 +46,7 @@ interface PublishPreviewModalProps {
   isSubmitting: boolean;
   isSavingDraft: boolean;
   canPublishFinal: boolean;
-  mapelDropdownRef: React.RefObject<HTMLDivElement | null>;
+  mapelDropdownRef: React.RefObject<HTMLDivElement>;
 }
 
 export function PublishPreviewModal(props: PublishPreviewModalProps) {
@@ -197,18 +197,18 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                   {isMapelDropdownOpen && (
                      <div className="absolute z-10 w-full mt-2 bg-white border border-gray-100 rounded-xl shadow-lg max-h-60 overflow-y-auto no-scrollbar animate-in fade-in zoom-in-95 duration-200">
                         {filteredMapel.length > 0 ? (
-                           Object.entries(filteredMapel.reduce((acc, current) => {
+                           (Object.entries(filteredMapel.reduce((acc, current) => {
                                const category = current.category || 'Lainnya';
                                if (!acc[category]) { acc[category] = []; }
                                acc[category].push(current);
                                return acc;
-                           }, {} as Record<string, any[]>)).map(([category, items]) => (
+                           }, {} as Record<string, any[]>)) as [string, any[]][]).map(([category, items]) => (
                               <div key={category} className="pb-1 last:pb-0">
                                  <div className="sticky top-0 bg-white/95 backdrop-blur-sm px-4 py-2 text-[11px] font-['Lexend_Deca'] font-extrabold text-gray-500 uppercase tracking-wider z-10 border-b border-gray-100">
                                     {category}
                                  </div>
                                  <div className="py-1">
-                                    {items.map((m) => (
+                                    {items.map((m: any) => (
                                        <div
                                           key={m.id}
                                           onClick={() => {
