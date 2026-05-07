@@ -26,6 +26,7 @@ import {
     Pencil,
     X,
     Calendar,
+    Loader2,
 } from "lucide-react";
 import { Link, useSearchParams, useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
@@ -58,7 +59,35 @@ export default function ProfilePage() {
     const [showFollowers, setShowFollowers] = useState(false);
     const [showFollowing, setShowFollowing] = useState(false);
 
+    const [followersList, setFollowersList] = useState<any[]>([]);
+    const [followingList, setFollowingList] = useState<any[]>([]);
+    const [isLoadingFollows, setIsLoadingFollows] = useState(false);
+
     const { user } = useAuth();
+
+    const fetchFollowsData = async () => {
+        if (!user?._id && !user?.id) return;
+        const userId = user._id || user.id;
+        setIsLoadingFollows(true);
+        try {
+            const [followersRes, followingRes] = await Promise.all([
+                axios.get(`/api/v1/users/${userId}/followers`),
+                axios.get(`/api/v1/users/${userId}/following`)
+            ]);
+            setFollowersList(followersRes.data);
+            setFollowingList(followingRes.data);
+        } catch (error) {
+            console.error("Gagal mengambil data followers/following", error);
+        } finally {
+            setIsLoadingFollows(false);
+        }
+    };
+
+    useEffect(() => {
+        if (showFollowers || showFollowing) {
+            fetchFollowsData();
+        }
+    }, [showFollowers, showFollowing]);
     const { bookmarkedIds, isBookmarked, toggleBookmark } = useBookmarks();
     const { showToast } = useToast();
 
@@ -183,6 +212,7 @@ export default function ProfilePage() {
         followers: user?.followers_count || 0,
         following: user?.following_count || 0,
         created_at: user?.created_at || null,
+        bio: user?.bio || "",
     };
 
     const [fetchedNotes, setFetchedNotes] = useState<any[]>([]);
@@ -300,14 +330,6 @@ export default function ProfilePage() {
                                 size={128}
                                 className="relative border-4 border-white bg-white w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-full shadow-sm"
                             />
-                            {currentUser.role !== "siswa" && (
-                                <div
-                                    className="absolute bottom-1 right-1 bg-emerald-500 text-white p-1 rounded-full shadow-sm ring-2 ring-white"
-                                    title="Verified Professional"
-                                >
-                                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-                                </div>
-                            )}
                         </div>
 
                         <div className="pt-3 flex items-center gap-2">
@@ -329,20 +351,24 @@ export default function ProfilePage() {
 
                     {/* Profile Info - Twitter Layout (Left Aligned, Clean) */}
                     <div className="mb-5">
-                        <h1 className="text-[22px] sm:text-[24px] font-extrabold font-['Lexend_Deca'] text-gray-900 leading-tight">
-                            {currentUser.name}
-                        </h1>
+                        <div className="flex items-center gap-3 flex-wrap">
+                            <h1 className="text-[22px] sm:text-[24px] font-extrabold font-['Lexend_Deca'] text-gray-900 leading-tight">
+                                {currentUser.name}
+                            </h1>
+                            {currentUser.role === "pakar" && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-bold text-[12px] border border-emerald-100">
+                                    <ShieldCheck className="w-3.5 h-3.5" /> Pakar
+                                </span>
+                            )}
+                            {currentUser.role === "admin" && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-600 font-bold text-[12px] border border-purple-100">
+                                    <Shield className="w-3.5 h-3.5" /> Admin
+                                </span>
+                            )}
+                        </div>
 
-                        <div className="flex flex-col gap-1.5 mt-2.5 font-['Manrope'] text-[14px] text-gray-500">
-                            {currentUser.role === "pakar" ? (
-                                <span className="flex items-center gap-1.5 text-emerald-600 font-medium">
-                                    <ShieldCheck className="w-4 h-4" /> Pakar Tersertifikasi
-                                </span>
-                            ) : currentUser.role === "admin" ? (
-                                <span className="flex items-center gap-1.5 text-purple-600 font-medium">
-                                    <Shield className="w-4 h-4" /> Administrator Sistem
-                                </span>
-                            ) : (
+                        <div className="flex flex-col gap-2 mt-2 font-['Manrope'] text-[14px] text-gray-500">
+                            {currentUser.role !== "pakar" && currentUser.role !== "admin" && (
                                 <span className="flex items-center gap-1.5">
                                     <MapPin className="w-4 h-4" /> 
                                     {currentUser.school && currentUser.jenjang 
@@ -355,10 +381,16 @@ export default function ProfilePage() {
                                 </span>
                             )}
                             
-                            <span className="flex items-center gap-1.5">
+                            <span className="flex items-center gap-1.5 mt-0.5">
                                 <Calendar className="w-4 h-4" /> Bergabung {currentUser.created_at ? new Date(currentUser.created_at).toLocaleDateString("id-ID", { month: "long", year: "numeric" }) : "Baru saja"}
                             </span>
                         </div>
+
+                        {currentUser.bio && (
+                            <p className="mt-3.5 text-[14px] text-gray-700 font-['Manrope'] leading-relaxed max-w-xl">
+                                {currentUser.bio}
+                            </p>
+                        )}
 
                         {/* Stats - Horizontal Twitter Style */}
                         <div className="flex items-center gap-5 mt-4 text-[14px] font-['Manrope']">
@@ -671,12 +703,52 @@ export default function ProfilePage() {
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
-                        <div className="p-6 max-h-[60vh] overflow-y-auto">
-                            <div className="flex flex-col items-center justify-center py-8 text-center">
-                                <Users className="w-10 h-10 text-gray-200 mb-3" />
-                                <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 text-[15px] mb-1">Belum ada pengikut</h4>
-                                <p className="font-['Manrope'] text-[14px] text-gray-500">Terus berkarya dan bagikan catatanmu!</p>
-                            </div>
+                        <div className="p-4 max-h-[60vh] overflow-y-auto">
+                            {isLoadingFollows ? (
+                                <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-gray-400"/></div>
+                            ) : followersList.length > 0 ? (
+                                <div className="flex flex-col">
+                                    {followersList.map((f, i) => (
+                                        <div 
+                                            key={i} 
+                                            className={`flex items-center gap-4 py-3 hover:bg-gray-50 transition-colors px-2 ${i !== followersList.length - 1 ? 'border-b border-gray-100' : ''}`} 
+                                        >
+                                            <div className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onClick={() => { setShowFollowers(false); navigate(`/profile/${f._id || f.id}`); }}>
+                                                <AvatarImage src={f.avatar} alt={f.name} size={46} className="rounded-full ring-2 ring-gray-50" />
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 leading-tight truncate">{f.name}</h4>
+                                                    <p className="font-['Manrope'] text-[13px] text-gray-500 capitalize mt-0.5 truncate">{f.role}</p>
+                                                </div>
+                                            </div>
+                                            {f._id !== user?.id && f.id !== user?.id && (
+                                                <button 
+                                                    className={`px-4 py-1.5 rounded-full text-[12px] font-bold font-['Manrope'] transition-all ${f.is_followed_by_me ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-primary text-white hover:bg-primary/90 shadow-sm'}`}
+                                                    onClick={async (e) => {
+                                                        e.stopPropagation();
+                                                        try {
+                                                            const token = localStorage.getItem('bayu-token') || sessionStorage.getItem('bayu-token');
+                                                            const res = await axios.post(`/api/users/${f._id || f.id}/follow`, {}, {
+                                                                headers: { Authorization: `Bearer ${token}` }
+                                                            });
+                                                            setFollowersList(prev => prev.map(u => (u._id || u.id) === (f._id || f.id) ? { ...u, is_followed_by_me: !u.is_followed_by_me } : u));
+                                                        } catch(err) {
+                                                            console.error(err);
+                                                        }
+                                                    }}
+                                                >
+                                                    {f.is_followed_by_me ? 'Mengikuti' : 'Ikuti'}
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center py-8 text-center">
+                                    <Users className="w-10 h-10 text-gray-200 mb-3" />
+                                    <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 text-[15px] mb-1">Belum ada pengikut</h4>
+                                    <p className="font-['Manrope'] text-[14px] text-gray-500">Terus berkarya dan bagikan catatanmu!</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -692,15 +764,55 @@ export default function ProfilePage() {
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
-                        <div className="p-6 max-h-[60vh] overflow-y-auto">
-                            <div className="flex flex-col items-center justify-center py-8 text-center">
-                                <Users className="w-10 h-10 text-gray-200 mb-3" />
-                                <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 text-[15px] mb-1">Masih Kosong</h4>
-                                <p className="font-['Manrope'] text-[14px] text-gray-500 mb-5">Temukan kreator favoritmu di halaman Jelajah.</p>
-                                <button onClick={() => {setShowFollowing(false); navigate("/explore")}} className="px-5 py-2 bg-gray-900 text-white rounded-full font-medium text-[13px] hover:bg-black transition-colors">
-                                    Cari Kreator
-                                </button>
-                            </div>
+                        <div className="p-4 max-h-[60vh] overflow-y-auto">
+                            {isLoadingFollows ? (
+                                <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-gray-400"/></div>
+                            ) : followingList.length > 0 ? (
+                                <div className="flex flex-col">
+                                    {followingList.map((f, i) => (
+                                        <div 
+                                            key={i} 
+                                            className={`flex items-center gap-4 py-3 hover:bg-gray-50 transition-colors px-2 ${i !== followingList.length - 1 ? 'border-b border-gray-100' : ''}`} 
+                                        >
+                                            <div className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onClick={() => { setShowFollowing(false); navigate(`/profile/${f._id || f.id}`); }}>
+                                                <AvatarImage src={f.avatar} alt={f.name} size={46} className="rounded-full ring-2 ring-gray-50" />
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 leading-tight truncate">{f.name}</h4>
+                                                    <p className="font-['Manrope'] text-[13px] text-gray-500 capitalize mt-0.5 truncate">{f.role}</p>
+                                                </div>
+                                            </div>
+                                            {f._id !== user?.id && f.id !== user?.id && (
+                                                <button 
+                                                    className={`px-4 py-1.5 rounded-full text-[12px] font-bold font-['Manrope'] transition-all ${f.is_followed_by_me ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-primary text-white hover:bg-primary/90 shadow-sm'}`}
+                                                    onClick={async (e) => {
+                                                        e.stopPropagation();
+                                                        try {
+                                                            const token = localStorage.getItem('bayu-token') || sessionStorage.getItem('bayu-token');
+                                                            const res = await axios.post(`/api/users/${f._id || f.id}/follow`, {}, {
+                                                                headers: { Authorization: `Bearer ${token}` }
+                                                            });
+                                                            setFollowingList(prev => prev.map(u => (u._id || u.id) === (f._id || f.id) ? { ...u, is_followed_by_me: !u.is_followed_by_me } : u));
+                                                        } catch(err) {
+                                                            console.error(err);
+                                                        }
+                                                    }}
+                                                >
+                                                    {f.is_followed_by_me ? 'Mengikuti' : 'Ikuti'}
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center py-8 text-center">
+                                    <Users className="w-10 h-10 text-gray-200 mb-3" />
+                                    <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 text-[15px] mb-1">Masih Kosong</h4>
+                                    <p className="font-['Manrope'] text-[14px] text-gray-500 mb-5">Temukan kreator favoritmu di halaman Jelajah.</p>
+                                    <button onClick={() => {setShowFollowing(false); navigate("/explore")}} className="px-5 py-2 bg-gray-900 text-white rounded-full font-medium text-[13px] hover:bg-black transition-colors">
+                                        Cari Kreator
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

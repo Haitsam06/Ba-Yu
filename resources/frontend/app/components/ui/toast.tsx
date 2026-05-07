@@ -199,10 +199,10 @@ const ToastContainer = () => {
               className={clsx(
                 "absolute right-0 bottom-0 shadow-menu rounded-xl leading-[21px] p-4 h-fit",
                 {
-                  message: "bg-geist-background text-gray-1000",
-                  success: "bg-blue-700 text-contrast-fg",
-                  warning: "bg-amber-800 text-gray-1000 dark:text-gray-100",
-                  error: "bg-red-800 text-contrast-fg"
+                  message: "bg-white text-gray-900 border border-gray-100 shadow-sm",
+                  success: "bg-emerald-600 text-white shadow-md",
+                  warning: "bg-amber-500 text-white shadow-md",
+                  error: "bg-red-600 text-white shadow-md"
                 }[toast.type],
                 isVisible ? "opacity-100" : "opacity-0",
                 index < lastVisibleStart && "pointer-events-none"
@@ -240,10 +240,10 @@ const ToastContainer = () => {
                         onClick={() => toastStore.remove(toast.id)}
                       >
                         <CloseIcon className={{
-                          message: "fill-gray-1000",
-                          success: "fill-contrast-fg",
-                          warning: "fill-gray-1000 dark:fill-gray-100",
-                          error: "fill-contrast-fg"
+                          message: "fill-gray-900",
+                          success: "fill-white",
+                          warning: "fill-white",
+                          error: "fill-white"
                         }[toast.type]} />
                       </Button>
                     </div>

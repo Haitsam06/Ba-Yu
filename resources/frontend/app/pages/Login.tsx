@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { MobileLayout } from "../components/MobileLayout";
 import { Mail, Lock, User, GraduationCap, Eye, EyeOff, Sparkles, ChevronRight, CheckCircle, X } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
+import { useToast } from "../contexts/ToastContext";
 
 export default function Login() {
     const [isLogin, setIsLogin] = useState(true);
@@ -14,15 +15,14 @@ export default function Login() {
         role: "pelajar",
         jenjang: "SMA",
     });
-    const [error, setError] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
     const navigate = useNavigate();
     const { login, register } = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { showToast } = useToast();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError("");
         setIsSubmitting(true);
 
         try {
@@ -34,7 +34,7 @@ export default function Login() {
                 );
 
                 if (errorMessage) {
-                    setError(errorMessage);
+                    showToast(errorMessage, "error");
                     return;
                 }
 
@@ -56,14 +56,14 @@ export default function Login() {
                 );
 
                 if (errorMessage) {
-                    setError(errorMessage);
+                    showToast(errorMessage, "error");
                     return;
                 }
 
                 navigate("/home");
             }
         } catch (err) {
-            setError("Terjadi kesalahan koneksi. Silakan coba lagi.");
+            showToast("Terjadi kesalahan koneksi. Silakan coba lagi.", "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -96,7 +96,7 @@ export default function Login() {
                 {/* Tab Switcher - Clean Pill */}
                 <div className="flex bg-gray-50/80 p-1.5 mb-8 rounded-2xl border border-gray-100/50 backdrop-blur-sm">
                     <button
-                        onClick={() => {setIsLogin(true); setError("");}}
+                        onClick={() => {setIsLogin(true);}}
                         className={`flex-1 py-2.5 rounded-xl font-['Lexend_Deca'] text-[14px] font-bold transition-all duration-300 outline-none ${
                             isLogin
                                 ? "bg-white text-gray-900 shadow-sm border border-gray-200/50"
@@ -106,7 +106,7 @@ export default function Login() {
                         Masuk
                     </button>
                     <button
-                        onClick={() => {setIsLogin(false); setError("");}}
+                        onClick={() => {setIsLogin(false);}}
                         className={`flex-1 py-2.5 rounded-xl font-['Lexend_Deca'] text-[14px] font-bold transition-all duration-300 outline-none ${
                             !isLogin
                                 ? "bg-white text-gray-900 shadow-sm border border-gray-200/50"
@@ -232,14 +232,6 @@ export default function Login() {
                             >
                                 Lupa Password?
                             </button>
-                        </div>
-                    )}
-
-                    {error && (
-                        <div className="mt-5 p-4 bg-red-50 border border-red-100 rounded-2xl animate-in zoom-in-95 duration-200">
-                            <p className="text-[14px] font-['Manrope'] font-bold text-red-600 flex items-center justify-center gap-2">
-                                <X className="w-4 h-4" /> {error}
-                            </p>
                         </div>
                     )}
 

@@ -26,7 +26,6 @@ export default function EditProfilePage() {
     const { user, updateUserSession } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [errorMsg, setErrorMsg] = useState("");
     const { showToast } = useToast();
 
     // Local state for the form, pre-filled with actual active user data
@@ -253,13 +252,12 @@ export default function EditProfilePage() {
 
     const handleSave = async () => {
         if (!formData.name.trim()) {
-            setErrorMsg("Nama lengkap tidak boleh kosong");
+            showToast("Nama lengkap tidak boleh kosong", "error");
             return;
         }
 
         try {
             setLoading(true);
-            setErrorMsg("");
             const token =
                 localStorage.getItem("bayu-token") ||
                 sessionStorage.getItem("bayu-token");
@@ -297,9 +295,9 @@ export default function EditProfilePage() {
             navigate("/profile");
         } catch (error: any) {
             console.error("Failed to update profile", error);
-            setErrorMsg(
-                error.response?.data?.message ||
-                    "Gagal menyimpan perubahan. Silakan coba lagi.",
+            showToast(
+                error.response?.data?.message || "Gagal menyimpan perubahan. Silakan coba lagi.",
+                "error"
             );
         } finally {
             setLoading(false);
@@ -348,13 +346,6 @@ export default function EditProfilePage() {
                 </div>
 
                 <div className="max-w-xl mx-auto px-5">
-                    {errorMsg && (
-                        <div className="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-2xl flex items-center gap-3 font-['Manrope'] text-sm">
-                            <AlertCircle className="w-5 h-5 shrink-0" />
-                            <p>{errorMsg}</p>
-                        </div>
-                    )}
-
                     {/* Avatar Section - Clean White Background */}
                     <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col items-center mb-6">
                         {/* Hidden file input */}
@@ -481,6 +472,9 @@ export default function EditProfilePage() {
                                         <option value="Kuliah">
                                             Perguruan Tinggi (Kuliah)
                                         </option>
+                                        <option value="Umum">
+                                            Umum
+                                        </option>
                                     </select>
                                     <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400">
                                         ▼
@@ -490,7 +484,7 @@ export default function EditProfilePage() {
 
                             <div>
                                 <label className="block text-sm font-['Manrope'] font-black text-gray-900 mb-2">
-                                    Asal Sekolah / Universitas
+                                    Asal Sekolah / Universitas / Instansi
                                 </label>
                                 <input
                                     type="text"

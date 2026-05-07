@@ -36,4 +36,46 @@ class FollowController extends Controller
             return response()->json(['status' => 'followed', 'message' => 'Berhasil mengikuti']);
         }
     }
+
+    public function followers($userId)
+    {
+        $followers = Follow::where('following_id', (string)$userId)
+                           ->with('followerUser')
+                           ->get()
+                           ->pluck('followerUser')
+                           ->filter();
+                           
+        if (auth('sanctum')->check()) {
+            $me = auth('sanctum')->user();
+            $myFollowingIds = Follow::where('follower_id', (string)$me->id)->pluck('following_id')->toArray();
+            
+            $followers = $followers->map(function ($user) use ($myFollowingIds) {
+                $user->is_followed_by_me = in_array((string)$user->id, $myFollowingIds);
+                return $user;
+            });
+        }
+
+        return response()->json($followers);
+    }
+
+    public function following($userId)
+    {
+        $following = Follow::where('follower_id', (string)$userId)
+                           ->with('followingUser')
+                           ->get()
+                           ->pluck('followingUser')
+                           ->filter();
+                           
+        if (auth('sanctum')->check()) {
+            $me = auth('sanctum')->user();
+            $myFollowingIds = Follow::where('follower_id', (string)$me->id)->pluck('following_id')->toArray();
+            
+            $following = $following->map(function ($user) use ($myFollowingIds) {
+                $user->is_followed_by_me = in_array((string)$user->id, $myFollowingIds);
+                return $user;
+            });
+        }
+
+        return response()->json($following);
+    }
 }

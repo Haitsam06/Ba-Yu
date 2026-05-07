@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { X, Mail, Lock, User, Eye, EyeOff, BookOpen, ArrowRight, GraduationCap, Loader2, Sparkles, CheckCircle, ChevronRight } from 'lucide-react';
 import { useNavigate, Link } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import ApplicationLogo from './ApplicationLogo';
 
 interface AuthModalProps {
@@ -13,7 +14,7 @@ interface AuthModalProps {
 export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalProps) {
   const [activeTab, setActiveTab] = useState<'login' | 'register' | 'forgot'>(defaultTab);
   const [showPassword, setShowPassword] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const { showToast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -45,13 +46,12 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg(null);
     setIsSubmitting(true);
     
     if (activeTab === 'login') {
       const error = await login(formData.email, formData.password, rememberMe);
       if (error) {
-         setErrorMsg(error);
+         showToast(error, "error");
          setIsSubmitting(false);
       } else {
          const email = formData.email.toLowerCase();
@@ -67,7 +67,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
     } else {
       const error = await register(formData.name, formData.email, formData.password, formData.jenjang);
       if (error) {
-         setErrorMsg(error);
+         showToast(error, "error");
          setIsSubmitting(false);
       } else {
          navigate("/home");
@@ -77,7 +77,6 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setErrorMsg(null);
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
@@ -143,7 +142,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                 {/* Tab Switcher - Clean Style */}
                 <div className="flex bg-gray-100 p-1 rounded-2xl border border-gray-200">
                   <button
-                    onClick={() => { setActiveTab('login'); setErrorMsg(null); }}
+                    onClick={() => { setActiveTab('login'); }}
                     className={`flex-1 py-2 rounded-xl font-['Lexend_Deca'] text-[13px] sm:text-[14px] font-bold transition-all duration-300 outline-none ${
                       activeTab === 'login'
                         ? "bg-white text-indigo-600 shadow-sm border border-gray-200"
@@ -153,7 +152,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                     Masuk
                   </button>
                   <button
-                    onClick={() => { setActiveTab('register'); setErrorMsg(null); }}
+                    onClick={() => { setActiveTab('register'); }}
                     className={`flex-1 py-2 rounded-xl font-['Lexend_Deca'] text-[13px] sm:text-[14px] font-bold transition-all duration-300 outline-none ${
                       activeTab === 'register'
                         ? "bg-white text-indigo-600 shadow-sm border border-gray-200"
@@ -163,15 +162,6 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                     Daftar Baru
                   </button>
                 </div>
-              </div>
-            )}
-
-            {/* Error Message */}
-            {errorMsg && (
-              <div className="mb-6 p-3.5 bg-red-50 border border-red-200 rounded-2xl animate-in zoom-in-95 duration-200">
-                <p className="text-[13px] font-['Manrope'] font-bold text-red-600 flex items-center justify-center gap-2 text-center">
-                  <X className="w-4 h-4" /> {errorMsg}
-                </p>
               </div>
             )}
 
@@ -254,6 +244,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         <option value="SMP">Menengah Pertama (SMP)</option>
                         <option value="SMA">Menengah Atas (SMA/SMK)</option>
                         <option value="Kuliah">Perguruan Tinggi (Kuliah)</option>
+                        <option value="Umum">Umum</option>
                       </select>
                       <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-500 pointer-events-none transform rotate-90" />
                     </div>
@@ -323,7 +314,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       disabled={isSubmitting}
                       onClick={async () => {
                         if (!formData.email) {
-                          setErrorMsg("Isi email terlebih dahulu!");
+                          showToast("Isi email terlebih dahulu!", "error");
                           return;
                         }
                         setIsSubmitting(true);
@@ -335,13 +326,13 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                           });
                           const data = await response.json();
                           if (response.ok) {
-                            alert("✅ SUKSES: " + data.message);
+                            showToast("SUKSES: " + data.message, "success");
                             setActiveTab('login');
                           } else {
-                            setErrorMsg(data.message);
+                            showToast(data.message, "error");
                           }
                         } catch (error) {
-                          setErrorMsg("Koneksi gagal");
+                          showToast("Koneksi gagal", "error");
                         } finally {
                           setIsSubmitting(false);
                         }

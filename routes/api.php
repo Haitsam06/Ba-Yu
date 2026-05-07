@@ -25,6 +25,8 @@ Route::get('/v1/posts/{id}', [PostController::class, 'show']);
 Route::get('/v1/users/{id}', [UserController::class, 'show']);
 Route::get('/v1/users/{id}/activities', [UserController::class, 'activities']);
 Route::get('/v1/experts', [UserController::class, 'experts']);
+Route::get('/v1/users/{id}/followers', [\App\Http\Controllers\FollowController::class, 'followers']);
+Route::get('/v1/users/{id}/following', [\App\Http\Controllers\FollowController::class, 'following']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
