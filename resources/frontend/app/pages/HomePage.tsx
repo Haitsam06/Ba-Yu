@@ -125,8 +125,8 @@ export default function HomePage() {
         return (
             <MobileLayout>
                 <div className="w-full h-full flex justify-center pb-20 pt-6">
-                    <div className="w-full max-w-[1140px] px-2 sm:px-4 md:px-6 flex flex-col xl:flex-row gap-10 xl:gap-14 animate-pulse">
-                        <div className="flex-1 min-w-0">
+                    <div className="w-full max-w-[1140px] px-2 sm:px-4 md:px-6 flex flex-col lg:flex-row gap-8 lg:gap-10 xl:gap-14 animate-pulse lg:justify-center mx-auto">
+                        <div className="flex-1 w-full lg:max-w-[640px] xl:max-w-[700px] min-w-0">
                             {/* CATEGORY PILLS SKELETON */}
                             <div className="flex gap-3 mb-6 overflow-hidden">
                                 {[...Array(6)].map((_, i) => (
@@ -149,7 +149,7 @@ export default function HomePage() {
                         </div>
 
                         {/* RIGHT COLUMN SKELETON */}
-                        <div className="hidden xl:block w-[320px] shrink-0 xl:border-l xl:border-gray-100 xl:pl-10 pt-4">
+                        <div className="hidden lg:block w-[280px] xl:w-[320px] shrink-0 border-l border-gray-100 pl-6 xl:pl-10 pt-4">
                             <div className="h-6 w-32 bg-gray-100 rounded-md mb-8"></div>
                             <div className="space-y-6">
                                 {[...Array(4)].map((_, i) => (
@@ -172,9 +172,9 @@ export default function HomePage() {
     return (
         <MobileLayout>
             <div className="w-full h-full flex justify-center pb-20">
-                <div className="w-full max-w-[1140px] px-2 sm:px-4 md:px-6 flex flex-col xl:flex-row gap-10 xl:gap-14">
+                <div className="w-full max-w-[1140px] px-2 sm:px-4 md:px-6 flex flex-col lg:flex-row gap-8 lg:gap-10 xl:gap-14 lg:justify-center mx-auto">
                     {/* LEFT COLUMN (MAIN DISCOVERY GRID) */}
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 w-full lg:max-w-[640px] xl:max-w-[700px] min-w-0">
                         {/* CATEGORY PILLS */}
                         <div className="mb-6 overflow-hidden relative">
                             <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-3 snap-x">
@@ -185,7 +185,7 @@ export default function HomePage() {
                                     <Link
                                         key={mapel.id}
                                         to={`/explore?subject=${mapel.id}`}
-                                        className="shrink-0 px-5 py-2.5 bg-gray-50 hover:bg-gray-100 rounded-full text-[13px] font-['Manrope'] font-medium text-gray-700 transition-all border border-gray-100 snap-start"
+                                        className="shrink-0 px-5 py-2.5 bg-white hover:bg-primary/5 hover:text-primary hover:border-primary/20 rounded-full text-[13px] font-['Manrope'] font-bold text-gray-600 transition-all duration-300 border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 snap-start"
                                     >
                                         {mapel.name}
                                     </Link>
@@ -269,7 +269,7 @@ export default function HomePage() {
                                 </div>
 
                                 {/* Hero Image / Placeholder */}
-                                <div className="w-full md:w-[45%] h-[240px] md:h-[320px] overflow-hidden relative shrink-0 rounded-2xl bg-gray-50 shadow-sm border border-gray-100">
+                                <div className="w-full md:w-[45%] h-[240px] md:h-[320px] overflow-hidden relative shrink-0 rounded-[2rem] bg-gray-50 shadow-md border border-gray-100 group-hover/title:shadow-lg transition-all duration-500">
                                     <Link
                                         to={`/note/${heroNote.id}`}
                                         className="block w-full h-full"
@@ -322,7 +322,7 @@ export default function HomePage() {
                     </div>
 
                     {/* RIGHT COLUMN (TRENDING SIDEBAR w/ GIANT NUMBERS) */}
-                    <div className="hidden xl:block w-[320px] shrink-0 border-l border-gray-100 pl-10">
+                    <div className="hidden lg:block w-[280px] xl:w-[320px] shrink-0 border-l border-gray-100 pl-6 xl:pl-10">
                         <div
                             className="sticky pt-8 pb-12"
                             style={{
@@ -363,8 +363,8 @@ export default function HomePage() {
                                                 className="group relative flex gap-4 items-start"
                                             >
                                                 {/* Giant Watermark Number */}
-                                                <div className="w-[32px] shrink-0 mt-[-2px]">
-                                                    <span className="font-['Lexend_Deca'] font-black text-[28px] text-gray-300 group-hover:text-gray-400 transition-colors select-none">
+                                                <div className="w-[36px] shrink-0 mt-[-4px]">
+                                                    <span className="font-['Lexend_Deca'] font-black text-[32px] text-gray-200 group-hover:text-primary/30 transition-colors select-none tracking-tighter">
                                                         0{idx + 1}
                                                     </span>
                                                 </div>

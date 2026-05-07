@@ -16,8 +16,8 @@ import {
     TrendingUp,
     Clock,
     Bookmark,
-    Star,
     X,
+    Compass,
 } from "lucide-react";
 import { NoteCardSkeleton } from "../components/ui/skeletons";
 import { mataPelajaran } from "../data/mockData";
@@ -52,8 +52,13 @@ export default function PublicExplorePage() {
         }
     }, [tabFromUrl]);
 
-    const [searchQuery, setSearchQuery] = useState("");
     const searchTermFromUrl = queryParams.get("q") || "";
+    const [searchQuery, setSearchQuery] = useState(searchTermFromUrl);
+
+    useEffect(() => {
+        setSearchQuery(searchTermFromUrl);
+    }, [searchTermFromUrl]);
+
     const [notes, setNotes] = useState<any[]>([]);
     const [isLoadingNotes, setIsLoadingNotes] = useState(true);
     const [experts, setExperts] = useState<any[]>([]);
@@ -157,7 +162,7 @@ export default function PublicExplorePage() {
         const fetchPosts = async () => {
             setIsLoadingNotes(true);
             try {
-                const keyword = searchTermFromUrl || searchQuery;
+                const keyword = searchQuery;
                 const queryParamsAPI: any = { sort: activeSegment };
 
                 if (keyword !== "") {
@@ -178,7 +183,7 @@ export default function PublicExplorePage() {
         };
 
         fetchPosts();
-    }, [searchQuery, searchTermFromUrl, activeSegment]);
+    }, [searchQuery, activeSegment]);
 
     const formattedNotes = notes.map((note) => ({
         ...note,
@@ -327,53 +332,47 @@ export default function PublicExplorePage() {
 
             {/* Main 2-Column Container */}
             <div className="w-full flex justify-center pb-12 sm:pb-20">
-                <div className="w-full max-w-[1140px] px-0 sm:px-4 md:px-6 flex flex-col xl:flex-row gap-0 xl:gap-14">
+                <div className="w-full max-w-[1140px] px-0 sm:px-4 md:px-6 flex flex-col lg:flex-row gap-0 lg:gap-10 xl:gap-14 lg:justify-center mx-auto">
                     {/* LEFT COLUMN (Main Feed) */}
-                    <div className="flex-1 min-w-0 max-w-[720px] mx-auto xl:mx-0 w-full pt-10">
-                        {/* Logged-in Header (Enhanced Medium Style) */}
+                    <div className="flex-1 min-w-0 w-full lg:max-w-[640px] xl:max-w-[700px] pt-10 mx-auto lg:mx-0">
+                        {/* Logged-in Header (Seamless Premium Style) */}
                         {isAuthenticated && (
-                            <div className="px-6 md:px-0 pb-2 mb-4 w-full">
-                                <div className="relative overflow-hidden bg-gradient-to-br from-gray-50/80 to-white border border-gray-100/60 rounded-3xl p-6 sm:p-8 shadow-sm mb-2 group/header hover:shadow-md transition-shadow">
-                                    <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none group-hover/header:bg-primary/10 transition-colors duration-700"></div>
-                                    <div className="relative z-10">
-                                        <h1 className="text-[28px] sm:text-[32px] font-['Lexend_Deca'] font-extrabold text-gray-900 tracking-tight leading-tight">
-                                            Eksplorasi Topik
-                                        </h1>
-                                        <p className="text-gray-700 font-['Manrope'] text-[15px] mt-1.5 mb-6">
-                                            Temukan materi dan inspirasi terbaru
-                                            pilihan.
-                                        </p>
+                            <div className="px-6 md:px-0 pb-12 mb-4 w-full">
+                                <div className="relative">
+                                    <h1 className="text-[36px] sm:text-[48px] font-['Lexend_Deca'] font-black text-gray-900 tracking-tight leading-none mb-4">
+                                        Eksplorasi<span className="text-primary">.</span>
+                                    </h1>
+                                    <p className="text-gray-500 font-['Manrope'] text-[16px] sm:text-[18px] font-medium max-w-xl mb-8 leading-relaxed">
+                                        Temukan materi, topik, dan inspirasi belajar dari seluruh penjuru negeri.
+                                    </p>
 
-                                        <div className="flex gap-3">
-                                            <div className="relative flex-1 group">
-                                                <Search
-                                                    className="absolute left-4 top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-gray-500 group-focus-within:text-primary transition-colors"
-                                                    strokeWidth={2.5}
-                                                />
-                                                <input
-                                                    type="text"
-                                                    placeholder="Cari referensi (contoh: Logaritma Dasar)"
-                                                    value={searchQuery}
-                                                    onChange={(e) =>
-                                                        setSearchQuery(
-                                                            e.target.value,
-                                                        )
-                                                    }
-                                                    className="w-full pl-11 pr-4 py-3.5 bg-white hover:bg-gray-50/50 focus:bg-white border border-gray-200 focus:border-primary/40 focus:shadow-[0_0_0_4px_rgba(93,92,230,0.08)] rounded-full font-['Manrope'] text-[15px] font-medium focus:outline-none transition-all placeholder:text-gray-500 text-gray-950"
-                                                />
-                                            </div>
-                                            <button
-                                                onClick={() =>
-                                                    setIsFilterOpen(true)
+                                    <div className="flex gap-4 items-center w-full max-w-[620px]">
+                                        <div className="relative flex-1 group">
+                                            <Search
+                                                className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-primary transition-all duration-300"
+                                                strokeWidth={2.5}
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Cari materi, topik, atau penulis..."
+                                                value={searchQuery}
+                                                onChange={(e) =>
+                                                    setSearchQuery(e.target.value)
                                                 }
-                                                className="w-[52px] h-[52px] bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 hover:border-primary/40 hover:text-primary transition-all flex-shrink-0 text-gray-600 shadow-sm"
-                                            >
-                                                <Filter
-                                                    className="w-5 h-5"
-                                                    strokeWidth={2.5}
-                                                />
-                                            </button>
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter" && searchQuery.trim()) {
+                                                        // Auto-fetch handles this
+                                                    }
+                                                }}
+                                                className="w-full pl-14 pr-6 py-4 bg-white border border-gray-200 hover:border-gray-300 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 rounded-[1.25rem] font-['Manrope'] text-[16px] font-bold text-gray-900 placeholder:text-gray-400 focus:outline-none transition-all shadow-sm"
+                                            />
                                         </div>
+                                        <button
+                                            onClick={() => setIsFilterOpen(true)}
+                                            className="h-[60px] w-[60px] bg-white border border-gray-200 hover:border-primary/40 hover:text-primary text-gray-600 rounded-[1.25rem] flex items-center justify-center transition-all shadow-sm hover:shadow-md active:scale-95 shrink-0"
+                                        >
+                                            <Filter className="w-5 h-5" strokeWidth={2.5} />
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -464,7 +463,7 @@ export default function PublicExplorePage() {
 
                     {/* RIGHT COLUMN (Sidebar) */}
                     <div
-                        className={`${!isAuthenticated ? "explore-reveal opacity-0 translate-y-6" : ""} hidden xl:block w-[320px] shrink-0 xl:border-l xl:border-gray-100 xl:pl-10`}
+                        className={`${!isAuthenticated ? "explore-reveal opacity-0 translate-y-6" : ""} hidden lg:block w-[280px] xl:w-[320px] shrink-0 border-l border-gray-100 pl-6 xl:pl-10`}
                         style={{
                             transition:
                                 "all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s",
@@ -559,10 +558,10 @@ export default function PublicExplorePage() {
                                     ].map((term) => (
                                         <button
                                             key={term}
-                                            className="px-3.5 py-2.5 bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50 text-gray-700 rounded-2xl font-['Manrope'] text-[13px] font-bold transition-colors truncate max-w-full text-left focus:outline-none"
+                                            className="px-3.5 py-2.5 bg-white hover:bg-primary/5 hover:text-primary hover:border-primary/20 text-gray-600 rounded-2xl font-['Manrope'] text-[13px] font-bold shadow-sm hover:shadow-md hover:-translate-y-0.5 border border-gray-100 transition-all duration-300 truncate max-w-full text-left focus:outline-none"
                                         >
                                             <Search
-                                                className="w-3.5 h-3.5 inline-block mr-1.5 text-gray-500"
+                                                className="w-3.5 h-3.5 inline-block mr-1.5 opacity-70"
                                                 strokeWidth={2.8}
                                             />{" "}
                                             {term}
