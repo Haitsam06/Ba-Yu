@@ -1,48 +1,56 @@
 import { useState, useEffect } from "react";
 import { MobileLayout } from "../components/MobileLayout";
-import { Navbar } from "../components/navbar";
-import { Footer } from "../components/footer";
 import { NoteCardSkeleton } from "../components/ui/skeletons";
+import { TagList } from "../components/ui/TagList";
+import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
 import {
     FileText,
+    Eye,
     Heart,
     MessageCircle,
+    Users,
+    Shield,
     Clock,
     CheckCircle,
-    Calendar,
-    Star,
-    ArrowLeft,
-    Eye,
+    ChevronRight,
+    MapPin,
     ShieldCheck,
+    Calendar,
+    MoreHorizontal,
+    X,
+    UserPlus,
+    UserCheck,
+    UserMinus
 } from "lucide-react";
-import { Link, useSearchParams, useNavigate, useParams } from "react-router";
+import { Link, useSearchParams, useParams, useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
-import { AuthModal } from "../components/auth-modal";
-import { TagList } from "../components/ui/TagList";
-import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
+
 export default function PublicProfilePage() {
+    const { id } = useParams(); // Mengambil ID dari URL
     const navigate = useNavigate();
-    const { id } = useParams<{ id: string }>();
     const [searchParams, setSearchParams] = useSearchParams();
     const tabParam = searchParams.get("tab") as "catatan" | "aktivitas";
 
-    const [activeTab, setActiveTab] = useState<"catatan" | "aktivitas">(
-        tabParam || "catatan",
-    );
-    const { isAuthenticated, user: loggedInUser } = useAuth();
+    const [activeTab, setActiveTab] = useState<"catatan" | "aktivitas">(tabParam || "catatan");
+    
+    // State untuk Modal Followers & Following
+    const [showFollowers, setShowFollowers] = useState(false);
+    const [showFollowing, setShowFollowing] = useState(false);
+
+    const { user: currentUser } = useAuth();
     const { showToast } = useToast();
 
-    const [targetUser, setTargetUser] = useState<any>(null);
-    const [activities, setActivities] = useState<any[]>([]);
-    const [notes, setNotes] = useState<any[]>([]);
-
-    const [isLoadingUser, setIsLoadingUser] = useState(true);
-    const [isLoadingNotes, setIsLoadingNotes] = useState(true);
-    const [isLoadingActivities, setIsLoadingActivities] = useState(false);
-
-    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [profileUser, setProfileUser] = useState<any>(null);
+    const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+    const [isFollowing, setIsFollowing] = useState(false);
 
     // Sync state if URL changes
     useEffect(() => {
@@ -65,75 +73,105 @@ export default function PublicProfilePage() {
         setSearchParams({ tab });
     };
 
+    // 1. Fetch Data Profil User
     useEffect(() => {
-        // If the id matches the logged-in user, we can optionally redirect to /profile
-        if (
-            isAuthenticated &&
-            loggedInUser &&
-            (loggedInUser.id === id || loggedInUser._id === id)
-        ) {
-            navigate("/profile", { replace: true });
-        }
-    }, [id, isAuthenticated, loggedInUser, navigate]);
-
-    const fetchUser = async () => {
-        setIsLoadingUser(true);
-        try {
-            const authHeader = isAuthenticated
-                ? {
-                      Authorization: `Bearer ${localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token")}`,
-                  }
-                : {};
-            const res = await axios.get(`/api/v1/users/${id}`, {
-                headers: authHeader,
-            });
-            setTargetUser(res.data.data);
-        } catch (e: any) {
-            if (e.response?.status === 404) {
-                showToast("Pengguna tidak ditemukan!", "error");
-                navigate("/explore");
+        const fetchProfile = async () => {
+            setIsLoadingProfile(true);
+            try {
+                const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+                const headers = token ? { Authorization: `Bearer ${token}` } : {};
+                
+                const res = await axios.get(`/api/v1/users/${id}`, { headers });
+                setProfileUser(res.data.data || res.data);
+                setIsFollowing(res.data.data?.is_followed || res.data?.is_followed || false);
+            } catch (error) {
+                console.error("Gagal mengambil data profil", error);
+                showToast("Pengguna tidak ditemukan", "error");
+                navigate(-1);
+            } finally {
+                setIsLoadingProfile(false);
             }
-        } finally {
-            setIsLoadingUser(false);
-        }
-    };
+        };
 
-    const fetchUserNotes = async () => {
-        setIsLoadingNotes(true);
-        try {
-            const response = await axios.get(`/api/v1/posts?user_id=${id}&sort=terbaru`);
-            setNotes(response.data.data || []);
-        } catch (error) {
-            console.error("Error fetching user notes:", error);
-        } finally {
-            setIsLoadingNotes(false);
+        if (id) {
+            // Jika ID sama dengan current user, redirect ke halaman profil pribadi
+            if (currentUser && (currentUser.id === id || currentUser._id === id)) {
+                navigate("/profile");
+            } else {
+                fetchProfile();
+            }
         }
-    };
+    }, [id, currentUser, navigate]);
 
-    const fetchActivities = async () => {
-        setIsLoadingActivities(true);
-        try {
-            const res = await axios.get(`/api/v1/users/${id}/activities`);
-            setActivities(res.data.data);
-        } catch (error) {
-            console.error("Gagal ngambil aktivitas", error);
-        } finally {
-            setIsLoadingActivities(false);
-        }
-    };
+    // 2. Fetch Catatan User
+    const [userNotes, setUserNotes] = useState<any[]>([]);
+    const [isLoadingNotes, setIsLoadingNotes] = useState(true);
 
     useEffect(() => {
-        if (id) {
-            fetchUser();
-            fetchUserNotes();
-            fetchActivities();
-        }
-    }, [id, isAuthenticated]);
+        const fetchApiNotes = async () => {
+            setIsLoadingNotes(true);
+            try {
+                const response = await axios.get(`/api/v1/posts?user_id=${id}&sort=terbaru`);
+                const mappedNotes = (response.data.data || response.data || []).map((note: any) => ({
+                    ...note,
+                    id: note._id || note.id,
+                    title: note.title,
+                    description: String(note.description || note.plain_content || "").replace(/&nbsp;/g, ' '),
+                    createdAt: note.created_at
+                        ? new Date(note.created_at).toLocaleDateString("id-ID", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                        })
+                        : "",
+                    thumbnail: note.thumbnail || null,
+                    mataPelajaran: note.mapel || "Umum",
+                    jenjang: note.jenjang || "-",
+                    kelas: note.kelas || "-",
+                    isValidated: note.is_verified,
+                    likes: note.likes_count || 0,
+                    is_liked: note.is_liked || false,
+                    comments: note.comments_count || 0,
+                    views: note.views || 0,
+                    author: note.user
+                        ? { ...note.user, avatar: note.user.avatar || null }
+                        : { name: profileUser?.name || "Pengguna", avatar: profileUser?.avatar || null },
+                }));
+                setUserNotes(mappedNotes);
+            } catch (error) {
+                console.error("Gagal mengambil data catatan:", error);
+            } finally {
+                setIsLoadingNotes(false);
+            }
+        };
+
+        if (id) fetchApiNotes();
+    }, [id, profileUser]);
+
+    // 3. Fetch Aktivitas User
+    const [activities, setActivities] = useState<any[]>([]);
+    const [isLoadingActivities, setIsLoadingActivities] = useState(false);
+
+    useEffect(() => {
+        const fetchActivities = async () => {
+            setIsLoadingActivities(true);
+            try {
+                const res = await axios.get(`/api/v1/users/${id}/activities`);
+                setActivities(res.data.data || res.data || []);
+            } catch (error) {
+                console.error("Gagal ngambil aktivitas", error);
+            } finally {
+                setIsLoadingActivities(false);
+            }
+        };
+        if (id) fetchActivities();
+    }, [id]);
 
     const handleLikePost = async (postId: string) => {
-        if (!isAuthenticated) return setShowAuthModal(true);
+        if (!currentUser)
+            return showToast("Silakan login terlebih dahulu untuk menyukai catatan.", "warning");
 
-        setNotes((prev) =>
+        setUserNotes((prev) =>
             prev.map((note) => {
                 if ((note._id || note.id) === postId) {
                     const isCurrentlyLiked = note.is_liked || false;
@@ -150,273 +188,211 @@ export default function PublicProfilePage() {
         );
 
         try {
-            const tk =
-                localStorage.getItem("bayu-token") ||
-                sessionStorage.getItem("bayu-token") ||
-                sessionStorage.getItem("bayu-token");
-            await axios.post(
-                `/api/v1/posts/${postId}/like`,
-                {},
-                {
-                    headers: { Authorization: `Bearer ${tk}` },
-                },
-            );
+            const tk = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+            await axios.post(`/api/v1/posts/${postId}/like`, {}, {
+                headers: { Authorization: `Bearer ${tk}` },
+            });
         } catch (e) {
             console.error(e);
         }
     };
 
     const handleFollowToggle = async () => {
-        if (!isAuthenticated) return setShowAuthModal(true);
-        if (!targetUser) return;
-
-        if (targetUser.is_followed_by_me) {
-            if (
-                !window.confirm(
-                    `Yakin ingin berhenti mengikuti ${targetUser.name}?`,
-                )
-            ) {
-                return;
-            }
+        if (!currentUser) {
+            showToast("Silakan login untuk mengikuti pengguna ini", "warning");
+            navigate("/login");
+            return;
         }
+        
+        const previousState = isFollowing;
+        setIsFollowing(!previousState);
+        setProfileUser((prev: any) => ({
+            ...prev,
+            followers_count: previousState 
+                ? Math.max(0, (prev?.followers_count || 0) - 1) 
+                : (prev?.followers_count || 0) + 1
+        }));
 
         try {
-            const token =
-                localStorage.getItem("bayu-token") ||
-                sessionStorage.getItem("bayu-token") ||
-                sessionStorage.getItem("bayu-token");
-            const response = await axios.post(
-                `/api/users/${targetUser._id || targetUser.id}/follow`,
-                {},
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                },
-            );
-
-            if (response.data.status === "followed") {
-                setTargetUser((prev: any) => ({
-                    ...prev,
-                    is_followed_by_me: true,
-                    followers_count: (prev.followers_count || 0) + 1,
-                }));
-                showToast("Berhasil mengikuti penulis!", "success");
-            } else {
-                setTargetUser((prev: any) => ({
-                    ...prev,
-                    is_followed_by_me: false,
-                    followers_count: Math.max(
-                        0,
-                        (prev.followers_count || 0) - 1,
-                    ),
-                }));
-                showToast("Berhenti mengikuti penulis.", "info");
-            }
-        } catch (error: any) {
-            console.error("Gagal toggle follow:", error);
-            showToast(
-                error.response?.data?.message || "Gagal memproses permintaan.",
-                "error",
-            );
+            const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+            await axios.post(`/api/v1/users/${id}/follow`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+        } catch (error) {
+            // Revert state on error
+            setIsFollowing(previousState);
+            setProfileUser((prev: any) => ({
+                ...prev,
+                followers_count: previousState 
+                    ? (prev?.followers_count || 0) + 1 
+                    : Math.max(0, (prev?.followers_count || 0) - 1)
+            }));
+            showToast("Gagal mengubah status ikuti", "error");
         }
     };
 
-    if (isLoadingUser) {
-        const SkeletonUI = () => (
-            <div className="min-h-screen bg-white">
-                {!isAuthenticated && <Navbar variant="default" />}
-                <div className="w-full h-48 sm:h-64 bg-gray-100 animate-pulse"></div>
-                <div className="max-w-4xl mx-auto px-5 lg:px-0 relative mb-10">
-                    <div className="flex flex-col sm:flex-row items-center sm:items-end justify-between gap-4 -mt-16 sm:-mt-20 mb-6 relative z-10">
-                        <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gray-200 animate-pulse border-4 border-white"></div>
-                    </div>
-                    <div className="w-48 h-8 bg-gray-200 mt-4 rounded-md animate-pulse"></div>
-                    <div className="w-64 h-4 bg-gray-200 mt-2 rounded-md animate-pulse"></div>
-                </div>
-            </div>
-        );
-        return isAuthenticated ? (
+    if (isLoadingProfile) {
+        return (
             <MobileLayout>
-                <SkeletonUI />
+                <div className="flex h-screen items-center justify-center bg-white">
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+                </div>
             </MobileLayout>
-        ) : (
-            <SkeletonUI />
         );
     }
 
-    if (!targetUser) return null;
+    const jenjangSekolah = profileUser?.school && profileUser?.jenjang_pendidikan 
+        ? `${profileUser.jenjang_pendidikan} di ${profileUser.school}` 
+        : profileUser?.school 
+            ? profileUser.school 
+            : profileUser?.jenjang_pendidikan 
+                ? `Pelajar ${profileUser.jenjang_pendidikan}` 
+                : "Pelajar EduPlatform";
 
-    const userNotes = notes.map((note) => ({
-        ...note,
-        id: note._id || note.id,
-        title: note.title,
-        createdAt: note.created_at
-            ? new Date(note.created_at).toLocaleDateString("id-ID", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-              })
-            : "",
-        thumbnail: note.thumbnail || null,
-        mataPelajaran: note.mapel || "Umum",
-        jenjang: note.jenjang || "-",
-        kelas: note.kelas || "-",
-        likes: note.likes_count || 0,
-        is_liked: note.is_liked || false,
-        comments: note.comments_count || 0,
-        author: note.user
-            ? {
-                  ...note.user,
-                  avatar: note.user.avatar || null,
-              }
-            : { name: targetUser.name, avatar: targetUser.avatar || null },
-    }));
-
-    const mainContent = (
-        <div
-            className={`pb-16 bg-white min-h-screen ${!isAuthenticated ? "pt-16 sm:pt-20" : ""}`}
-        >
-            {/* Full-Width Cover Banner */}
-            <div className="w-full h-48 sm:h-64 bg-gradient-to-br from-[#E0E7FF] via-[#DBEAFE] to-[#F3E8FF] relative overflow-hidden flex items-center justify-center">
-                <button
-                    onClick={() => navigate(-1)}
-                    className="absolute top-4 left-4 p-2 bg-white/50 hover:bg-white/80 rounded-full transition-colors flex items-center justify-center group z-20"
-                >
-                    <ArrowLeft className="w-5 h-5 text-gray-700" />
-                </button>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-                <div className="absolute bottom-0 left-10 w-40 h-40 bg-indigo-200/40 rounded-full blur-2xl translate-y-1/2"></div>
-            </div>
-
-            {/* Main Content Container */}
-            <div className="max-w-4xl mx-auto px-5 lg:px-0 relative mb-10">
-                {/* Avatar & Top Actions */}
-                <div className="flex flex-col sm:flex-row items-center sm:items-end justify-between gap-4 -mt-16 sm:-mt-20 mb-6 relative z-10">
-                    <div className="relative">
-                        <AvatarImage
-                            src={targetUser.avatar}
-                            alt={targetUser.name}
-                            size={160}
-                            className="border-4 border-white bg-white shadow-sm sm:!w-[160px] sm:!h-[160px] !w-[128px] !h-[128px]"
-                        />
-                        {targetUser.role !== "siswa" && (
-                            <div
-                                className="absolute bottom-2 right-2 bg-green-500 text-white p-1.5 rounded-full shadow-sm border-2 border-white ring-2 ring-transparent transition hover:ring-green-100"
-                                title="Verified Professional"
-                            >
-                                <CheckCircle className="w-5 h-5" />
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="flex items-center w-full sm:w-auto mt-2 sm:mt-0 justify-center sm:justify-start">
-                        <button
-                            onClick={handleFollowToggle}
-                            className={`w-full sm:w-auto px-8 py-2.5 rounded-full text-[14px] font-['Manrope'] font-bold transition-all shadow-sm ${
-                                targetUser.is_followed_by_me
-                                    ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                                    : "bg-gray-900 text-white hover:bg-black"
-                            }`}
-                        >
-                            {targetUser.is_followed_by_me
-                                ? "Mengikuti"
-                                : "Ikuti Penulis"}
-                        </button>
-                    </div>
+    return (
+        <MobileLayout>
+            <div className="pb-16 bg-white min-h-screen">
+                {/* 1. Cover Banner (Twitter Aspect Ratio) */}
+                <div className="w-full h-32 sm:h-48 bg-gradient-to-r from-[#E0E7FF] to-[#DBEAFE] relative overflow-hidden block">
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.04]"></div>
                 </div>
 
-                {/* Profile Info */}
-                <div className="text-center sm:text-left mb-8">
-                    <h1 className="text-2xl sm:text-[32px] font-['Lexend_Deca'] font-extrabold text-gray-900 mb-1 leading-tight tracking-tight">
-                        {targetUser.name}
-                    </h1>
-
-                    <p className="font-['Manrope'] text-[15px] text-gray-500 font-medium mb-5">
-                        {targetUser.role === "pakar"
-                            ? "Pakar Pendidikan Tersertifikasi"
-                            : targetUser.role === "admin"
-                              ? "Administrator Sistem"
-                              : `Pelajar ${targetUser.jenjang_pendidikan || ""} ${targetUser.school ? `di ${targetUser.school}` : ""}`}
-                    </p>
-
-                    {/* Horizontal Minimalist Stats */}
-                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-6 gap-y-3 text-[15px] font-['Manrope'] mb-6 text-gray-600">
-                        <span className="flex items-center gap-1.5">
-                            <strong className="text-gray-900 font-bold">
-                                {targetUser.followers_count || 0}
-                            </strong>{" "}
-                            Pengikut
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                            <strong className="text-gray-900 font-bold">
-                                {targetUser.following_count || 0}
-                            </strong>{" "}
-                            Mengikuti
-                        </span>
-                        <span className="w-1 h-1 rounded-full bg-gray-300 hidden sm:block"></span>
-                        <span className="flex items-center gap-1.5 text-gray-500">
-                            <Calendar className="w-4 h-4" /> Bergabung{" "}
-                            {new Date(
-                                targetUser.created_at || Date.now(),
-                            ).getFullYear()}
-                        </span>
-                    </div>
-
-                    {targetUser.bio && (
-                        <div className="bg-gray-50 rounded-2xl p-4 sm:p-5 border border-gray-100 max-w-2xl mx-auto sm:mx-0 shadow-sm">
-                            <p className="font-['Manrope'] text-[15px] text-gray-800 leading-relaxed italic whitespace-pre-wrap">
-                                "{targetUser.bio}"
-                            </p>
+                {/* 2. Main Profile Content Container */}
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 relative mb-6">
+                    {/* Avatar & Top Actions (Twitter Layout) */}
+                    <div className="flex justify-between items-start mb-3">
+                        <div className="relative -mt-12 sm:-mt-16">
+                            <AvatarImage
+                                src={profileUser?.avatar}
+                                alt={profileUser?.name}
+                                size={128}
+                                className="relative border-4 border-white bg-white w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-full shadow-sm"
+                            />
+                            {profileUser?.role !== "siswa" && (
+                                <div
+                                    className="absolute bottom-1 right-1 bg-emerald-500 text-white p-1 rounded-full shadow-sm ring-2 ring-white"
+                                    title="Verified Professional"
+                                >
+                                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                                </div>
+                            )}
                         </div>
-                    )}
-                </div>
 
-                {/* Sticky Tab Navigation */}
-                <div
-                    id="profil-tabs"
-                    className="sticky top-0 bg-white z-40 border-b border-gray-100 mb-8 pt-2"
-                >
-                    <div className="flex gap-8 overflow-x-auto scrollbar-hide px-1">
-                        {[
-                            {
-                                id: "catatan",
-                                label: "Catatan Rilisan",
-                                count: userNotes.length,
-                            },
-                            {
-                                id: "aktivitas",
-                                label: "Aktivitas Diskusi",
-                                count: activities.length,
-                            },
-                        ].map((tab) => (
+                        <div className="pt-3 flex items-center gap-2">
                             <button
-                                key={tab.id}
-                                onClick={() => handleTabChange(tab.id as any)}
-                                className={`relative pb-4 font-['Lexend_Deca'] font-semibold text-[15px] whitespace-nowrap transition-colors flex items-center gap-2 ${
-                                    activeTab === tab.id
-                                        ? "text-gray-900 border-b-2 border-primary"
-                                        : "text-gray-500 hover:text-gray-700"
+                                onClick={handleFollowToggle}
+                                className={`flex items-center gap-1.5 px-5 py-1.5 sm:px-6 sm:py-2 rounded-full font-bold text-[13px] sm:text-[14px] transition-all ${
+                                    isFollowing 
+                                    ? "bg-white text-gray-900 border border-gray-300 hover:border-red-300 hover:text-red-600 hover:bg-red-50 group" 
+                                    : "bg-gray-900 text-white border border-gray-900 hover:bg-black"
                                 }`}
                             >
-                                {tab.label}
-                                <span
-                                    className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${activeTab === tab.id ? "bg-primary/10 text-primary" : "bg-gray-100 text-gray-500"}`}
-                                >
-                                    {tab.count}
-                                </span>
-                                {activeTab === tab.id && (
-                                    <div className="absolute bottom-0 left-0 w-full h-[3px] bg-primary rounded-t-full transition-all duration-300"></div>
+                                {isFollowing ? (
+                                    <>
+                                        <UserCheck className="w-4 h-4 group-hover:hidden" />
+                                        <UserMinus className="w-4 h-4 hidden group-hover:block" />
+                                        <span className="group-hover:hidden">Mengikuti</span>
+                                        <span className="hidden group-hover:block">Batal Ikuti</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <UserPlus className="w-4 h-4" /> Ikuti
+                                    </>
                                 )}
                             </button>
-                        ))}
+                        </div>
+                    </div>
+
+                    {/* Profile Info - Twitter Layout (Left Aligned, Clean) */}
+                    <div className="mb-5">
+                        <h1 className="text-[22px] sm:text-[24px] font-extrabold font-['Lexend_Deca'] text-gray-900 leading-tight">
+                            {profileUser?.name || "Pengguna"}
+                        </h1>
+
+                        <div className="flex flex-col gap-1.5 mt-2.5 font-['Manrope'] text-[14px] text-gray-500">
+                            {profileUser?.role === "pakar" ? (
+                                <span className="flex items-center gap-1.5 text-emerald-600 font-medium">
+                                    <ShieldCheck className="w-4 h-4" /> Pakar Tersertifikasi
+                                </span>
+                            ) : profileUser?.role === "admin" ? (
+                                <span className="flex items-center gap-1.5 text-purple-600 font-medium">
+                                    <Shield className="w-4 h-4" /> Administrator Sistem
+                                </span>
+                            ) : (
+                                <span className="flex items-center gap-1.5">
+                                    <MapPin className="w-4 h-4" /> {jenjangSekolah}
+                                </span>
+                            )}
+                            
+                            <span className="flex items-center gap-1.5">
+                                <Calendar className="w-4 h-4" /> Bergabung 2023
+                            </span>
+                        </div>
+
+                        {/* Stats - Horizontal Twitter Style */}
+                        <div className="flex items-center gap-5 mt-4 text-[14px] font-['Manrope']">
+                            <button 
+                                onClick={() => setShowFollowing(true)}
+                                className="hover:underline outline-none text-gray-500 transition-colors"
+                            >
+                                <strong className="text-gray-900 font-bold">{profileUser?.following_count || 0}</strong> Mengikuti
+                            </button>
+                            
+                            <button 
+                                onClick={() => setShowFollowers(true)}
+                                className="hover:underline outline-none text-gray-500 transition-colors"
+                            >
+                                <strong className="text-gray-900 font-bold">{profileUser?.followers_count || 0}</strong> Pengikut
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                {/* Tab Panels */}
-                <div className="min-h-[400px]">
+                {/* 3. Sticky Tab Navigation - Ba-Yu Signature Style */}
+                <div
+                    id="profil-tabs"
+                    className="sticky top-0 bg-white/95 backdrop-blur-md z-40 border-b border-gray-100 mb-4 pt-2"
+                >
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6">
+                        <div className="flex gap-8 overflow-x-auto scrollbar-hide px-1">
+                            {[
+                                { id: "catatan", label: "Catatan Rilisan", count: userNotes.length },
+                                { id: "aktivitas", label: "Aktivitas Diskusi", count: activities.length },
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => handleTabChange(tab.id as any)}
+                                    className={`relative cursor-pointer pb-4 font-['Lexend_Deca'] font-bold text-[15px] whitespace-nowrap transition-colors flex items-center gap-2 ${
+                                        activeTab === tab.id
+                                            ? "text-gray-950"
+                                            : "text-gray-500 hover:text-gray-950"
+                                    }`}
+                                >
+                                    {tab.label}
+                                    <span
+                                        className={`px-2 py-0.5 rounded-full text-[11px] font-bold transition-colors ${
+                                            activeTab === tab.id 
+                                            ? "bg-primary/10 text-primary" 
+                                            : "bg-gray-100 text-gray-600"
+                                        }`}
+                                    >
+                                        {tab.count}
+                                    </span>
+                                    {activeTab === tab.id && (
+                                        <div className="absolute bottom-0 left-0 w-full h-[3px] bg-primary rounded-t-full transition-all duration-300"></div>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* 4. Tab Panels - Ba-Yu Classic Card Styles */}
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 min-h-[400px]">
                     {activeTab === "catatan" && (
-                        <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-3xl">
+                        <div className="flex flex-col animate-in fade-in duration-500 w-full">
                             {isLoadingNotes ? (
-                                <div className="space-y-0">
+                                <div className="space-y-6 pt-4">
                                     {[...Array(3)].map((_, i) => (
                                         <NoteCardSkeleton key={i} />
                                     ))}
@@ -428,42 +404,41 @@ export default function PublicProfilePage() {
                                         className="group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 py-6 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors bg-transparent outline-none"
                                     >
                                         <div className="flex-1 min-w-0 flex flex-col w-full h-full">
-                                            <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-700">
+                                            {/* Author Header */}
+                                            <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-800 font-bold">
                                                 <div className="flex items-center gap-1.5">
                                                     <AvatarImage
-                                                         src={note.author.avatar}
-                                                         alt={note.author.name}
-                                                         size={20}
-                                                         className="ring-2 ring-transparent"
-                                                     />
-                                                    <span className="font-medium text-gray-900 tracking-tight">
-                                                        {note.author.name}
+                                                        src={profileUser?.avatar}
+                                                        alt={profileUser?.name}
+                                                        size={20}
+                                                        className="ring-2 ring-transparent"
+                                                    />
+                                                    <span className="font-bold text-gray-900 tracking-tight">
+                                                        {profileUser?.name}
                                                     </span>
                                                 </div>
-                                                <span className="text-gray-700 px-0.5 font-bold">
-                                                    di
-                                                </span>
-                                                <span className="font-semibold text-gray-800 tracking-tight">
+                                                <span className="text-gray-500 px-0.5">di</span>
+                                                <span className="font-extrabold text-gray-900 tracking-tight">
                                                     {note.mataPelajaran}
                                                 </span>
                                                 {note.jenjang && note.jenjang !== "Umum" && (
                                                     <>
-                                                        <span className="text-[10px] text-gray-700 mx-0.5 font-black">
-                                                            •
-                                                        </span>
-                                                        <span className="text-gray-500 tracking-tight">
+                                                        <span className="text-[10px] text-gray-500 mx-0.5">•</span>
+                                                        <span className="text-gray-700 tracking-tight font-extrabold">
                                                             {note.jenjang === "Kuliah"
                                                                 ? `${note.kelas || "S1/D4"} Semester ${note.semester || 1}`
                                                                 : (note.kelas && note.kelas !== "Semua" ? `${note.jenjang} Kelas ${note.kelas}` : note.jenjang)}
                                                         </span>
                                                     </>
                                                 )}
-                                                {note.is_verified && (
+                                                {note.isValidated && (
                                                     <span className="flex items-center gap-1 text-[12px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md ml-1">
                                                         <ShieldCheck className="w-3.5 h-3.5" />
                                                     </span>
                                                 )}
                                             </div>
+
+                                            {/* Title */}
                                             <Link
                                                 to={`/note/${note.id}`}
                                                 className="block mb-2 outline-none font-['Lexend_Deca'] cursor-pointer"
@@ -473,116 +448,88 @@ export default function PublicProfilePage() {
                                                 </h2>
                                             </Link>
 
-                                            <p className="text-[15px] font-['Manrope'] text-gray-500 line-clamp-2 leading-relaxed mb-4 pr-2">
+                                            {/* Excerpt */}
+                                            <p className="text-[15px] font-['Manrope'] text-gray-700 line-clamp-2 leading-relaxed mb-4 pr-2 font-medium">
                                                 {note.description}
                                             </p>
 
                                             {/* Tags */}
                                             <TagList tags={note.tags} />
 
+                                            {/* Meta Footer */}
                                             <div className={`flex items-center justify-between ${!(note.tags && note.tags.length > 0) ? 'mt-auto' : ''}`}>
                                                 <div className="flex items-center gap-1.5 text-gray-500">
-                                                    <Clock
-                                                        className="w-[14px] h-[14px] text-gray-600"
-                                                        strokeWidth={2}
-                                                    />
+                                                    <Clock className="w-[14px] h-[14px] text-gray-600" strokeWidth={2.5} />
                                                     <span className="text-[13px] font-['Manrope'] font-medium">
                                                         {note.createdAt}
                                                     </span>
                                                 </div>
 
                                                 <div className="flex items-center gap-3 shrink-0 ml-4">
-                                                    <div className="flex items-center gap-1.5 text-gray-500" title={`${note.views} kali dilihat`}>
-                                                        <Eye className="w-[15px] h-[15px]" strokeWidth={2} />
-                                                        <span className="text-[13px] font-['Manrope'] font-medium">
-                                                            {note.views}
-                                                        </span>
+                                                    <div className="flex items-center gap-1.5 text-gray-700 font-bold" title={`${note.views} kali dilihat`}>
+                                                        <Eye className="w-[15px] h-[15px] text-gray-600" strokeWidth={2.5} />
+                                                        <span className="text-[13px] font-['Manrope']">{note.views}</span>
                                                     </div>
                                                     <button
                                                         onClick={(e) => {
                                                             e.preventDefault();
-                                                            handleLikePost(
-                                                                note.id,
-                                                            );
+                                                            handleLikePost(note.id);
                                                         }}
-                                                        className={`flex items-center gap-1.5 transition-colors focus:outline-none ${note.is_liked ? "text-red-500" : "text-gray-500 hover:text-red-500"}`}
+                                                        className={`flex items-center gap-1.5 transition-colors focus:outline-none font-bold ${note.is_liked ? "text-red-600" : "text-gray-700 hover:text-red-600"}`}
                                                         title={`${note.likes} suka`}
                                                     >
-                                                        <Heart
-                                                            className={`w-[15px] h-[15px] ${note.is_liked ? "fill-red-500" : ""}`}
-                                                            strokeWidth={2}
-                                                        />
-                                                        <span className="text-[13px] font-['Manrope'] font-medium">
-                                                            {note.likes}
-                                                        </span>
+                                                        <Heart className={`w-[15px] h-[15px] ${note.is_liked ? "fill-red-600" : "text-gray-600"}`} strokeWidth={2.5} />
+                                                        <span className="text-[13px] font-['Manrope']">{note.likes}</span>
                                                     </button>
                                                     <Link
                                                         to={`/note/${note.id}#comments-section`}
-                                                        onClick={(e) =>
-                                                            e.stopPropagation()
-                                                        }
-                                                        className="flex items-center gap-1.5 text-gray-500 hover:text-gray-900 transition-colors focus:outline-none"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        className="flex items-center gap-1.5 text-gray-700 hover:text-gray-950 transition-colors focus:outline-none font-bold"
                                                         title={`${note.comments} komentar`}
                                                     >
-                                                        <MessageCircle
-                                                            className="w-[15px] h-[15px]"
-                                                            strokeWidth={2}
-                                                        />
-                                                        <span className="text-[13px] font-['Manrope'] font-medium">
-                                                            {note.comments}
-                                                        </span>
+                                                        <MessageCircle className="w-[15px] h-[15px] text-gray-600" strokeWidth={2.5} />
+                                                        <span className="text-[13px] font-['Manrope']">{note.comments}</span>
                                                     </Link>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* Thumbnail */}
-                                            {note.thumbnail ? (
-                                                <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-gray-100 relative shadow-sm">
-                                                    <Link
-                                                        to={`/note/${note.id}`}
-                                                        className="block w-full h-full outline-none cursor-pointer"
-                                                    >
-                                                        <img
-                                                            src={note.thumbnail}
-                                                            alt={note.title}
-                                                            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-                                                        />
-                                                        {/* Floating badge */}
-                                                        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
-                                                            <Clock className="w-3 h-3" />{" "}
-                                                            {note.read_time || 1}m
-                                                        </div>
-                                                    </Link>
-                                                </div>
-                                            ) : (
-                                                <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden shadow-sm relative">
-                                                    <Link
-                                                        to={`/note/${note.id}`}
-                                                        className="block w-full h-full outline-none cursor-pointer"
-                                                    >
-                                                        <DefaultThumbnail className="w-full h-full rounded-2xl" />
-                                                        {/* Floating badge */}
-                                                        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
-                                                            <Clock className="w-3 h-3" />{" "}
-                                                            {note.read_time || 1}m
-                                                        </div>
-                                                    </Link>
-                                                </div>
-                                            )}
+                                        {note.thumbnail ? (
+                                            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-gray-100 relative shadow-sm">
+                                                <Link to={`/note/${note.id}`} className="block w-full h-full outline-none cursor-pointer">
+                                                    <img
+                                                        src={note.thumbnail}
+                                                        alt={note.title}
+                                                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                                                    />
+                                                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
+                                                        <Clock className="w-3 h-3" /> {note.read_time || 1}m
+                                                    </div>
+                                                </Link>
+                                            </div>
+                                        ) : (
+                                            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden shadow-sm relative">
+                                                <Link to={`/note/${note.id}`} className="block w-full h-full outline-none cursor-pointer">
+                                                    <DefaultThumbnail className="w-full h-full rounded-2xl" />
+                                                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
+                                                        <Clock className="w-3 h-3" /> {note.read_time || 1}m
+                                                    </div>
+                                                </Link>
+                                            </div>
+                                        )}
                                     </article>
                                 ))
                             ) : (
-                                <div className="col-span-full py-20 text-center bg-gray-50 rounded-3xl border border-gray-100 border-dashed flex flex-col items-center justify-center">
-                                    <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center mb-5">
-                                        <FileText className="w-8 h-8 text-gray-300" />
+                                <div className="py-20 text-center flex flex-col items-center justify-center">
+                                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                        <FileText className="w-8 h-8 text-gray-400" />
                                     </div>
-                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-[19px] mb-2">
+                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-[18px] mb-2">
                                         Belum Terdapat Rilisan
                                     </h3>
-                                    <p className="font-['Manrope'] text-[15px] text-gray-500 max-w-sm mx-auto leading-relaxed">
-                                        Pengguna ini belum mempublikasikan
-                                        catatan apa pun untuk dibagikan.
+                                    <p className="font-['Manrope'] text-[14px] text-gray-500 mb-6 max-w-sm mx-auto">
+                                        {profileUser?.name} belum mempublikasikan catatan apa pun.
                                     </p>
                                 </div>
                             )}
@@ -590,110 +537,134 @@ export default function PublicProfilePage() {
                     )}
 
                     {activeTab === "aktivitas" && (
-                        <div className="w-full">
+                        <div className="w-full animate-in fade-in duration-500">
                             {isLoadingActivities ? (
-                                <div className="py-20 text-center text-gray-500 font-['Manrope'] animate-pulse">
-                                    Memuat jejak aktivitas...
-                                </div>
-                            ) : activities.length > 0 ? (
-                                <div className="flex flex-col gap-4 mt-2">
-                                    {activities.map((activity: any) => (
-                                        <div
-                                            key={activity.id}
-                                            onClick={() =>
-                                                navigate(
-                                                    `/note/${activity.post_id}#comment-${activity.id}`,
-                                                )
-                                            }
-                                            className="p-5 border border-gray-200 rounded-2xl bg-white shadow-sm hover:shadow-md transition-all text-left cursor-pointer hover:border-primary/40 group relative overflow-hidden"
-                                        >
-                                            <div className="absolute top-0 left-0 w-1.5 h-full bg-primary/20 group-hover:bg-primary transition-colors"></div>
-
-                                            <div className="text-sm text-gray-500 mb-3 font-['Manrope'] flex items-center gap-2">
-                                                {activity.parent_comment_id ? (
-                                                    <span className="flex items-center gap-1.5 text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded text-xs">
-                                                        <MessageCircle className="w-3.5 h-3.5" />{" "}
-                                                        Membalas
-                                                    </span>
-                                                ) : (
-                                                    <span className="flex items-center gap-1.5 text-gray-600 font-bold bg-gray-100 px-2 py-0.5 rounded text-xs">
-                                                        <MessageCircle className="w-3.5 h-3.5" />{" "}
-                                                        Berkomentar
-                                                    </span>
-                                                )}
-                                                <span>di:</span>{" "}
-                                                <span className="font-semibold text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
-                                                    {activity.post?.title ||
-                                                        "Catatan telah dihapus"}
-                                                </span>
+                                <div className="flex flex-col gap-4 pt-4">
+                                    {[...Array(3)].map((_, i) => (
+                                        <div key={i} className="p-5 border border-gray-100 rounded-3xl bg-white animate-pulse flex flex-col gap-4">
+                                            <div className="flex gap-3">
+                                                <div className="w-16 h-5 bg-gray-100 rounded-full"></div>
+                                                <div className="w-32 h-5 bg-gray-100 rounded-full"></div>
                                             </div>
-
                                             <div className="flex gap-4">
-                                                <AvatarImage
-                                                     src={targetUser.avatar}
-                                                     alt={targetUser.name}
-                                                     size={40}
-                                                     className="border border-gray-100 shrink-0"
-                                                 />
-                                                <div>
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <span className="font-['Manrope'] font-bold text-[15px]">
-                                                            {targetUser.name}
-                                                        </span>
-                                                        <span className="text-gray-400 text-xs font-medium">
-                                                            •{" "}
-                                                            {new Date(
-                                                                activity.created_at,
-                                                            ).toLocaleDateString(
-                                                                "id-ID",
-                                                                {
-                                                                    month: "short",
-                                                                    day: "numeric",
-                                                                },
-                                                            )}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-gray-800 text-[15px] font-['Manrope'] leading-relaxed whitespace-pre-wrap">
-                                                        {activity.content}
-                                                    </p>
+                                                <div className="w-10 h-10 bg-gray-100 rounded-full shrink-0"></div>
+                                                <div className="flex-1 space-y-2">
+                                                    <div className="h-4 bg-gray-100 rounded w-full"></div>
+                                                    <div className="h-4 bg-gray-100 rounded w-4/5"></div>
                                                 </div>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
+                            ) : activities.length > 0 ? (
+                                <div className="flex flex-col gap-6 animate-in fade-in duration-500 w-full">
+                                    {activities.map((activity: any) => (
+                                        <article
+                                            key={activity.id}
+                                            onClick={() => navigate(`/note/${activity.post_id}#comment-${activity.id}`)}
+                                            className="group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 py-6 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors bg-transparent outline-none cursor-pointer"
+                                        >
+                                            <div className="flex-1 min-w-0 flex flex-col w-full h-full text-left">
+                                                <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-950 font-bold">
+                                                     <div className="flex items-center gap-1.5">
+                                                         <AvatarImage src={profileUser?.avatar} alt={profileUser?.name} size={20} className="ring-2 ring-transparent" />
+                                                         <span className="font-black text-gray-950 tracking-tight">{profileUser?.name}</span>
+                                                     </div>
+                                                     <span className="text-gray-700 px-0.5">{activity.parent_comment_id ? "membalas komentar di" : "berkomentar di"}</span>
+                                                     <span className="font-black text-gray-950 tracking-tight line-clamp-1">{activity.post?.title || "Catatan"}</span>
+                                                </div>
+
+                                                <div className="block mb-3 font-['Lexend_Deca']">
+                                                    <h2 className="text-[17px] md:text-[19px] font-extrabold text-gray-950 leading-[1.5] tracking-tight group-hover:text-primary transition-colors line-clamp-3 italic">
+                                                        "{activity.content}"
+                                                    </h2>
+                                                </div>
+
+                                                <div className="flex items-center justify-between mt-auto">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="flex items-center gap-1.5 text-gray-600">
+                                                            <Clock className="w-[14px] h-[14px] text-gray-500" strokeWidth={2} />
+                                                            <span className="text-[13px] font-['Manrope'] font-semibold">
+                                                                {new Date(activity.created_at).toLocaleDateString("id-ID", { month: "short", day: "numeric", year: "numeric" })}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center gap-3 ml-2">
+                                                            <button className="flex items-center gap-1 text-gray-500 hover:text-red-500 transition-colors">
+                                                                <Heart className="w-[14px] h-[14px]" />
+                                                                <span className="text-[12px] font-bold">{activity.likes_count || 0}</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-gray-100 relative shadow-sm border border-gray-100/50">
+                                                {activity.post?.thumbnail ? (
+                                                    <img src={activity.post.thumbnail} alt={activity.post.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
+                                                ) : (
+                                                    <DefaultThumbnail className="w-full h-full transform group-hover:scale-110 transition-transform duration-500" />
+                                                )}
+                                                <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1.5">
+                                                    <MessageCircle className="w-3 h-3" /> DISKUSI
+                                                </div>
+                                            </div>
+                                        </article>
+                                    ))}
+                                </div>
                             ) : (
-                                <div className="py-20 text-center bg-gray-50/50 rounded-3xl border border-gray-100 border-dashed flex flex-col items-center">
-                                    <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center mb-4">
-                                        <MessageCircle className="w-8 h-8 text-gray-300" />
+                                <div className="py-20 text-center flex flex-col items-center justify-center">
+                                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                        <MessageCircle className="w-8 h-8 text-gray-400" />
                                     </div>
-                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-[19px] mb-2">
-                                        Belum Ada Aktivitas
-                                    </h3>
-                                    <p className="font-['Manrope'] text-[15px] text-gray-500 max-w-sm mx-auto leading-relaxed">
-                                        Pengguna ini belum pernah memberikan
-                                        komentar di platform Ba-Yu.
-                                    </p>
+                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-[18px] mb-2">Belum Ada Riwayat</h3>
+                                    <p className="font-['Manrope'] text-[14px] text-gray-500 max-w-sm mx-auto">{profileUser?.name} belum memiliki interaksi diskusi.</p>
                                 </div>
                             )}
                         </div>
                     )}
                 </div>
             </div>
-            <AuthModal
-                isOpen={showAuthModal}
-                onClose={() => setShowAuthModal(false)}
-                defaultTab="login"
-            />
-        </div>
-    );
 
-    return isAuthenticated ? (
-        <MobileLayout>{mainContent}</MobileLayout>
-    ) : (
-        <>
-            <Navbar variant="default" />
-            {mainContent}
-            <Footer />
-        </>
+            {/* Modal Followers Clean */}
+            {showFollowers && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/20 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowFollowers(false)}>
+                    <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-[16px]">Pengikut {profileUser?.name}</h3>
+                            <button onClick={() => setShowFollowers(false)} className="text-gray-400 hover:text-gray-900 transition-colors">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+                        <div className="p-6 max-h-[60vh] overflow-y-auto">
+                            <div className="flex flex-col items-center justify-center py-8 text-center">
+                                <Users className="w-10 h-10 text-gray-200 mb-3" />
+                                <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 text-[15px] mb-1">Belum ada pengikut</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal Following Clean */}
+            {showFollowing && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/20 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowFollowing(false)}>
+                    <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-[16px]">{profileUser?.name} Mengikuti</h3>
+                            <button onClick={() => setShowFollowing(false)} className="text-gray-400 hover:text-gray-900 transition-colors">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+                        <div className="p-6 max-h-[60vh] overflow-y-auto">
+                            <div className="flex flex-col items-center justify-center py-8 text-center">
+                                <Users className="w-10 h-10 text-gray-200 mb-3" />
+                                <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 text-[15px] mb-1">Masih Kosong</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+        </MobileLayout>
     );
 }
