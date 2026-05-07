@@ -73,7 +73,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
         
         {/* Modal Header */}
         <div className="flex items-center justify-between mb-12">
-          <h1 className="font-['Lexend_Deca'] font-extrabold text-2xl md:text-3xl text-gray-900 tracking-tight">Story Preview</h1>
+          <h1 className="font-['Lexend_Deca'] font-extrabold text-2xl md:text-3xl text-gray-900 tracking-tight">Preview</h1>
           <button 
             onClick={onClose}
             className="p-2 text-gray-500 hover:text-gray-950 hover:bg-gray-100 rounded-full transition-colors"
@@ -313,7 +313,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                <button
                   onClick={handleSubmit}
                   disabled={!canPublishFinal || isSubmitting}
-                  className="bg-emerald-600 text-white px-7 py-2 rounded-full text-[14px] font-['Manrope'] font-bold disabled:opacity-40 hover:bg-emerald-700 transition-colors cursor-pointer"
+                  className="bg-primary text-white px-7 py-2 rounded-full text-[14px] font-['Manrope'] font-bold disabled:opacity-40 hover:bg-primary/90 transition-colors cursor-pointer"
                >
                   {isSubmitting ? 'Publishing...' : 'Publish now'}
                </button>

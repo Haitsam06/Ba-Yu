@@ -1,16 +1,26 @@
-import { Link } from "react-router";
+import React, { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router";
+import axios from "axios";
 import {
     Clock,
-    Eye,
     Heart,
     MessageCircle,
     Bookmark,
     ShieldCheck,
     FileText,
+    MoreHorizontal,
+    Share2,
+    Download,
+    Edit2,
+    Trash2,
+    AlertTriangle,
+    X
 } from "lucide-react";
 import { AvatarImage, DefaultThumbnail } from "./ui/DefaultImages";
 import { TagList } from "./ui/TagList";
 import { useBookmarks } from "../contexts/BookmarkContext";
+import { useAuth } from "../contexts/AuthContext";
+import { useToast } from "../contexts/ToastContext";
 
 interface NoteCardProps {
     note: {
@@ -39,13 +49,32 @@ interface NoteCardProps {
         read_time?: number;
     };
     onLike?: (postId: string) => void;
+    onDelete?: (postId: string) => void;
     className?: string;
     showBookmark?: boolean;
     isDraft?: boolean;
 }
 
-export function NoteCard({ note, onLike, className = "", showBookmark = true, isDraft = false }: NoteCardProps) {
+export function NoteCard({ note, onLike, onDelete, className = "", showBookmark = true, isDraft = false }: NoteCardProps) {
     const { isBookmarked, toggleBookmark } = useBookmarks();
+    const { user } = useAuth();
+    const { showToast } = useToast();
+    const navigate = useNavigate();
+    
+    const [showMenu, setShowMenu] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setShowMenu(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const authorId = note.author?.id || note.author?._id;
     
@@ -154,12 +183,6 @@ export function NoteCard({ note, onLike, className = "", showBookmark = true, is
 
                     {!isDraft && (
                         <div className="flex items-center gap-3 shrink-0 ml-4">
-                            <div className="flex items-center gap-1.5 text-gray-700 font-bold" title={`${note.views || 0} kali dilihat`}>
-                                <Eye className="w-[15px] h-[15px] text-gray-600" strokeWidth={2.5} />
-                                <span className="text-[13px] font-['Manrope']">
-                                    {note.views || 0}
-                                </span>
-                            </div>
                             <button
                                 onClick={(e) => {
                                     e.preventDefault();
@@ -209,6 +232,79 @@ export function NoteCard({ note, onLike, className = "", showBookmark = true, is
                                     />
                                 </button>
                             )}
+
+                            {/* Dropdown Menu */}
+                            <div className="relative" ref={menuRef}>
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setShowMenu(!showMenu);
+                                    }}
+                                    className="p-1.5 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors focus:outline-none"
+                                >
+                                    <MoreHorizontal className="w-[18px] h-[18px]" strokeWidth={2.5} />
+                                </button>
+                                {showMenu && (
+                                    <div className="absolute bottom-full right-0 mb-2 w-48 bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 py-1.5 z-50 animate-in fade-in zoom-in-95 duration-200">
+                                        <button
+                                            onClick={(e) => { 
+                                                e.preventDefault(); 
+                                                e.stopPropagation(); 
+                                                setShowMenu(false); 
+                                                if(navigator.share) { 
+                                                    navigator.share({ title: note.title, url: `${window.location.origin}/note/${note.id}` }); 
+                                                } else { 
+                                                    navigator.clipboard.writeText(`${window.location.origin}/note/${note.id}`); 
+                                                    showToast("Tautan disalin!", "success");
+                                                } 
+                                            }}
+                                            className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                        >
+                                            <Share2 className="w-4 h-4 text-gray-500" /> Bagikan
+                                        </button>
+                                        <button
+                                            onClick={(e) => { 
+                                                e.preventDefault(); 
+                                                e.stopPropagation(); 
+                                                setShowMenu(false); 
+                                                showToast("Fitur unduh segera hadir", "info"); 
+                                            }}
+                                            className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                        >
+                                            <Download className="w-4 h-4 text-gray-500" /> Unduh
+                                        </button>
+                                        
+                                        {user && (user.id === authorId || user._id === authorId) && (
+                                            <>
+                                                <div className="h-px bg-gray-100 my-1"></div>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        setShowMenu(false);
+                                                        navigate(`/upload?id=${note.id}`);
+                                                    }}
+                                                    className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                                >
+                                                    <Edit2 className="w-4 h-4 text-gray-500" /> Edit Catatan
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { 
+                                                        e.preventDefault(); 
+                                                        e.stopPropagation(); 
+                                                        setShowMenu(false); 
+                                                        setShowDeleteModal(true);
+                                                    }}
+                                                    className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-red-600 hover:bg-red-50 flex items-center gap-2"
+                                                >
+                                                    <Trash2 className="w-4 h-4" /> Hapus
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
@@ -243,6 +339,68 @@ export function NoteCard({ note, onLike, className = "", showBookmark = true, is
                     </div>
                 </Link>
             </div>
+
+            {/* DELETE MODAL */}
+            {showDeleteModal && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div 
+                        className="bg-white rounded-3xl w-full max-w-sm shadow-xl border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="p-6 text-center">
+                            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm">
+                                <AlertTriangle className="w-8 h-8" strokeWidth={2.5} />
+                            </div>
+                            <h3 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 mb-2">
+                                Hapus Catatan?
+                            </h3>
+                            <p className="text-[13px] text-gray-600 font-['Manrope'] font-medium mb-6">
+                                Tindakan ini tidak dapat dibatalkan. Catatan "{note.title}" akan dihapus permanen dari sistem.
+                            </p>
+                            
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setShowDeleteModal(false)}
+                                    disabled={isDeleting}
+                                    className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl font-['Manrope'] font-bold text-[14px] hover:bg-gray-200 transition-colors disabled:opacity-50"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    onClick={async () => {
+                                        setIsDeleting(true);
+                                        try {
+                                            const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+                                            await axios.delete(`/api/v1/posts/${note.id}`, {
+                                                headers: { Authorization: `Bearer ${token}` }
+                                            });
+                                            showToast("Catatan berhasil dihapus", "success");
+                                            setShowDeleteModal(false);
+                                            if (onDelete) {
+                                                onDelete(note.id);
+                                            } else {
+                                                window.location.reload();
+                                            }
+                                        } catch (error) {
+                                            showToast("Gagal menghapus catatan", "error");
+                                        } finally {
+                                            setIsDeleting(false);
+                                        }
+                                    }}
+                                    disabled={isDeleting}
+                                    className="flex-1 py-3 px-4 bg-red-600 text-white rounded-xl font-['Manrope'] font-bold text-[14px] hover:bg-red-700 transition-colors shadow-md shadow-red-200 disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    {isDeleting ? (
+                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    ) : (
+                                        "Ya, Hapus"
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </article>
     );
 }

@@ -226,7 +226,8 @@ export default function UploadPage() {
     
     setIsCropping(false);
     if (!descriptionEdited) {
-      const strippedContent = content.replace(/<[^>]*>?/gm, '');
+      const withLineBreaks = content.replace(/<\/(p|div|h[1-6])>/gi, '\n').replace(/<br\s*\/?>/gi, '\n');
+      const strippedContent = withLineBreaks.replace(/<[^>]*>?/gm, '').trim();
       setPreviewDescription(strippedContent.length > 150 ? strippedContent.substring(0, 150) + '...' : strippedContent);
     }
     setShowPreviewModal(true);
@@ -326,11 +327,11 @@ export default function UploadPage() {
       {isLoadingDraft && (
         <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-[100] flex flex-col items-center justify-center animate-in fade-in duration-300">
           <div className="relative">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center animate-bounce">
-              <FileText className="w-8 h-8 text-emerald-600" />
+            <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center animate-bounce">
+              <FileText className="w-8 h-8 text-indigo-600" />
             </div>
             <div className="absolute -bottom-1 -right-1">
-              <Loader2 className="w-6 h-6 text-emerald-500 animate-spin" />
+              <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
             </div>
           </div>
           <h3 className="mt-6 font-['Lexend_Deca'] font-extrabold text-gray-900 text-lg">
@@ -354,7 +355,7 @@ export default function UploadPage() {
                 <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
               </button>
               <div className="hidden sm:flex items-center gap-2.5 min-w-0">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_8px_rgba(52,211,153,0.4)] animate-pulse"></div>
+                <div className="w-2 h-2 rounded-full bg-indigo-500 shrink-0 shadow-[0_0_8px_rgba(99,102,241,0.4)] animate-pulse"></div>
                 <span className="text-[14px] font-['Lexend_Deca'] font-extrabold text-gray-900 truncate max-w-[200px]">
                   {title.trim() ? title : 'Draf Baru'}
                 </span>
@@ -365,7 +366,7 @@ export default function UploadPage() {
               <button
                 onClick={handleOpenPreview}
                 disabled={!canOpenPreview}
-                className="flex items-center gap-1.5 bg-emerald-600 text-white px-5 py-2.5 rounded-full text-[13px] font-['Lexend_Deca'] font-extrabold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-700 hover:shadow-[0_4px_12px_rgba(5,150,105,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] transition-all duration-200"
+                className="flex items-center gap-1.5 bg-primary text-white px-5 py-2.5 rounded-full text-[13px] font-['Lexend_Deca'] font-extrabold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary/90 hover:shadow-[0_4px_12px_rgba(79,70,229,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] transition-all duration-200"
               >
                 Publish
               </button>
