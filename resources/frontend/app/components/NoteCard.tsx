@@ -96,12 +96,12 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
 
     return (
         <article
-            className={`group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-8 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors bg-transparent outline-none ${className} ${isDraft ? 'cursor-pointer' : ''}`}
+            className={`group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-8 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors bg-transparent outline-none ${className} ${isDraft ? 'cursor-pointer' : ''}`}
         >
             {/* Feed Text */}
             <div className="flex-1 min-w-0 flex flex-col w-full h-full">
                 {/* Author Header */}
-                <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-800">
+                <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-800 dark:text-gray-400">
                     <Link
                         to={`/profile/${authorId}`}
                         className="flex items-center gap-1.5 group/author outline-none cursor-pointer"
@@ -111,24 +111,24 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                             src={note.author?.avatar}
                             alt={note.author?.name}
                             size={20}
-                            className="ring-2 ring-transparent group-hover/author:ring-primary/20 transition-all"
+                            className="ring-2 ring-slate-100 dark:ring-white/5 group-hover/author:ring-primary/20 transition-all"
                         />
-                        <span className="font-bold text-gray-950 group-hover/author:underline tracking-tight">
+                        <span className="font-bold text-gray-950 dark:text-gray-200 group-hover/author:underline tracking-tight">
                             {note.author?.name}
                         </span>
                     </Link>
-                    <span className="text-gray-700 px-0.5 font-bold">
+                    <span className="text-gray-700 dark:text-gray-500 px-0.5 font-bold">
                         di
                     </span>
-                    <span className="font-extrabold text-gray-900 tracking-tight">
+                    <span className="font-extrabold text-gray-900 dark:text-gray-300 tracking-tight">
                         {note.mataPelajaran}
                     </span>
                     {note.jenjang && note.jenjang !== "Umum" && note.jenjang !== "-" && (
                         <>
-                            <span className="text-[10px] text-gray-700 mx-0.5 font-bold">
+                            <span className="text-[10px] text-gray-700 dark:text-gray-500 mx-0.5 font-bold">
                                 •
                             </span>
-                            <span className="text-gray-800 font-bold tracking-tight">
+                            <span className="text-gray-800 dark:text-gray-400 font-bold tracking-tight">
                                 {note.jenjang === "Kuliah"
                                     ? `${note.kelas || "S1/D4"} Semester ${note.semester || 1}`
                                     : (note.kelas && note.kelas !== "Semua" && note.kelas !== "-" ? `${note.jenjang} Kelas ${note.kelas}` : note.jenjang)}
@@ -137,13 +137,13 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                     )}
 
                     {note.is_verified && (
-                        <span className="flex items-center gap-1 text-[12px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md ml-1">
+                        <span className="flex items-center gap-1 text-[12px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 px-2 py-0.5 rounded-md ml-1">
                             <ShieldCheck className="w-3.5 h-3.5" />
                         </span>
                     )}
 
                     {isDraft && (
-                        <span className="ml-1.5 px-2 py-0.5 rounded-md bg-amber-50 text-amber-600 border border-amber-100 text-[10px] font-bold uppercase tracking-wider">
+                        <span className="ml-1.5 px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20 text-[10px] font-bold uppercase tracking-wider">
                             Draft
                         </span>
                     )}
@@ -154,13 +154,13 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                     to={targetUrl}
                     className="block mb-2 outline-none font-['Lexend_Deca'] cursor-pointer"
                 >
-                    <h2 className="text-[20px] md:text-[22px] font-extrabold text-gray-900 leading-[1.25] tracking-tight group-hover:text-primary transition-colors line-clamp-2">
+                    <h2 className="text-[20px] md:text-[22px] font-extrabold text-gray-900 dark:text-gray-100 leading-[1.25] tracking-tight group-hover:text-primary transition-colors line-clamp-2">
                         {note.title || (isDraft ? "Draft Tanpa Judul" : "Tanpa Judul")}
                     </h2>
                 </Link>
 
                 {/* Excerpt */}
-                <p className="text-[15px] font-['Manrope'] text-gray-700 line-clamp-2 leading-relaxed mb-4 pr-2 font-medium">
+                <p className="text-[15px] font-['Manrope'] text-gray-700 dark:text-gray-400 line-clamp-2 leading-relaxed mb-4 pr-2 font-medium">
                     {note.description}
                 </p>
 
@@ -171,9 +171,9 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
 
                 {/* Meta Footer (Medium Style) */}
                 <div className={`flex items-center justify-between ${!(note.tags && note.tags.length > 0) ? 'mt-auto' : ''}`}>
-                    <div className="flex items-center gap-1.5 text-gray-700 font-bold">
+                    <div className="flex items-center gap-1.5 text-gray-700 dark:text-gray-500 font-bold">
                         <Clock
-                            className="w-[14px] h-[14px] text-gray-600"
+                            className="w-[14px] h-[14px] text-gray-600 dark:text-gray-500"
                             strokeWidth={2.5}
                         />
                         <span className="text-[13px] font-['Manrope']">
@@ -193,7 +193,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                 title={`${note.likes || 0} suka`}
                             >
                                 <Heart
-                                    className={`w-[15px] h-[15px] ${note.is_liked ? "fill-red-600" : "text-gray-600"}`}
+                                    className={`w-[15px] h-[15px] ${note.is_liked ? "fill-red-600" : "text-gray-600 dark:text-gray-500"}`}
                                     strokeWidth={2.5}
                                 />
                                 <span className="text-[13px] font-['Manrope']">
@@ -205,11 +205,11 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                 onClick={(e) =>
                                     e.stopPropagation()
                                 }
-                                className="flex items-center gap-1.5 text-gray-600 hover:text-gray-950 transition-colors focus:outline-none font-bold"
+                                className="flex items-center gap-1.5 text-gray-600 dark:text-gray-500 hover:text-gray-950 dark:hover:text-gray-300 transition-colors focus:outline-none font-bold"
                                 title={`${note.comments || 0} komentar`}
                             >
                                 <MessageCircle
-                                    className="w-[15px] h-[15px] text-gray-600"
+                                    className="w-[15px] h-[15px] text-gray-600 dark:text-gray-500"
                                     strokeWidth={2.5}
                                 />
                                 <span className="text-[13px] font-['Manrope']">
@@ -241,12 +241,12 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                         e.stopPropagation();
                                         setShowMenu(!showMenu);
                                     }}
-                                    className="p-1.5 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors focus:outline-none"
+                                    className="p-1.5 rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-gray-200 transition-colors focus:outline-none"
                                 >
                                     <MoreHorizontal className="w-[18px] h-[18px]" strokeWidth={2.5} />
                                 </button>
                                 {showMenu && (
-                                    <div className="absolute bottom-full right-0 mb-2 w-48 bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 py-1.5 z-50 animate-in fade-in zoom-in-95 duration-200">
+                                    <div className="absolute bottom-full right-0 mb-2 w-48 bg-white dark:bg-[#1C1A29] rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-white/5 py-1.5 z-50 animate-in fade-in zoom-in-95 duration-200">
                                         <button
                                             onClick={(e) => { 
                                                 e.preventDefault(); 
@@ -259,9 +259,9 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                                     showToast("Tautan disalin!", "success");
                                                 } 
                                             }}
-                                            className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                            className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
                                         >
-                                            <Share2 className="w-4 h-4 text-gray-500" /> Bagikan
+                                            <Share2 className="w-4 h-4 text-gray-500 dark:text-gray-400" /> Bagikan
                                         </button>
                                         <button
                                             onClick={(e) => { 
@@ -270,14 +270,14 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                                 setShowMenu(false); 
                                                 showToast("Fitur unduh segera hadir", "info"); 
                                             }}
-                                            className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                            className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
                                         >
-                                            <Download className="w-4 h-4 text-gray-500" /> Unduh
+                                            <Download className="w-4 h-4 text-gray-500 dark:text-gray-400" /> Unduh
                                         </button>
                                         
                                         {user && (user.id === authorId || user._id === authorId) && (
                                             <>
-                                                <div className="h-px bg-gray-100 my-1"></div>
+                                                <div className="h-px bg-gray-100 dark:bg-white/5 my-1"></div>
                                                 <button
                                                     onClick={(e) => {
                                                         e.preventDefault();
@@ -285,9 +285,9 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                                         setShowMenu(false);
                                                         navigate(`/upload?id=${note.id}`);
                                                     }}
-                                                    className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                                    className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
                                                 >
-                                                    <Edit2 className="w-4 h-4 text-gray-500" /> Edit Catatan
+                                                    <Edit2 className="w-4 h-4 text-gray-500 dark:text-gray-400" /> Edit Catatan
                                                 </button>
                                                 <button
                                                     onClick={(e) => { 
@@ -296,7 +296,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                                         setShowMenu(false); 
                                                         setShowDeleteModal(true);
                                                     }}
-                                                    className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-red-600 hover:bg-red-50 flex items-center gap-2"
+                                                    className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 flex items-center gap-2"
                                                 >
                                                     <Trash2 className="w-4 h-4" /> Hapus
                                                 </button>
@@ -311,7 +311,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
             </div>
 
             {/* Thumbnail */}
-            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-gray-100 relative shadow-sm">
+            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-gray-100 dark:bg-[#1C1A29] relative shadow-sm dark:shadow-none">
                 <Link
                     to={targetUrl}
                     className="block w-full h-full outline-none cursor-pointer"
@@ -330,7 +330,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                         />
                     )}
                     {/* Floating badge */}
-                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
+                    <div className="absolute top-2 right-2 bg-white/90 dark:bg-black/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
                         {isDraft ? (
                             <><FileText className="w-3 h-3" /> DRAF</>
                         ) : (
@@ -344,17 +344,17 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
             {showDeleteModal && (
                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
                     <div 
-                        className="bg-white rounded-3xl w-full max-w-sm shadow-xl border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-200"
+                        className="bg-white dark:bg-[#1C1A29] rounded-3xl w-full max-w-sm shadow-xl dark:shadow-2xl border border-gray-100 dark:border-white/5 overflow-hidden animate-in zoom-in-95 duration-200"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="p-6 text-center">
-                            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm">
+                            <div className="w-16 h-16 bg-red-50 dark:bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white dark:border-[#1C1A29] shadow-sm dark:shadow-none">
                                 <AlertTriangle className="w-8 h-8" strokeWidth={2.5} />
                             </div>
-                            <h3 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 mb-2">
+                            <h3 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 dark:text-gray-100 mb-2">
                                 Hapus Catatan?
                             </h3>
-                            <p className="text-[13px] text-gray-600 font-['Manrope'] font-medium mb-6">
+                            <p className="text-[13px] text-gray-600 dark:text-gray-400 font-['Manrope'] font-medium mb-6">
                                 Tindakan ini tidak dapat dibatalkan. Catatan "{note.title}" akan dihapus permanen dari sistem.
                             </p>
                             
@@ -362,7 +362,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                 <button
                                     onClick={() => setShowDeleteModal(false)}
                                     disabled={isDeleting}
-                                    className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 rounded-xl font-['Manrope'] font-bold text-[14px] hover:bg-gray-200 transition-colors disabled:opacity-50"
+                                    className="flex-1 py-3 px-4 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 rounded-xl font-['Manrope'] font-bold text-[14px] hover:bg-gray-200 dark:hover:bg-white/15 transition-colors disabled:opacity-50"
                                 >
                                     Batal
                                 </button>

@@ -204,7 +204,11 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
   ];
 
   const btnClass = (active: boolean) =>
-    `w-8 h-8 flex items-center justify-center rounded-[10px] transition-all duration-200 ${active ? 'bg-indigo-100 text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-100'}`;
+    `w-8 h-8 flex items-center justify-center rounded-[10px] transition-all duration-200 ${
+      active 
+        ? 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 shadow-sm' 
+        : 'text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-white/10'
+    }`;
 
   // Hide on mobile (can be too wide), or adapt left position
   const isMobile = window.innerWidth < 640;
@@ -217,7 +221,7 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
       style={{ top: position.top - 16, left: leftPos }}
       onMouseDown={(e) => e.preventDefault()}
     >
-      <div className="bg-white/90 backdrop-blur-xl rounded-[18px] shadow-[0_8px_30px_rgba(0,0,0,0.06)] p-1.5 flex flex-col items-center gap-1 border border-slate-200/60">
+      <div className="bg-white/90 dark:bg-[#1C1A29]/90 backdrop-blur-xl rounded-[18px] shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] p-1.5 flex flex-col items-center gap-1 border border-slate-200/60 dark:border-white/10">
          <button className={btnClass(!!formats.bold)} onClick={() => toggle('bold')} title="Bold"><Bold className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
          <button className={btnClass(!!formats.italic)} onClick={() => toggle('italic')} title="Italic"><Italic className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
          <button className={btnClass(!!formats.underline)} onClick={() => toggle('underline')} title="Underline"><Underline className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
@@ -229,7 +233,7 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
             {formats.background && <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full" style={{ background: formats.background }}></div>}
           </button>
           {showColorPicker && (
-            <div className="absolute left-full top-0 ml-2 bg-white/95 backdrop-blur-xl rounded-[14px] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] p-2 flex flex-col gap-2 border border-slate-200/60 animate-in fade-in zoom-in-95 duration-200" onMouseDown={(e) => e.preventDefault()}>
+            <div className="absolute left-full top-0 ml-2 bg-white/95 dark:bg-[#1C1A29]/95 backdrop-blur-xl rounded-[14px] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] dark:shadow-[0_10px_30px_-5px_rgba(0,0,0,0.4)] p-2 flex flex-col gap-2 border border-slate-200/60 dark:border-white/10 animate-in fade-in zoom-in-95 duration-200" onMouseDown={(e) => e.preventDefault()}>
               <div className="flex items-center gap-1.5">
                   {HIGHLIGHT_COLORS.map((c) => (
                     <button
@@ -241,10 +245,10 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
                     />
                   ))}
               </div>
-              <div className="h-px w-full bg-slate-100" />
+              <div className="h-px w-full bg-slate-100 dark:bg-white/10" />
               <button
                 onClick={removeHighlight}
-                className="w-full py-1 rounded-lg border border-slate-200 hover:border-red-500 bg-slate-50 flex items-center justify-center gap-1 text-slate-500 hover:text-red-500 hover:bg-red-50 transition-all text-[11px] font-bold"
+                className="w-full py-1 rounded-lg border border-slate-200 dark:border-white/10 hover:border-red-500 bg-slate-50 dark:bg-white/5 flex items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all text-[11px] font-bold"
                 title="Hapus warna"
               >
                 <X className="w-3 h-3" strokeWidth={3} />
@@ -254,13 +258,13 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
           )}
          </div>
 
-         <div className="w-5 h-px bg-slate-200 my-0.5"></div>
-         
-         <button className={btnClass(formats.header === 1)} onClick={() => toggle('header', 1)} title="Heading 1"><Heading1 className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
-         <button className={btnClass(formats.header === 2)} onClick={() => toggle('header', 2)} title="Heading 2"><Heading2 className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
-         <button className={btnClass(!!formats.link)} onClick={() => toggle('link')} title="Link"><LinkIcon className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
-         
-         <div className="w-5 h-px bg-slate-200 my-1"></div>
+          <div className="w-5 h-px bg-slate-200 dark:bg-white/10 my-0.5"></div>
+          
+          <button className={btnClass(formats.header === 1)} onClick={() => toggle('header', 1)} title="Heading 1"><Heading1 className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
+          <button className={btnClass(formats.header === 2)} onClick={() => toggle('header', 2)} title="Heading 2"><Heading2 className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
+          <button className={btnClass(!!formats.link)} onClick={() => toggle('link')} title="Link"><LinkIcon className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
+          
+          <div className="w-5 h-px bg-slate-200 dark:bg-white/10 my-1"></div>
 
          <div className="relative flex justify-center w-full">
             <button
@@ -274,14 +278,14 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
 
             {/* Expanded actions popping out to the right */}
             <div 
-              className={`flex items-center gap-1 bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-[14px] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] px-2 py-1.5 absolute left-8 top-1/2 -translate-y-1/2 ml-2 transition-all duration-300 origin-left 
+              className={`flex items-center gap-1 bg-white/95 dark:bg-[#1C1A29]/95 backdrop-blur-xl border border-slate-200/60 dark:border-white/10 rounded-[14px] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.1)] dark:shadow-[0_10px_30px_-5px_rgba(0,0,0,0.4)] px-2 py-1.5 absolute left-8 top-1/2 -translate-y-1/2 ml-2 transition-all duration-300 origin-left 
                 ${expandedPlus ? 'opacity-100 scale-100 translate-x-0 pointer-events-auto' : 'opacity-0 scale-50 -translate-x-4 pointer-events-none'}`}
             >
               {actions.map((action) => (
                 <button
                   key={action.id}
                   onClick={() => insertBlock(action.id)}
-                  className={`w-9 h-9 flex items-center justify-center rounded-xl hover:bg-slate-50 active:scale-95 transition-all group ${action.color}`}
+                  className={`w-9 h-9 flex items-center justify-center rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 active:scale-95 transition-all group ${action.color}`}
                   title={action.label}
                 >
                       <action.icon className="w-[18px] h-[18px] group-hover:scale-110 transition-transform" strokeWidth={2.5} />

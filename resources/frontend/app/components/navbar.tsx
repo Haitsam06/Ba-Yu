@@ -44,7 +44,7 @@ export function Navbar({ variant = 'default' }: NavbarProps) {
         <div
           style={{ transition: 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
           className={`w-full flex items-center justify-between overflow-hidden ${isScrolled
-            ? 'max-w-5xl bg-white/80 backdrop-blur-2xl border border-white/70 shadow-[0_12px_40px_rgba(79,70,229,0.10)] rounded-[2rem] h-[72px] px-6 sm:px-10'
+            ? 'max-w-5xl bg-white/80 dark:bg-[#1C1A29]/80 backdrop-blur-2xl border border-white/70 dark:border-white/5 shadow-[0_12px_40px_rgba(79,70,229,0.10)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.3)] rounded-[2rem] h-[72px] px-6 sm:px-10'
             : 'max-w-7xl bg-transparent border-transparent h-24 sm:h-28 px-6 sm:px-10'
             }`}
         >
@@ -63,19 +63,19 @@ export function Navbar({ variant = 'default' }: NavbarProps) {
           <div className="hidden md:flex items-center gap-8 lg:gap-10">
             <Link
               to="/"
-              className="text-gray-600 hover:text-primary transition-colors font-semibold text-[15px] hover:-translate-y-0.5 transform duration-200"
+              className="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors font-semibold text-[15px] hover:-translate-y-0.5 transform duration-200"
             >
               Beranda
             </Link>
             <a
               href="#tentang"
-              className="text-gray-600 hover:text-primary transition-colors font-semibold text-[15px] hover:-translate-y-0.5 transform duration-200"
+              className="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors font-semibold text-[15px] hover:-translate-y-0.5 transform duration-200"
             >
               Tentang
             </a>
             <Link
               to="/katalog"
-              className="text-gray-600 hover:text-primary transition-colors font-semibold text-[15px] hover:-translate-y-0.5 transform duration-200"
+              className="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors font-semibold text-[15px] hover:-translate-y-0.5 transform duration-200"
             >
               Jelajahi
             </Link>
@@ -94,7 +94,7 @@ export function Navbar({ variant = 'default' }: NavbarProps) {
             ) : (
               <>
                 <button
-                  className="hidden md:block font-bold text-gray-700 hover:text-primary px-3 sm:px-4 py-2 hover:bg-gray-50/50 rounded-full transition-colors text-sm"
+                  className="hidden md:block font-bold text-gray-700 dark:text-gray-300 hover:text-primary px-3 sm:px-4 py-2 hover:bg-gray-50/50 dark:hover:bg-white/5 rounded-full transition-colors text-sm"
                   onClick={() => openAuthModal('login')}
                 >
                   Masuk

@@ -328,17 +328,17 @@ export default function EditProfilePage() {
 
     return (
         <MobileLayout showBottomNav={false}>
-            <div className="min-h-screen pb-10 bg-[#FAFAFA]">
+            <div className="min-h-screen pb-10 bg-[#FAFAFA] dark:bg-[#13111C]">
                 {/* Header - Transparent & Refined */}
-                <div className="sticky top-0 bg-[#FAFAFA]/95 backdrop-blur-md z-20 px-5 pt-8 pb-4 flex items-center justify-between border-b border-gray-100 mb-6">
+                <div className="sticky top-0 bg-[#FAFAFA]/95 dark:bg-[#13111C]/95 backdrop-blur-md z-20 px-5 pt-8 pb-4 flex items-center justify-between border-b border-gray-100 dark:border-white/5 mb-6">
                     <button
                         onClick={() => navigate(-1)}
                         disabled={loading}
-                        className="w-10 h-10 flex items-center justify-center bg-white border border-gray-200 hover:border-gray-300 rounded-full transition-colors shadow-sm disabled:opacity-50"
+                        className="w-10 h-10 flex items-center justify-center bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 rounded-full transition-colors shadow-sm dark:shadow-none disabled:opacity-50"
                     >
-                        <ArrowLeft className="w-5 h-5 text-gray-700" />
+                        <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                     </button>
-                    <h1 className="text-gray-900 font-['Lexend_Deca'] font-bold text-lg">
+                    <h1 className="text-gray-900 dark:text-gray-100 font-['Lexend_Deca'] font-bold text-lg">
                         Edit Profil
                     </h1>
                     <div className="w-10"></div>{" "}
@@ -347,7 +347,7 @@ export default function EditProfilePage() {
 
                 <div className="max-w-xl mx-auto px-5">
                     {/* Avatar Section - Clean White Background */}
-                    <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col items-center mb-6">
+                    <div className="bg-white dark:bg-[#1C1A29] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none flex flex-col items-center mb-6">
                         {/* Hidden file input */}
                         <input
                             type="file"
@@ -383,16 +383,16 @@ export default function EditProfilePage() {
 
                     <div className="space-y-6 mb-10">
                         {/* Section 1: Informasi Dasar */}
-                        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-5">
+                        <div className="bg-white dark:bg-[#1C1A29] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none space-y-5">
                             <div className="flex items-center gap-2 mb-2">
                                 <User className="w-4 h-4 text-primary" />
-                                <h2 className="font-['Lexend_Deca'] font-bold text-gray-900">
+                                <h2 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100">
                                     Informasi Pribadi
                                 </h2>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-['Manrope'] font-black text-gray-900 mb-2">
+                                <label className="block text-sm font-['Manrope'] font-black text-gray-900 dark:text-gray-200 mb-2">
                                     Nama Lengkap{" "}
                                     <span className="text-red-600 font-black">*</span>
                                 </label>
@@ -405,14 +405,14 @@ export default function EditProfilePage() {
                                             name: e.target.value,
                                         })
                                     }
-                                    className="w-full px-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-2xl font-['Manrope'] text-[15px] focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                    className="w-full px-4 py-3.5 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                                     placeholder="Masukkan nama lengkap"
                                     disabled={loading}
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-['Manrope'] font-black text-gray-900 mb-2">
+                                <label className="block text-sm font-['Manrope'] font-black text-gray-900 dark:text-gray-200 mb-2">
                                     Bio Singkat
                                 </label>
                                 <textarea
@@ -424,7 +424,7 @@ export default function EditProfilePage() {
                                         })
                                     }
                                     rows={3}
-                                    className="w-full px-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-2xl font-['Manrope'] text-[15px] focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+                                    className="w-full px-4 py-3.5 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
                                     placeholder="Ceritakan minat belajarmu atau tujuanmu..."
                                     disabled={loading}
                                 />
@@ -435,16 +435,16 @@ export default function EditProfilePage() {
                         </div>
 
                         {/* Section 2: Data Pendidikan */}
-                        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-5">
+                        <div className="bg-white dark:bg-[#1C1A29] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none space-y-5">
                             <div className="flex items-center gap-2 mb-2">
                                 <BookOpen className="w-4 h-4 text-emerald-500" />
-                                <h2 className="font-['Lexend_Deca'] font-bold text-gray-900">
+                                <h2 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100">
                                     Detail Akademik
                                 </h2>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-['Manrope'] font-black text-gray-900 mb-2">
+                                <label className="block text-sm font-['Manrope'] font-black text-gray-900 dark:text-gray-200 mb-2">
                                     Jenjang Pendidikan Terkini
                                 </label>
                                 <div className="relative">
@@ -457,7 +457,7 @@ export default function EditProfilePage() {
                                                     e.target.value,
                                             })
                                         }
-                                        className="w-full px-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-2xl font-['Manrope'] text-[15px] focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
+                                        className="w-full px-4 py-3.5 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
                                         disabled={loading}
                                     >
                                         <option value="SD">
@@ -483,7 +483,7 @@ export default function EditProfilePage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-['Manrope'] font-black text-gray-900 mb-2">
+                                <label className="block text-sm font-['Manrope'] font-black text-gray-900 dark:text-gray-200 mb-2">
                                     Asal Sekolah / Universitas / Instansi
                                 </label>
                                 <input
@@ -495,7 +495,7 @@ export default function EditProfilePage() {
                                             school: e.target.value,
                                         })
                                     }
-                                    className="w-full px-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-2xl font-['Manrope'] text-[15px] focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                    className="w-full px-4 py-3.5 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                                     placeholder="Misal: SMAN 1 Jakarta"
                                     disabled={loading}
                                 />
@@ -503,23 +503,23 @@ export default function EditProfilePage() {
                         </div>
 
                         {/* Section 3: Kontak (Locked Email) */}
-                        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm space-y-5">
+                        <div className="bg-white dark:bg-[#1C1A29] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none space-y-5">
                             <div className="flex items-center gap-2 mb-2">
                                 <Phone className="w-4 h-4 text-purple-500" />
-                                <h2 className="font-['Lexend_Deca'] font-bold text-gray-900">
+                                <h2 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100">
                                     Kontak
                                 </h2>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-['Manrope'] font-bold text-gray-900 mb-2">
+                                <label className="block text-sm font-['Manrope'] font-bold text-gray-900 dark:text-gray-200 mb-2">
                                     Alamat Email
                                 </label>
                                 <input
                                     type="email"
                                     value={user?.email || ""}
                                     readOnly
-                                    className="w-full px-4 py-3.5 bg-gray-100/70 border border-transparent text-gray-500 rounded-2xl font-['Manrope'] text-[15px] cursor-not-allowed"
+                                    className="w-full px-4 py-3.5 bg-gray-100/70 dark:bg-white/5 border border-transparent text-gray-500 dark:text-gray-500 rounded-2xl font-['Manrope'] text-[15px] cursor-not-allowed"
                                 />
                                 <p className="font-['Manrope'] text-xs text-gray-600 font-bold mt-2">
                                     Email utama tidak dapat diubah dari panel
@@ -528,7 +528,7 @@ export default function EditProfilePage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-['Manrope'] font-bold text-gray-900 mb-2">
+                                <label className="block text-sm font-['Manrope'] font-bold text-gray-900 dark:text-gray-200 mb-2">
                                     Nomor Handphone (Opsional)
                                 </label>
                                 <input
@@ -540,7 +540,7 @@ export default function EditProfilePage() {
                                             phone: e.target.value,
                                         })
                                     }
-                                    className="w-full px-4 py-3.5 bg-gray-50/50 border border-gray-200 rounded-2xl font-['Manrope'] text-[15px] focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                    className="w-full px-4 py-3.5 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                                     placeholder="Contoh: 0812xxxx"
                                     disabled={loading}
                                 />
@@ -553,7 +553,7 @@ export default function EditProfilePage() {
                         <button
                             onClick={handleSave}
                             disabled={loading}
-                            className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white py-4 rounded-full font-['Lexend_Deca'] font-bold text-[15px] shadow-xl shadow-gray-200 hover:bg-black hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:hover:translate-y-0"
+                            className="w-full flex items-center justify-center gap-2 bg-gray-900 dark:bg-primary text-white py-4 rounded-full font-['Lexend_Deca'] font-bold text-[15px] shadow-xl shadow-gray-200 dark:shadow-primary/10 hover:bg-black dark:hover:bg-primary/90 hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:hover:translate-y-0"
                         >
                             {loading ? (
                                 <>
@@ -575,16 +575,16 @@ export default function EditProfilePage() {
                     onClick={() => setShowSourceSelector(false)}
                 >
                     <div
-                        className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl animate-in slide-in-from-bottom-4 duration-300"
+                        className="bg-white dark:bg-[#1C1A29] rounded-t-3xl sm:rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl animate-in slide-in-from-bottom-4 duration-300"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-lg">
+                        <div className="p-6 border-b border-gray-100 dark:border-white/5 flex items-center justify-between">
+                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-lg">
                                 Ganti Foto Profil
                             </h3>
                             <button
                                 onClick={() => setShowSourceSelector(false)}
-                                className="p-2 text-gray-400 hover:text-gray-900 transition-colors bg-gray-50 hover:bg-gray-100 rounded-full"
+                                className="p-2 text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full"
                             >
                                 <X className="w-5 h-5" />
                             </button>
@@ -593,13 +593,13 @@ export default function EditProfilePage() {
                         <div className="p-4 space-y-2 pb-6">
                             <button
                                 onClick={openCamera}
-                                className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-colors text-left group"
+                                className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left group"
                             >
                                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <Camera className="w-6 h-6 text-primary" />
                                 </div>
                                 <div>
-                                    <h4 className="font-['Manrope'] font-bold text-gray-900 leading-tight">
+                                    <h4 className="font-['Manrope'] font-bold text-gray-900 dark:text-gray-100 leading-tight">
                                         Ambil dari Kamera
                                     </h4>
                                     <p className="font-['Manrope'] text-sm text-gray-500">
@@ -613,13 +613,13 @@ export default function EditProfilePage() {
                                     setShowSourceSelector(false);
                                     fileInputRef.current?.click();
                                 }}
-                                className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-colors text-left group"
+                                className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left group"
                             >
                                 <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <ImageIcon className="w-6 h-6 text-emerald-500" />
                                 </div>
                                 <div>
-                                    <h4 className="font-['Manrope'] font-bold text-gray-900 leading-tight">
+                                    <h4 className="font-['Manrope'] font-bold text-gray-900 dark:text-gray-100 leading-tight">
                                         Pilih dari Galeri / File
                                     </h4>
                                     <p className="font-['Manrope'] text-sm text-gray-500">

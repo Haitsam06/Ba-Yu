@@ -6,15 +6,15 @@ export default function PrivacyPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#F8FAFF] font-['Manrope']">
+    <div className="min-h-screen bg-[#F8FAFF] dark:bg-[#13111C] font-['Manrope'] transition-colors duration-500">
       {/* Header */}
-      <header className="bg-white/90 backdrop-blur-xl border-b border-indigo-50 sticky top-0 z-10 shadow-sm">
+      <header className="bg-white/90 dark:bg-[#13111C]/90 backdrop-blur-xl border-b border-indigo-50 dark:border-white/5 sticky top-0 z-10 shadow-sm">
         <div className="max-w-4xl mx-auto px-6 h-20 flex items-center justify-between">
           <button 
             onClick={() => navigate('/')}
-            className="flex items-center gap-3 text-gray-700 hover:text-indigo-600 font-['Lexend_Deca'] font-bold transition-all group"
+            className="flex items-center gap-3 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-['Lexend_Deca'] font-bold transition-all group"
           >
-            <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center group-hover:bg-indigo-50 group-hover:shadow-md group-hover:shadow-indigo-500/10 transition-all">
+            <div className="w-10 h-10 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center group-hover:bg-indigo-50 dark:group-hover:bg-indigo-500/10 group-hover:shadow-md group-hover:shadow-indigo-500/10 transition-all">
               <ArrowLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
             </div>
             <span className="hidden sm:block">Kembali ke Beranda</span>
@@ -28,7 +28,7 @@ export default function PrivacyPage() {
 
       {/* Content */}
       <main className="max-w-4xl mx-auto px-6 py-12 sm:py-20">
-        <div className="bg-white rounded-[2.5rem] border border-indigo-50 shadow-[0_20px_50px_-12px_rgba(79,70,229,0.08)] overflow-hidden">
+        <div className="bg-white dark:bg-[#1C1A29] rounded-[2.5rem] border border-indigo-50 dark:border-white/5 shadow-[0_20px_50px_-12px_rgba(79,70,229,0.08)] overflow-hidden">
           {/* Hero Section */}
           <div className="relative bg-slate-950 px-10 py-20 text-center overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600/20 rounded-full blur-[100px] -mr-32 -mt-32"></div>
@@ -50,12 +50,12 @@ export default function PrivacyPage() {
                 { icon: Eye, label: 'Transparan', desc: 'Terbuka tentang data yang diambil.', color: 'purple' },
                 { icon: Database, label: 'Terkontrol', desc: 'Anda punya kendali penuh.', color: 'amber' }
               ].map((p, idx) => (
-                <div key={idx} className="p-8 bg-gray-50 rounded-[2rem] text-center border border-gray-100 hover:shadow-md transition-shadow">
-                  <div className={`w-14 h-14 rounded-2xl bg-white flex items-center justify-center mx-auto mb-5 shadow-sm border border-${p.color}-100`}>
-                    <p.icon className={`w-7 h-7 text-${p.color}-600`} />
+                <div key={idx} className="p-8 bg-slate-50 dark:bg-white/5 rounded-[2rem] text-center border border-slate-100 dark:border-white/5 hover:shadow-md transition-shadow">
+                  <div className={`w-14 h-14 rounded-2xl bg-white dark:bg-slate-900 flex items-center justify-center mx-auto mb-5 shadow-sm border border-${p.color}-100 dark:border-white/10`}>
+                    <p.icon className={`w-7 h-7 text-${p.color}-600 dark:text-${p.color}-400`} />
                   </div>
-                  <h3 className="font-bold text-gray-950 text-lg mb-2">{p.label}</h3>
-                  <p className="text-sm text-gray-600 font-medium">{p.desc}</p>
+                  <h3 className="font-bold text-slate-950 dark:text-slate-100 text-lg mb-2">{p.label}</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">{p.desc}</p>
                 </div>
               ))}
             </div>
@@ -63,12 +63,12 @@ export default function PrivacyPage() {
             {/* Data Collection */}
             <section className="space-y-6">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center border border-indigo-100">
-                  <Info className="w-6 h-6 text-indigo-600" />
+                <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center border border-indigo-100 dark:border-indigo-500/20">
+                  <Info className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                 </div>
-                <h2 className="font-['Lexend_Deca'] text-2xl font-bold text-gray-950">1. Data yang Kami Kumpulkan</h2>
+                <h2 className="font-['Lexend_Deca'] text-2xl font-bold text-slate-950 dark:text-slate-100">1. Data yang Kami Kumpulkan</h2>
               </div>
-              <p className="text-gray-700 leading-relaxed text-lg">
+              <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-lg font-medium">
                 Kami hanya mengumpulkan informasi minimal yang diperlukan untuk menunjang proses belajar Anda:
               </p>
               <div className="grid gap-4 mt-6">
@@ -77,11 +77,11 @@ export default function PrivacyPage() {
                   { title: 'Konten Belajar', text: 'Catatan, gambar, dan komentar yang Anda unggah.' },
                   { title: 'Data Teknis', text: 'Log aktivitas untuk perbaikan performa platform.' }
                 ].map((item, i) => (
-                  <div key={i} className="flex gap-4 p-6 bg-white border border-gray-100 rounded-2xl items-center shadow-sm">
+                  <div key={i} className="flex gap-4 p-6 bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-white/5 rounded-2xl items-center shadow-sm">
                     <div className="w-2 h-10 rounded-full bg-indigo-600"></div>
                     <div>
-                      <h4 className="font-bold text-gray-950">{item.title}</h4>
-                      <p className="text-gray-600 text-sm">{item.text}</p>
+                      <h4 className="font-bold text-slate-950 dark:text-slate-100">{item.title}</h4>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm font-medium">{item.text}</p>
                     </div>
                   </div>
                 ))}
@@ -90,9 +90,9 @@ export default function PrivacyPage() {
 
             {/* Data Usage */}
             <section className="space-y-6">
-              <h2 className="font-['Lexend_Deca'] text-2xl font-bold text-gray-950">2. Penggunaan Data</h2>
-              <div className="space-y-4 text-gray-700 leading-relaxed text-lg bg-slate-50 p-10 rounded-[2.5rem] border border-slate-100">
-                <p className="font-bold text-indigo-600 mb-4 underline underline-offset-4">Data Anda digunakan untuk:</p>
+              <h2 className="font-['Lexend_Deca'] text-2xl font-bold text-slate-950 dark:text-slate-100">2. Penggunaan Data</h2>
+              <div className="space-y-4 text-slate-700 dark:text-slate-300 leading-relaxed text-lg bg-slate-50 dark:bg-slate-800/20 p-10 rounded-[2.5rem] border border-slate-100 dark:border-white/5">
+                <p className="font-black text-indigo-600 dark:text-indigo-400 mb-4 underline underline-offset-4">Data Anda digunakan untuk:</p>
                 <ul className="space-y-4">
                   <li className="flex gap-4 items-center">
                     <CheckCircle className="w-5 h-5 text-indigo-600 shrink-0" />
@@ -126,7 +126,7 @@ export default function PrivacyPage() {
       </main>
 
       {/* Simple Footer */}
-      <footer className="py-20 text-center text-gray-900 text-sm font-bold opacity-60">
+      <footer className="py-20 text-center text-slate-900 dark:text-slate-400 text-sm font-bold opacity-60">
         &copy; 2026 Ba-Yu Platform. Privasi Anda adalah Amanah Kami.
       </footer>
     </div>

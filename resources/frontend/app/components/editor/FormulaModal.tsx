@@ -25,10 +25,10 @@ export function FormulaModal({ isOpen, onClose, onInsertFormula }: FormulaModalP
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl" onClick={e => e.stopPropagation()}>
-        <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-          <h3 className="font-['Lexend_Deca'] font-extrabold text-lg text-gray-900">Sisipkan Rumus</h3>
-          <button onClick={onClose} className="p-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors">
+      <div className="bg-white dark:bg-[#1C1A29] rounded-2xl w-full max-w-lg shadow-xl" onClick={e => e.stopPropagation()}>
+        <div className="p-5 border-b border-gray-100 dark:border-white/5 flex items-center justify-between">
+          <h3 className="font-['Lexend_Deca'] font-extrabold text-lg text-gray-900 dark:text-gray-100">Sisipkan Rumus</h3>
+          <button onClick={onClose} className="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -40,7 +40,7 @@ export function FormulaModal({ isOpen, onClose, onInsertFormula }: FormulaModalP
                 key={cat}
                 onClick={() => setFormulaTab(cat)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-['Manrope'] font-black whitespace-nowrap transition-colors ${
-                  formulaTab === cat ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100'
+                  formulaTab === cat ? 'bg-primary text-white' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10'
                 }`}
               >
                 {cat}
@@ -53,7 +53,7 @@ export function FormulaModal({ isOpen, onClose, onInsertFormula }: FormulaModalP
               <button
                 key={preset.label}
                 onClick={() => insertFormula(preset.latex)}
-                className="text-left p-3 rounded-xl border border-gray-200 hover:border-primary hover:bg-primary/5 transition-colors group overflow-hidden"
+                className="text-left p-3 rounded-xl border border-gray-200 dark:border-white/10 hover:border-primary hover:bg-primary/5 transition-colors group overflow-hidden"
               >
                 <p className="text-xs font-['Manrope'] font-bold text-gray-600 mb-1.5">{preset.label}</p>
                 <div
@@ -64,7 +64,7 @@ export function FormulaModal({ isOpen, onClose, onInsertFormula }: FormulaModalP
             ))}
           </div>
           {/* Custom Input */}
-          <div className="p-5 border-t border-gray-100 mt-3">
+          <div className="p-5 border-t border-gray-100 dark:border-white/5 mt-3">
             <label className="block text-xs font-['Manrope'] font-black text-gray-600 mb-2 uppercase">
               Atau tulis LaTeX sendiri
             </label>
@@ -74,7 +74,7 @@ export function FormulaModal({ isOpen, onClose, onInsertFormula }: FormulaModalP
                 value={formulaInput}
                 onChange={e => setFormulaInput(e.target.value)}
                 placeholder="Contoh: x^2 + y^2 = z^2"
-                className="flex-1 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono focus:outline-none focus:border-primary"
+                className="flex-1 px-3 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm font-mono text-gray-900 dark:text-gray-100 focus:outline-none focus:border-primary"
                 onKeyDown={e => {
                   if (e.key === 'Enter' && formulaInput.trim()) {
                     e.preventDefault();
@@ -91,7 +91,7 @@ export function FormulaModal({ isOpen, onClose, onInsertFormula }: FormulaModalP
               </button>
             </div>
             {formulaInput.trim() && (
-              <div className="mt-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+              <div className="mt-3 p-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/5">
                 <p className="text-[10px] font-['Manrope'] text-gray-700 mb-1.5 uppercase tracking-wide font-black">
                   Preview
                 </p>
@@ -102,8 +102,8 @@ export function FormulaModal({ isOpen, onClose, onInsertFormula }: FormulaModalP
             )}
           </div>
           {/* Close */}
-          <div className="p-4 border-t border-gray-100 flex justify-end">
-            <button onClick={onClose} className="px-4 py-2 text-sm font-['Manrope'] font-bold text-gray-600 hover:text-gray-950 transition-colors">
+          <div className="p-4 border-t border-gray-100 dark:border-white/5 flex justify-end">
+            <button onClick={onClose} className="px-4 py-2 text-sm font-['Manrope'] font-bold text-gray-600 dark:text-gray-400 hover:text-gray-950 dark:hover:text-gray-200 transition-colors">
               Batal
             </button>
           </div>

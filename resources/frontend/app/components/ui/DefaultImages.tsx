@@ -19,12 +19,12 @@ export function DefaultThumbnail({
     
     // Fallback colors if subject not found
     const fallbackColors = [
-        'bg-indigo-100 text-indigo-500',
-        'bg-emerald-100 text-emerald-500',
-        'bg-amber-100 text-amber-500',
-        'bg-rose-100 text-rose-500',
-        'bg-sky-100 text-sky-500',
-        'bg-purple-100 text-purple-500',
+        'bg-indigo-100 dark:bg-indigo-500/10 text-indigo-500 dark:text-indigo-400',
+        'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-500 dark:text-emerald-400',
+        'bg-amber-100 dark:bg-amber-500/10 text-amber-500 dark:text-amber-400',
+        'bg-rose-100 dark:bg-rose-500/10 text-rose-500 dark:text-rose-400',
+        'bg-sky-100 dark:bg-sky-500/10 text-sky-500 dark:text-sky-400',
+        'bg-purple-100 dark:bg-purple-500/10 text-purple-500 dark:text-purple-400',
     ];
 
     // Simple hash function for consistent color based on title or subject
@@ -45,8 +45,8 @@ export function DefaultThumbnail({
 
     return (
         <div 
-            className={`flex items-center justify-center ${colorClass} ${className} transition-all duration-500`}
-            style={subjectData ? { backgroundColor: `${subjectData.color}15` } : {}}
+            className={`flex items-center justify-center ${colorClass} ${className} transition-all duration-500 relative`}
+            style={subjectData ? { backgroundColor: `${subjectData.color}25` } : {}}
         >
             <div className="flex flex-col items-center gap-2 transition-transform duration-500">
                 {subjectData ? (
@@ -59,7 +59,7 @@ export function DefaultThumbnail({
             </div>
             
             {/* Subtle background pattern */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+            <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
         </div>
     );
 }
@@ -71,10 +71,10 @@ export function DefaultThumbnail({
 export function DefaultAvatar({ size = 20, className = "" }: { size?: number; className?: string }) {
     return (
         <div 
-            className={`flex items-center justify-center rounded-full bg-gradient-to-br from-gray-300 to-gray-400 shrink-0 ${className}`}
+            className={`flex items-center justify-center rounded-full bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 shrink-0 ${className} border border-slate-300/20 dark:border-white/5 shadow-inner`}
             style={{ width: size, height: size }}
         >
-            <User className="text-gray-600" style={{ width: size * 0.55, height: size * 0.55 }} strokeWidth={2.5} />
+            <User className="text-slate-500 dark:text-slate-400" style={{ width: size * 0.55, height: size * 0.55 }} strokeWidth={2.5} />
         </div>
     );
 }
@@ -111,10 +111,10 @@ export function AvatarImage({
                 const parent = target.parentElement;
                 if (parent) {
                     const placeholder = document.createElement('div');
-                    placeholder.className = `flex items-center justify-center rounded-full bg-gradient-to-br from-gray-300 to-gray-400 shrink-0 ${className}`;
+                    placeholder.className = `flex items-center justify-center rounded-full bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 shrink-0 ${className} border border-slate-300/20 dark:border-white/5`;
                     placeholder.style.width = `${size}px`;
                     placeholder.style.height = `${size}px`;
-                    placeholder.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${size * 0.55}" height="${size * 0.55}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-600"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+                    placeholder.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${size * 0.55}" height="${size * 0.55}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500 dark:text-slate-400"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
                     parent.insertBefore(placeholder, target);
                 }
             }}

@@ -42,8 +42,6 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
       mainNavItems.push({ path: '/admin', icon: LayoutDashboard, label: 'Sistem Admin' });
   }
 
-  // Rendering constantly to allow smooth parent width transitions via overflow-hidden
-
   return (
     <aside className="w-60 h-full flex flex-col bg-transparent overflow-hidden whitespace-nowrap">
       
@@ -52,7 +50,6 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
          
          <div className="px-3 space-y-1">
             {mainNavItems.map((item) => {
-              // Exact match for /profile so it doesn't highlight when on /profile?tab=bookmarks
               const isProfileBase = item.path === '/profile' && location.pathname === '/profile' && !location.search;
               const isBookmarksTab = item.path === '/profile?tab=bookmarks' && location.pathname === '/profile' && location.search.includes('tab=bookmarks');
               const active = item.path === '/profile' ? isProfileBase : (item.path === '/profile?tab=bookmarks' ? isBookmarksTab : isActive(item.path));
@@ -63,10 +60,10 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
                   className={`flex items-center gap-3 px-3 py-[7px] rounded-[8px] transition-all duration-200 w-full group ${
                     active 
                       ? 'bg-primary/10 text-primary' 
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200/60'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200 active:bg-gray-200/60 dark:active:bg-white/10'
                   }`}
                 >
-                  <item.icon className={`shrink-0 transition-all duration-200 ${active ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-700 group-hover:text-gray-900'}`} strokeWidth={active ? 2.5 : 2} />
+                  <item.icon className={`shrink-0 transition-all duration-200 ${active ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-700 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200'}`} strokeWidth={active ? 2.5 : 2} />
                   <span className={`font-['Manrope'] text-[14px] truncate mt-[1px] ${active ? 'font-bold' : 'font-medium'}`}>
                     {item.label}
                   </span>
@@ -76,24 +73,24 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
          </div>
 
          {/* Stats Section */}
-         <div className="mt-8 mb-2 px-6 text-[11px] font-['Lexend_Deca'] font-black text-gray-600 tracking-wider">
+         <div className="mt-8 mb-2 px-6 text-[11px] font-['Lexend_Deca'] font-black text-gray-600 dark:text-gray-500 tracking-wider">
             WAWASAN
          </div>
          <div className="px-3 space-y-1">
             <Link
               to="/stats"
               className={`flex items-center gap-3 px-3 py-[7px] rounded-[8px] transition-all duration-200 w-full group ${
-                isActive('/stats') ? 'bg-primary/10 text-primary' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                isActive('/stats') ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
-              <Hash className={`shrink-0 transition-all duration-200 ${isActive('/stats') ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-700 group-hover:text-gray-900'}`} strokeWidth={isActive('/stats') ? 2.5 : 2} />
+              <Hash className={`shrink-0 transition-all duration-200 ${isActive('/stats') ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-700 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200'}`} strokeWidth={isActive('/stats') ? 2.5 : 2} />
               <span className={`font-['Manrope'] text-[14px] truncate mt-[1px] ${isActive('/stats') ? 'font-bold' : 'font-medium'}`}>Statistik Belajar</span>
             </Link>
          </div>
 
          {/* Curated / Pakar Choice */}
          <div className="mt-8 mb-2 px-6 flex items-center gap-1.5 selection-none">
-            <span className="text-[11px] font-['Lexend_Deca'] font-black text-gray-600 tracking-wider">PAKAR CHOICE</span>
+            <span className="text-[11px] font-['Lexend_Deca'] font-black text-gray-600 dark:text-gray-500 tracking-wider">PAKAR CHOICE</span>
             <Star className="w-[10px] h-[10px] text-amber-500 fill-amber-500 mb-[1px]" />
          </div>
           {pakarChoiceNotes.length > 0 ? (
@@ -102,10 +99,10 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
                  <Link
                    key={note.id || note._id}
                    to={`/note/${note.id || note._id}`}
-                   className="flex items-start gap-3 px-3 py-[7px] rounded-[8px] transition-all duration-200 text-gray-600 hover:bg-gray-100 hover:text-gray-900 group w-full"
+                   className="flex items-start gap-3 px-3 py-[7px] rounded-[8px] transition-all duration-200 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200 group w-full"
                  >
                    <div className="mt-[2.5px]">
-                     <FileText className="w-[16px] h-[16px] text-gray-500 group-hover:text-amber-500 transition-colors shrink-0" strokeWidth={2.5} />
+                     <FileText className="w-[16px] h-[16px] text-gray-500 dark:text-gray-500 group-hover:text-amber-500 transition-colors shrink-0" strokeWidth={2.5} />
                    </div>
                    <span className="font-['Manrope'] text-[14px] font-medium truncate overflow-hidden text-ellipsis w-full leading-tight">
                      {note.title}
@@ -114,7 +111,7 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
                ))}
             </div>
           ) : (
-            <div className="px-5 py-2 text-[12px] font-['Manrope'] text-gray-600 font-bold">Belum ada pilihan pakar</div>
+            <div className="px-5 py-2 text-[12px] font-['Manrope'] text-gray-600 dark:text-gray-500 font-bold">Belum ada pilihan pakar</div>
           )}
       </div>
 

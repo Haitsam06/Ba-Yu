@@ -4,6 +4,7 @@ import { NoteCard } from "../components/NoteCard";
 import { NoteCardSkeleton } from "../components/ui/skeletons";
 import { TagList } from "../components/ui/TagList";
 import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
+import { Skeleton } from "../components/ui/skeleton";
 import {
     FileText,
     Eye,
@@ -263,50 +264,50 @@ export default function PublicProfilePage() {
     if (isLoadingProfile) {
         return (
             <MobileLayout>
-                <div className="pb-16 bg-white min-h-screen animate-pulse">
+                <div className="pb-16 bg-white dark:bg-[#13111C] min-h-screen animate-pulse">
                     {/* Cover Banner Skeleton */}
-                    <div className="w-full h-32 sm:h-48 bg-gray-200"></div>
+                    <Skeleton className="w-full h-32 sm:h-48 rounded-none" />
 
                     {/* Main Profile Content Container */}
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 relative mb-6">
                         {/* Avatar & Top Actions */}
                         <div className="flex justify-between items-start mb-3">
                             <div className="relative -mt-12 sm:-mt-16">
-                                <div className="border-4 border-white bg-gray-200 w-24 h-24 sm:w-32 sm:h-32 rounded-full"></div>
+                                <Skeleton className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white dark:border-[#13111C]" />
                             </div>
                             <div className="pt-3">
-                                <div className="w-24 h-8 sm:w-28 sm:h-10 bg-gray-200 rounded-full"></div>
+                                <Skeleton className="w-24 h-8 sm:w-28 sm:h-10 rounded-full" />
                             </div>
                         </div>
 
                         {/* Profile Info */}
                         <div className="mb-5 space-y-3">
-                            <div className="h-7 bg-gray-200 rounded w-1/3"></div>
+                            <Skeleton className="h-7 w-1/3" />
                             
                             <div className="space-y-2">
-                                <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                                <div className="h-4 bg-gray-200 rounded w-1/5"></div>
+                                <Skeleton className="h-4 w-1/4" />
+                                <Skeleton className="h-4 w-1/5" />
                             </div>
 
                             <div className="space-y-2 pt-2">
-                                <div className="h-4 bg-gray-200 rounded w-full max-w-xl"></div>
-                                <div className="h-4 bg-gray-200 rounded w-4/5 max-w-lg"></div>
+                                <Skeleton className="h-4 w-full max-w-xl" />
+                                <Skeleton className="h-4 w-4/5 max-w-lg" />
                             </div>
 
                             {/* Stats */}
                             <div className="flex gap-5 mt-4">
-                                <div className="h-5 bg-gray-200 rounded w-20"></div>
-                                <div className="h-5 bg-gray-200 rounded w-20"></div>
+                                <Skeleton className="h-5 w-20" />
+                                <Skeleton className="h-5 w-20" />
                             </div>
                         </div>
                     </div>
 
                     {/* Tabs Navigation Skeleton */}
-                    <div className="border-b border-gray-100 mb-4 pt-2">
+                    <div className="border-b border-gray-100 dark:border-white/5 mb-4 pt-2">
                         <div className="max-w-4xl mx-auto px-4 sm:px-6">
                             <div className="flex gap-8 px-1 pb-4">
-                                <div className="h-5 bg-gray-200 rounded w-24"></div>
-                                <div className="h-5 bg-gray-200 rounded w-32"></div>
+                                <Skeleton className="h-5 w-24" />
+                                <Skeleton className="h-5 w-32" />
                             </div>
                         </div>
                     </div>
@@ -334,9 +335,9 @@ export default function PublicProfilePage() {
 
     return (
         <MobileLayout>
-            <div className="pb-16 bg-white min-h-screen">
+            <div className="pb-16 bg-white dark:bg-[#13111C] min-h-screen">
                 {/* 1. Cover Banner (Twitter Aspect Ratio) */}
-                <div className="w-full h-32 sm:h-48 bg-gradient-to-r from-[#E0E7FF] to-[#DBEAFE] relative overflow-hidden block">
+                <div className="w-full h-32 sm:h-48 bg-gradient-to-r from-[#E0E7FF] to-[#DBEAFE] dark:from-[#2E2C4B]/60 dark:to-[#1C1A29] relative overflow-hidden block">
                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.04]"></div>
                 </div>
 
@@ -349,7 +350,7 @@ export default function PublicProfilePage() {
                                 src={profileUser?.avatar}
                                 alt={profileUser?.name}
                                 size={128}
-                                className="relative border-4 border-white bg-white w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-full shadow-sm"
+                                className="relative border-4 border-white dark:border-[#13111C] bg-white dark:bg-[#1C1A29] w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-full shadow-sm"
                             />
                         </div>
 
@@ -358,7 +359,7 @@ export default function PublicProfilePage() {
                                 onClick={handleFollowToggle}
                                 className={`flex items-center gap-1.5 px-5 py-1.5 sm:px-6 sm:py-2 rounded-full font-bold text-[13px] sm:text-[14px] transition-all ${
                                     isFollowing 
-                                    ? "bg-white text-gray-900 border border-gray-300 hover:border-red-300 hover:text-red-600 hover:bg-red-50 group" 
+                                    ? "bg-white dark:bg-[#1C1A29] text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-white/10 hover:border-red-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 group" 
                                     : "bg-gray-900 text-white border border-gray-900 hover:bg-black"
                                 }`}
                             >
@@ -381,16 +382,16 @@ export default function PublicProfilePage() {
                     {/* Profile Info - Twitter Layout (Left Aligned, Clean) */}
                     <div className="mb-5">
                         <div className="flex items-center gap-3 flex-wrap">
-                            <h1 className="text-[22px] sm:text-[24px] font-extrabold font-['Lexend_Deca'] text-gray-900 leading-tight">
+                            <h1 className="text-[22px] sm:text-[24px] font-extrabold font-['Lexend_Deca'] text-gray-900 dark:text-gray-100 leading-tight">
                                 {profileUser?.name || "Pengguna"}
                             </h1>
                             {profileUser?.role === "pakar" && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-bold text-[12px] border border-emerald-100">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[12px] border border-emerald-100 dark:border-emerald-500/20">
                                     <ShieldCheck className="w-3.5 h-3.5" /> Pakar
                                 </span>
                             )}
                             {profileUser?.role === "admin" && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-600 font-bold text-[12px] border border-purple-100">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 font-bold text-[12px] border border-purple-100 dark:border-purple-500/20">
                                     <Shield className="w-3.5 h-3.5" /> Admin
                                 </span>
                             )}
@@ -409,7 +410,7 @@ export default function PublicProfilePage() {
                         </div>
 
                         {profileUser?.bio && (
-                            <p className="mt-3.5 text-[14px] text-gray-700 font-['Manrope'] leading-relaxed max-w-xl">
+                            <p className="mt-3.5 text-[14px] text-gray-700 dark:text-gray-300 font-['Manrope'] leading-relaxed max-w-xl">
                                 {profileUser.bio}
                             </p>
                         )}
@@ -420,14 +421,14 @@ export default function PublicProfilePage() {
                                 onClick={() => setShowFollowing(true)}
                                 className="hover:underline outline-none text-gray-500 transition-colors"
                             >
-                                <strong className="text-gray-900 font-bold">{profileUser?.following_count || 0}</strong> Mengikuti
+                                <strong className="text-gray-900 dark:text-gray-100 font-bold">{profileUser?.following_count || 0}</strong> Mengikuti
                             </button>
                             
                             <button 
                                 onClick={() => setShowFollowers(true)}
                                 className="hover:underline outline-none text-gray-500 transition-colors"
                             >
-                                <strong className="text-gray-900 font-bold">{profileUser?.followers_count || 0}</strong> Pengikut
+                                <strong className="text-gray-900 dark:text-gray-100 font-bold">{profileUser?.followers_count || 0}</strong> Pengikut
                             </button>
                         </div>
                     </div>
@@ -436,7 +437,7 @@ export default function PublicProfilePage() {
                 {/* 3. Sticky Tab Navigation - Ba-Yu Signature Style */}
                 <div
                     id="profil-tabs"
-                    className="sticky top-0 bg-white/95 backdrop-blur-md z-40 border-b border-gray-100 mb-4 pt-2"
+                    className="sticky top-0 bg-white/95 dark:bg-[#13111C]/95 backdrop-blur-md z-40 border-b border-gray-100 dark:border-white/5 mb-4 pt-2"
                 >
                     <div className="max-w-4xl mx-auto px-4 sm:px-6">
                         <div className="flex gap-8 overflow-x-auto scrollbar-hide px-1">
@@ -449,8 +450,8 @@ export default function PublicProfilePage() {
                                     onClick={() => handleTabChange(tab.id as any)}
                                     className={`relative cursor-pointer pb-4 font-['Lexend_Deca'] font-bold text-[15px] whitespace-nowrap transition-colors flex items-center gap-2 ${
                                         activeTab === tab.id
-                                            ? "text-gray-950"
-                                            : "text-gray-500 hover:text-gray-950"
+                                            ? "text-gray-950 dark:text-gray-100"
+                                            : "text-gray-500 dark:text-gray-400 hover:text-gray-950 dark:hover:text-gray-100"
                                     }`}
                                 >
                                     {tab.label}
@@ -458,7 +459,7 @@ export default function PublicProfilePage() {
                                         className={`px-2 py-0.5 rounded-full text-[11px] font-bold transition-colors ${
                                             activeTab === tab.id 
                                             ? "bg-primary/10 text-primary" 
-                                            : "bg-gray-100 text-gray-600"
+                                            : "bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400"
                                         }`}
                                     >
                                         {tab.count}
@@ -492,13 +493,13 @@ export default function PublicProfilePage() {
                                 ))
                             ) : (
                                 <div className="py-20 text-center flex flex-col items-center justify-center">
-                                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                    <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
                                         <FileText className="w-8 h-8 text-gray-400" />
                                     </div>
-                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-[18px] mb-2">
+                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[18px] mb-2">
                                         Belum Terdapat Rilisan
                                     </h3>
-                                    <p className="font-['Manrope'] text-[14px] text-gray-500 mb-6 max-w-sm mx-auto">
+                                    <p className="font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400 mb-6 max-w-sm mx-auto">
                                         {profileUser?.name} belum mempublikasikan catatan apa pun.
                                     </p>
                                 </div>
@@ -511,7 +512,7 @@ export default function PublicProfilePage() {
                             {isLoadingActivities ? (
                                 <div className="flex flex-col gap-4 pt-4">
                                     {[...Array(3)].map((_, i) => (
-                                        <div key={i} className="p-5 border border-gray-100 rounded-3xl bg-white animate-pulse flex flex-col gap-4">
+                                        <div key={i} className="p-5 border border-gray-100 dark:border-white/5 rounded-3xl bg-white dark:bg-[#1C1A29] animate-pulse flex flex-col gap-4">
                                             <div className="flex gap-3">
                                                 <div className="w-16 h-5 bg-gray-100 rounded-full"></div>
                                                 <div className="w-32 h-5 bg-gray-100 rounded-full"></div>
@@ -532,34 +533,34 @@ export default function PublicProfilePage() {
                                         <article
                                             key={activity.id}
                                             onClick={() => navigate(`/note/${activity.post_id}#comment-${activity.id}`)}
-                                            className="group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 py-6 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors bg-transparent outline-none cursor-pointer"
+                                            className="group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 py-6 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors bg-transparent outline-none cursor-pointer"
                                         >
                                             <div className="flex-1 min-w-0 flex flex-col w-full h-full text-left">
-                                                <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-950 font-bold">
+                                                <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-950 dark:text-gray-100 font-bold">
                                                      <div className="flex items-center gap-1.5">
                                                          <AvatarImage src={profileUser?.avatar} alt={profileUser?.name} size={20} className="ring-2 ring-transparent" />
-                                                         <span className="font-black text-gray-950 tracking-tight">{profileUser?.name}</span>
+                                                         <span className="font-black text-gray-950 dark:text-gray-100 tracking-tight">{profileUser?.name}</span>
                                                      </div>
-                                                     <span className="text-gray-700 px-0.5">{activity.parent_comment_id ? "membalas komentar di" : "berkomentar di"}</span>
-                                                     <span className="font-black text-gray-950 tracking-tight line-clamp-1">{activity.post?.title || "Catatan"}</span>
+                                                     <span className="text-gray-700 dark:text-gray-400 px-0.5">{activity.parent_comment_id ? "membalas komentar di" : "berkomentar di"}</span>
+                                                     <span className="font-black text-gray-950 dark:text-gray-100 tracking-tight line-clamp-1">{activity.post?.title || "Catatan"}</span>
                                                 </div>
 
                                                 <div className="block mb-3 font-['Lexend_Deca']">
-                                                    <h2 className="text-[17px] md:text-[19px] font-extrabold text-gray-950 leading-[1.5] tracking-tight group-hover:text-primary transition-colors line-clamp-3 italic">
+                                                    <h2 className="text-[17px] md:text-[19px] font-extrabold text-gray-950 dark:text-gray-100 leading-[1.5] tracking-tight group-hover:text-primary transition-colors line-clamp-3 italic">
                                                         "{activity.content}"
                                                     </h2>
                                                 </div>
 
                                                 <div className="flex items-center justify-between mt-auto">
                                                     <div className="flex items-center gap-4">
-                                                        <div className="flex items-center gap-1.5 text-gray-600">
-                                                            <Clock className="w-[14px] h-[14px] text-gray-500" strokeWidth={2} />
+                                                        <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
+                                                            <Clock className="w-[14px] h-[14px] text-gray-500 dark:text-gray-400" strokeWidth={2} />
                                                             <span className="text-[13px] font-['Manrope'] font-semibold">
                                                                 {new Date(activity.created_at).toLocaleDateString("id-ID", { month: "short", day: "numeric", year: "numeric" })}
                                                             </span>
                                                         </div>
                                                         <div className="flex items-center gap-3 ml-2">
-                                                            <button className="flex items-center gap-1 text-gray-500 hover:text-red-500 transition-colors">
+                                                            <button className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:text-red-500 transition-colors">
                                                                 <Heart className="w-[14px] h-[14px]" />
                                                                 <span className="text-[12px] font-bold">{activity.likes_count || 0}</span>
                                                             </button>
@@ -568,13 +569,13 @@ export default function PublicProfilePage() {
                                                 </div>
                                             </div>
 
-                                            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-gray-100 relative shadow-sm border border-gray-100/50">
+                                            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-gray-100 dark:bg-[#1C1A29] relative shadow-sm dark:shadow-none border border-gray-100/50 dark:border-white/5">
                                                 {activity.post?.thumbnail ? (
                                                     <img src={activity.post.thumbnail} alt={activity.post.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
                                                 ) : (
                                                     <DefaultThumbnail className="w-full h-full transform group-hover:scale-110 transition-transform duration-500" />
                                                 )}
-                                                <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1.5">
+                                                <div className="absolute top-2 right-2 bg-white/90 dark:bg-black/50 backdrop-blur-sm text-gray-800 dark:text-gray-100 text-[10px] font-['Lexend_Deca'] font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1.5">
                                                     <MessageCircle className="w-3 h-3" /> DISKUSI
                                                 </div>
                                             </div>
@@ -583,11 +584,11 @@ export default function PublicProfilePage() {
                                 </div>
                             ) : (
                                 <div className="py-20 text-center flex flex-col items-center justify-center">
-                                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                    <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
                                         <MessageCircle className="w-8 h-8 text-gray-400" />
                                     </div>
-                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-[18px] mb-2">Belum Ada Riwayat</h3>
-                                    <p className="font-['Manrope'] text-[14px] text-gray-500 max-w-sm mx-auto">{profileUser?.name} belum memiliki interaksi diskusi.</p>
+                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[18px] mb-2">Belum Ada Riwayat</h3>
+                                    <p className="font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400 max-w-sm mx-auto">{profileUser?.name} belum memiliki interaksi diskusi.</p>
                                 </div>
                             )}
                         </div>
@@ -598,10 +599,10 @@ export default function PublicProfilePage() {
             {/* Modal Followers Clean */}
             {showFollowers && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/20 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowFollowers(false)}>
-                    <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-[16px]">Pengikut {profileUser?.name}</h3>
-                            <button onClick={() => setShowFollowers(false)} className="text-gray-400 hover:text-gray-900 transition-colors">
+                    <div className="bg-white dark:bg-[#1C1A29] w-full max-w-sm rounded-2xl shadow-xl dark:shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/5">
+                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[16px]">Pengikut {profileUser?.name}</h3>
+                            <button onClick={() => setShowFollowers(false)} className="text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
@@ -613,18 +614,18 @@ export default function PublicProfilePage() {
                                     {followersList.map((f, i) => (
                                         <div 
                                             key={i} 
-                                            className={`flex items-center gap-4 py-3 hover:bg-gray-50 transition-colors px-2 ${i !== followersList.length - 1 ? 'border-b border-gray-100' : ''}`} 
+                                            className={`flex items-center gap-4 py-3 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors px-2 ${i !== followersList.length - 1 ? 'border-b border-gray-100 dark:border-white/5' : ''}`} 
                                         >
                                             <div className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onClick={() => { setShowFollowers(false); navigate(`/profile/${f._id || f.id}`); }}>
-                                                <AvatarImage src={f.avatar} alt={f.name} size={46} className="rounded-full ring-2 ring-gray-50" />
+                                                <AvatarImage src={f.avatar} alt={f.name} size={46} className="rounded-full ring-2 ring-slate-100 dark:ring-white/5" />
                                                 <div className="flex-1 min-w-0">
-                                                    <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 leading-tight truncate">{f.name}</h4>
+                                                    <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 dark:text-gray-100 leading-tight truncate">{f.name}</h4>
                                                     <p className="font-['Manrope'] text-[13px] text-gray-500 capitalize mt-0.5 truncate">{f.role}</p>
                                                 </div>
                                             </div>
                                             {f._id !== currentUser?.id && f.id !== currentUser?.id && (
                                                 <button 
-                                                    className={`px-4 py-1.5 rounded-full text-[12px] font-bold font-['Manrope'] transition-all ${f.is_followed_by_me ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-primary text-white hover:bg-primary/90 shadow-sm'}`}
+                                                    className={`px-4 py-1.5 rounded-full text-[12px] font-bold font-['Manrope'] transition-all ${f.is_followed_by_me ? 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20' : 'bg-primary text-white hover:bg-primary/90 shadow-sm'}`}
                                                     onClick={async (e) => {
                                                         e.stopPropagation();
                                                         try {
@@ -647,7 +648,7 @@ export default function PublicProfilePage() {
                             ) : (
                                 <div className="flex flex-col items-center justify-center py-8 text-center">
                                     <Users className="w-10 h-10 text-gray-200 mb-3" />
-                                    <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 text-[15px] mb-1">Belum ada pengikut</h4>
+                                    <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 dark:text-gray-100 text-[15px] mb-1">Belum ada pengikut</h4>
                                 </div>
                             )}
                         </div>
@@ -658,10 +659,10 @@ export default function PublicProfilePage() {
             {/* Modal Following Clean */}
             {showFollowing && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/20 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowFollowing(false)}>
-                    <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 text-[16px]">{profileUser?.name} Mengikuti</h3>
-                            <button onClick={() => setShowFollowing(false)} className="text-gray-400 hover:text-gray-900 transition-colors">
+                    <div className="bg-white dark:bg-[#1C1A29] w-full max-w-sm rounded-2xl shadow-xl dark:shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/5">
+                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[16px]">{profileUser?.name} Mengikuti</h3>
+                            <button onClick={() => setShowFollowing(false)} className="text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
@@ -676,15 +677,15 @@ export default function PublicProfilePage() {
                                             className={`flex items-center gap-4 py-3 hover:bg-gray-50 transition-colors px-2 ${i !== followingList.length - 1 ? 'border-b border-gray-100' : ''}`} 
                                         >
                                             <div className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer" onClick={() => { setShowFollowing(false); navigate(`/profile/${f._id || f.id}`); }}>
-                                                <AvatarImage src={f.avatar} alt={f.name} size={46} className="rounded-full ring-2 ring-gray-50" />
+                                                <AvatarImage src={f.avatar} alt={f.name} size={46} className="rounded-full ring-2 ring-slate-100 dark:ring-white/5" />
                                                 <div className="flex-1 min-w-0">
-                                                    <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 leading-tight truncate">{f.name}</h4>
+                                                    <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 dark:text-gray-100 leading-tight truncate">{f.name}</h4>
                                                     <p className="font-['Manrope'] text-[13px] text-gray-500 capitalize mt-0.5 truncate">{f.role}</p>
                                                 </div>
                                             </div>
                                             {f._id !== currentUser?.id && f.id !== currentUser?.id && (
                                                 <button 
-                                                    className={`px-4 py-1.5 rounded-full text-[12px] font-bold font-['Manrope'] transition-all ${f.is_followed_by_me ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-primary text-white hover:bg-primary/90 shadow-sm'}`}
+                                                    className={`px-4 py-1.5 rounded-full text-[12px] font-bold font-['Manrope'] transition-all ${f.is_followed_by_me ? 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20' : 'bg-primary text-white hover:bg-primary/90 shadow-sm'}`}
                                                     onClick={async (e) => {
                                                         e.stopPropagation();
                                                         try {
@@ -707,7 +708,7 @@ export default function PublicProfilePage() {
                             ) : (
                                 <div className="flex flex-col items-center justify-center py-8 text-center">
                                     <Users className="w-10 h-10 text-gray-200 mb-3" />
-                                    <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 text-[15px] mb-1">Masih Kosong</h4>
+                                    <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 dark:text-gray-100 text-[15px] mb-1">Masih Kosong</h4>
                                 </div>
                             )}
                         </div>

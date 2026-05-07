@@ -215,7 +215,7 @@ export default function AdminDashboard() {
 
     return (
         <MobileLayout>
-            <div className="pb-8 bg-gray-50/50 min-h-screen">
+            <div className="pb-8 bg-gray-50/50 dark:bg-[#13111C] min-h-screen">
                 {/* Widescreen Header & Stats Ribbon */}
                 <div className="bg-gradient-to-br from-indigo-900 via-purple-800 to-fuchsia-900 px-6 md:px-10 pt-8 pb-16 shadow-inner relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 pointer-events-none"></div>
@@ -288,7 +288,7 @@ export default function AdminDashboard() {
                         {/* Left Column (Main Data Area) */}
                         <div className="xl:col-span-3 space-y-6">
                             {/* Search & Tabs Controls */}
-                            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-2 md:p-3">
+                            <div className="bg-white dark:bg-[#1C1A29] rounded-3xl shadow-sm dark:shadow-none border border-gray-100 dark:border-white/5 p-2 md:p-3">
                                 <div className="flex flex-col md:flex-row gap-3">
                                     <div className="flex-1 relative">
                                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" strokeWidth={2.5} />
@@ -299,7 +299,7 @@ export default function AdminDashboard() {
                                                 setSearchQuery(e.target.value)
                                             }
                                             placeholder="Cari user, catatan, atau ID laporan..."
-                                            className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent hover:border-gray-200 rounded-2xl font-['Manrope'] text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all"
+                                            className="w-full pl-11 pr-4 py-3 bg-gray-50 dark:bg-white/5 border border-transparent hover:border-gray-200 dark:hover:border-white/10 rounded-2xl font-['Manrope'] text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                                         />
                                     </div>
                                     {/* Tabs */}
@@ -340,11 +340,11 @@ export default function AdminDashboard() {
                                                     className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl font-['Lexend_Deca'] font-semibold text-sm whitespace-nowrap transition-all ${
                                                         isActive
                                                             ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
-                                                            : "bg-transparent text-gray-700 hover:bg-gray-100 font-bold"
+                                                            : "bg-transparent text-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 font-bold"
                                                     }`}
                                                 >
                                                     <Icon
-                                                        className={`w-4 h-4 ${isActive ? "text-white" : "text-gray-600"}`}
+                                                        className={`w-4 h-4 ${isActive ? "text-white" : "text-gray-600 dark:text-gray-400"}`}
                                                         strokeWidth={2.5}
                                                     />
                                                     {tab.label}
@@ -365,13 +365,13 @@ export default function AdminDashboard() {
                             </div>
 
                             {/* Tab Contents */}
-                            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 min-h-[500px]">
+                            <div className="bg-white dark:bg-[#1C1A29] rounded-3xl shadow-sm dark:shadow-none border border-gray-100 dark:border-white/5 p-6 md:p-8 min-h-[500px]">
                                 {/* Sertifikasi Tab */}
                                 {activeTab === "sertifikasi" && (
                                     <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                                         <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-50">
                                             <div>
-                                                <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900">
+                                                <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">
                                                     Verifikasi Sertifikat Pakar
                                                 </h3>
                                                 <p className="text-sm font-['Manrope'] text-gray-500 mt-1">
@@ -384,7 +384,7 @@ export default function AdminDashboard() {
                                         {pendingCerts.length === 0 ? (
                                             <div className="py-16 text-center bg-gray-50 border border-gray-100 border-dashed rounded-3xl">
                                                 <ShieldCheck className="w-16 h-16 text-gray-500 mx-auto mb-4" strokeWidth={1} />
-                                                <h4 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 mb-1">
+                                                <h4 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 dark:text-gray-100 mb-1">
                                                     Semua Pengajuan Selesai
                                                 </h4>
                                                 <p className="text-sm text-gray-500 font-['Manrope']">
@@ -397,7 +397,7 @@ export default function AdminDashboard() {
                                                 {pendingCerts.map((cert) => (
                                                     <div
                                                         key={cert.id}
-                                                        className="bg-white rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-indigo-100 p-6 relative overflow-hidden group"
+                                                        className="bg-white dark:bg-[#252336] rounded-3xl shadow-sm dark:shadow-none hover:shadow-md transition-shadow border border-indigo-100 dark:border-white/5 p-6 relative overflow-hidden group"
                                                     >
                                                         <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-bl-full pointer-events-none transition-transform group-hover:scale-110"></div>
 
@@ -407,7 +407,7 @@ export default function AdminDashboard() {
                                                                     <FileText className="w-6 h-6" />
                                                                 </div>
                                                                 <div>
-                                                                    <h4 className="font-['Lexend_Deca'] font-bold text-gray-900">
+                                                                    <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100">
                                                                         User ID:{" "}
                                                                         {
                                                                             cert.user_id
@@ -434,7 +434,7 @@ export default function AdminDashboard() {
                                                                 href={`http://localhost:8000/storage/${cert.file_sertifikat}`}
                                                                 target="_blank"
                                                                 rel="noreferrer"
-                                                                className="flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700 hover:underline font-semibold transition-colors bg-white px-3 py-2 rounded-xl border border-indigo-50 shadow-sm truncate"
+                                                                className="flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700 hover:underline font-semibold transition-colors bg-white dark:bg-[#1C1A29] px-3 py-2 rounded-xl border border-indigo-50 dark:border-white/10 shadow-sm dark:shadow-none truncate"
                                                             >
                                                                 <Eye className="w-4 h-4 text-indigo-400 shrink-0" />{" "}
                                                                 Dokumen Bukti
@@ -449,7 +449,7 @@ export default function AdminDashboard() {
                                                                         "reject",
                                                                     )
                                                                 }
-                                                                className="flex-1 py-3 bg-white hover:bg-red-50 text-red-600 rounded-xl font-['Lexend_Deca'] font-semibold text-sm transition-colors border border-gray-200 hover:border-red-200 flex items-center justify-center gap-2"
+                                                                className="flex-1 py-3 bg-white dark:bg-[#1C1A29] hover:bg-red-50 dark:hover:bg-red-500/10 text-red-600 rounded-xl font-['Lexend_Deca'] font-semibold text-sm transition-colors border border-gray-200 dark:border-white/10 hover:border-red-200 flex items-center justify-center gap-2"
                                                             >
                                                                 <XCircle className="w-4 h-4" />{" "}
                                                                 Tolak
@@ -479,7 +479,7 @@ export default function AdminDashboard() {
                                     <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                                         <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-50">
                                             <div>
-                                                <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900">
+                                                <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">
                                                     Database Catatan
                                                 </h3>
                                                 <p className="text-sm font-['Manrope'] text-gray-500 mt-1">
@@ -517,7 +517,7 @@ export default function AdminDashboard() {
                                                                     note.id ||
                                                                     note._id
                                                                 }
-                                                                className="bg-white rounded-3xl border border-gray-100 p-5 hover:border-gray-200 hover:shadow-md transition-all flex flex-col justify-between group"
+                                                                className="bg-white dark:bg-[#252336] rounded-3xl border border-gray-100 dark:border-white/5 p-5 hover:border-gray-200 dark:hover:border-white/10 hover:shadow-md transition-all flex flex-col justify-between group"
                                                             >
                                                                 <div>
                                                                     <div className="flex items-start gap-4 mb-4">
@@ -533,7 +533,7 @@ export default function AdminDashboard() {
                                                                             </span>
                                                                         </div>
                                                                         <div className="flex-1 min-w-0 pt-0.5">
-                                                                            <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 text-sm mb-1.5 line-clamp-1">
+                                                                            <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-sm mb-1.5 line-clamp-1">
                                                                                 {
                                                                                     note.title
                                                                                 }
@@ -589,7 +589,7 @@ export default function AdminDashboard() {
                                                                                     note._id,
                                                                             )
                                                                         }
-                                                                        className="px-4 py-2.5 bg-white text-red-500 rounded-xl hover:bg-red-50 hover:border-red-200 transition-colors border border-gray-200 flex items-center justify-center tooltip"
+                                                                        className="px-4 py-2.5 bg-white dark:bg-[#1C1A29] text-red-500 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 hover:border-red-200 transition-colors border border-gray-200 dark:border-white/10 flex items-center justify-center tooltip"
                                                                         title="Hapus Permanen"
                                                                     >
                                                                         <Trash2 className="w-4 h-4" />
@@ -608,7 +608,7 @@ export default function AdminDashboard() {
                                     <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                                         <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-50">
                                             <div>
-                                                <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900">
+                                                <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">
                                                     Resolusi Laporan
                                                 </h3>
                                                 <p className="text-sm font-['Manrope'] text-gray-500 mt-1">
@@ -633,7 +633,7 @@ export default function AdminDashboard() {
                                                             report.id ||
                                                             report._id
                                                         }
-                                                        className="bg-white rounded-3xl border border-orange-200 p-5 lg:p-6 hover:shadow-md transition-shadow"
+                                                        className="bg-white dark:bg-[#252336] rounded-3xl border border-orange-200 dark:border-white/5 p-5 lg:p-6 hover:shadow-md transition-shadow"
                                                     >
                                                         <div className="flex flex-col md:flex-row gap-5 items-start md:items-center">
                                                             <div className="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center flex-shrink-0 border border-orange-200">
@@ -655,7 +655,7 @@ export default function AdminDashboard() {
                                                                             ).toLocaleDateString()}
                                                                     </span>
                                                                 </div>
-                                                                <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 text-lg mb-1 leading-tight">
+                                                                <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-lg mb-1 leading-tight">
                                                                     {report.post_id
                                                                         ? `Catatan ID: ${report.post_id}`
                                                                         : report.type ===
@@ -699,7 +699,7 @@ export default function AdminDashboard() {
                                                                             "abaikan",
                                                                         )
                                                                     }
-                                                                    className="flex-1 md:flex-none px-6 py-3 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300 rounded-xl font-['Lexend_Deca'] font-semibold text-sm transition-all text-center"
+                                                                    className="flex-1 md:flex-none px-6 py-3 bg-white dark:bg-[#1C1A29] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 hover:border-gray-300 dark:hover:border-white/20 rounded-xl font-['Lexend_Deca'] font-semibold text-sm transition-all text-center"
                                                                 >
                                                                     Abaikan
                                                                 </button>
@@ -741,7 +741,7 @@ export default function AdminDashboard() {
                                     <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                                         <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-50">
                                             <div>
-                                                <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900">
+                                                <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">
                                                     Manajemen Pengguna
                                                 </h3>
                                             </div>
@@ -767,7 +767,7 @@ export default function AdminDashboard() {
                                                     return (
                                                         <div
                                                             key={u.id || u._id}
-                                                            className="bg-white rounded-3xl border border-gray-100 p-5 hover:border-indigo-100 hover:shadow-md transition-all flex items-center gap-4"
+                                                            className="bg-white dark:bg-[#252336] rounded-3xl border border-gray-100 dark:border-white/5 p-5 hover:border-indigo-100 dark:hover:border-white/10 hover:shadow-md transition-all flex items-center gap-4"
                                                         >
                                                             <AvatarImage
                                                                 src={u.avatar}
@@ -776,7 +776,7 @@ export default function AdminDashboard() {
                                                                 className="rounded-2xl object-cover bg-gray-50 border border-gray-100"
                                                             />
                                                             <div className="flex-1 min-w-0">
-                                                                <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 text-sm mb-0.5 truncate">
+                                                                <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-sm mb-0.5 truncate">
                                                                     {u.name}
                                                                 </h4>
                                                                 <p className="text-[11px] font-['Lexend_Deca'] font-bold text-indigo-600 uppercase tracking-wider mb-2">
@@ -827,13 +827,13 @@ export default function AdminDashboard() {
                         {/* Right Column (Sidebar Log) */}
                         <div className="xl:col-span-1 space-y-6">
                             {/* System Status */}
-                            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 relative overflow-hidden">
+                            <div className="bg-white dark:bg-[#1C1A29] rounded-3xl shadow-sm dark:shadow-none border border-gray-100 dark:border-white/5 p-6 relative overflow-hidden">
                                 <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100">
                                         <Server className="w-5 h-5 text-emerald-600" />
                                     </div>
-                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900">
+                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100">
                                         System Status
                                     </h3>
                                 </div>
@@ -865,9 +865,9 @@ export default function AdminDashboard() {
                             </div>
 
                             {/* Activity Feed */}
-                            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col h-[400px]">
+                            <div className="bg-white dark:bg-[#1C1A29] rounded-3xl shadow-sm dark:shadow-none border border-gray-100 dark:border-white/5 flex flex-col h-[400px]">
                                 <div className="p-6 border-b border-gray-50 flex items-center justify-between">
-                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 flex items-center gap-2">
+                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                                         <Activity className="w-4 h-4 text-blue-500" />{" "}
                                         Recent Logs
                                     </h3>
@@ -911,7 +911,7 @@ export default function AdminDashboard() {
                                                 className={`w-4 h-4 rounded-full mt-1 border-2 border-white shadow-sm z-10 ${log.type === "system" ? "bg-blue-400" : log.type === "warn" ? "bg-red-400" : log.type === "success" ? "bg-green-400" : "bg-gray-400"}`}
                                             ></div>
                                             <div>
-                                                <p className="font-['Manrope'] text-sm font-semibold text-gray-800">
+                                                <p className="font-['Manrope'] text-sm font-semibold text-gray-800 dark:text-gray-200">
                                                     {log.action}
                                                 </p>
                                                 <div className="flex items-center gap-2 mt-0.5">

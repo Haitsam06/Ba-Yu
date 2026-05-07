@@ -263,10 +263,10 @@ export default function PublicExplorePage() {
 
     // === SHARED CONTENT ===
     const exploreContent = (
-        <div className={!isAuthenticated ? "bg-[#FAFAFA]" : ""}>
+        <div className={!isAuthenticated ? "bg-[#FAFAFA] dark:bg-[#13111C]" : "dark:bg-[#13111C]"}>
             {/* Hero Section — Guest Only */}
             {!isAuthenticated && (
-                <div className="relative bg-white pt-28 sm:pt-32 pb-12 sm:pb-16 border-b border-gray-100">
+                <div className="relative bg-white dark:bg-[#13111C] pt-28 sm:pt-32 pb-12 sm:pb-16 border-b border-gray-100 dark:border-white/5">
                     <div className="max-w-7xl mx-auto px-6 sm:px-8">
                         <div
                             className="explore-reveal opacity-0 translate-y-4"
@@ -279,12 +279,12 @@ export default function PublicExplorePage() {
                                 <BookOpen className="w-4 h-4 text-gray-400" />
                                 Perpustakaan Digital
                             </div>
-                            <h1 className="font-['Lexend_Deca'] font-extrabold text-5xl sm:text-6xl text-gray-900 tracking-tight mb-6 leading-[1.05]">
+                            <h1 className="font-['Lexend_Deca'] font-extrabold text-5xl sm:text-6xl text-gray-900 dark:text-gray-100 tracking-tight mb-6 leading-[1.05]">
                                 Jelajahi Ribuan{" "}
                                 <br className="hidden sm:block" />
                                 Catatan Belajar.
                             </h1>
-                            <p className="text-gray-700 font-['Manrope'] text-lg sm:text-xl max-w-2xl leading-relaxed mb-10">
+                            <p className="text-gray-700 dark:text-gray-300 font-['Manrope'] text-lg sm:text-xl max-w-2xl leading-relaxed mb-10">
                                 Temukan materi terkurasi dari pelajar dan pakar
                                 pendidikan <br className="hidden md:block" /> di
                                 seluruh Indonesia. Gratis selamanya.
@@ -302,7 +302,7 @@ export default function PublicExplorePage() {
                             <div className="flex gap-3">
                                 <div className="relative flex-1 group">
                                     <Search
-                                        className="absolute left-5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-500 group-focus-within:text-gray-900 transition-colors"
+                                        className="absolute left-5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-500 group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors"
                                         strokeWidth={2}
                                     />
                                     <input
@@ -312,7 +312,7 @@ export default function PublicExplorePage() {
                                         onChange={(e) =>
                                             setSearchQuery(e.target.value)
                                         }
-                                        className="w-full pl-12 pr-5 py-4 bg-gray-50 hover:bg-gray-100 focus:bg-white border text-gray-950 border-transparent focus:border-gray-300 rounded-[14px] font-['Manrope'] text-[15px] font-medium focus:outline-none transition-all placeholder:text-gray-500 shadow-sm"
+                                        className="w-full pl-12 pr-5 py-4 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 focus:bg-white dark:focus:bg-[#1C1A29] border text-gray-950 dark:text-gray-100 border-transparent focus:border-gray-300 dark:focus:border-white/20 rounded-[14px] font-['Manrope'] text-[15px] font-medium focus:outline-none transition-all placeholder:text-gray-500 shadow-sm"
                                     />
                                 </div>
                                 <button
@@ -339,7 +339,7 @@ export default function PublicExplorePage() {
                         {isAuthenticated && (
                             <div className="px-6 md:px-0 pb-12 mb-4 w-full">
                                 <div className="relative">
-                                    <h1 className="text-[36px] sm:text-[48px] font-['Lexend_Deca'] font-black text-gray-900 tracking-tight leading-none mb-4">
+                                    <h1 className="text-[36px] sm:text-[48px] font-['Lexend_Deca'] font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none mb-4">
                                         Eksplorasi<span className="text-primary">.</span>
                                     </h1>
                                     <p className="text-gray-500 font-['Manrope'] text-[16px] sm:text-[18px] font-medium max-w-xl mb-8 leading-relaxed">
@@ -364,12 +364,12 @@ export default function PublicExplorePage() {
                                                         // Auto-fetch handles this
                                                     }
                                                 }}
-                                                className="w-full pl-14 pr-6 py-4 bg-white border border-gray-200 hover:border-gray-300 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 rounded-[1.25rem] font-['Manrope'] text-[16px] font-bold text-gray-900 placeholder:text-gray-400 focus:outline-none transition-all shadow-sm"
+                                                className="w-full pl-14 pr-6 py-4 bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 rounded-[1.25rem] font-['Manrope'] text-[16px] font-bold text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none transition-all shadow-sm"
                                             />
                                         </div>
                                         <button
                                             onClick={() => setIsFilterOpen(true)}
-                                            className="h-[60px] w-[60px] bg-white border border-gray-200 hover:border-primary/40 hover:text-primary text-gray-600 rounded-[1.25rem] flex items-center justify-center transition-all shadow-sm hover:shadow-md active:scale-95 shrink-0"
+                                            className="h-[60px] w-[60px] bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 hover:border-primary/40 hover:text-primary text-gray-600 dark:text-gray-400 rounded-[1.25rem] flex items-center justify-center transition-all shadow-sm hover:shadow-md active:scale-95 shrink-0"
                                         >
                                             <Filter className="w-5 h-5" strokeWidth={2.5} />
                                         </button>
@@ -400,12 +400,12 @@ export default function PublicExplorePage() {
                                             }
                                             className={`pb-4 relative shrink-0 font-['Lexend_Deca'] text-[15px] transition-colors focus:outline-none flex items-center gap-2 group ${
                                                 activeSegment === tab.key
-                                                    ? "text-gray-900 font-extrabold"
-                                                    : "text-gray-500 font-medium hover:text-gray-900"
+                                                    ? "text-gray-900 dark:text-gray-100 font-extrabold"
+                                                    : "text-gray-500 font-medium hover:text-gray-900 dark:hover:text-gray-200"
                                             }`}
                                         >
                                             <tab.icon
-                                                className={`w-[16px] h-[16px] transition-colors ${activeSegment === tab.key ? "text-gray-900" : "text-gray-600 group-hover:text-gray-900"}`}
+                                                className={`w-[16px] h-[16px] transition-colors ${activeSegment === tab.key ? "text-gray-900 dark:text-gray-100" : "text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200"}`}
                                                 strokeWidth={
                                                     activeSegment === tab.key
                                                         ? 2.5
@@ -413,7 +413,7 @@ export default function PublicExplorePage() {
                                                 }
                                             />
                                             <span
-                                                className={`font-['Lexend_Deca'] font-semibold text-[14px] transition-colors ${activeSegment === tab.key ? "text-gray-900" : "text-gray-600 group-hover:text-gray-900"}`}
+                                                className={`font-['Lexend_Deca'] font-semibold text-[14px] transition-colors ${activeSegment === tab.key ? "text-gray-900 dark:text-gray-100" : "text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200"}`}
                                             >
                                                 {tab.label}
                                             </span>
@@ -449,7 +449,7 @@ export default function PublicExplorePage() {
                                     <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                                         <BookOpen className="w-8 h-8 text-gray-500" />
                                     </div>
-                                    <h3 className="font-['Lexend_Deca'] font-extrabold text-gray-900 text-lg mb-2">
+                                    <h3 className="font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 text-lg mb-2">
                                         Pencarian Tidak Ditemukan
                                     </h3>
                                     <p className="text-gray-600 font-['Manrope'] font-medium">
@@ -463,7 +463,7 @@ export default function PublicExplorePage() {
 
                     {/* RIGHT COLUMN (Sidebar) */}
                     <div
-                        className={`${!isAuthenticated ? "explore-reveal opacity-0 translate-y-6" : ""} hidden lg:block w-[280px] xl:w-[320px] shrink-0 border-l border-gray-100 pl-6 xl:pl-10`}
+                        className={`${!isAuthenticated ? "explore-reveal opacity-0 translate-y-6" : ""} hidden lg:block w-[280px] xl:w-[320px] shrink-0 border-l border-gray-100 dark:border-white/5 pl-6 xl:pl-10`}
                         style={{
                             transition:
                                 "all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s",
@@ -477,7 +477,7 @@ export default function PublicExplorePage() {
                         >
                             {/* Penulis Direkomendasikan */}
                             <div>
-                                <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 tracking-tight mb-5 flex items-center gap-2">
+                                <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-5 flex items-center gap-2">
                                     <Sparkles
                                         className="w-4 h-4 text-primary"
                                         strokeWidth={2.5}
@@ -502,7 +502,7 @@ export default function PublicExplorePage() {
                                                         className="rounded-full object-cover bg-gray-100 ring-2 ring-transparent group-hover:ring-primary/20 transition-all"
                                                     />
                                                     <div className="flex flex-col min-w-0">
-                                                        <span className="font-['Lexend_Deca'] font-extrabold text-[14px] text-gray-900 truncate group-hover:text-primary transition-colors">
+                                                        <span className="font-['Lexend_Deca'] font-extrabold text-[14px] text-gray-900 dark:text-gray-200 truncate group-hover:text-primary transition-colors">
                                                             {expert.name}
                                                         </span>
                                                         <span className="font-['Manrope'] font-bold text-[12px] text-gray-600 truncate">
@@ -521,8 +521,8 @@ export default function PublicExplorePage() {
                                                     }
                                                     className={`px-3.5 py-1.5 rounded-[10px] border font-['Manrope'] text-[12px] font-bold transition-all focus:outline-none ${
                                                         expert.is_followed_by_me
-                                                            ? "border-gray-300 text-gray-600 bg-gray-100 hover:bg-gray-200"
-                                                            : "border-gray-200 text-gray-600 hover:border-primary hover:text-primary hover:bg-primary/5"
+                                                            ? "border-gray-300 dark:border-white/20 text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20"
+                                                            : "border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-primary hover:text-primary hover:bg-primary/5"
                                                     }`}
                                                 >
                                                     {expert.is_followed_by_me
@@ -541,7 +541,7 @@ export default function PublicExplorePage() {
 
                             {/* Pencarian Populer (Trending Searches) */}
                             <div>
-                                <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 tracking-tight mb-4 flex items-center gap-2">
+                                <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-4 flex items-center gap-2">
                                     <TrendingUp
                                         className="w-4 h-4 text-rose-500"
                                         strokeWidth={2.5}
@@ -558,7 +558,7 @@ export default function PublicExplorePage() {
                                     ].map((term) => (
                                         <button
                                             key={term}
-                                            className="px-3.5 py-2.5 bg-white hover:bg-primary/5 hover:text-primary hover:border-primary/20 text-gray-600 rounded-2xl font-['Manrope'] text-[13px] font-bold shadow-sm hover:shadow-md hover:-translate-y-0.5 border border-gray-100 transition-all duration-300 truncate max-w-full text-left focus:outline-none"
+                                            className="px-3.5 py-2.5 bg-white dark:bg-[#1C1A29] hover:bg-primary/5 dark:hover:bg-primary/10 hover:text-primary hover:border-primary/20 text-gray-600 dark:text-gray-400 rounded-2xl font-['Manrope'] text-[13px] font-bold shadow-sm dark:shadow-none hover:shadow-md hover:-translate-y-0.5 border border-gray-100 dark:border-white/5 transition-all duration-300 truncate max-w-full text-left focus:outline-none"
                                         >
                                             <Search
                                                 className="w-3.5 h-3.5 inline-block mr-1.5 opacity-70"
@@ -574,37 +574,37 @@ export default function PublicExplorePage() {
                              <div className="pt-2 flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-['Manrope'] font-bold text-gray-600">
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-950 transition-colors"
+                                    className="hover:text-gray-950 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Bantuan
                                 </Link>
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-950 transition-colors"
+                                    className="hover:text-gray-950 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Status
                                 </Link>
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-950 transition-colors"
+                                    className="hover:text-gray-950 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Tentang Kami
                                 </Link>
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-950 transition-colors"
+                                    className="hover:text-gray-950 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Karir
                                 </Link>
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-950 transition-colors"
+                                    className="hover:text-gray-950 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Privasi
                                 </Link>
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-950 transition-colors"
+                                    className="hover:text-gray-950 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Ketentuan
                                 </Link>
@@ -672,9 +672,9 @@ export default function PublicExplorePage() {
                 onClick={() => setIsFilterOpen(false)}
             />
             <div
-                className={`relative w-full sm:w-[500px] max-h-[85vh] sm:max-h-[600px] bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col transition-transform duration-300 ${isFilterOpen ? "pointer-events-auto translate-y-0 scale-100" : "pointer-events-none translate-y-full sm:translate-y-4 sm:scale-95"}`}
+                className={`relative w-full sm:w-[500px] max-h-[85vh] sm:max-h-[600px] bg-white dark:bg-[#1C1A29] rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col transition-transform duration-300 ${isFilterOpen ? "pointer-events-auto translate-y-0 scale-100" : "pointer-events-none translate-y-full sm:translate-y-4 sm:scale-95"}`}
             >
-                <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white z-10">
+                <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-white/5 bg-white dark:bg-[#1C1A29] z-10">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
                             <Filter
@@ -682,7 +682,7 @@ export default function PublicExplorePage() {
                                 strokeWidth={2.5}
                             />
                         </div>
-                        <h3 className="font-['Lexend_Deca'] font-extrabold text-[18px] text-gray-900 tracking-tight">
+                        <h3 className="font-['Lexend_Deca'] font-extrabold text-[18px] text-gray-900 dark:text-gray-100 tracking-tight">
                             Filter Referensi
                         </h3>
                     </div>
@@ -697,7 +697,7 @@ export default function PublicExplorePage() {
                 <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar bg-gray-50/50">
                     {/* Tingkat Pendidikan */}
                     <div>
-                        <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 mb-4 flex items-center justify-between">
+                        <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 dark:text-gray-100 mb-4 flex items-center justify-between">
                             Tingkat Pendidikan
                             {selectedJenjang !== "Semua" && (
                                 <span className="text-[11px] font-['Lexend_Deca'] text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-md">
@@ -713,7 +713,7 @@ export default function PublicExplorePage() {
                                     className={`px-4 py-2.5 rounded-2xl font-['Manrope'] text-[13.5px] font-bold transition-all border ${
                                         selectedJenjang === jenjang
                                             ? "bg-primary text-white border-primary shadow-[0_4px_12px_rgb(93,92,230,0.3)]"
-                                            : "bg-white text-gray-600 border-gray-200 hover:border-primary/40 hover:text-primary hover:bg-primary/5 hover:shadow-sm"
+                                            : "bg-white dark:bg-[#1C1A29] text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:border-primary/40 hover:text-primary dark:hover:text-primary hover:bg-primary/5 dark:hover:bg-primary/10 hover:shadow-sm"
                                     }`}
                                 >
                                     {jenjang}

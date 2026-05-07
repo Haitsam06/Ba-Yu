@@ -68,15 +68,15 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
   const maxSemester = currentJenjang?.maxSemester || 2;
 
   return (
-    <div className="fixed inset-0 bg-white z-[100] overflow-y-auto animate-in fade-in zoom-in-95 duration-300">
+    <div className="fixed inset-0 bg-white dark:bg-[#13111C] z-[100] overflow-y-auto animate-in fade-in zoom-in-95 duration-300">
       <div className="max-w-6xl mx-auto px-6 py-8 min-h-screen flex flex-col">
         
         {/* Modal Header */}
         <div className="flex items-center justify-between mb-12">
-          <h1 className="font-['Lexend_Deca'] font-extrabold text-2xl md:text-3xl text-gray-900 tracking-tight">Preview</h1>
+          <h1 className="font-['Lexend_Deca'] font-extrabold text-2xl md:text-3xl text-gray-900 dark:text-gray-100 tracking-tight">Preview</h1>
           <button 
             onClick={onClose}
-            className="p-2 text-gray-500 hover:text-gray-950 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-950 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors"
           >
             <X className="w-8 h-8" strokeWidth={2.5} />
           </button>
@@ -87,7 +87,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
           
           {/* Left Side: Thumbnail Preview */}
           <div className="flex-1 max-w-xl">
-            <div className={`w-full aspect-video bg-gray-50 rounded-2xl bg-gray-100/80 mb-4 flex flex-col items-center justify-center text-center p-8 border border-gray-200/50 relative overflow-hidden group ${isCropping ? 'ring-4 ring-primary' : ''}`}>
+            <div className={`w-full aspect-video bg-gray-50 dark:bg-[#1C1A29] rounded-2xl mb-4 flex flex-col items-center justify-center text-center p-8 border border-gray-200/50 dark:border-white/5 relative overflow-hidden group ${isCropping ? 'ring-4 ring-primary' : ''}`}>
               {isCropping && extractedThumbnail ? (
                 <div className="absolute inset-0 z-20 bg-black">
                   <Cropper
@@ -115,9 +115,9 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
 
               {!isCropping && extractedThumbnail && (
                 <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                   <div className="bg-white/95 backdrop-blur-md rounded-lg shadow-sm border border-gray-200 p-1 flex gap-1">
+                   <div className="bg-white/95 dark:bg-[#1C1A29]/95 backdrop-blur-md rounded-lg shadow-sm border border-gray-200 dark:border-white/10 p-1 flex gap-1">
                       <button onClick={() => { setFinalThumbnail(extractedThumbnail); setThumbnailFit('contain'); }} className={`px-2.5 py-1 text-[11px] font-bold rounded-md transition-colors ${thumbnailFit==='contain' && finalThumbnail === extractedThumbnail ? 'bg-gray-900 text-white':'text-gray-600 hover:bg-gray-100'}`}>Tampil Utuh</button>
-                      <button onClick={() => setIsCropping(true)} className="px-2.5 py-1 text-[11px] font-bold rounded-md bg-white text-gray-950 border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors">Sesuaikan Ruang Crop</button>
+                      <button onClick={() => setIsCropping(true)} className="px-2.5 py-1 text-[11px] font-bold rounded-md bg-white dark:bg-[#252336] text-gray-950 dark:text-gray-200 border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none hover:bg-gray-50 dark:hover:bg-white/10 transition-colors">Sesuaikan Ruang Crop</button>
                    </div>
                 </div>
               )}
@@ -126,7 +126,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
             {/* Thumbnail Selector Carousel */}
             {!isCropping && availableImages.length > 1 && (
               <div className="mb-4 animate-in fade-in zoom-in-95 duration-300">
-                <p className="text-[13px] font-['Lexend_Deca'] font-extrabold text-gray-900 mb-2.5">Pilih Sampul Khusus</p>
+                <p className="text-[13px] font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 mb-2.5">Pilih Sampul Khusus</p>
                 <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
                    {availableImages.map((img, idx) => (
                        <button 
@@ -142,14 +142,14 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
               </div>
             )}
 
-            <div className="space-y-4 font-['Manrope'] text-gray-700 border-b border-gray-100 pb-6 group">
+            <div className="space-y-4 font-['Manrope'] text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-white/5 pb-6 group">
               <div className="relative">
                 <input 
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Ubah judul catatan..."
-                  className="w-full font-['Lexend_Deca'] text-xl font-bold text-gray-900 mb-1 border-b border-transparent hover:border-gray-300 focus:border-primary focus:outline-none bg-transparent transition-colors py-1"
+                  className="w-full font-['Lexend_Deca'] text-xl font-bold text-gray-900 dark:text-gray-100 mb-1 border-b border-transparent hover:border-gray-300 dark:hover:border-white/10 focus:border-primary focus:outline-none bg-transparent transition-colors py-1"
                 />
                 <textarea 
                   value={previewDescription}
@@ -158,7 +158,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                      setDescriptionEdited(true);
                   }}
                   placeholder="Tulis subjudul/ringkasan singkat yang menarik..."
-                  className="w-full text-sm leading-relaxed border-b border-transparent hover:border-gray-300 focus:border-primary focus:outline-none bg-transparent transition-colors resize-none overflow-hidden min-h-[60px] text-gray-700 placeholder:text-gray-500 font-bold"
+                  className="w-full text-sm leading-relaxed border-b border-transparent hover:border-gray-300 dark:hover:border-white/10 focus:border-primary focus:outline-none bg-transparent transition-colors resize-none overflow-hidden min-h-[60px] text-gray-700 dark:text-gray-300 placeholder:text-gray-500 font-bold"
                   rows={3}
                 />
               </div>
@@ -173,12 +173,12 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
             
             {/* Mapel Row */}
             <div className="mb-8" ref={mapelDropdownRef}>
-               <p className="font-['Lexend_Deca'] font-extrabold text-gray-900 text-[15px] mb-2">Kategori Mapel <span className="text-red-500">*</span></p>
+               <p className="font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 text-[15px] mb-2">Kategori Mapel <span className="text-red-500">*</span></p>
                <p className="text-[13px] text-gray-600 font-['Manrope'] mb-3 font-bold">Pilih satu kategori utama yang paling sesuai.</p>
                
                <div className="relative">
                   <div 
-                     className={`flex items-center w-full px-4 py-3 bg-gray-50 border ${isMapelDropdownOpen ? 'border-primary/50 bg-white' : 'border-transparent hover:border-gray-200'} rounded-lg transition-all cursor-pointer`}
+                     className={`flex items-center w-full px-4 py-3 bg-gray-50 dark:bg-[#1C1A29] border ${isMapelDropdownOpen ? 'border-primary/50 bg-white dark:bg-[#252336]' : 'border-transparent hover:border-gray-200 dark:hover:border-white/10'} rounded-lg transition-all cursor-pointer`}
                      onClick={() => setIsMapelDropdownOpen(true)}
                   >
                      <input
@@ -195,7 +195,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                   </div>
 
                   {isMapelDropdownOpen && (
-                     <div className="absolute z-10 w-full mt-2 bg-white border border-gray-100 rounded-xl shadow-lg max-h-60 overflow-y-auto no-scrollbar animate-in fade-in zoom-in-95 duration-200">
+                     <div className="absolute z-10 w-full mt-2 bg-white dark:bg-[#1C1A29] border border-gray-100 dark:border-white/5 rounded-xl shadow-lg dark:shadow-2xl max-h-60 overflow-y-auto no-scrollbar animate-in fade-in zoom-in-95 duration-200">
                         {filteredMapel.length > 0 ? (
                            (Object.entries(filteredMapel.reduce((acc, current) => {
                                const category = current.category || 'Lainnya';
@@ -204,7 +204,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                                return acc;
                            }, {} as Record<string, any[]>)) as [string, any[]][]).map(([category, items]) => (
                               <div key={category} className="pb-1 last:pb-0">
-                                 <div className="sticky top-0 bg-white/95 backdrop-blur-sm px-4 py-2 text-[11px] font-['Lexend_Deca'] font-extrabold text-gray-500 uppercase tracking-wider z-10 border-b border-gray-100">
+                                 <div className="sticky top-0 bg-white/95 dark:bg-[#1C1A29]/95 backdrop-blur-sm px-4 py-2 text-[11px] font-['Lexend_Deca'] font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider z-10 border-b border-gray-100 dark:border-white/5">
                                     {category}
                                  </div>
                                  <div className="py-1">
@@ -216,7 +216,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                                              setMapelSearch('');
                                              setIsMapelDropdownOpen(false);
                                           }}
-                                          className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors ${meta.mataPelajaran === m.name ? 'bg-primary/5' : 'hover:bg-gray-50'}`}
+                                          className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors ${meta.mataPelajaran === m.name ? 'bg-primary/5' : 'hover:bg-gray-50 dark:hover:bg-white/5'}`}
                                        >
                                           <span className="text-lg">{m.icon}</span>
                                           <span className={`text-[14px] font-['Manrope'] ${meta.mataPelajaran === m.name ? 'font-bold text-primary' : 'font-medium text-gray-700'}`}>
@@ -240,7 +240,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
 
             {/* Pendidikan & Kelas Row */}
             <div className="mb-8">
-               <p className="font-['Lexend_Deca'] font-extrabold text-gray-900 text-[15px] mb-2">Tingkat Pendidikan</p>
+               <p className="font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 text-[15px] mb-2">Tingkat Pendidikan</p>
                <p className="text-[13px] text-gray-600 font-['Manrope'] mb-3 font-bold">Tentukan audiens kelas sasaran catatan ini.</p>
                
                <div className="flex gap-2 flex-wrap mb-3">
@@ -250,8 +250,8 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                     onClick={() => setMeta({ ...meta, jenjang: j.id, kelas: j.kelas[0], semester: 1 })}
                     className={`px-3 py-1 rounded-full text-[12px] font-['Lexend_Deca'] font-black border transition-all duration-200 ${
                       meta.jenjang === j.id
-                        ? 'bg-gray-900 text-white border-gray-900 shadow-md shadow-gray-900/10'
-                        : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400 hover:text-gray-900'
+                        ? 'bg-gray-900 dark:bg-primary text-white border-gray-900 dark:border-primary shadow-md shadow-gray-900/10 dark:shadow-none'
+                        : 'bg-white dark:bg-[#1C1A29] text-gray-600 dark:text-gray-400 border-gray-300 dark:border-white/10 hover:border-gray-400 dark:hover:border-white/20 hover:text-gray-900 dark:hover:text-gray-200'
                     }`}
                   >
                     {j.label}
@@ -263,7 +263,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                   <select
                     value={meta.kelas}
                     onChange={(e) => setMeta({ ...meta, kelas: e.target.value })}
-                    className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-['Manrope'] font-semibold focus:outline-none focus:border-primary transition-all cursor-pointer"
+                    className="flex-1 px-3 py-2 bg-gray-50 dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-lg text-sm font-['Manrope'] font-semibold text-gray-900 dark:text-gray-100 focus:outline-none focus:border-primary transition-all cursor-pointer"
                   >
                     {kelasOptions.map((k: string) => (
                       <option key={k} value={k}>{meta.jenjang === 'Kuliah' ? k : `Kelas ${k}`}</option>
@@ -273,7 +273,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                   <select
                     value={meta.semester}
                     onChange={(e) => setMeta({ ...meta, semester: parseInt(e.target.value) })}
-                    className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-['Manrope'] font-semibold focus:outline-none focus:border-primary transition-all cursor-pointer"
+                    className="flex-1 px-3 py-2 bg-gray-50 dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-lg text-sm font-['Manrope'] font-semibold text-gray-900 dark:text-gray-100 focus:outline-none focus:border-primary transition-all cursor-pointer"
                   >
                     {Array.from({ length: maxSemester }, (_, i) => i + 1).map((s) => (
                       <option key={s} value={s}>Semester {s}</option>
@@ -284,7 +284,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
 
             {/* Tags Row */}
             <div className="mb-10">
-              <p className="font-['Lexend_Deca'] font-extrabold text-gray-900 text-[15px] mb-2">Tags / Keywords</p>
+              <p className="font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 text-[15px] mb-2">Tags / Keywords</p>
               <p className="text-[13px] text-gray-600 font-['Manrope'] mb-3 font-bold">Tambahkan hingga 5 kata kunci agar mudah dicari.</p>
               
               <input
@@ -293,7 +293,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddTag(); }}}
                 placeholder="Add a topic (press Enter)..."
-                className="w-full px-4 py-3 bg-gray-50 border border-transparent hover:border-gray-200 rounded-lg text-[14px] font-['Manrope'] focus:outline-none focus:bg-white focus:border-primary/50 transition-all mb-3 text-gray-950 placeholder:text-gray-500 font-bold"
+                className="w-full px-4 py-3 bg-gray-50 dark:bg-[#1C1A29] border border-transparent hover:border-gray-200 dark:hover:border-white/10 rounded-lg text-[14px] font-['Manrope'] focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:border-primary/50 transition-all mb-3 text-gray-950 dark:text-gray-100 placeholder:text-gray-500 font-bold"
               />
               
               <div className="flex flex-wrap gap-2">
@@ -309,7 +309,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
             </div>
 
             {/* Publish Area */}
-            <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
+            <div className="pt-6 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
                <button
                   onClick={handleSubmit}
                   disabled={!canPublishFinal || isSubmitting}

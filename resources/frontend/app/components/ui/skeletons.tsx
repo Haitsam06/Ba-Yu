@@ -2,7 +2,7 @@ import { Skeleton } from "./skeleton";
 
 export function NoteCardSkeleton() {
   return (
-    <div className="flex flex-col-reverse sm:flex-row gap-6 sm:gap-8 py-8 border-b border-gray-100 last:border-0 pointer-events-none">
+    <div className="flex flex-col-reverse sm:flex-row gap-6 sm:gap-8 py-8 border-b border-gray-100 dark:border-white/5 last:border-0 pointer-events-none">
        <div className="flex-1 space-y-4 py-2">
           <Skeleton className="h-7 w-[85%] sm:w-3/4 rounded-lg" />
           

@@ -18,7 +18,7 @@ export function TagList({ tags, className = "mb-6 mt-auto" }: TagListProps) {
             {visibleTags.map((tag, idx) => (
                 <span 
                     key={idx} 
-                    className="px-2.5 py-1 bg-gray-100/80 text-gray-800 border border-gray-200 rounded-md text-[11px] font-['Manrope'] font-bold transition-colors hover:bg-gray-100 cursor-default"
+                    className="px-2.5 py-1 bg-gray-100/80 dark:bg-white/5 text-gray-800 dark:text-gray-300 border border-gray-200 dark:border-white/10 rounded-md text-[11px] font-['Manrope'] font-bold transition-colors hover:bg-gray-100 dark:hover:bg-white/10 cursor-default"
                 >
                     {tag}
                 </span>
@@ -30,7 +30,7 @@ export function TagList({ tags, className = "mb-6 mt-auto" }: TagListProps) {
                         e.stopPropagation();
                         setExpanded(true);
                     }}
-                    className="px-2.5 py-1 bg-white text-gray-800 border border-gray-200 rounded-md text-[11px] font-['Manrope'] font-bold hover:bg-gray-50 hover:text-primary transition-colors cursor-pointer focus:outline-none"
+                    className="px-2.5 py-1 bg-white dark:bg-[#1C1A29] text-gray-800 dark:text-gray-300 border border-gray-200 dark:border-white/10 rounded-md text-[11px] font-['Manrope'] font-bold hover:bg-gray-50 dark:hover:bg-white/10 hover:text-primary transition-colors cursor-pointer focus:outline-none"
                 >
                     +{hiddenCount} lainnya
                 </button>
@@ -42,7 +42,7 @@ export function TagList({ tags, className = "mb-6 mt-auto" }: TagListProps) {
                         e.stopPropagation();
                         setExpanded(false);
                     }}
-                    className="px-2.5 py-1 bg-white text-gray-800 border border-gray-200 rounded-md text-[11px] font-['Manrope'] font-bold hover:bg-gray-50 hover:text-red-500 transition-colors cursor-pointer focus:outline-none"
+                    className="px-2.5 py-1 bg-white dark:bg-[#1C1A29] text-gray-800 dark:text-gray-300 border border-gray-200 dark:border-white/10 rounded-md text-[11px] font-['Manrope'] font-bold hover:bg-gray-50 dark:hover:bg-white/10 hover:text-red-500 transition-colors cursor-pointer focus:outline-none"
                 >
                     Tutup
                 </button>

@@ -3,7 +3,7 @@ import { BookOpen, Github, Twitter, Instagram } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="bg-[#F8F9FF] border-t border-border mt-32">
+    <footer className="bg-[#F8F9FF] dark:bg-[#0E0C17] border-t border-border dark:border-white/5 mt-32">
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* Brand */}
@@ -22,19 +22,19 @@ export function Footer() {
             <div className="flex gap-3">
               <a
                 href="#"
-                className="w-10 h-10 rounded-full bg-white border border-border flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-all"
+                className="w-10 h-10 rounded-full bg-white dark:bg-[#1C1A29] border border-border dark:border-white/10 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-all"
               >
                 <Twitter className="w-4 h-4" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 rounded-full bg-white border border-border flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-all"
+                className="w-10 h-10 rounded-full bg-white dark:bg-[#1C1A29] border border-border dark:border-white/10 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-all"
               >
                 <Instagram className="w-4 h-4" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 rounded-full bg-white border border-border flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-all"
+                className="w-10 h-10 rounded-full bg-white dark:bg-[#1C1A29] border border-border dark:border-white/10 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-all"
               >
                 <Github className="w-4 h-4" />
               </a>
@@ -43,7 +43,7 @@ export function Footer() {
 
           {/* Product */}
           <div>
-            <h4 className="font-semibold mb-4">Produk</h4>
+            <h4 className="font-semibold mb-4 dark:text-gray-100">Produk</h4>
             <ul className="space-y-3">
               <li>
                 <Link to="/explore" className="text-muted-foreground hover:text-primary transition-colors">
@@ -65,7 +65,7 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h4 className="font-semibold mb-4">Sumber Daya</h4>
+            <h4 className="font-semibold mb-4 dark:text-gray-100">Sumber Daya</h4>
             <ul className="space-y-3">
               <li>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
@@ -87,7 +87,7 @@ export function Footer() {
 
           {/* Company */}
           <div>
-            <h4 className="font-semibold mb-4">Perusahaan</h4>
+            <h4 className="font-semibold mb-4 dark:text-gray-100">Perusahaan</h4>
             <ul className="space-y-3">
               <li>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
@@ -108,7 +108,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="border-t border-border dark:border-white/5 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-sm">
             © 2026 Ba-Yu (BelajarYuk). All rights reserved.
           </p>

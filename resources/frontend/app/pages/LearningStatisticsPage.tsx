@@ -151,20 +151,20 @@ const LearningStatisticsPage = () => {
 
   return (
     <MobileLayout>
-      <div className="min-h-screen bg-white font-['Manrope'] pb-20">
+      <div className="min-h-screen bg-white dark:bg-[#13111C] font-['Manrope'] pb-20">
         
         {/* STICKY HEADER (X STYLE) */}
-        <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+        <div className="sticky top-0 z-20 bg-white/80 dark:bg-[#13111C]/80 backdrop-blur-md border-b border-slate-100 dark:border-white/5 px-6 py-4 flex items-center justify-between">
            <div className="flex items-center gap-4">
-              <button onClick={() => navigate(-1)} className="text-slate-800 hover:bg-slate-100 p-1.5 rounded-full transition-colors">
+              <button onClick={() => navigate(-1)} className="text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10 p-1.5 rounded-full transition-colors">
                  <X size={22} />
               </button>
               <div>
-                 <h1 className="text-lg font-bold tracking-tight text-slate-800 leading-none">Statistik Belajar</h1>
-                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">{monthNames[displayMonth]} {displayYear} • Progres</p>
+                 <h1 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100 leading-none">Statistik Belajar</h1>
+                 <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">{monthNames[displayMonth]} {displayYear} • Progres</p>
               </div>
            </div>
-           <button onClick={handleShare} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-colors active:scale-95">
+           <button onClick={handleShare} className="w-10 h-10 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-primary transition-colors active:scale-95">
               <Share2 size={18} />
            </button>
         </div>
@@ -178,7 +178,7 @@ const LearningStatisticsPage = () => {
               {/* DAILY HIGHLIGHT */}
               <section>
                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-['Lexend_Deca'] font-bold text-slate-800">Ringkasan Hari Ini</h2>
+                    <h2 className="text-xl font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100">Ringkasan Hari Ini</h2>
                     <button 
                       onClick={() => setIsGoalModalOpen(true)}
                       className="text-[13px] font-bold text-indigo-600 hover:text-indigo-700 transition-colors"
@@ -189,13 +189,13 @@ const LearningStatisticsPage = () => {
 
                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* PROGRESS CARD */}
-                    <div className="bg-white rounded-[24px] p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
-                       <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-full -z-10 opacity-50 group-hover:scale-110 transition-transform duration-500" />
+                    <div className="bg-white dark:bg-[#1C1A29] rounded-[24px] p-6 border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none hover:shadow-md transition-shadow group relative overflow-hidden">
+                       <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 dark:bg-indigo-500/10 rounded-bl-full -z-10 opacity-50 group-hover:scale-110 transition-transform duration-500" />
                        <div className="flex items-center justify-between mb-6">
-                          <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
+                          <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400">
                              <Target size={20} />
                           </div>
-                          <span className="text-[13px] font-bold text-slate-500">{Math.round(((stats?.summary?.today_duration || 0) / (stats?.daily_target || 1)) * 100) || 0}% Selesai</span>
+                          <span className="text-[13px] font-bold text-slate-500 dark:text-slate-400">{Math.round(((stats?.summary?.today_duration || 0) / (stats?.daily_target || 1)) * 100) || 0}% Selesai</span>
                        </div>
                        
                        <div className="mb-4">
@@ -203,7 +203,7 @@ const LearningStatisticsPage = () => {
                           <p className="text-[13px] font-medium text-slate-500 mt-1">Target belajar harian</p>
                        </div>
 
-                       <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-2">
+                       <div className="w-full h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden mb-2">
                           <div 
                             className="h-full bg-indigo-600 rounded-full transition-all duration-1000" 
                             style={{ width: `${Math.min(((stats?.summary?.today_duration || 0) / (stats?.daily_target || 1)) * 100, 100) || 0}%` }}                          
@@ -212,7 +212,7 @@ const LearningStatisticsPage = () => {
                     </div>
 
                     {/* STREAK CARD */}
-                    <div className="bg-gradient-to-br from-orange-400 to-orange-500 rounded-[24px] p-6 text-white shadow-lg shadow-orange-200/50 relative overflow-hidden flex flex-col justify-between">
+                    <div className="bg-gradient-to-br from-orange-400 to-orange-500 rounded-[24px] p-6 text-white shadow-lg shadow-orange-200/50 dark:shadow-none relative overflow-hidden flex flex-col justify-between">
                        <div className="absolute -top-6 -right-6 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
                        <div className="absolute bottom-4 right-4 opacity-20 transform -rotate-12">
                           <Flame size={100} />
@@ -240,24 +240,24 @@ const LearningStatisticsPage = () => {
               {/* ACTIVITY CHART SECTION */}
               <section>
                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-['Lexend_Deca'] font-bold text-slate-800">Analisis Aktivitas</h2>
-                    <div className="flex bg-slate-100 rounded-xl p-1">
+                    <h2 className="text-xl font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100">Analisis Aktivitas</h2>
+                    <div className="flex bg-slate-100 dark:bg-white/5 rounded-xl p-1">
                        <button 
                          onClick={() => setChartView('weekly')}
-                         className={`px-4 py-1.5 rounded-lg text-[12px] font-bold transition-all ${chartView === 'weekly' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}
+                         className={`px-4 py-1.5 rounded-lg text-[12px] font-bold transition-all ${chartView === 'weekly' ? 'bg-white dark:bg-[#1C1A29] shadow-sm text-slate-800 dark:text-slate-100' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'}`}
                        >
                          Mingguan
                        </button>
                        <button 
                          onClick={() => setChartView('monthly')}
-                         className={`px-4 py-1.5 rounded-lg text-[12px] font-bold transition-all ${chartView === 'monthly' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}
+                         className={`px-4 py-1.5 rounded-lg text-[12px] font-bold transition-all ${chartView === 'monthly' ? 'bg-white dark:bg-[#1C1A29] shadow-sm text-slate-800 dark:text-slate-100' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'}`}
                        >
                          Bulanan
                        </button>
                     </div>
                  </div>
 
-                 <div className="bg-white rounded-[24px] p-6 border border-slate-200 shadow-sm h-[320px] w-full">
+                 <div className="bg-white dark:bg-[#1C1A29] rounded-[24px] p-6 border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none h-[320px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                        <BarChart data={activeChartData} margin={{ top: 10, right: 0, left: -30, bottom: 0 }}>
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -273,7 +273,7 @@ const LearningStatisticsPage = () => {
                             tickLine={false} 
                             tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 600, fontFamily: 'Manrope' }} 
                           />
-                          <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f8fafc' }} />
+                          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--chart-cursor)' }} />
                           <Bar 
                             dataKey="value" 
                             fill="#4f46e5" 
@@ -283,7 +283,7 @@ const LearningStatisticsPage = () => {
                              {activeChartData.map((entry: any, index: number) => (
                                 <Cell 
                                   key={`cell-${index}`} 
-                                  fill={entry.hours > (chartView === 'weekly' ? 4 : 20) ? '#6366f1' : '#e0e7ff'} 
+                                  fill={entry.value > (chartView === 'weekly' ? 4 : 20) ? '#6366f1' : 'rgba(99, 102, 241, 0.15)'} 
                                   className="hover:opacity-80 transition-opacity cursor-pointer"
                                 />
                              ))}
@@ -296,17 +296,17 @@ const LearningStatisticsPage = () => {
               {/* RECENT FEED (BA-YU APP STYLE) */}
               <section>
                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-['Lexend_Deca'] font-bold text-slate-800">Riwayat Terakhir</h2>
+                    <h2 className="text-xl font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100">Riwayat Terakhir</h2>
                  </div>
 
                  <div className="grid gap-4">
                     {isLoading ? (
                        [...Array(3)].map((_, i) => (
-                          <div key={i} className="bg-white rounded-[20px] p-4 border border-slate-200 animate-pulse flex gap-4">
-                             <div className="w-24 h-24 bg-slate-100 rounded-xl shrink-0" />
+                          <div key={i} className="bg-white dark:bg-[#1C1A29] rounded-[20px] p-4 border border-slate-200 dark:border-white/5 animate-pulse flex gap-4">
+                             <div className="w-24 h-24 bg-slate-100 dark:bg-white/5 rounded-xl shrink-0" />
                              <div className="flex-1 space-y-3 py-2">
-                                <div className="h-4 bg-slate-100 rounded-full w-3/4" />
-                                <div className="h-3 bg-slate-100 rounded-full w-1/2" />
+                                <div className="h-4 bg-slate-100 dark:bg-white/5 rounded-full w-3/4" />
+                                <div className="h-3 bg-slate-100 dark:bg-white/5 rounded-full w-1/2" />
                              </div>
                           </div>
                        ))
@@ -330,7 +330,7 @@ const LearningStatisticsPage = () => {
                               comments: note.comments_count || note.comments || 0,
                               read_time: note.read_time,
                           };
-                          return <NoteCard key={mappedNote.id} note={mappedNote} showBookmark={false} className="border border-slate-200 rounded-[20px] p-4 shadow-sm hover:shadow-md bg-white hover:bg-slate-50/50" />;
+                          return <NoteCard key={mappedNote.id} note={mappedNote} showBookmark={false} className="border border-slate-200 dark:border-white/5 rounded-[20px] p-4 shadow-sm dark:shadow-none hover:shadow-md bg-white dark:bg-[#1C1A29] hover:bg-slate-50/50 dark:hover:bg-white/[0.02]" />;
                        })
                     ) : (
                        <div className="text-center py-10 text-slate-500 font-medium text-[14px]">Belum ada riwayat catatan yang dibuka.</div>
@@ -338,7 +338,7 @@ const LearningStatisticsPage = () => {
                  </div>
                  
                  {allNotes.length > 3 && (
-                    <button onClick={() => setShowFullHistory(!showFullHistory)} className="w-full mt-6 py-3.5 bg-white text-[13px] font-bold text-slate-600 rounded-xl hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm">
+                    <button onClick={() => setShowFullHistory(!showFullHistory)} className="w-full mt-6 py-3.5 bg-white dark:bg-[#1C1A29] text-[13px] font-bold text-slate-600 dark:text-slate-400 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-colors border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none">
                        {showFullHistory ? "Sembunyikan Sebagian" : "Lihat Semua Riwayat"}
                     </button>
                  )}
@@ -349,38 +349,38 @@ const LearningStatisticsPage = () => {
            <div className="hidden lg:block w-[340px] shrink-0 space-y-6 sticky top-24 self-start">
               
               {/* TOP PERFORMANCE */}
-              <div className="bg-white rounded-[24px] p-6 border border-slate-200 shadow-sm">
-                 <h3 className="text-[16px] font-['Lexend_Deca'] font-bold text-slate-800 mb-5">Pencapaian</h3>
+              <div className="bg-white dark:bg-[#1C1A29] rounded-[24px] p-6 border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none">
+                 <h3 className="text-[16px] font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100 mb-5">Pencapaian</h3>
                  <div className="space-y-3">
-                    <div className="flex items-center gap-4 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                       <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-amber-500 shadow-sm">
+                    <div className="flex items-center gap-4 bg-slate-50 dark:bg-white/5 p-3.5 rounded-2xl border border-slate-100 dark:border-white/5">
+                       <div className="w-10 h-10 bg-white dark:bg-[#252336] rounded-xl flex items-center justify-center text-amber-500 shadow-sm dark:shadow-none">
                           <Award size={20} />
                        </div>
                        <div>
                           <p className="text-[11px] font-medium text-slate-500 mb-0.5">Catatan</p>
-                          <h4 className="text-[14px] font-bold text-slate-800 leading-none">{stats?.achievements?.notes_created || 0} Catatan dibuat</h4>
+                          <h4 className="text-[14px] font-bold text-slate-800 dark:text-slate-100 leading-none">{stats?.achievements?.notes_created || 0} Catatan dibuat</h4>
                        </div>
                     </div>
-                    <div className="flex items-center gap-4 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                       <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-emerald-500 shadow-sm">
+                    <div className="flex items-center gap-4 bg-slate-50 dark:bg-white/5 p-3.5 rounded-2xl border border-slate-100 dark:border-white/5">
+                       <div className="w-10 h-10 bg-white dark:bg-[#252336] rounded-xl flex items-center justify-center text-emerald-500 shadow-sm dark:shadow-none">
                           <BookOpen size={20} />
                        </div>
                        <div>
                           <p className="text-[11px] font-medium text-slate-500 mb-0.5">Total Materi</p>
-                          <h4 className="text-[14px] font-bold text-slate-800 leading-none">{stats?.achievements?.materials_completed || 0} Selesai</h4>
+                          <h4 className="text-[14px] font-bold text-slate-800 dark:text-slate-100 leading-none">{stats?.achievements?.materials_completed || 0} Selesai</h4>
                        </div>
                     </div>
                  </div>
               </div>
 
               {/* CALENDAR MINI */}
-              <div className="bg-white rounded-[24px] p-6 border border-slate-200 shadow-sm">
+              <div className="bg-white dark:bg-[#1C1A29] rounded-[24px] p-6 border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none">
                  <div className="flex items-center justify-between mb-5">
-                    <h3 className="text-[16px] font-['Lexend_Deca'] font-bold text-slate-800">Kalender Belajar</h3>
+                    <h3 className="text-[16px] font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100">Kalender Belajar</h3>
                     <div className="flex items-center gap-2">
-                       <button onClick={() => setMonthOffset(m => m - 1)} className="p-1 text-slate-400 hover:text-indigo-600 transition-colors rounded-full hover:bg-indigo-50"><ChevronRight size={16} className="rotate-180" /></button>
-                       <span className="text-[12px] font-bold text-slate-500 min-w-[70px] text-center">{monthNames[displayMonth]}</span>
-                       <button onClick={() => setMonthOffset(m => m + 1)} className="p-1 text-slate-400 hover:text-indigo-600 transition-colors rounded-full hover:bg-indigo-50"><ChevronRight size={16} /></button>
+                       <button onClick={() => setMonthOffset(m => m - 1)} className="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-primary transition-colors rounded-full hover:bg-indigo-50 dark:hover:bg-primary/10"><ChevronRight size={16} className="rotate-180" /></button>
+                       <span className="text-[12px] font-bold text-slate-500 dark:text-slate-400 min-w-[70px] text-center">{monthNames[displayMonth]}</span>
+                       <button onClick={() => setMonthOffset(m => m + 1)} className="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-primary transition-colors rounded-full hover:bg-indigo-50 dark:hover:bg-primary/10"><ChevronRight size={16} /></button>
                     </div>
                  </div>
                  <div className="grid grid-cols-7 gap-1.5 text-center mb-2">
@@ -401,8 +401,8 @@ const LearningStatisticsPage = () => {
                           <div key={day} className={`aspect-square rounded-lg flex items-center justify-center text-[12px] font-semibold relative
                              ${isToday && isStreak ? 'bg-orange-500 text-white shadow-md' : 
                                isToday ? 'bg-indigo-600 text-white shadow-md' : 
-                               isStreak ? 'bg-orange-100 text-orange-600' : 
-                               'bg-slate-50 text-slate-600 hover:bg-slate-100 cursor-pointer'}
+                               isStreak ? 'bg-orange-100 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400' : 
+                               'bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 cursor-pointer'}
                           `}>
                              {day}
                              {isStreak && !isToday && (
@@ -430,10 +430,10 @@ const LearningStatisticsPage = () => {
             className="absolute inset-0 bg-slate-900/40 backdrop-blur-md"
             onClick={() => setIsGoalModalOpen(false)}
           />
-          <div className="bg-white rounded-[40px] w-full max-w-md p-8 md:p-10 relative z-10 shadow-2xl border border-white transform animate-in zoom-in slide-in-from-bottom-8 duration-500 max-h-[95vh] overflow-y-auto">
+          <div className="bg-white dark:bg-[#1C1A29] rounded-[40px] w-full max-w-md p-8 md:p-10 relative z-10 shadow-2xl border border-white dark:border-white/5 transform animate-in zoom-in slide-in-from-bottom-8 duration-500 max-h-[95vh] overflow-y-auto">
             <button 
               onClick={() => setIsGoalModalOpen(false)}
-              className="absolute top-6 right-6 w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors"
+              className="absolute top-6 right-6 w-10 h-10 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
             >
               <X size={20} />
             </button>
@@ -443,7 +443,7 @@ const LearningStatisticsPage = () => {
                 <Target className="text-indigo-600 w-8 h-8" />
               </div>
               
-              <h3 className="font-['Lexend_Deca'] text-2xl font-bold text-slate-800 mb-2 tracking-tight">Set Goal Harian</h3>
+              <h3 className="font-['Lexend_Deca'] text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2 tracking-tight">Set Goal Harian</h3>
               <p className="text-slate-500 text-sm font-medium mb-10 max-w-[280px]">
                 Tentukan target durasi belajar harianmu dengan presisi digital.
               </p>
@@ -455,11 +455,11 @@ const LearningStatisticsPage = () => {
                   <div className="flex flex-col items-center gap-3">
                     <button 
                       onClick={() => setTempHours((prev: number) => (prev + 1) % 24)}
-                      className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+                      className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-primary transition-all"
                     >
                       <ChevronRight className="rotate-[-90deg]" size={20} />
                     </button>
-                    <div className="w-20 h-24 sm:w-24 sm:h-28 bg-indigo-50/50 rounded-[28px] border-2 border-indigo-100/50 flex items-center justify-center relative overflow-hidden group focus-within:border-indigo-400 transition-colors">
+                    <div className="w-20 h-24 sm:w-24 sm:h-28 bg-indigo-50/50 dark:bg-indigo-500/5 rounded-[28px] border-2 border-indigo-100/50 dark:border-indigo-500/20 flex items-center justify-center relative overflow-hidden group focus-within:border-indigo-400 transition-colors">
                        <input 
                          type="text"
                          value={tempHours.toString().padStart(2, '0')}
@@ -473,7 +473,7 @@ const LearningStatisticsPage = () => {
                     </div>
                     <button 
                       onClick={() => setTempHours((prev: number) => (prev - 1 + 24) % 24)}
-                      className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+                      className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-primary transition-all"
                     >
                       <ChevronRight className="rotate-[90deg]" size={20} />
                     </button>
@@ -489,11 +489,11 @@ const LearningStatisticsPage = () => {
                   <div className="flex flex-col items-center gap-3">
                     <button 
                       onClick={() => setTempMinutes((prev: number) => (prev + 5) % 60)}
-                      className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+                      className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-primary transition-all"
                     >
                       <ChevronRight className="rotate-[-90deg]" size={20} />
                     </button>
-                    <div className="w-20 h-24 sm:w-24 sm:h-28 bg-indigo-50/50 rounded-[28px] border-2 border-indigo-100/50 flex items-center justify-center relative overflow-hidden focus-within:border-indigo-400 transition-colors">
+                    <div className="w-20 h-24 sm:w-24 sm:h-28 bg-indigo-50/50 dark:bg-indigo-500/5 rounded-[28px] border-2 border-indigo-100/50 dark:border-indigo-500/20 flex items-center justify-center relative overflow-hidden focus-within:border-indigo-400 transition-colors">
                        <input 
                          type="text"
                          value={tempMinutes.toString().padStart(2, '0')}
@@ -507,7 +507,7 @@ const LearningStatisticsPage = () => {
                     </div>
                     <button 
                       onClick={() => setTempMinutes((prev: number) => (prev - 5 + 60) % 60)}
-                      className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all"
+                      className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-primary transition-all"
                     >
                       <ChevronRight className="rotate-[90deg]" size={20} />
                     </button>
@@ -539,7 +539,7 @@ const LearningStatisticsPage = () => {
         console.error("Gagal nyimpen target:", error);
     }
 }}
-                      className="w-full py-5 bg-indigo-600 text-white rounded-[24px] text-[13px] font-bold uppercase tracking-widest shadow-xl shadow-indigo-100 hover:-translate-y-1 hover:bg-indigo-700 transition-all duration-300"
+                      className="w-full py-5 bg-indigo-600 text-white rounded-[24px] text-[13px] font-bold uppercase tracking-widest shadow-xl shadow-indigo-100 dark:shadow-none hover:-translate-y-1 hover:bg-indigo-700 transition-all duration-300"
                    >
                       Simpan Target Belajar
                    </button>
@@ -559,15 +559,15 @@ const LearningStatisticsPage = () => {
       {/* MODAL SHARE */}
       {showShareModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-300">
-            <div className="bg-white rounded-[32px] w-full max-w-md max-h-[90vh] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] overflow-hidden border border-white transform animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 flex flex-col">
-                <div className="bg-indigo-50 p-6 pb-5 text-center border-b border-indigo-100/50 shrink-0">
-                    <div className="w-14 h-14 bg-white text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm border border-indigo-200/30">
+            <div className="bg-white dark:bg-[#1C1A29] rounded-[32px] w-full max-w-md max-h-[90vh] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] dark:shadow-[0_25px_70px_-10px_rgba(0,0,0,0.6)] overflow-hidden border border-white dark:border-white/5 transform animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 flex flex-col">
+                <div className="bg-indigo-50 dark:bg-indigo-500/10 p-6 pb-5 text-center border-b border-indigo-100/50 dark:border-white/5 shrink-0">
+                    <div className="w-14 h-14 bg-white dark:bg-[#1C1A29] text-indigo-600 dark:text-primary rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm dark:shadow-none border border-indigo-200/30 dark:border-primary/20">
                         <Share2 className="w-7 h-7" strokeWidth={2.5} />
                     </div>
-                    <h3 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 mb-1">
+                    <h3 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 dark:text-gray-100 mb-1">
                         Bagikan Statistik Belajarmu
                     </h3>
-                    <p className="font-['Manrope'] text-[13px] text-gray-600 font-bold px-6">
+                    <p className="font-['Manrope'] text-[13px] text-gray-600 dark:text-gray-400 font-bold px-6">
                         Pamerin progres belajar dan streak kamu ke teman-teman.
                     </p>
                 </div>
@@ -575,28 +575,28 @@ const LearningStatisticsPage = () => {
                 <div className="p-6 pt-6 overflow-y-auto custom-scrollbar">
                     <div className="grid grid-cols-4 gap-y-6 gap-x-3 mb-6">
                         <button onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`Cek statistik belajarku di Ba-Yu! Streak: ${stats?.summary?.current_streak || 0} hari. ${window.location.href}`)}`, "_blank")} className="flex flex-col items-center gap-2 group">
-                            <div className="w-11 h-11 bg-[#25D366] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-green-100 group-hover:-translate-y-1 transition-all">
+                            <div className="w-11 h-11 bg-[#25D366] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-green-100/50 dark:shadow-green-900/20 group-hover:-translate-y-1 transition-all">
                                 <MessageCircleIcon className="w-5 h-5 fill-white" />
                             </div>
-                            <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">WA</span>
+                            <span className="text-[9px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider">WA</span>
                         </button>
                         <button onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Gila, streak belajarku udah ${stats?.summary?.current_streak || 0} hari di Ba-Yu! 🚀`)}&url=${encodeURIComponent(window.location.href)}`, "_blank")} className="flex flex-col items-center gap-2 group">
-                            <div className="w-11 h-11 bg-black text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-gray-200 group-hover:-translate-y-1 transition-all">
+                            <div className="w-11 h-11 bg-black text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-gray-200/50 dark:shadow-black/30 group-hover:-translate-y-1 transition-all">
                                 <Twitter className="w-5 h-5 fill-white" />
                             </div>
-                            <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">X</span>
+                            <span className="text-[9px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider">X</span>
                         </button>
                         <button onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, "_blank")} className="flex flex-col items-center gap-2 group">
-                            <div className="w-11 h-11 bg-[#1877F2] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-blue-100 group-hover:-translate-y-1 transition-all">
+                            <div className="w-11 h-11 bg-[#1877F2] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-blue-100/50 dark:shadow-blue-900/20 group-hover:-translate-y-1 transition-all">
                                 <Facebook className="w-5 h-5 fill-white" />
                             </div>
-                            <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">FB</span>
+                            <span className="text-[9px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider">FB</span>
                         </button>
                         <button onClick={() => window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(`Cek statistik belajarku di Ba-Yu! Streak: ${stats?.summary?.current_streak || 0} hari.`)}`, "_blank")} className="flex flex-col items-center gap-2 group">
-                            <div className="w-11 h-11 bg-[#0088cc] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-sky-100 group-hover:-translate-y-1 transition-all">
+                            <div className="w-11 h-11 bg-[#0088cc] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-sky-100/50 dark:shadow-sky-900/20 group-hover:-translate-y-1 transition-all">
                                 <Send className="w-5 h-5 fill-white" />
                             </div>
-                            <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">Tele</span>
+                            <span className="text-[9px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tele</span>
                         </button>
                     </div>
 
@@ -608,7 +608,7 @@ const LearningStatisticsPage = () => {
                             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400">
                                 <Link2 className="w-4 h-4" />
                             </div>
-                            <input type="text" readOnly value={window.location.href} className="w-full pl-11 pr-24 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-[12.5px] font-bold text-gray-800 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-400 transition-all" />
+                            <input type="text" readOnly value={window.location.href} className="w-full pl-11 pr-24 py-3.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl text-[12.5px] font-bold text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-400 transition-all" />
                             <button onClick={() => { navigator.clipboard.writeText(window.location.href); showToast("Link berhasil disalin!", "success"); }} className="absolute right-2 top-2 bottom-2 px-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 active:scale-95">
                                 Salin
                             </button>
@@ -616,8 +616,8 @@ const LearningStatisticsPage = () => {
                     </div>
                 </div>
 
-                <div className="p-5 border-t border-gray-50 shrink-0">
-                    <button onClick={() => setShowShareModal(false)} className="w-full py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] text-gray-500 bg-gray-50 hover:bg-gray-100 transition-all active:scale-95">
+                <div className="p-5 border-t border-gray-50 dark:border-white/5 shrink-0">
+                    <button onClick={() => setShowShareModal(false)} className="w-full py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-all active:scale-95">
                         Tutup Modal
                     </button>
                 </div>

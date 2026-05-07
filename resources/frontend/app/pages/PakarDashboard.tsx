@@ -63,21 +63,21 @@ const FeedbackModal = ({ isOpen, onClose, onSubmit, type, noteTitle }: FeedbackM
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
-            <div className="bg-white w-full max-w-lg rounded-[24px] shadow-xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-100">
+            <div className="bg-white dark:bg-[#1C1A29] w-full max-w-lg rounded-[24px] shadow-xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-100 dark:border-white/5">
                 {/* Modal Header */}
-                <div className={`p-6 md:p-8 pb-4 flex justify-between items-start ${type === 'approve' ? 'bg-indigo-50/50' : 'bg-rose-50/50'}`}>
+                <div className={`p-6 md:p-8 pb-4 flex justify-between items-start ${type === 'approve' ? 'bg-indigo-50/50 dark:bg-indigo-500/10' : 'bg-rose-50/50 dark:bg-rose-500/10'}`}>
                     <div className="flex gap-4">
                         <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-sm ${type === 'approve' ? 'bg-indigo-600 text-white' : 'bg-rose-600 text-white'}`}>
                             {type === 'approve' ? <CheckCircle size={24} /> : <XCircle size={24} />}
                         </div>
                         <div>
-                            <h3 className="font-['Lexend_Deca'] text-xl font-bold text-slate-800">
+                            <h3 className="font-['Lexend_Deca'] text-xl font-bold text-slate-800 dark:text-slate-100">
                                 {type === 'approve' ? 'Validasi Materi' : 'Tolak Materi'}
                             </h3>
                             <p className="text-slate-500 text-sm font-medium line-clamp-1 mt-0.5">{noteTitle}</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-white rounded-full transition-colors">
+                    <button onClick={onClose} className="p-2 hover:bg-white dark:hover:bg-white/10 rounded-full transition-colors">
                         <X size={20} className="text-slate-400" />
                     </button>
                 </div>
@@ -103,7 +103,7 @@ const FeedbackModal = ({ isOpen, onClose, onSubmit, type, noteTitle }: FeedbackM
                                 </span>
                             </div>
 
-                            <div className="relative bg-slate-50/50 p-6 md:p-8 rounded-[20px] border border-slate-100 flex flex-col items-center group/stars">
+                            <div className="relative bg-slate-50/50 dark:bg-white/5 p-6 md:p-8 rounded-[20px] border border-slate-100 dark:border-white/5 flex flex-col items-center group/stars">
                                 <div className="absolute inset-0 bg-gradient-to-r from-amber-200/5 via-amber-300/10 to-amber-200/5 opacity-0 group-hover/stars:opacity-100 transition-opacity duration-1000 blur-2xl pointer-events-none" />
                                 <div className="flex gap-4 relative z-10">
                                     {[1, 2, 3, 4, 5].map((s) => (
@@ -123,9 +123,9 @@ const FeedbackModal = ({ isOpen, onClose, onSubmit, type, noteTitle }: FeedbackM
                                         </button>
                                     ))}
                                 </div>
-                                <div className="mt-6 w-full h-1.5 bg-slate-100 rounded-full overflow-hidden relative">
+                                <div className="mt-6 w-full h-1.5 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden relative">
                                     <div 
-                                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-700 ease-out rounded-full shadow-sm"
+                                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-700 ease-out rounded-full shadow-[0_0_10px_rgba(245,158,11,0.3)]"
                                         style={{ width: `${(rating / 5) * 100}%` }}
                                     />
                                 </div>
@@ -143,12 +143,12 @@ const FeedbackModal = ({ isOpen, onClose, onSubmit, type, noteTitle }: FeedbackM
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
                             placeholder={type === 'approve' ? 'Berikan saran yang membangun...' : 'Jelaskan kekurangan materi ini...'}
-                            className="w-full h-28 p-4 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all resize-none shadow-sm"
+                            className="w-full h-28 p-4 bg-white dark:bg-[#13111C] border border-slate-200 dark:border-white/10 rounded-xl text-[14px] font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all resize-none shadow-sm dark:shadow-none"
                         />
                     </div>
 
                     <div className="flex gap-3">
-                        <button onClick={onClose} className="flex-1 py-3.5 bg-slate-50 border border-slate-100 text-slate-600 rounded-xl font-['Lexend_Deca'] font-bold text-[12px] uppercase tracking-wider hover:bg-slate-100 transition-all shadow-sm">Batal</button>
+                        <button onClick={onClose} className="flex-1 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 text-slate-600 dark:text-slate-300 rounded-xl font-['Lexend_Deca'] font-bold text-[12px] uppercase tracking-wider hover:bg-slate-100 dark:hover:bg-white/10 transition-all shadow-sm dark:shadow-none">Batal</button>
                         <button onClick={handleFormSubmit} disabled={isSubmitting || (type === 'reject' && !reason.trim())} className={`flex-[2] py-3.5 rounded-xl font-['Lexend_Deca'] font-bold text-[12px] uppercase tracking-wider text-white shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 ${type === 'approve' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-rose-600 hover:bg-rose-700'}`}>
                             {isSubmitting ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Send size={14} />{type === 'approve' ? 'Konfirmasi Validasi' : 'Konfirmasi Tolak'}</>}
                         </button>
@@ -242,37 +242,37 @@ export default function PakarDashboard() {
 
     return (
         <MobileLayout>
-            <div className="pb-12 bg-slate-50/50 min-h-screen font-['Manrope']">
+            <div className="pb-12 bg-slate-50/50 dark:bg-[#13111C] min-h-screen font-['Manrope']">
                 <FeedbackModal isOpen={isFeedbackModalOpen} onClose={() => setIsFeedbackModalOpen(false)} onSubmit={handleVerifySubmit} type={feedbackType} noteTitle={selectedNoteForFeedback?.title || ""} />
                 
-                <div className="bg-gradient-to-b from-indigo-50/50 via-white to-transparent px-4 sm:px-6 md:px-10 pt-10 pb-12 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-100/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/4 pointer-events-none" />
+                <div className="bg-gradient-to-b from-indigo-50/50 dark:from-primary/5 via-white dark:via-[#13111C] to-transparent px-4 sm:px-6 md:px-10 pt-10 pb-12 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-100/20 dark:bg-primary/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/4 pointer-events-none" />
                     
                     <div className="relative z-10 max-w-7xl mx-auto">
                         <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
                             <div className="flex items-center gap-6">
                                 <div className="relative group shrink-0">
-                                    <AvatarImage src={user?.avatar} alt={user?.name} size={76} className="relative rounded-[24px] border-4 border-white shadow-sm" />
-                                    <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-white rounded-lg shadow-sm flex items-center justify-center border border-slate-100"><Sparkles className="w-3.5 h-3.5 text-indigo-600 animate-pulse" /></div>
+                                    <AvatarImage src={user?.avatar} alt={user?.name} size={76} className="relative rounded-[24px] border-4 border-white dark:border-[#1C1A29] shadow-sm" />
+                                    <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-white dark:bg-[#1C1A29] rounded-lg shadow-sm flex items-center justify-center border border-slate-100 dark:border-white/10"><Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-primary animate-pulse" /></div>
                                 </div>
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2.5 mb-1.5">
-                                        <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-100">Verified Expert</span>
-                                        <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">• Level 4 Pakar</span>
+                                        <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-0.5 rounded-md border border-indigo-100 dark:border-indigo-500/20">Verified Expert</span>
+                                        <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">• Level 4 Pakar</span>
                                     </div>
-                                    <h1 className="font-['Lexend_Deca'] text-3xl font-bold text-slate-800 tracking-tight leading-none">{user?.name || "Pakar Ba-Yu"}</h1>
+                                    <h1 className="font-['Lexend_Deca'] text-3xl font-bold text-slate-800 dark:text-slate-100 tracking-tight leading-none">{user?.name || "Pakar Ba-Yu"}</h1>
                                     <p className="text-slate-500 font-medium text-[14px]">Siap mengkurasi <span className="text-indigo-600 font-bold">{pendingNotes.length} materi</span> berkualitas hari ini.</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
-                                <button className="bg-white border border-slate-200 rounded-xl px-5 py-3 text-slate-600 font-bold text-[13px] flex items-center gap-2 hover:bg-slate-50 shadow-sm transition-all"><LayoutGrid size={16} className="text-indigo-600" />Tag</button>
-                                <button className="bg-slate-800 text-white rounded-xl px-5 py-3 text-[13px] font-bold flex items-center gap-2 hover:bg-slate-900 shadow-md shadow-slate-200 transition-all"><BookOpen size={16} />Baca Massal</button>
+                                <button className="bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 rounded-xl px-5 py-3 text-slate-600 dark:text-slate-300 font-bold text-[13px] flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-white/5 shadow-sm dark:shadow-none transition-all"><LayoutGrid size={16} className="text-indigo-600 dark:text-primary" />Tag</button>
+                                <button className="bg-slate-800 dark:bg-indigo-600 text-white rounded-xl px-5 py-3 text-[13px] font-bold flex items-center gap-2 hover:bg-slate-900 dark:hover:bg-indigo-700 shadow-md shadow-slate-200 dark:shadow-none transition-all"><BookOpen size={16} />Baca Massal</button>
                             </div>
                         </header>
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
                             {stats.map((stat, idx) => (
-                                <div key={idx} className="bg-white rounded-[24px] p-6 border border-slate-200 shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex flex-col justify-between min-h-[160px]">
+                                <div key={idx} className="bg-white dark:bg-[#1C1A29] rounded-[24px] p-6 border border-slate-200 dark:border-white/5 shadow-sm hover:shadow-md dark:shadow-none transition-all group relative overflow-hidden flex flex-col justify-between min-h-[160px]">
                                    <div className="absolute inset-x-0 bottom-0 z-0 opacity-[0.15] group-hover:opacity-[0.25] transition-opacity h-1/2 pointer-events-none">
                                       <ResponsiveContainer width="100%" height="100%">
                                          <AreaChart data={sparkData}>
@@ -282,11 +282,11 @@ export default function PakarDashboard() {
                                    </div>
                                    <div className="relative z-10">
                                       <div className="flex justify-between items-center mb-4">
-                                        <div className={`w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 group-hover:scale-105 transition-transform duration-300`}><stat.icon className={`w-5 h-5 ${stat.color}`} /></div>
-                                        <div className="px-2.5 py-1 bg-emerald-50 rounded-lg flex items-center gap-1.5"><TrendingUp size={12} className="text-emerald-600" /><span className="text-[10px] font-bold text-emerald-700 tracking-wider">AKTIF</span></div>
+                                        <div className={`w-10 h-10 bg-slate-50 dark:bg-white/5 rounded-xl flex items-center justify-center border border-slate-100 dark:border-white/5 group-hover:scale-105 transition-transform duration-300`}><stat.icon className={`w-5 h-5 ${stat.color} dark:text-primary`} /></div>
+                                        <div className="px-2.5 py-1 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg flex items-center gap-1.5"><TrendingUp size={12} className="text-emerald-600 dark:text-emerald-400" /><span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 tracking-wider">AKTIF</span></div>
                                       </div>
                                       <div className="flex flex-col">
-                                        <div className="flex items-baseline gap-2"><span className="text-3xl font-['Lexend_Deca'] font-bold text-slate-800 tracking-tight">{isLoading ? ".." : stat.value}</span></div>
+                                        <div className="flex items-baseline gap-2"><span className="text-3xl font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100 tracking-tight">{isLoading ? ".." : stat.value}</span></div>
                                         <p className="text-[12px] font-semibold text-slate-500 mt-1 uppercase tracking-wider">{stat.label}</p>
                                       </div>
                                    </div>
@@ -302,9 +302,9 @@ export default function PakarDashboard() {
                             <div className="flex flex-col lg:flex-row items-center gap-4">
                                 <div className="flex-1 relative w-full group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><Search className="h-5 w-5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" /></div>
-                                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Cari materi berdasarkan judul..." className="block w-full pl-12 pr-6 py-3.5 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all shadow-sm" />
+                                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Cari materi berdasarkan judul..." className="block w-full pl-12 pr-6 py-3.5 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 rounded-xl text-[14px] font-medium text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all shadow-sm dark:shadow-none" />
                                 </div>
-                                <div className="flex gap-1.5 p-1 bg-slate-100 rounded-xl">
+                                <div className="flex gap-1.5 p-1 bg-slate-100 dark:bg-white/5 rounded-xl">
                                     {[
                                         { id: "pending", label: "Antrean", icon: ListFilter },
                                         { id: "approved", label: "Verif", icon: CheckCircle },
@@ -312,9 +312,9 @@ export default function PakarDashboard() {
                                     ].map((tab) => {
                                         const active = filter === tab.id;
                                         return (
-                                            <button key={tab.id} onClick={() => setFilter(tab.id as any)} className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-wider transition-all ${active ? "bg-white text-slate-800 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-700"}`}>
+                                            <button key={tab.id} onClick={() => setFilter(tab.id as any)} className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-wider transition-all ${active ? "bg-white dark:bg-[#252336] text-slate-800 dark:text-slate-100 shadow-sm dark:shadow-[0_4px_12px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-white/5" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"}`}>
                                                 <tab.icon size={14} />{tab.label}
-                                                {tab.id === 'pending' && pendingNotes.length > 0 && <span className={`ml-1 px-1.5 py-0.5 rounded-md flex items-center justify-center text-[9px] font-bold ${active ? "bg-indigo-50 text-indigo-600" : "bg-slate-200 text-slate-500"}`}>{pendingNotes.length}</span>}
+                                                {tab.id === 'pending' && pendingNotes.length > 0 && <span className={`ml-1 px-1.5 py-0.5 rounded-md flex items-center justify-center text-[9px] font-bold ${active ? "bg-indigo-50 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400" : "bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-slate-400"}`}>{pendingNotes.length}</span>}
                                             </button>
                                         );
                                     })}
@@ -324,48 +324,48 @@ export default function PakarDashboard() {
                             <div className="grid grid-cols-1 gap-4">
                                 {isLoading ? (
                                     <div className="flex flex-col items-center justify-center py-20">
-                                        <div className="w-10 h-10 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin mb-4" />
-                                        <span className="text-slate-400 font-semibold text-[13px] animate-pulse">Menghubungkan Server Pakar...</span>
+                                        <div className="w-10 h-10 border-4 border-indigo-100 dark:border-white/10 border-t-indigo-600 rounded-full animate-spin mb-4" />
+                                        <span className="text-slate-400 dark:text-slate-500 font-semibold text-[13px] animate-pulse">Menghubungkan Server Pakar...</span>
                                     </div>
                                 ) : filteredNotes.length === 0 ? (
-                                    <div className="bg-white rounded-[24px] py-20 border border-slate-200 border-dashed text-center flex flex-col items-center shadow-sm">
-                                        <div className="w-20 h-20 bg-slate-50 rounded-[20px] flex items-center justify-center mb-5"><CheckCircle className="w-10 h-10 text-slate-300" /></div>
-                                        <h3 className="font-['Lexend_Deca'] text-xl font-bold text-slate-800 mb-1.5">Tugas Selesai!</h3>
-                                        <p className="text-slate-500 font-medium text-[14px]">Antrean materi verifikasi kamu kosong hari ini.</p>
+                                    <div className="bg-white dark:bg-[#1C1A29] rounded-[24px] py-20 border border-slate-200 dark:border-white/10 border-dashed text-center flex flex-col items-center shadow-sm dark:shadow-none">
+                                        <div className="w-20 h-20 bg-slate-50 dark:bg-white/5 rounded-[20px] flex items-center justify-center mb-5"><CheckCircle className="w-10 h-10 text-slate-300 dark:text-white/20" /></div>
+                                        <h3 className="font-['Lexend_Deca'] text-xl font-bold text-slate-800 dark:text-slate-100 mb-1.5">Tugas Selesai!</h3>
+                                        <p className="text-slate-500 dark:text-slate-400 font-medium text-[14px]">Antrean materi verifikasi kamu kosong hari ini.</p>
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
                                         {filteredNotes.map((note) => {
                                             const subject = mataPelajaran.find(m => m.name === note.mataPelajaran);
                                             return (
-                                                <article key={note.id} className="group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-8 border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors bg-transparent outline-none px-4 sm:px-6 rounded-[24px]">
+                                                <article key={note.id} className="group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-8 border-b border-slate-100 dark:border-white/5 last:border-0 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors bg-transparent outline-none px-4 sm:px-6 rounded-[24px]">
                                                     {/* Feed Text */}
                                                     <div className="flex-1 min-w-0 flex flex-col w-full h-full">
                                                         {/* Author Header */}
                                                         <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-slate-800">
                                                             <div className="flex items-center gap-1.5 group/author">
                                                                 <AvatarImage src={note.author?.avatar} size={20} className="ring-2 ring-transparent group-hover/author:ring-indigo-500/20 transition-all" />
-                                                                <span className="font-bold text-slate-950 group-hover/author:underline tracking-tight">{note.author?.name}</span>
+                                                                <span className="font-bold text-slate-950 dark:text-slate-200 group-hover/author:underline tracking-tight">{note.author?.name}</span>
                                                             </div>
                                                             <span className="text-slate-700 px-0.5 font-bold">di</span>
-                                                            <span className="font-extrabold text-slate-900 tracking-tight">{note.mataPelajaran}</span>
+                                                            <span className="font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">{note.mataPelajaran}</span>
                                                             {note.kelas && note.kelas !== "-" && note.kelas !== "Semua" && (
                                                                 <>
                                                                     <span className="text-[10px] text-slate-400 mx-0.5 font-bold">•</span>
-                                                                    <span className="text-slate-800 font-bold tracking-tight">Kelas {note.kelas}</span>
+                                                                    <span className="text-slate-800 dark:text-slate-300 font-bold tracking-tight">Kelas {note.kelas}</span>
                                                                 </>
                                                             )}
                                                             <span className="text-[10px] text-slate-400 mx-0.5 font-bold">•</span>
-                                                            <span className="text-[12px] text-slate-500 font-bold">{new Date(note.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+                                                            <span className="text-[12px] text-slate-500 dark:text-slate-400 font-bold">{new Date(note.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
                                                         </div>
 
                                                         {/* Title */}
-                                                        <h2 className="text-[20px] md:text-[22px] font-extrabold text-slate-900 leading-[1.25] tracking-tight group-hover:text-indigo-600 transition-colors line-clamp-2 mb-2 font-['Lexend_Deca']">
+                                                        <h2 className="text-[20px] md:text-[22px] font-extrabold text-slate-900 dark:text-slate-100 leading-[1.25] tracking-tight group-hover:text-indigo-600 transition-colors line-clamp-2 mb-2 font-['Lexend_Deca']">
                                                             {note.title}
                                                         </h2>
 
                                                         {/* Excerpt */}
-                                                        <p className="text-[15px] font-['Manrope'] text-slate-600 line-clamp-2 leading-relaxed mb-5 pr-2 font-medium">
+                                                        <p className="text-[15px] font-['Manrope'] text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed mb-5 pr-2 font-medium">
                                                             {note.description}
                                                         </p>
 
@@ -373,21 +373,21 @@ export default function PakarDashboard() {
                                                         <div className="flex items-center gap-3 mt-auto flex-wrap">
                                                             {note.isValidated ? (
                                                                 <>
-                                                                    <div className="bg-emerald-50 text-emerald-600 rounded-full px-4 py-2 border border-emerald-100 font-['Lexend_Deca'] font-bold text-[11px] flex items-center gap-2 uppercase tracking-widest"><ShieldCheck size={16} /> Verified</div>
-                                                                    <Link to={`/note/${note.id}`} className="px-5 py-2 bg-white border border-slate-200 text-slate-600 rounded-full font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest flex items-center gap-1.5 hover:bg-slate-50 hover:border-indigo-200 hover:text-indigo-600 transition-all shadow-sm group/btn">Detail<ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" /></Link>
+                                                                    <div className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full px-4 py-2 border border-emerald-100 dark:border-emerald-500/20 font-['Lexend_Deca'] font-bold text-[11px] flex items-center gap-2 uppercase tracking-widest"><ShieldCheck size={16} /> Verified</div>
+                                                                    <Link to={`/note/${note.id}`} className="px-5 py-2 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 rounded-full font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest flex items-center gap-1.5 hover:bg-slate-50 dark:hover:bg-white/5 hover:border-indigo-200 hover:text-indigo-600 transition-all shadow-sm dark:shadow-none group/btn">Detail<ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" /></Link>
                                                                 </>
                                                             ) : (
                                                                 <>
                                                                     <button onClick={() => handleActionClick(note, "approve")} className="px-5 py-2 bg-indigo-600 text-white rounded-full font-['Lexend_Deca'] font-bold text-[11px] shadow-sm hover:bg-indigo-700 transition-all flex items-center gap-1.5 uppercase tracking-widest"><CheckCircle size={14} /> Setuju</button>
-                                                                    <button onClick={() => handleActionClick(note, "reject")} className="px-4 py-2 bg-white border border-slate-200 text-rose-500 rounded-full hover:bg-rose-50 hover:border-rose-200 transition-all flex items-center shadow-sm"><XCircle size={16} /></button>
-                                                                    <Link to={`/note/${note.id}`} className="px-5 py-2 bg-slate-50 text-slate-600 rounded-full font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest flex items-center hover:bg-slate-100 border border-slate-200 transition-all shadow-sm">Detail</Link>
+                                                                    <button onClick={() => handleActionClick(note, "reject")} className="px-4 py-2 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 text-rose-500 rounded-full hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:border-rose-200 transition-all flex items-center shadow-sm dark:shadow-none"><XCircle size={16} /></button>
+                                                                    <Link to={`/note/${note.id}`} className="px-5 py-2 bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 rounded-full font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest flex items-center hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-all shadow-sm dark:shadow-none">Detail</Link>
                                                                 </>
                                                             )}
                                                         </div>
                                                     </div>
 
                                                     {/* Thumbnail */}
-                                                    <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-slate-50 relative shadow-sm border border-slate-100 flex items-center justify-center">
+                                                    <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-slate-50 dark:bg-white/5 relative shadow-sm border border-slate-100 dark:border-white/5 flex items-center justify-center">
                                                         {note.thumbnail ? (
                                                             <img src={note.thumbnail} alt={note.title} className="w-full h-full object-cover transition-transform duration-500" />
                                                         ) : (
@@ -405,11 +405,11 @@ export default function PakarDashboard() {
                         </div>
 
                         <div className="xl:col-span-1 space-y-6">
-                            <div className="bg-white rounded-[24px] p-6 border border-slate-200 shadow-sm relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-16 h-16 bg-indigo-50/50 rounded-bl-[24px]" />
+                            <div className="bg-white dark:bg-[#1C1A29] rounded-[24px] p-6 border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-16 h-16 bg-indigo-50/50 dark:bg-indigo-500/10 rounded-bl-[24px]" />
                                 <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-10 h-10 bg-indigo-50 rounded-[12px] flex items-center justify-center"><Map className="w-5 h-5 text-indigo-600" /></div>
-                                    <div><h3 className="font-['Lexend_Deca'] font-bold text-slate-800 text-[15px] uppercase tracking-tight">Pedoman</h3><p className="text-[10px] text-indigo-500 font-semibold uppercase tracking-widest">Pakar 2026</p></div>
+                                    <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-500/10 rounded-[12px] flex items-center justify-center"><Map className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /></div>
+                                    <div><h3 className="font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100 text-[15px] uppercase tracking-tight">Pedoman</h3><p className="text-[10px] text-indigo-500 dark:text-indigo-400 font-semibold uppercase tracking-widest">Pakar 2026</p></div>
                                 </div>
                                 <div className="space-y-5">
                                     {[
@@ -419,7 +419,7 @@ export default function PakarDashboard() {
                                     ].map((rule) => (
                                         <div key={rule.num} className="flex gap-4 group">
                                             <div className={`w-1.5 h-1.5 rounded-full ${rule.c} mt-1.5 shrink-0`} />
-                                            <div><h4 className="text-[12px] font-bold text-slate-800 mb-0.5">{rule.title}</h4><p className="text-[12px] text-slate-500 font-medium leading-snug">{rule.desc}</p></div>
+                                            <div><h4 className="text-[12px] font-bold text-slate-800 dark:text-slate-100 mb-0.5">{rule.title}</h4><p className="text-[12px] text-slate-500 font-medium leading-snug">{rule.desc}</p></div>
                                         </div>
                                     ))}
                                 </div>

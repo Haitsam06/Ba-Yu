@@ -7,7 +7,7 @@
     @viteReactRefresh
     @vite('resources/frontend/main.tsx')
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 dark:bg-[#13111C] text-slate-900 dark:text-slate-100 transition-colors duration-300 antialiased">
     <div id="root"></div>
 </body>
 </html>

@@ -147,11 +147,11 @@ export function FeatureCarousel() {
               opacity: { duration: 0.3 },
               scale: { duration: 0.3 },
             }}
-            className={`bg-gradient-to-br ${currentFeature.bgGradient} rounded-3xl p-12 md:p-16 border-2 border-border relative overflow-hidden`}
+            className={`bg-gradient-to-br ${currentFeature.bgGradient} dark:from-[#1C1A29] dark:to-[#1C1A29] rounded-3xl p-12 md:p-16 border-2 border-slate-200 dark:border-white/10 relative overflow-hidden shadow-sm`}
           >
             {/* Background decoration */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/30 rounded-full -translate-y-32 translate-x-32 blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/20 rounded-full translate-y-32 -translate-x-32 blur-3xl" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/30 dark:bg-white/5 rounded-full -translate-y-32 translate-x-32 blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/20 dark:bg-white/5 rounded-full translate-y-32 -translate-x-32 blur-3xl" />
 
             <div className="relative z-10 max-w-4xl mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -172,7 +172,7 @@ export function FeatureCarousel() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="text-4xl font-bold text-foreground mb-4"
+                    className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4"
                   >
                     {currentFeature.title}
                   </motion.h3>
@@ -182,7 +182,7 @@ export function FeatureCarousel() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
-                    className="text-lg text-muted-foreground leading-relaxed mb-6"
+                    className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-6 font-medium"
                   >
                     {currentFeature.description}
                   </motion.p>
@@ -194,14 +194,14 @@ export function FeatureCarousel() {
                     transition={{ delay: 0.5 }}
                     className="flex flex-wrap gap-3"
                   >
-                    <div className="flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-xl border border-white/40 shadow-sm">
-                      <currentFeature.icon className="w-5 h-5 text-foreground" />
-                      <span className="font-bold text-sm text-foreground">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-white/60 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/40 dark:border-white/10 shadow-sm">
+                      <currentFeature.icon className="w-5 h-5 text-slate-800 dark:text-slate-200" />
+                      <span className="font-bold text-sm text-slate-800 dark:text-slate-200">
                         {currentFeature.stats}
                       </span>
                     </div>
-                    <div className="px-4 py-2 bg-white/60 backdrop-blur-sm rounded-xl border border-white/40 shadow-sm">
-                      <span className="font-bold text-sm text-foreground">
+                    <div className="px-4 py-2 bg-white/60 dark:bg-white/10 backdrop-blur-sm rounded-xl border border-white/40 dark:border-white/10 shadow-sm">
+                      <span className="font-bold text-sm text-slate-800 dark:text-slate-200">
                         ✨ {currentFeature.highlight}
                       </span>
                     </div>
@@ -216,7 +216,7 @@ export function FeatureCarousel() {
                   className="relative"
                 >
                   {/* Large Icon Showcase */}
-                  <div className={`w-full aspect-square rounded-3xl bg-gradient-to-br ${currentFeature.color} flex items-center justify-center shadow-2xl border-8 border-white/50 relative overflow-hidden`}>
+                  <div className={`w-full aspect-square rounded-3xl bg-gradient-to-br ${currentFeature.color} flex items-center justify-center shadow-2xl border-8 border-white/50 dark:border-white/10 relative overflow-hidden`}>
                     <motion.div
                       animate={{ 
                         rotate: [0, 5, -5, 0],
@@ -259,11 +259,11 @@ export function FeatureCarousel() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.6, type: 'spring' }}
-                    className="absolute -bottom-4 -right-4 bg-white rounded-2xl shadow-2xl px-6 py-3 border-2 border-border"
+                    className="absolute -bottom-4 -right-4 bg-white dark:bg-[#1C1A29] rounded-2xl shadow-2xl px-6 py-3 border-2 border-slate-200 dark:border-white/10"
                   >
                     <div className="flex items-center gap-2">
-                      <Shield className="w-5 h-5 text-primary" />
-                      <span className="font-bold text-foreground">Fitur Unggulan</span>
+                      <Shield className="w-5 h-5 text-primary dark:text-indigo-400" />
+                      <span className="font-bold text-slate-900 dark:text-slate-100">Fitur Unggulan</span>
                     </div>
                   </motion.div>
                 </motion.div>
@@ -275,16 +275,16 @@ export function FeatureCarousel() {
         {/* Navigation Buttons */}
         <button
           onClick={handlePrev}
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-md hover:bg-white rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-110 z-10 group"
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 dark:bg-[#1C1A29]/90 backdrop-blur-md hover:bg-white dark:hover:bg-[#1C1A29] rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-110 z-10 group border border-transparent dark:border-white/5"
         >
-          <ChevronLeft className="w-6 h-6 text-foreground group-hover:-translate-x-0.5 transition-transform" />
+          <ChevronLeft className="w-6 h-6 text-slate-800 dark:text-slate-200 group-hover:-translate-x-0.5 transition-transform" />
         </button>
 
         <button
           onClick={handleNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-md hover:bg-white rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-110 z-10 group"
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 dark:bg-[#1C1A29]/90 backdrop-blur-md hover:bg-white dark:hover:bg-[#1C1A29] rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-110 z-10 group border border-transparent dark:border-white/5"
         >
-          <ChevronRight className="w-6 h-6 text-foreground group-hover:translate-x-0.5 transition-transform" />
+          <ChevronRight className="w-6 h-6 text-slate-800 dark:text-slate-200 group-hover:translate-x-0.5 transition-transform" />
         </button>
       </div>
 
@@ -300,7 +300,7 @@ export function FeatureCarousel() {
               className={`h-2 rounded-full transition-all ${
                 index === currentIndex
                   ? 'w-12 bg-primary'
-                  : 'w-2 bg-gray-300 group-hover:bg-gray-400'
+                  : 'w-2 bg-gray-300 dark:bg-white/10 group-hover:bg-gray-400 dark:group-hover:bg-white/30'
               }`}
               whileHover={{ scale: 1.2 }}
               whileTap={{ scale: 0.9 }}
@@ -319,8 +319,8 @@ export function FeatureCarousel() {
             whileTap={{ scale: 0.95 }}
             className={`p-4 rounded-xl border-2 transition-all ${
               index === currentIndex
-                ? 'border-primary bg-primary/5 shadow-lg'
-                : 'border-border bg-white hover:border-primary/50 hover:shadow-md'
+                ? 'border-primary bg-primary/5 dark:bg-indigo-500/10 shadow-lg'
+                : 'border-slate-100 dark:border-white/5 bg-white dark:bg-[#1C1A29] hover:border-primary/50 hover:shadow-md'
             }`}
           >
             <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${feature.color} flex items-center justify-center mb-2 mx-auto`}>
@@ -340,7 +340,7 @@ export function FeatureCarousel() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute top-4 right-4 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full shadow-lg flex items-center gap-2 text-xs font-medium text-gray-600"
+          className="absolute top-4 right-4 px-3 py-1.5 bg-white/90 dark:bg-[#1C1A29]/90 backdrop-blur-md rounded-full shadow-lg flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-400 border border-transparent dark:border-white/10"
         >
           <motion.div
             animate={{ scale: [1, 1.2, 1] }}

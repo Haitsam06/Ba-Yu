@@ -334,7 +334,7 @@ export default function UploadPage() {
               <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
             </div>
           </div>
-          <h3 className="mt-6 font-['Lexend_Deca'] font-extrabold text-gray-900 text-lg">
+          <h3 className="mt-6 font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 text-lg">
             Menyiapkan Draf...
           </h3>
           <p className="mt-2 font-['Manrope'] text-gray-700 font-medium text-sm">
@@ -342,21 +342,21 @@ export default function UploadPage() {
           </p>
         </div>
       )}
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-white dark:bg-[#13111C]">
 
         {/* Top Bar */}
-        <div className="sticky top-0 bg-white/95 backdrop-blur-md border-b border-gray-100/60 z-30 transition-all duration-300 shadow-[0_2px_10px_rgb(0,0,0,0.02)]">
+        <div className="sticky top-0 bg-white/95 dark:bg-[#13111C]/95 backdrop-blur-md border-b border-gray-100/60 dark:border-white/5 z-30 transition-all duration-300 shadow-[0_2px_10px_rgb(0,0,0,0.02)] dark:shadow-none">
           <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3 min-w-0">
               <button
                 onClick={() => navigate(-1)}
-                className="p-2 -ml-2 hover:bg-gray-100 active:bg-gray-200 rounded-full transition-all duration-200 text-gray-500 hover:text-gray-900 shrink-0"
+                className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-white/10 active:bg-gray-200 dark:active:bg-white/15 rounded-full transition-all duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 shrink-0"
               >
                 <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
               </button>
               <div className="hidden sm:flex items-center gap-2.5 min-w-0">
                 <div className="w-2 h-2 rounded-full bg-indigo-500 shrink-0 shadow-[0_0_8px_rgba(99,102,241,0.4)] animate-pulse"></div>
-                <span className="text-[14px] font-['Lexend_Deca'] font-extrabold text-gray-900 truncate max-w-[200px]">
+                <span className="text-[14px] font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 truncate max-w-[200px]">
                   {title.trim() ? title : 'Draf Baru'}
                 </span>
               </div>
@@ -429,7 +429,7 @@ export default function UploadPage() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Judul Catatan..."
-            className="w-full text-[40px] md:text-[48px] font-['Lexend_Deca'] font-extrabold text-gray-900 placeholder:text-gray-300 focus:outline-none mt-12 mb-2 leading-[1.1] tracking-[-0.03em] transition-all"
+            className="w-full text-[40px] md:text-[48px] font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:outline-none mt-12 mb-2 leading-[1.1] tracking-[-0.03em] transition-all bg-transparent"
             maxLength={200}
           />
           <div className="flex items-center gap-3 mb-8">
@@ -444,7 +444,9 @@ export default function UploadPage() {
             <style dangerouslySetInnerHTML={{ __html: `
               .notion-editor .ql-container.ql-snow { border: none !important; font-family: 'Manrope', sans-serif; font-size: 17px; }
               .notion-editor .ql-editor { padding: 0 !important; min-height: 500px; line-height: 1.9; color: #1f2937; }
+              .dark .notion-editor .ql-editor { color: #E8E6F0; }
               .notion-editor .ql-editor.ql-blank::before { color: #9ca3af; font-style: normal; font-family: 'Manrope', sans-serif; left: 0 !important; right: 0 !important; }
+              .dark .notion-editor .ql-editor.ql-blank::before { color: #4b5563; }
               .notion-editor .ql-editor h1 { font-family: 'Lexend Deca', sans-serif; font-size: 1.75em; font-weight: 700; margin: 1em 0 0.4em; color: #111827; }
               .notion-editor .ql-editor h2 { font-family: 'Lexend Deca', sans-serif; font-size: 1.35em; font-weight: 700; margin: 0.8em 0 0.3em; color: #1f2937; }
               .notion-editor .ql-editor h3 { font-family: 'Lexend Deca', sans-serif; font-size: 1.15em; font-weight: 600; margin: 0.6em 0 0.3em; color: #374151; }
@@ -527,7 +529,7 @@ export default function UploadPage() {
 
         {/* Bottom hint — sticky so it respects sidebar layout */}
         {!canOpenPreview && (
-          <div className="sticky bottom-0 bg-white/90 backdrop-blur-md border-t border-gray-100 py-3 z-10 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="sticky bottom-0 bg-white/90 dark:bg-[#13111C]/90 backdrop-blur-md border-t border-gray-100 dark:border-white/5 py-3 z-10 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <p className="text-sm font-['Manrope'] text-gray-600 font-bold text-center px-4">
               {!title.trim() ? '✏️  Mulai dengan menulis judul' : !hasContent ? '📝  Tulis isi catatan' : ''}
             </p>

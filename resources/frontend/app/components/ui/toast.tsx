@@ -199,7 +199,7 @@ const ToastContainer = () => {
               className={clsx(
                 "absolute right-0 bottom-0 shadow-menu rounded-xl leading-[21px] p-4 h-fit",
                 {
-                  message: "bg-white text-gray-900 border border-gray-100 shadow-sm",
+                  message: "bg-white dark:bg-[#1C1A29] text-gray-900 dark:text-gray-100 border border-gray-100 dark:border-white/10 shadow-sm",
                   success: "bg-emerald-600 text-white shadow-md",
                   warning: "bg-amber-500 text-white shadow-md",
                   error: "bg-red-600 text-white shadow-md"

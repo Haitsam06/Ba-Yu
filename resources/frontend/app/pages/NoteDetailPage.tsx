@@ -437,7 +437,7 @@ export default function NoteDetailPage() {
               <MobileLayout showBottomNav={false}>{children}</MobileLayout>
           )
         : ({ children }: { children: React.ReactNode }) => (
-              <div className="min-h-screen bg-white">
+              <div className="min-h-screen bg-white dark:bg-[#13111C]">
                   <Navbar variant="default" />
                   {children}
               </div>
@@ -700,14 +700,14 @@ export default function NoteDetailPage() {
             />
 
             {/* Top Bar - Clean / Sticky */}
-            <div className="sticky top-0 bg-white/95 backdrop-blur-md border-b border-gray-100/50 z-30 transition-all">
+            <div className="sticky top-0 bg-white/95 dark:bg-[#13111C]/95 backdrop-blur-md border-b border-gray-100/50 dark:border-white/5 z-30 transition-all">
                 <div className="max-w-3xl mx-auto px-5 py-3 flex items-center justify-between">
                     <button
                         onClick={() => navigate(-1)}
-                        className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center group"
+                        className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors flex items-center justify-center group"
                     >
                         <ArrowLeft
-                            className="w-5 h-5 text-gray-600 group-hover:text-gray-950 transition-colors"
+                            className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-gray-950 dark:group-hover:text-gray-100 transition-colors"
                             strokeWidth={2.5}
                         />
                     </button>
@@ -716,14 +716,14 @@ export default function NoteDetailPage() {
                         {(user?.role === "pakar" || user?.role === "admin") && (
                             <button
                                 onClick={handleVerifyPakar}
-                                className="hidden sm:flex mr-2 items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200 rounded-lg text-[13px] font-['Lexend_Deca'] font-bold transition-colors"
+                                className="hidden sm:flex mr-2 items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 rounded-lg text-[13px] font-['Lexend_Deca'] font-bold transition-colors"
                             >
                                 <ShieldCheck className="w-4 h-4" /> Verifikasi
                             </button>
                         )}
                         <button
                             onClick={handleShare}
-                            className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-600 hover:text-gray-950"
+                            className="p-2 hover:bg-gray-50 dark:hover:bg-white/10 rounded-full transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-950 dark:hover:text-gray-100"
                         >
                             <Share2
                                 className="w-[18px] h-[18px]"
@@ -734,7 +734,7 @@ export default function NoteDetailPage() {
                             onClick={() =>
                                 requireAuth(() => toggleBookmark(note.id))
                             }
-                            className={`p-2 rounded-full transition-colors ${isBookmarked(note.id) ? "text-primary bg-primary/5 hover:bg-primary/10" : "text-gray-600 hover:text-gray-950 hover:bg-gray-50"}`}
+                            className={`p-2 rounded-full transition-colors ${isBookmarked(note.id) ? "text-primary bg-primary/5 hover:bg-primary/10" : "text-gray-600 dark:text-gray-400 hover:text-gray-950 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-white/10"}`}
                         >
                             <Bookmark
                                 className={`w-[18px] h-[18px] ${isBookmarked(note.id) ? "fill-primary" : ""}`}
@@ -765,7 +765,7 @@ export default function NoteDetailPage() {
 
             <article className="max-w-3xl mx-auto px-5 lg:px-0 pt-8 mt-2">
                 {/* Title */}
-                <h1 className="font-['Lexend_Deca'] font-extrabold text-[2.5rem] md:text-[3.25rem] text-gray-900 mb-4 leading-[1.12] tracking-tight">
+                <h1 className="font-['Lexend_Deca'] font-extrabold text-[2.5rem] md:text-[3.25rem] text-gray-900 dark:text-gray-100 mb-4 leading-[1.12] tracking-tight">
                     {note.title}
                 </h1>
 
@@ -774,12 +774,12 @@ export default function NoteDetailPage() {
                     <span className="text-[12px] font-['Lexend_Deca'] font-bold text-primary uppercase tracking-widest bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
                         {note.mataPelajaran}
                     </span>
-                    <span className="text-[14px] font-['Manrope'] font-bold text-gray-700 bg-gray-200/60 px-3 py-1 rounded-full border border-gray-300/30">
+                    <span className="text-[14px] font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 bg-gray-200/60 dark:bg-white/10 px-3 py-1 rounded-full border border-gray-300/30 dark:border-white/10">
                         {note.jenjang === "Kuliah"
                             ? `${note.kelas || "1"}`
                             : `${note.jenjang} Kelas ${note.kelas}`}
                     </span>
-                    <span className="text-[14px] font-['Manrope'] font-bold text-gray-700 bg-gray-200/60 px-3 py-1 rounded-full border border-gray-300/30 hidden sm:block">
+                    <span className="text-[14px] font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 bg-gray-200/60 dark:bg-white/10 px-3 py-1 rounded-full border border-gray-300/30 dark:border-white/10 hidden sm:block">
                         Semester {note.semester}
                     </span>
                 </div>
@@ -794,14 +794,14 @@ export default function NoteDetailPage() {
                             src={author.avatar}
                             alt={author.name}
                             size={48}
-                            className="shadow-sm border border-gray-100 bg-gray-50 hover:ring-2 hover:ring-primary/20 transition-all cursor-pointer"
+                            className="shadow-sm border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-[#1C1A29] hover:ring-2 hover:ring-primary/20 transition-all cursor-pointer"
                         />
                     </Link>
                     <div className="flex-1">
                         <div className="flex items-center gap-2">
                             <Link
                                 to={`/profile/${author._id || author.id}`}
-                                className="font-['Manrope'] font-bold text-gray-900 text-[15px] hover:text-primary transition-colors"
+                                className="font-['Manrope'] font-bold text-gray-900 dark:text-gray-100 text-[15px] hover:text-primary transition-colors"
                             >
                                 {author.name}
                             </Link>
@@ -832,7 +832,7 @@ export default function NoteDetailPage() {
                                 </button>
                             )}
                         </div>
-                        <div className="flex items-center gap-3 text-[13px] font-['Manrope'] text-gray-600 mt-0.5 font-bold">
+                        <div className="flex items-center gap-3 text-[13px] font-['Manrope'] text-gray-600 dark:text-gray-400 mt-0.5 font-bold">
                             <div className="flex items-center gap-1.5">
                                 <span>{note.createdAt}</span>
                             </div>
@@ -861,7 +861,7 @@ export default function NoteDetailPage() {
                 </div>
 
                 {/* Interactivity Bar Top */}
-                <div className="flex items-center justify-between py-3 border-y border-gray-100/80 mb-10 px-1">
+                <div className="flex items-center justify-between py-3 border-y border-gray-100/80 dark:border-white/5 mb-10 px-1">
                     <div className="flex items-center gap-6">
                         <button
                             onClick={handleLikePost}
@@ -869,7 +869,7 @@ export default function NoteDetailPage() {
                             aria-label="Suka catatan"
                         >
                             <Heart
-                                className={`w-5 h-5 transition-transform group-hover:scale-110 ${liked ? "fill-red-500 text-red-500" : "text-gray-600 group-hover:text-red-500"}`}
+                                className={`w-5 h-5 transition-transform group-hover:scale-110 ${liked ? "fill-red-500 text-red-500" : "text-gray-600 dark:text-gray-400 group-hover:text-red-500"}`}
                                 strokeWidth={2.5}
                             />
                             <span
@@ -891,10 +891,10 @@ export default function NoteDetailPage() {
                                     });
                                 }
                             }}
-                            className="flex items-center gap-2 text-[15px] font-['Manrope'] font-bold text-gray-600 hover:text-gray-950 transition-colors group"
+                            className="flex items-center gap-2 text-[15px] font-['Manrope'] font-bold text-gray-600 dark:text-gray-400 hover:text-gray-950 dark:hover:text-gray-100 transition-colors group"
                         >
                             <MessageCircle
-                                className="w-5 h-5 text-gray-600 group-hover:text-gray-950 transition-transform group-hover:scale-110"
+                                className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-gray-950 dark:group-hover:text-gray-100 transition-transform group-hover:scale-110"
                                 strokeWidth={2.5}
                             />
                             <span>{comments.length}</span>
@@ -911,7 +911,7 @@ export default function NoteDetailPage() {
 
                     <div className="flex items-center gap-3">
                         {note.isValidated && (
-                            <div className="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest border border-emerald-100 shadow-sm animate-in fade-in duration-700">
+                            <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest border border-emerald-100 dark:border-emerald-500/20 shadow-sm dark:shadow-none animate-in fade-in duration-700">
                                 <ShieldCheck className="w-3.5 h-3.5" />
                                 Review Pakar
                             </div>
@@ -922,7 +922,7 @@ export default function NoteDetailPage() {
                 {/* Editor Content Area (Borderless Notion / Substack View) */}
                 <div
                     id="area-materi-pdf"
-                    className="notion-reader ql-snow mb-16"
+                    className="notion-reader ql-snow mb-16 note-content-container"
                 >
                     <div
                         className="ql-editor"
@@ -932,24 +932,24 @@ export default function NoteDetailPage() {
                 {/* 🔥 KURUNG TUTUPNYA PINDAH KE SINI YA DER! 🔥 */}
 
                 {/* PREMIUM DOWNLOAD CARD */}
-                <div className="mt-16 mb-16 bg-gradient-to-br from-indigo-50/40 via-white to-white rounded-[40px] p-10 md:p-14 text-center border border-indigo-50 shadow-[0_10px_30px_rgba(0,0,0,0.02)] relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-100/20 rounded-bl-[100px] pointer-events-none transition-transform group-hover:scale-110 duration-700" />
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-violet-100/10 rounded-tr-[80px] pointer-events-none" />
+                <div className="mt-16 mb-16 bg-gradient-to-br from-indigo-50/40 via-white to-white dark:from-[#1C1A29] dark:via-[#1C1A29] dark:to-[#1C1A29] rounded-[40px] p-10 md:p-14 text-center border border-indigo-50 dark:border-white/5 shadow-[0_10px_30px_rgba(0,0,0,0.02)] dark:shadow-none relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-100/20 dark:bg-indigo-500/10 rounded-bl-[100px] pointer-events-none transition-transform duration-700" />
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-violet-100/10 dark:bg-primary/10 rounded-tr-[80px] pointer-events-none" />
 
                     <div className="relative z-10">
-                        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-md border border-indigo-50 group-hover:rotate-12 transition-transform">
-                            <DownloadCloud className="w-8 h-8 text-indigo-600" />
+                        <div className="w-16 h-16 bg-white dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-md dark:shadow-none border border-indigo-50 dark:border-white/10 transition-transform">
+                            <DownloadCloud className="w-8 h-8 text-indigo-600 dark:text-primary" />
                         </div>
-                        <h3 className="font-['Lexend_Deca'] font-extrabold text-2xl text-slate-900 mb-4">
+                        <h3 className="font-['Lexend_Deca'] font-extrabold text-2xl text-slate-900 dark:text-slate-100 mb-4">
                             Materi Lengkap dalam Genggaman
                         </h3>
-                        <p className="font-['Manrope'] text-[16px] text-slate-500 mb-10 max-w-md mx-auto leading-relaxed font-medium">
+                        <p className="font-['Manrope'] text-[16px] text-slate-500 dark:text-slate-400 mb-10 max-w-md mx-auto leading-relaxed font-medium">
                             Unduh versi PDF asli untuk dipelajari kapan saja,
                             bahkan saat Anda sedang tidak terhubung ke internet.
                         </p>
                         <button
                             onClick={handleDownloadPDF}
-                            className="mx-auto flex items-center justify-center gap-3 px-10 py-5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-[13px] font-['Lexend_Deca'] font-black uppercase tracking-widest transition-all shadow-xl shadow-slate-900/10 hover:-translate-y-1 active:scale-95"
+                            className="mx-auto flex items-center justify-center gap-3 px-10 py-5 bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 text-white rounded-2xl text-[13px] font-['Lexend_Deca'] font-black uppercase tracking-widest transition-all shadow-xl shadow-slate-900/10 dark:shadow-none active:scale-95"
                         >
                             <FileText className="w-5 h-5 opacity-50" />
                             Download PDF Materi
@@ -959,32 +959,32 @@ export default function NoteDetailPage() {
 
                 {/* PREMIUM VERIFIED CARD */}
                 {note.isValidated && validator && (
-                    <div className="bg-white rounded-[40px] p-8 md:p-12 flex flex-col lg:flex-row items-center justify-between gap-10 mb-24 shadow-[0_20px_50px_-12px_rgba(93,92,230,0.12)] border border-emerald-50 relative overflow-hidden group mt-12">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50/50 rounded-full blur-[80px] pointer-events-none -translate-y-1/2 translate-x-1/4" />
-                        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-indigo-50/30 rounded-full blur-[60px] pointer-events-none" />
+                    <div className="bg-white dark:bg-[#1C1A29] rounded-[40px] p-8 md:p-12 flex flex-col lg:flex-row items-center justify-between gap-10 mb-24 shadow-[0_20px_50px_-12px_rgba(93,92,230,0.12)] dark:shadow-none border border-emerald-50 dark:border-white/5 relative overflow-hidden group mt-12">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50/50 dark:bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none -translate-y-1/2 translate-x-1/4" />
+                        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-indigo-50/30 dark:bg-indigo-500/10 rounded-full blur-[60px] pointer-events-none" />
 
                         <div className="flex flex-col md:flex-row items-center text-center md:text-left gap-8 flex-1 relative z-10">
-                            <div className="w-24 h-24 bg-emerald-500 rounded-[36px] flex items-center justify-center shadow-lg shadow-emerald-500/25 group-hover:rotate-6 transition-transform duration-700">
+                            <div className="w-24 h-24 bg-emerald-500 rounded-[36px] flex items-center justify-center shadow-lg shadow-emerald-500/25 transition-transform duration-700">
                                 <ShieldCheck className="w-12 h-12 text-white" />
                             </div>
                             <div className="space-y-3">
                                 <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
-                                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.25em] bg-emerald-50 px-4 py-1.5 rounded-full border border-emerald-100/50 shadow-sm">
+                                    <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.25em] bg-emerald-50 dark:bg-emerald-500/10 px-4 py-1.5 rounded-full border border-emerald-100/50 dark:border-emerald-500/20 shadow-sm dark:shadow-none">
                                         Expert Verified
                                     </span>
                                 </div>
-                                <h4 className="font-['Lexend_Deca'] font-black text-3xl text-slate-900 tracking-tight">
+                                <h4 className="font-['Lexend_Deca'] font-black text-3xl text-slate-900 dark:text-slate-100 tracking-tight">
                                     Kurasi Materi Pakar
                                 </h4>
                                 {note.verify_reason ? (
                                     <div className="relative">
-                                        <MessageSquare className="absolute -left-2 -top-2 w-10 h-10 text-emerald-100 opacity-50" />
-                                        <p className="font-['Manrope'] text-slate-600 text-[16px] leading-relaxed max-w-xl font-bold italic relative z-10 pl-2">
+                                        <MessageSquare className="absolute -left-2 -top-2 w-10 h-10 text-emerald-100 dark:text-emerald-900/30 opacity-50" />
+                                        <p className="font-['Manrope'] text-slate-600 dark:text-slate-400 text-[16px] leading-relaxed max-w-xl font-bold italic relative z-10 pl-2">
                                             "{note.verify_reason}"
                                         </p>
                                     </div>
                                 ) : (
-                                    <p className="font-['Manrope'] text-slate-400 text-[15px] leading-relaxed max-w-lg font-medium italic">
+                                    <p className="font-['Manrope'] text-slate-400 dark:text-slate-500 text-[15px] leading-relaxed max-w-lg font-medium italic">
                                         Pakar memberikan rating tinggi untuk
                                         akurasi materi ini tanpa catatan
                                         tambahan.
@@ -995,16 +995,16 @@ export default function NoteDetailPage() {
 
                         <Link
                             to={validator.id ? `/profile/${validator.id}` : "#"}
-                            className="bg-slate-50/80 backdrop-blur-md rounded-[32px] p-8 border border-slate-100 shadow-sm flex items-center gap-6 shrink-0 w-full lg:w-auto relative z-10 group/pakar hover:bg-white hover:border-indigo-100 transition-all duration-500 cursor-pointer"
+                            className="bg-slate-50/80 dark:bg-white/5 backdrop-blur-md rounded-[32px] p-8 border border-slate-100 dark:border-white/10 shadow-sm dark:shadow-none flex items-center gap-6 shrink-0 w-full lg:w-auto relative z-10 group/pakar hover:border-indigo-100 dark:hover:border-primary/30 transition-all duration-500 cursor-pointer"
                         >
                             <div className="relative">
                                 <AvatarImage
                                     src={validator.avatar}
                                     alt={validator.name}
                                     size={64}
-                                    className="rounded-2xl border-4 border-white shadow-lg"
+                                    className="rounded-2xl border-4 border-white dark:border-[#1C1A29] shadow-lg dark:shadow-none"
                                 />
-                                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center shadow-sm">
+                                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full border-2 border-white dark:border-[#1C1A29] flex items-center justify-center shadow-sm">
                                     <Check
                                         className="w-3.5 h-3.5 text-white"
                                         strokeWidth={4}
@@ -1012,10 +1012,10 @@ export default function NoteDetailPage() {
                                 </div>
                             </div>
                             <div>
-                                <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.25em] mb-1.5">
+                                <p className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.25em] mb-1.5">
                                     Verified By
                                 </p>
-                                <p className="text-[18px] font-['Lexend_Deca'] font-black text-slate-900 group-hover/pakar:text-indigo-600 transition-colors leading-none mb-2">
+                                <p className="text-[18px] font-['Lexend_Deca'] font-black text-slate-900 dark:text-slate-100 group-hover/pakar:text-indigo-600 dark:group-hover/pakar:text-primary transition-colors leading-none mb-2">
                                     {validator.name}
                                 </p>
                                 <div className="flex items-center gap-2 mt-3 bg-white px-3 py-1.5 rounded-xl border border-slate-100 w-fit shadow-sm">
@@ -1039,8 +1039,8 @@ export default function NoteDetailPage() {
                                             />
                                         ))}
                                     </div>
-                                    <div className="w-[1px] h-3 bg-slate-200 mx-1" />
-                                    <span className="text-[11px] font-black text-slate-900">
+                                    <div className="w-[1px] h-3 bg-slate-200 dark:bg-white/10 mx-1" />
+                                    <span className="text-[11px] font-black text-slate-900 dark:text-slate-100">
                                         {(note.expert_rating || 5).toFixed(1)}
                                     </span>
                                 </div>
@@ -1054,7 +1054,7 @@ export default function NoteDetailPage() {
 
                 {/* Author Bottom Profile (Substack style) */}
                 <div className="mb-20">
-                    <h4 className="font-['Lexend_Deca'] font-extrabold text-[13px] text-gray-500 uppercase tracking-widest mb-6 text-center sm:text-left">
+                    <h4 className="font-['Lexend_Deca'] font-extrabold text-[13px] text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-6 text-center sm:text-left">
                         DITULIS OLEH
                     </h4>
                     <div className="bg-transparent flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
@@ -1063,7 +1063,7 @@ export default function NoteDetailPage() {
                                 src={author.avatar}
                                 alt={author.name}
                                 size={96}
-                                className="sm:!w-28 sm:!h-28 !w-24 !h-24 shrink-0 border border-gray-100 hover:ring-4 hover:ring-primary/20 transition-all cursor-pointer"
+                                className="sm:!w-28 sm:!h-28 !w-24 !h-24 shrink-0 border border-gray-100 dark:border-white/10 hover:ring-4 hover:ring-primary/20 transition-all cursor-pointer"
                             />
                         </Link>
                         <div className="flex-1">
@@ -1072,7 +1072,7 @@ export default function NoteDetailPage() {
                                     to={`/profile/${author._id || author.id}`}
                                     className="hover:text-primary transition-colors"
                                 >
-                                    <h3 className="font-['Lexend_Deca'] font-extrabold text-[28px] text-gray-900 hover:text-primary transition-colors">
+                                    <h3 className="font-['Lexend_Deca'] font-extrabold text-[28px] text-gray-900 dark:text-gray-100 hover:text-primary transition-colors">
                                         {author.name}
                                     </h3>
                                 </Link>
@@ -1085,7 +1085,7 @@ export default function NoteDetailPage() {
                                     </div>
                                 )}
                             </div>
-                            <p className="font-['Manrope'] text-[16px] text-gray-800 mb-6 max-w-xl leading-relaxed font-medium">
+                            <p className="font-['Manrope'] text-[16px] text-gray-800 dark:text-gray-300 mb-6 max-w-xl leading-relaxed font-medium">
                                 {author.role === "pakar"
                                     ? "Pakar Pendidikan tersertifikasi yang aktif membimbing siswa dan meninjau ribuan catatan."
                                     : `Siswa ${author.jenjang} yang aktif membagikan catatannya. Mari belajar bersama dan raih prestasi!`}
@@ -1098,8 +1098,8 @@ export default function NoteDetailPage() {
                                     }
                                     className={`w-full sm:w-auto px-8 py-3 rounded-full text-[15px] font-['Manrope'] font-bold transition-all ${
                                         isFollowing
-                                            ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                                            : "bg-gray-900 text-white hover:bg-black"
+                                            ? "bg-gray-200 dark:bg-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-white/15"
+                                            : "bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-black dark:hover:bg-gray-200 shadow-sm"
                                     }`}
                                 >
                                     {isFollowing
@@ -1107,15 +1107,15 @@ export default function NoteDetailPage() {
                                         : "Ikuti Penulis"}
                                 </button>
 
-                                <div className="flex items-center gap-6 mt-4 sm:mt-0 font-['Manrope'] text-[15px] text-gray-600 font-bold">
+                                <div className="flex items-center gap-6 mt-4 sm:mt-0 font-['Manrope'] text-[15px] text-gray-600 dark:text-gray-400 font-bold">
                                     <div className="flex items-center gap-1.5">
-                                        <span className="font-extrabold text-gray-900">
+                                        <span className="font-extrabold text-gray-900 dark:text-gray-100">
                                             {followerCount}
                                         </span>{" "}
                                         Pengikut
                                     </div>
                                     <div className="flex items-center gap-1.5">
-                                        <span className="font-extrabold text-gray-900">
+                                        <span className="font-extrabold text-gray-900 dark:text-gray-100">
                                             {author.totalCatatan || 0}
                                         </span>{" "}
                                         Tulisan
@@ -1129,15 +1129,15 @@ export default function NoteDetailPage() {
                 {/* Comments Section (Bottom placement) */}
                 <div
                     id="comments-section"
-                    className="mb-24 pt-10 border-t border-gray-100"
+                    className="mb-24 pt-10 border-t border-gray-100 dark:border-white/5"
                 >
-                    <h4 className="font-['Lexend_Deca'] font-bold text-2xl text-gray-900 mb-8">
+                    <h4 className="font-['Lexend_Deca'] font-bold text-2xl text-gray-900 dark:text-gray-100 mb-8">
                         Diskusi ({comments.length})
                     </h4>
 
                     {/* Comment Input */}
                     {isAuthenticated ? (
-                        <div className="mb-12 flex gap-4 bg-white p-2 rounded-3xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+                        <div className="mb-12 flex gap-4 bg-white dark:bg-[#1C1A29] p-2 rounded-3xl border border-gray-100 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] dark:shadow-none">
                             <div className="hidden sm:block m-4">
                                 <AvatarImage
                                     src={user?.avatar}
@@ -1154,10 +1154,10 @@ export default function NoteDetailPage() {
                                         setCommentText(e.target.value)
                                     }
                                     placeholder="Apa pendapatmu? Jadilah yang pertama memulai diskusi."
-                                    className="w-full px-2 py-2 bg-transparent border-none font-['Manrope'] text-base text-left resize-none focus:outline-none focus:ring-0 min-h-[80px] text-gray-900 placeholder:text-gray-500 font-medium"
+                                    className="w-full px-2 py-2 bg-transparent border-none font-['Manrope'] text-base text-left resize-none focus:outline-none focus:ring-0 min-h-[80px] text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-500 font-medium"
                                 />
                                 <div className="flex justify-between items-center mt-2 border-t border-gray-50 pt-3">
-                                    <p className="text-xs text-gray-600 font-['Manrope'] px-2 font-bold">
+                                    <p className="text-xs text-gray-600 dark:text-gray-400 font-['Manrope'] px-2 font-bold">
                                         Format dengan Markdown didukung (segera)
                                     </p>
                                     <button
@@ -1176,21 +1176,21 @@ export default function NoteDetailPage() {
                             </div>
                         </div>
                     ) : (
-                        <div className="mb-12 bg-gray-50 rounded-3xl p-8 border border-gray-100 flex flex-col items-center justify-center text-center">
+                        <div className="mb-12 bg-gray-50 dark:bg-white/5 rounded-3xl p-8 border border-gray-100 dark:border-white/5 flex flex-col items-center justify-center text-center">
                             <MessageCircle
                                 className="w-8 h-8 text-gray-600 mb-3"
                                 strokeWidth={2.5}
                             />
-                            <h5 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 mb-1">
+                            <h5 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 dark:text-gray-100 mb-1">
                                 Punya Pertanyaan?
                             </h5>
-                            <p className="font-['Manrope'] text-[15px] text-gray-700 mb-6 font-medium">
+                            <p className="font-['Manrope'] text-[15px] text-gray-700 dark:text-gray-300 mb-6 font-medium">
                                 Gabung dengan diskusi dan tanyakan langsung ke
                                 penulis atau pakar.
                             </p>
                             <button
                                 onClick={() => openAuthModal("login")}
-                                className="px-8 py-3 bg-white border border-gray-200 text-gray-800 rounded-xl text-[15px] font-['Lexend_Deca'] font-bold shadow-sm hover:border-gray-300 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                                className="px-8 py-3 bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 text-gray-800 dark:text-gray-200 rounded-xl text-[15px] font-['Lexend_Deca'] font-bold shadow-sm hover:border-gray-300 dark:hover:border-white/20 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors flex items-center justify-center gap-2"
                             >
                                 <LogIn className="w-5 h-5" /> Masuk untuk
                                 Berkomentar
@@ -1202,7 +1202,7 @@ export default function NoteDetailPage() {
                     <div className="space-y-6 sm:space-y-8">
                         {comments.length === 0 ? (
                             <div className="text-center py-12">
-                                <p className="font-['Manrope'] text-base text-gray-600 font-bold">
+                                <p className="font-['Manrope'] text-base text-gray-600 dark:text-gray-400 font-bold">
                                     Belum ada komentar.
                                 </p>
                             </div>
@@ -1244,7 +1244,7 @@ export default function NoteDetailPage() {
                                                         src={cAuth.avatar}
                                                         alt={cAuth.name}
                                                         size={48}
-                                                        className="shrink-0 border border-gray-100 hover:ring-2 hover:ring-primary/20 transition-all sm:w-12 sm:h-12 w-10 h-10"
+                                                        className="shrink-0 border border-gray-100 dark:border-white/10 hover:ring-2 hover:ring-primary/20 transition-all sm:w-12 sm:h-12 w-10 h-10"
                                                     />
                                                 </Link>
                                                 <div className="flex-1 w-full">
@@ -1252,7 +1252,7 @@ export default function NoteDetailPage() {
                                                         <div className="flex items-center gap-2 cursor-pointer">
                                                             <Link
                                                                 to={`/profile/${cAuth._id || cAuth.id}`}
-                                                                className="font-['Manrope'] font-bold text-base text-gray-900 hover:underline hover:text-primary transition-colors"
+                                                                className="font-['Manrope'] font-bold text-base text-gray-900 dark:text-gray-100 hover:underline hover:text-primary transition-colors"
                                                             >
                                                                 {cAuth.name}
                                                             </Link>
@@ -1311,7 +1311,7 @@ export default function NoteDetailPage() {
                                                                             )
                                                                         }
                                                                     />
-                                                                    <div className="absolute right-0 mt-2 w-44 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 py-2 z-50 overflow-hidden transform origin-top-right transition-all animate-in fade-in zoom-in-95 duration-200">
+                                                                    <div className="absolute right-0 mt-2 w-44 bg-white dark:bg-[#1C1A29] rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 dark:border-white/5 py-2 z-50 overflow-hidden transform origin-top-right transition-all animate-in fade-in zoom-in-95 duration-200">
                                                                         {isAuthenticated &&
                                                                             user &&
                                                                             (user._id ||
@@ -1354,7 +1354,7 @@ export default function NoteDetailPage() {
                                                                                     },
                                                                                 )
                                                                             }
-                                                                            className="w-full text-left px-4 py-2.5 text-[14px] font-['Manrope'] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                                                                            className="w-full text-left px-4 py-2.5 text-[14px] font-['Manrope'] font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
                                                                         >
                                                                             <Flag className="w-4 h-4 text-gray-500" />{" "}
                                                                             Laporkan
@@ -1364,7 +1364,7 @@ export default function NoteDetailPage() {
                                                             )}
                                                         </div>
                                                     </div>
-                                                    <p className="font-['Manrope'] text-[15.5px] text-gray-900 leading-relaxed mb-2.5 break-words font-medium">
+                                                    <p className="font-['Manrope'] text-[15.5px] text-gray-900 dark:text-gray-200 leading-relaxed mb-2.5 break-words font-medium">
                                                         {comment.content ||
                                                             comment.text}
                                                     </p>
@@ -1475,7 +1475,7 @@ export default function NoteDetailPage() {
                                                     </div>
 
                                                     {replyingTo?.id === cid && (
-                                                        <div className="mt-4 bg-white p-2.5 sm:p-3 rounded-2xl border border-gray-200 shadow-sm flex flex-col sm:flex-row gap-2 sm:gap-3 items-end sm:items-center">
+                                                        <div className="mt-4 bg-white dark:bg-[#1C1A29] p-2.5 sm:p-3 rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none flex flex-col sm:flex-row gap-2 sm:gap-3 items-end sm:items-center">
                                                             <textarea
                                                                 dir="ltr"
                                                                 autoFocus
@@ -1489,7 +1489,7 @@ export default function NoteDetailPage() {
                                                                             .value,
                                                                     )
                                                                 }
-                                                                className="w-full sm:flex-1 bg-transparent border-none text-[15px] font-['Manrope'] text-left focus:outline-none focus:ring-0 resize-none h-[40px] pt-2 text-gray-900 placeholder:text-gray-500 font-bold"
+                                                                className="w-full sm:flex-1 bg-transparent border-none text-[15px] font-['Manrope'] text-left focus:outline-none focus:ring-0 resize-none h-[40px] pt-2 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 font-bold"
                                                                 onKeyDown={async (
                                                                     e,
                                                                 ) => {
@@ -1512,7 +1512,7 @@ export default function NoteDetailPage() {
                                                                             null,
                                                                         )
                                                                     }
-                                                                    className="px-3 py-1.5 text-gray-600 hover:text-gray-900 text-xs font-['Lexend_Deca'] font-extrabold bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                                                                    className="px-3 py-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 text-xs font-['Lexend_Deca'] font-extrabold bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 rounded-lg transition-colors"
                                                                 >
                                                                     Batal
                                                                 </button>
@@ -1547,7 +1547,7 @@ export default function NoteDetailPage() {
                                         >
                                             {renderCommentItem(root, false)}
                                             {childReplies.length > 0 && (
-                                                <div className="ml-10 sm:ml-12 flex flex-col gap-3 sm:gap-4 border-l-[3px] border-gray-100 pl-4 sm:pl-5">
+                                                <div className="ml-10 sm:ml-12 flex flex-col gap-3 sm:gap-4 border-l-[3px] border-gray-100 dark:border-white/10 pl-4 sm:pl-5">
                                                     {childReplies.map((child) =>
                                                         renderCommentItem(
                                                             child,
@@ -1564,8 +1564,8 @@ export default function NoteDetailPage() {
                 </div>
 
                 {/* Recommended Notes Section */}
-                <div className="mt-8 mb-24 border-t border-gray-100 pt-16">
-                    <h4 className="font-['Lexend_Deca'] font-bold text-2xl text-gray-900 mb-8 border-l-4 border-primary pl-4">
+                <div className="mt-8 mb-24 border-t border-gray-100 dark:border-white/5 pt-16">
+                    <h4 className="font-['Lexend_Deca'] font-bold text-2xl text-gray-900 dark:text-gray-100 mb-8 border-l-4 border-primary pl-4">
                         Rekomendasi Catatan Lainnya
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1575,9 +1575,9 @@ export default function NoteDetailPage() {
                                 <Link
                                     key={recNote.id}
                                     to={`/notes/${recNote.id}`}
-                                    className="group bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 flex flex-col"
+                                    className="group bg-white dark:bg-[#1C1A29] rounded-3xl border border-gray-100 dark:border-white/5 overflow-hidden shadow-sm dark:shadow-none hover:shadow-xl transition-all hover:-translate-y-1 flex flex-col"
                                 >
-                                    <div className="relative h-48 overflow-hidden bg-gray-50">
+                                    <div className="relative h-48 overflow-hidden bg-gray-50 dark:bg-[#252336]">
                                         {recNote.thumbnail ? (
                                             <img
                                                 src={recNote.thumbnail}
@@ -1601,7 +1601,7 @@ export default function NoteDetailPage() {
                                         </div>
                                     </div>
                                     <div className="p-6 flex flex-col flex-1">
-                                        <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 mb-3 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
+                                        <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100 mb-3 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
                                             {recNote.title}
                                         </h3>
                                         <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
@@ -1658,13 +1658,13 @@ export default function NoteDetailPage() {
             {/* Modal Share */}
             {showShareModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-300">
-                    <div className="bg-white rounded-[32px] w-full max-w-md max-h-[90vh] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] overflow-hidden border border-white transform animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 flex flex-col">
+                    <div className="bg-white dark:bg-[#1C1A29] rounded-[32px] w-full max-w-md max-h-[90vh] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] dark:shadow-[0_25px_70px_-10px_rgba(0,0,0,0.6)] overflow-hidden border border-white dark:border-white/5 transform animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 flex flex-col">
                         {/* Header with Icon - Identical to Report Modal */}
-                        <div className="bg-indigo-50 p-6 pb-5 text-center border-b border-indigo-100/50 shrink-0">
-                            <div className="w-14 h-14 bg-white text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm border border-indigo-200/30">
+                        <div className="bg-indigo-50 dark:bg-indigo-500/10 p-6 pb-5 text-center border-b border-indigo-100/50 dark:border-white/5 shrink-0">
+                            <div className="w-14 h-14 bg-white dark:bg-[#252336] text-indigo-600 dark:text-primary rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm dark:shadow-none border border-indigo-200/30 dark:border-primary/20">
                                 <Share2 className="w-7 h-7" strokeWidth={2.5} />
                             </div>
-                            <h3 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 mb-1">
+                            <h3 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 dark:text-gray-100 mb-1">
                                 Bagikan Catatan
                             </h3>
                             <p className="font-['Manrope'] text-[13px] text-gray-600 font-bold px-6">
@@ -1674,7 +1674,7 @@ export default function NoteDetailPage() {
 
                         <div className="p-6 pt-6 overflow-y-auto custom-scrollbar">
                             {/* Social Preview Card - Enhanced Contrast */}
-                            <div className="bg-gray-50 border border-gray-100 rounded-2xl p-3 mb-6 flex gap-3 text-left">
+                            <div className="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-2xl p-3 mb-6 flex gap-3 text-left">
                                 <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 shadow-sm border border-white">
                                     {note.thumbnail ? (
                                         <img
@@ -1691,7 +1691,7 @@ export default function NoteDetailPage() {
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0 py-0.5">
-                                    <h4 className="font-['Lexend_Deca'] font-bold text-[12.5px] text-gray-900 truncate mb-0.5">
+                                    <h4 className="font-['Lexend_Deca'] font-bold text-[12.5px] text-gray-900 dark:text-gray-100 truncate mb-0.5">
                                         {note.title}
                                     </h4>
                                     <p className="font-['Manrope'] text-[10.5px] text-gray-600 font-bold line-clamp-2 leading-relaxed opacity-80">
@@ -1713,7 +1713,7 @@ export default function NoteDetailPage() {
                                     }
                                     className="flex flex-col items-center gap-2 group"
                                 >
-                                    <div className="w-11 h-11 bg-[#25D366] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-green-100 group-hover:-translate-y-1 transition-all">
+                                    <div className="w-11 h-11 bg-[#25D366] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-green-100/50 dark:shadow-green-900/20 group-hover:-translate-y-1 transition-all">
                                         <MessageCircle className="w-5 h-5 fill-white" />
                                     </div>
                                     <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">
@@ -1729,7 +1729,7 @@ export default function NoteDetailPage() {
                                     }
                                     className="flex flex-col items-center gap-2 group"
                                 >
-                                    <div className="w-11 h-11 bg-black text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-gray-200 group-hover:-translate-y-1 transition-all">
+                                    <div className="w-11 h-11 bg-black text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-gray-200/50 dark:shadow-black/30 group-hover:-translate-y-1 transition-all">
                                         <Twitter className="w-5 h-5 fill-white" />
                                     </div>
                                     <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">
@@ -1745,7 +1745,7 @@ export default function NoteDetailPage() {
                                     }
                                     className="flex flex-col items-center gap-2 group"
                                 >
-                                    <div className="w-11 h-11 bg-[#1877F2] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-blue-100 group-hover:-translate-y-1 transition-all">
+                                    <div className="w-11 h-11 bg-[#1877F2] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-blue-100/50 dark:shadow-blue-900/20 group-hover:-translate-y-1 transition-all">
                                         <Facebook className="w-5 h-5 fill-white" />
                                     </div>
                                     <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">
@@ -1761,7 +1761,7 @@ export default function NoteDetailPage() {
                                     }
                                     className="flex flex-col items-center gap-2 group"
                                 >
-                                    <div className="w-11 h-11 bg-[#0088cc] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-sky-100 group-hover:-translate-y-1 transition-all">
+                                    <div className="w-11 h-11 bg-[#0088cc] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-sky-100/50 dark:shadow-sky-900/20 group-hover:-translate-y-1 transition-all">
                                         <Send className="w-5 h-5 fill-white" />
                                     </div>
                                     <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">
@@ -1777,7 +1777,7 @@ export default function NoteDetailPage() {
                                     }
                                     className="flex flex-col items-center gap-2 group"
                                 >
-                                    <div className="w-11 h-11 bg-[#0077b5] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-blue-100 group-hover:-translate-y-1 transition-all">
+                                    <div className="w-11 h-11 bg-[#0077b5] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-blue-100 dark:shadow-none group-hover:-translate-y-1 transition-all">
                                         <svg
                                             className="w-5 h-5 fill-current"
                                             viewBox="0 0 24 24"
@@ -1798,7 +1798,7 @@ export default function NoteDetailPage() {
                                     }
                                     className="flex flex-col items-center gap-2 group"
                                 >
-                                    <div className="w-11 h-11 bg-[#00b900] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-green-100 group-hover:-translate-y-1 transition-all">
+                                    <div className="w-11 h-11 bg-[#00b900] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-green-100 dark:shadow-none group-hover:-translate-y-1 transition-all">
                                         <svg
                                             className="w-6 h-6 fill-current"
                                             viewBox="0 0 24 24"
@@ -1819,7 +1819,7 @@ export default function NoteDetailPage() {
                                     }
                                     className="flex flex-col items-center gap-2 group"
                                 >
-                                    <div className="w-11 h-11 bg-[#bd081c] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-red-100 group-hover:-translate-y-1 transition-all">
+                                    <div className="w-11 h-11 bg-[#bd081c] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-red-100 dark:shadow-none group-hover:-translate-y-1 transition-all">
                                         <svg
                                             className="w-5 h-5 fill-current"
                                             viewBox="0 0 24 24"
@@ -1840,7 +1840,7 @@ export default function NoteDetailPage() {
                                     }
                                     className="flex flex-col items-center gap-2 group"
                                 >
-                                    <div className="w-11 h-11 bg-gray-600 text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-gray-100 group-hover:-translate-y-1 transition-all">
+                                    <div className="w-11 h-11 bg-gray-600 text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-gray-100 dark:shadow-none group-hover:-translate-y-1 transition-all">
                                         <svg
                                             className="w-5 h-5 fill-none stroke-current"
                                             strokeWidth="2.5"
@@ -1871,7 +1871,7 @@ export default function NoteDetailPage() {
                                         type="text"
                                         readOnly
                                         value={window.location.href}
-                                        className="w-full pl-11 pr-24 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-[12.5px] font-bold text-gray-800 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-400 transition-all"
+                                        className="w-full pl-11 pr-24 py-3.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl text-[12.5px] font-bold text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-400 transition-all"
                                     />
                                     <button
                                         onClick={() => {
@@ -1883,7 +1883,7 @@ export default function NoteDetailPage() {
                                                 "success",
                                             );
                                         }}
-                                        className="absolute right-2 top-2 bottom-2 px-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 active:scale-95"
+                                        className="absolute right-2 top-2 bottom-2 px-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 dark:shadow-none active:scale-95"
                                     >
                                         Salin
                                     </button>
@@ -1891,10 +1891,10 @@ export default function NoteDetailPage() {
                             </div>
                         </div>
 
-                        <div className="p-5 border-t border-gray-50 shrink-0">
+                        <div className="p-5 border-t border-gray-50 dark:border-white/5 shrink-0">
                             <button
                                 onClick={() => setShowShareModal(false)}
-                                className="w-full py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] text-gray-500 bg-gray-50 hover:bg-gray-100 transition-all active:scale-95"
+                                className="w-full py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-all active:scale-95"
                             >
                                 Tutup Modal
                             </button>
@@ -1906,13 +1906,13 @@ export default function NoteDetailPage() {
             {/* Modal Report */}
             {showReportModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-300">
-                    <div className="bg-white rounded-[32px] w-full max-w-md shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] overflow-hidden border border-white transform animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+                    <div className="bg-white dark:bg-[#1C1A29] rounded-[32px] w-full max-w-md shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] overflow-hidden border border-white dark:border-white/5 transform animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
                         {/* Header with Icon */}
-                        <div className="bg-rose-50 p-8 pb-5 text-center border-b border-rose-100/50">
-                            <div className="w-16 h-16 bg-white text-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-rose-200/30">
+                        <div className="bg-rose-50 dark:bg-rose-500/10 p-8 pb-5 text-center border-b border-rose-100/50 dark:border-white/5">
+                            <div className="w-16 h-16 bg-white dark:bg-[#252336] text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm dark:shadow-none border border-rose-200/30 dark:border-rose-500/20">
                                 <Flag className="w-8 h-8" strokeWidth={2.5} />
                             </div>
-                            <h3 className="font-['Lexend_Deca'] font-extrabold text-2xl text-gray-900 mb-1">
+                            <h3 className="font-['Lexend_Deca'] font-extrabold text-2xl text-gray-900 dark:text-gray-100 mb-1">
                                 Laporkan{" "}
                                 {reportTarget?.type === "note"
                                     ? "Catatan"
@@ -1936,7 +1936,7 @@ export default function NoteDetailPage() {
                                             onChange={(e) =>
                                                 setReportReason(e.target.value)
                                             }
-                                            className="w-full px-5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl font-['Manrope'] font-bold text-gray-800 focus:outline-none focus:ring-4 focus:ring-rose-500/5 focus:border-rose-400 focus:bg-white transition-all appearance-none cursor-pointer hover:border-gray-300"
+                                            className="w-full px-5 py-4 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] font-bold text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-4 focus:ring-rose-500/5 focus:border-rose-400 focus:bg-white dark:focus:bg-white/10 transition-all appearance-none cursor-pointer hover:border-gray-300 dark:hover:border-white/20"
                                         >
                                             <option value="">
                                                 Pilih alasan pelaporan...
@@ -1980,7 +1980,7 @@ export default function NoteDetailPage() {
                                             setReportDescription(e.target.value)
                                         }
                                         placeholder="Jelaskan secara singkat mengapa Anda melaporkan konten ini..."
-                                        className="w-full px-5 py-4 bg-gray-50/50 border border-gray-200 rounded-2xl font-['Manrope'] text-[14.5px] focus:outline-none focus:ring-4 focus:ring-rose-500/5 focus:border-rose-400 focus:bg-white transition-all resize-none h-32 text-gray-800 placeholder:text-gray-400 font-bold hover:border-gray-300"
+                                        className="w-full px-5 py-4 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[14.5px] focus:outline-none focus:ring-4 focus:ring-rose-500/5 focus:border-rose-400 focus:bg-white dark:focus:bg-white/10 transition-all resize-none h-32 text-gray-800 dark:text-gray-200 placeholder:text-gray-400 font-bold hover:border-gray-300 dark:hover:border-white/20"
                                     ></textarea>
                                 </div>
                             </div>
@@ -1988,7 +1988,7 @@ export default function NoteDetailPage() {
                             <div className="grid grid-cols-2 gap-4 mt-10">
                                 <button
                                     onClick={() => setShowReportModal(false)}
-                                    className="px-6 py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] text-gray-500 bg-gray-50 hover:bg-gray-100 transition-all active:scale-95"
+                                    className="px-6 py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-all active:scale-95"
                                 >
                                     Batalkan
                                 </button>
@@ -1997,7 +1997,7 @@ export default function NoteDetailPage() {
                                     disabled={
                                         isSubmittingReport || !reportReason
                                     }
-                                    className="px-6 py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] bg-rose-500 text-white hover:bg-rose-600 transition-all shadow-lg shadow-rose-200 disabled:opacity-50 disabled:shadow-none hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2"
+                                    className="px-6 py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] bg-rose-500 text-white hover:bg-rose-600 transition-all shadow-lg shadow-rose-200 dark:shadow-none disabled:opacity-50 disabled:shadow-none hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2"
                                 >
                                     {isSubmittingReport ? (
                                         <>
@@ -2026,7 +2026,7 @@ export default function NoteDetailPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white dark:bg-[#13111C]">
             <Navbar variant="default" />
             {noteContent}
             <Footer />

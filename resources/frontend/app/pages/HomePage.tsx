@@ -149,8 +149,8 @@ export default function HomePage() {
                         </div>
 
                         {/* RIGHT COLUMN SKELETON */}
-                        <div className="hidden lg:block w-[280px] xl:w-[320px] shrink-0 border-l border-gray-100 pl-6 xl:pl-10 pt-4">
-                            <div className="h-6 w-32 bg-gray-100 rounded-md mb-8"></div>
+                        <div className="hidden lg:block w-[280px] xl:w-[320px] shrink-0 border-l border-gray-100 dark:border-white/5 pl-6 xl:pl-10 pt-4">
+                            <div className="h-6 w-32 bg-gray-100 dark:bg-white/5 rounded-md mb-8"></div>
                             <div className="space-y-6">
                                 {[...Array(4)].map((_, i) => (
                                     <div key={i} className="flex gap-4">
@@ -185,27 +185,27 @@ export default function HomePage() {
                                     <Link
                                         key={mapel.id}
                                         to={`/explore?subject=${mapel.id}`}
-                                        className="shrink-0 px-5 py-2.5 bg-white hover:bg-primary/5 hover:text-primary hover:border-primary/20 rounded-full text-[13px] font-['Manrope'] font-bold text-gray-600 transition-all duration-300 border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 snap-start"
+                                        className="shrink-0 px-5 py-2.5 bg-white dark:bg-[#1C1A29] hover:bg-primary/5 hover:text-primary hover:border-primary/20 rounded-full text-[13px] font-['Manrope'] font-bold text-gray-600 dark:text-gray-400 transition-all duration-300 border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none hover:shadow-md hover:-translate-y-0.5 snap-start"
                                     >
                                         {mapel.name}
                                     </Link>
                                 ))}
                             </div>
                             {/* Fade mask for absolute right pill scrolls */}
-                            <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none z-10"></div>
+                            <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white dark:from-[#13111C] to-transparent pointer-events-none z-10"></div>
                         </div>
 
                         {/* THE HERO ARTICLE (MAGAZINE STYLE) */}
                         {heroNote && (
-                            <div className="mb-12 pb-12 border-b border-gray-100 relative group transition-all duration-500 ease-out flex flex-col md:flex-row gap-8">
+                            <div className="mb-12 pb-12 border-b border-gray-100 dark:border-white/5 relative group transition-all duration-500 ease-out flex flex-col md:flex-row gap-8">
                                 {/* Hero Text Content */}
                                 <div className="flex-1 flex flex-col justify-center z-10 w-full md:w-1/2">
                                     <div className="flex items-center gap-2 mb-4">
                                         <span className="bg-primary/10 text-primary text-[11px] font-['Lexend_Deca'] font-bold px-2 py-1 rounded-[6px] uppercase tracking-wider">
                                             Fokus Utama
                                         </span>
-                                        <span className="text-gray-600 text-[12px] font-semibold flex items-center gap-1.5">
-                                            • <Clock className="w-3 h-3 text-gray-700" strokeWidth={2.5} /> {heroNote.read_time || 1} min
+                                        <span className="text-gray-600 dark:text-gray-400 text-[12px] font-semibold flex items-center gap-1.5">
+                                            • <Clock className="w-3 h-3 text-gray-700 dark:text-gray-400" strokeWidth={2.5} /> {heroNote.read_time || 1} min
                                         </span>
 
                                         {/*Badge Verifikasi*/}
@@ -220,12 +220,12 @@ export default function HomePage() {
                                         to={`/note/${heroNote.id}`}
                                         className="block group/title"
                                     >
-                                        <h2 className="text-[28px] md:text-[36px] font-['Lexend_Deca'] font-extrabold text-gray-900 leading-[1.1] mb-4 tracking-tight group-hover/title:text-primary transition-colors line-clamp-3">
+                                        <h2 className="text-[28px] md:text-[36px] font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 leading-[1.1] mb-4 tracking-tight group-hover/title:text-primary transition-colors line-clamp-3">
                                             {heroNote.title}
                                         </h2>
                                     </Link>
 
-                                    <p className="text-[16px] font-['Manrope'] text-gray-700 leading-relaxed mb-8 line-clamp-3 md:line-clamp-2">
+                                    <p className="text-[16px] font-['Manrope'] text-gray-700 dark:text-gray-400 leading-relaxed mb-8 line-clamp-3 md:line-clamp-2">
                                         {heroNote.description}
                                     </p>
 
@@ -242,13 +242,13 @@ export default function HomePage() {
                                                             src={hAuthor?.avatar}
                                                             alt={hAuthor?.name}
                                                             size={40}
-                                                            className="ring-2 ring-gray-50 group-hover/hauth:ring-primary/30 transition-all"
+                                                            className="ring-2 ring-gray-50 dark:ring-white/10 group-hover/hauth:ring-primary/30 transition-all"
                                                         />
                                                         <div className="flex flex-col">
-                                                            <span className="text-[14px] font-['Lexend_Deca'] font-bold text-gray-900 tracking-tight group-hover/hauth:underline">
+                                                            <span className="text-[14px] font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 tracking-tight group-hover/hauth:underline">
                                                                 {hAuthor?.name}
                                                             </span>
-                                                            <span className="text-[12px] font-['Manrope'] text-gray-700 font-bold">
+                                                            <span className="text-[12px] font-['Manrope'] text-gray-700 dark:text-gray-400 font-bold">
                                                                 {heroNote.createdAt ? new Date(heroNote.createdAt).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' }) : "Baru saja"}
                                                             </span>
                                                         </div>
@@ -258,7 +258,7 @@ export default function HomePage() {
                                         </div>
                                         <Link
                                             to={`/note/${heroNote.id}`}
-                                            className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-600 hover:bg-primary/10 hover:text-primary transition-colors shrink-0 outline-none"
+                                            className="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-primary/10 hover:text-primary transition-colors shrink-0 outline-none"
                                         >
                                             <ChevronRight
                                                 className="w-5 h-5"
@@ -269,7 +269,7 @@ export default function HomePage() {
                                 </div>
 
                                 {/* Hero Image / Placeholder */}
-                                <div className="w-full md:w-[45%] h-[240px] md:h-[320px] overflow-hidden relative shrink-0 rounded-[2rem] bg-gray-50 shadow-md border border-gray-100 group-hover/title:shadow-lg transition-all duration-500">
+                                <div className="w-full md:w-[45%] h-[240px] md:h-[320px] overflow-hidden relative shrink-0 rounded-[2rem] bg-gray-50 dark:bg-[#1C1A29] shadow-md dark:shadow-none border border-gray-100 dark:border-white/5 group-hover/title:shadow-lg transition-all duration-500">
                                     <Link
                                         to={`/note/${heroNote.id}`}
                                         className="block w-full h-full"
@@ -288,7 +288,7 @@ export default function HomePage() {
                                             />
                                         )}
                                         {/* Floating badge */}
-                                        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-gray-800 text-[11px] font-['Lexend_Deca'] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1.5 z-20">
+                                        <div className="absolute top-3 right-3 bg-white/90 dark:bg-black/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 text-[11px] font-['Lexend_Deca'] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1.5 z-20">
                                             <Clock className="w-3.5 h-3.5" /> {heroNote.read_time || 1}m
                                         </div>
                                     </Link>
@@ -298,7 +298,7 @@ export default function HomePage() {
 
                         {/* VERTICAL FEED SECTION */}
                         <div className="mb-4 flex items-center justify-between px-2">
-                            <h3 className="font-['Lexend_Deca'] font-extrabold text-[18px] text-gray-900 tracking-tight flex items-center gap-2">
+                            <h3 className="font-['Lexend_Deca'] font-extrabold text-[18px] text-gray-900 dark:text-gray-100 tracking-tight flex items-center gap-2">
                                 Catatan{" "}
                                 <div className="w-2 h-2 rounded-full bg-green-500"></div>
                             </h3>
@@ -322,14 +322,14 @@ export default function HomePage() {
                     </div>
 
                     {/* RIGHT COLUMN (TRENDING SIDEBAR w/ GIANT NUMBERS) */}
-                    <div className="hidden lg:block w-[280px] xl:w-[320px] shrink-0 border-l border-gray-100 pl-6 xl:pl-10">
+                    <div className="hidden lg:block w-[280px] xl:w-[320px] shrink-0 border-l border-gray-100 dark:border-white/5 pl-6 xl:pl-10">
                         <div
                             className="sticky pt-8 pb-12"
                             style={{
                                 top: "min(72px, calc(100vh - 100% - 24px))",
                             }}
                         >
-                            <div className="pb-8 border-b border-gray-100">
+                            <div className="pb-8 border-b border-gray-100 dark:border-white/5">
                                 <div className="flex items-center gap-2 mb-8">
                                     <span className="flex items-center justify-center w-8 h-8 rounded-[8px] bg-[#FFF2F2] text-[#FF4D4F]">
                                         <svg
@@ -349,7 +349,7 @@ export default function HomePage() {
                                             />
                                         </svg>
                                     </span>
-                                    <h3 className="font-['Lexend_Deca'] font-extrabold text-[18px] text-gray-900 tracking-tight">
+                                    <h3 className="font-['Lexend_Deca'] font-extrabold text-[18px] text-gray-900 dark:text-gray-100 tracking-tight">
                                         Sedang Populer
                                     </h3>
                                 </div>
@@ -364,7 +364,7 @@ export default function HomePage() {
                                             >
                                                 {/* Giant Watermark Number */}
                                                 <div className="w-[36px] shrink-0 mt-[-4px]">
-                                                    <span className="font-['Lexend_Deca'] font-black text-[32px] text-gray-200 group-hover:text-primary/30 transition-colors select-none tracking-tighter">
+                                                    <span className="font-['Lexend_Deca'] font-black text-[32px] text-gray-200 dark:text-white/10 group-hover:text-primary/30 transition-colors select-none tracking-tighter">
                                                         0{idx + 1}
                                                     </span>
                                                 </div>
@@ -380,7 +380,7 @@ export default function HomePage() {
                                                             size={20}
                                                             className="rounded-[6px]"
                                                         />
-                                                        <span className="font-['Lexend_Deca'] font-bold text-[13px] text-gray-700 truncate tracking-tight">
+                                                        <span className="font-['Lexend_Deca'] font-bold text-[13px] text-gray-700 dark:text-gray-400 truncate tracking-tight">
                                                             {tAuth?.name}
                                                         </span>
                                                     </Link>
@@ -388,11 +388,11 @@ export default function HomePage() {
                                                         to={`/note/${trend.id}`}
                                                         className="block outline-none"
                                                     >
-                                                        <h4 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 leading-[1.3] group-hover:text-primary transition-colors line-clamp-2 tracking-tight">
+                                                        <h4 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 leading-[1.3] group-hover:text-primary transition-colors line-clamp-2 tracking-tight">
                                                             {trend.title}
                                                         </h4>
                                                     </Link>
-                                                    <div className="font-['Manrope'] text-[12px] text-gray-600 mt-2 font-bold">
+                                                    <div className="font-['Manrope'] text-[12px] text-gray-600 dark:text-gray-500 mt-2 font-bold">
                                                         {new Date(
                                                             trend.createdAt,
                                                         ).toLocaleDateString(
@@ -411,15 +411,15 @@ export default function HomePage() {
 
                                 <Link 
                                     to="/explore?tab=populer"
-                                    className="block w-full mt-6 bg-gray-50 hover:bg-primary/10 text-gray-600 hover:text-primary rounded-2xl py-3 text-[14px] font-['Lexend_Deca'] font-bold transition-colors text-center"
+                                    className="block w-full mt-6 bg-gray-50 dark:bg-white/5 hover:bg-primary/10 text-gray-600 dark:text-gray-400 hover:text-primary rounded-2xl py-3 text-[14px] font-['Lexend_Deca'] font-bold transition-colors text-center"
                                 >
                                     Lihat Semua
                                 </Link>
                             </div>
 
                             {/* Discover Topics Section */}
-                            <div className="py-8 border-b border-gray-100">
-                                <h3 className="font-['Lexend_Deca'] font-bold text-[16px] text-gray-900 tracking-tight mb-4">
+                            <div className="py-8 border-b border-gray-100 dark:border-white/5">
+                                <h3 className="font-['Lexend_Deca'] font-bold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-4">
                                     Jelajahi Topik Belajar
                                 </h3>
                                 <div className="flex flex-wrap gap-2">
@@ -427,7 +427,7 @@ export default function HomePage() {
                                         <Link
                                             key={tag.id}
                                             to={`/explore?subject=${tag.id}`}
-                                            className="px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-full text-[13px] font-['Manrope'] font-medium text-gray-700 transition-all border border-gray-100"
+                                            className="px-4 py-2 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full text-[13px] font-['Manrope'] font-medium text-gray-700 dark:text-gray-400 transition-all border border-gray-100 dark:border-white/5"
                                         >
                                             {tag.name}
                                         </Link>
@@ -436,40 +436,40 @@ export default function HomePage() {
                             </div>
 
                             {/* Quick Links */}
-                            <div className="mt-8 flex flex-wrap gap-x-4 gap-y-3 text-[13px] font-['Manrope'] font-medium text-gray-500">
+                            <div className="mt-8 flex flex-wrap gap-x-4 gap-y-3 text-[13px] font-['Manrope'] font-medium text-gray-500 dark:text-gray-600">
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-900 transition-colors"
+                                    className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Bantuan
                                 </Link>
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-900 transition-colors"
+                                    className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Status
                                 </Link>
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-900 transition-colors"
+                                    className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Tentang Kami
                                 </Link>
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-900 transition-colors"
+                                    className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Karir
                                 </Link>
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-900 transition-colors"
+                                    className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Ketentuan
                                 </Link>
                                 <Link
                                     to="#"
-                                    className="hover:text-gray-900 transition-colors"
+                                    className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Privasi
                                 </Link>

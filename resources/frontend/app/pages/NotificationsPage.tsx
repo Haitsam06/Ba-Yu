@@ -191,11 +191,11 @@ export default function NotificationsPage() {
 
     return (
         <MobileLayout>
-            <div className="min-h-screen pb-4 bg-slate-50/50">
+            <div className="min-h-screen pb-4 bg-slate-50/50 dark:bg-[#13111C]">
                 {/* Header Ribbon */}
-                <div className="px-6 pt-12 pb-8 bg-white/80 backdrop-blur-md border-b border-slate-100 flex flex-col sm:flex-row items-end sm:items-center justify-between gap-6 sticky top-0 z-30">
+                <div className="px-6 pt-12 pb-8 bg-white/80 dark:bg-[#13111C]/80 backdrop-blur-md border-b border-slate-100 dark:border-white/5 flex flex-col sm:flex-row items-end sm:items-center justify-between gap-6 sticky top-0 z-30">
                     <div className="flex flex-col gap-1">
-                        <h1 className="text-slate-800 font-['Lexend_Deca'] font-bold text-[32px] tracking-tight leading-none">
+                        <h1 className="text-slate-800 dark:text-gray-100 font-['Lexend_Deca'] font-bold text-[32px] tracking-tight leading-none">
                             Notifikasi
                         </h1>
                         <p className="text-slate-500 font-['Manrope'] text-[15px] font-medium opacity-90">
@@ -209,7 +209,7 @@ export default function NotificationsPage() {
                     {unreadCount > 0 && (
                         <button
                             onClick={handleMarkAllAsRead}
-                            className="flex items-center gap-2.5 bg-indigo-50 text-indigo-600 text-[13px] font-bold px-6 py-2.5 rounded-xl hover:bg-indigo-100 transition-all duration-300 shadow-sm active:scale-95"
+                            className="flex items-center gap-2.5 bg-indigo-50 dark:bg-primary/10 text-indigo-600 dark:text-primary text-[13px] font-bold px-6 py-2.5 rounded-xl hover:bg-indigo-100 dark:hover:bg-primary/20 transition-all duration-300 shadow-sm dark:shadow-none active:scale-95"
                         >
                             <CheckCheck className="w-4.5 h-4.5" />
                             Tandai Dibaca
@@ -222,13 +222,13 @@ export default function NotificationsPage() {
                     <div className="flex gap-3">
                         <button
                             onClick={() => setFilter("all")}
-                            className={`px-6 py-2.5 rounded-xl font-['Lexend_Deca'] font-bold text-[13px] transition-all duration-300 ${filter === "all" ? "bg-indigo-600 text-white shadow-md shadow-indigo-200" : "bg-white text-slate-500 border border-slate-200 hover:border-slate-300 hover:text-slate-800 shadow-sm"}`}
+                            className={`px-6 py-2.5 rounded-xl font-['Lexend_Deca'] font-bold text-[13px] transition-all duration-300 ${filter === "all" ? "bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none" : "bg-white dark:bg-[#1C1A29] text-slate-500 dark:text-gray-400 border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:text-slate-800 dark:hover:text-gray-200 shadow-sm dark:shadow-none"}`}
                         >
                             Semua
                         </button>
                         <button
                             onClick={() => setFilter("unread")}
-                            className={`px-6 py-2.5 rounded-xl font-['Lexend_Deca'] font-bold text-[13px] transition-all duration-300 flex items-center gap-2 ${filter === "unread" ? "bg-indigo-600 text-white shadow-md shadow-indigo-200" : "bg-white text-slate-500 border border-slate-200 hover:border-slate-300 hover:text-slate-800 shadow-sm"}`}
+                            className={`px-6 py-2.5 rounded-xl font-['Lexend_Deca'] font-bold text-[13px] transition-all duration-300 flex items-center gap-2 ${filter === "unread" ? "bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none" : "bg-white dark:bg-[#1C1A29] text-slate-500 dark:text-gray-400 border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:text-slate-800 dark:hover:text-gray-200 shadow-sm dark:shadow-none"}`}
                         >
                             Belum Dibaca
                             <span
@@ -247,7 +247,7 @@ export default function NotificationsPage() {
                             {[...Array(5)].map((_, i) => (
                                 <div
                                     key={i}
-                                    className="animate-pulse flex gap-4 sm:gap-5 p-5 rounded-2xl border border-slate-100 bg-white"
+                                    className="animate-pulse flex gap-4 sm:gap-5 p-5 rounded-2xl border border-slate-100 dark:border-white/5 bg-white dark:bg-[#1C1A29]"
                                 >
                                     <div className="w-[52px] h-[52px] shrink-0 rounded-2xl bg-slate-100"></div>
                                     <div className="flex-1 space-y-3 py-1">
@@ -298,8 +298,8 @@ export default function NotificationsPage() {
                                         className={cn(
                                             "group relative overflow-hidden rounded-[20px] p-4 sm:p-5 transition-all duration-300 cursor-pointer border",
                                             !notif.is_read
-                                                ? "bg-white shadow-md border-indigo-100 hover:shadow-lg hover:border-indigo-200 hover:-translate-y-0.5"
-                                                : "bg-white/60 border-slate-100 hover:bg-white hover:shadow-sm hover:border-slate-200"
+                                                ? "bg-white dark:bg-[#1C1A29] shadow-md dark:shadow-lg border-indigo-100 dark:border-primary/20 hover:shadow-lg hover:border-indigo-200 dark:hover:border-primary/30 hover:-translate-y-0.5"
+                                                : "bg-white/60 dark:bg-[#1C1A29]/60 border-slate-100 dark:border-white/5 hover:bg-white dark:hover:bg-[#1C1A29] hover:shadow-sm hover:border-slate-200 dark:hover:border-white/10"
                                         )}
                                         style={{
                                             animation: `fadeSlideIn 0.5s ease-out ${index * 0.05}s both`,
@@ -368,7 +368,7 @@ export default function NotificationsPage() {
                                                         </div>
                                                         <p className={cn(
                                                             "font-['Manrope'] leading-snug line-clamp-2 pr-4",
-                                                            !notif.is_read ? "text-slate-800 font-bold text-[14px] sm:text-[15px]" : "text-slate-600 font-medium text-[14px] sm:text-[15px]"
+                                                            !notif.is_read ? "text-slate-800 dark:text-gray-100 font-bold text-[14px] sm:text-[15px]" : "text-slate-600 dark:text-gray-400 font-medium text-[14px] sm:text-[15px]"
                                                         )}>
                                                             {notif.message}
                                                         </p>
@@ -406,7 +406,7 @@ export default function NotificationsPage() {
                                     </div>
                                 </div>
 
-                                <h3 className="font-['Lexend_Deca'] font-bold text-slate-800 text-[20px] mb-2 tracking-tight">
+                                <h3 className="font-['Lexend_Deca'] font-bold text-slate-800 dark:text-gray-100 text-[20px] mb-2 tracking-tight">
                                     {filter === "unread"
                                         ? "Semua Pesan Terbaca!"
                                         : "Kotak Masuk Sepi"}
