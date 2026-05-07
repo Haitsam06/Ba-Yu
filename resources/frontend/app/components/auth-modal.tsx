@@ -49,18 +49,18 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
     setIsSubmitting(true);
     
     if (activeTab === 'login') {
-      const success = await login(formData.email, formData.password, rememberMe);
-      if (!success) {
-         setErrorMsg("Email atau password salah");
+      const error = await login(formData.email, formData.password, rememberMe);
+      if (error) {
+         setErrorMsg(error);
          setIsSubmitting(false);
       } else {
          const email = formData.email.toLowerCase();
          if (email === "admin@gmail.com") {
-             window.location.href = "/admin";
+             navigate("/admin");
          } else if (email === "pakar@gmail.com") {
-             window.location.href = "/pakar";
+             navigate("/pakar");
          } else {
-             window.location.href = "/home";
+             navigate("/home");
          }
          onClose();
       }
@@ -70,7 +70,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
          setErrorMsg(error);
          setIsSubmitting(false);
       } else {
-         window.location.href = "/home";
+         navigate("/home");
          onClose();
       }
     }

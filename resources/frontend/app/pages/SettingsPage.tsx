@@ -69,7 +69,7 @@ export default function SettingsPage() {
       <div className="min-h-screen pb-10 bg-white font-['Manrope']">
         
         {/* TOP NAVIGATION (Instagram/X Style) */}
-        <div className="sticky top-0 z-[100] bg-white/90 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center gap-6">
+        <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center gap-6">
           <button onClick={() => navigate(-1)} className="text-slate-900 hover:bg-slate-100 p-1 rounded-full transition-colors">
             <ArrowLeft size={24} />
           </button>

@@ -17,33 +17,55 @@ export default function Login() {
     const [error, setError] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { login, register } = useAuth();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
-        console.log("STATUS CENTANGAN: ", rememberMe);
+        setIsSubmitting(true);
 
-        if (isLogin) {
-            const success = await login(
-                formData.email,
-                formData.password,
-                rememberMe
-            );
-            if (success) {
+        try {
+            if (isLogin) {
+                const errorMessage = await login(
+                    formData.email,
+                    formData.password,
+                    rememberMe
+                );
+
+                if (errorMessage) {
+                    setError(errorMessage);
+                    return;
+                }
+
+                // Redirect based on role/email
                 const email = formData.email.toLowerCase();
                 if (email === "admin@gmail.com") {
-                    window.location.href = "/admin";
+                    navigate("/admin");
                 } else if (email === "pakar@gmail.com") {
-                    window.location.href = "/pakar";
+                    navigate("/pakar");
                 } else {
-                    window.location.href = "/home";
+                    navigate("/home");
                 }
             } else {
-                setError("Email atau password salah");
+                const errorMessage = await register(
+                    formData.name,
+                    formData.email,
+                    formData.password,
+                    formData.jenjang
+                );
+
+                if (errorMessage) {
+                    setError(errorMessage);
+                    return;
+                }
+
+                navigate("/home");
             }
-        } else {
-            window.location.href = "/home";
+        } catch (err) {
+            setError("Terjadi kesalahan koneksi. Silakan coba lagi.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -223,9 +245,17 @@ export default function Login() {
 
                     <button
                         type="submit"
-                        className={`w-full bg-gray-900 hover:bg-black text-white py-4 rounded-full font-['Lexend_Deca'] font-bold text-[15px] shadow-lg shadow-gray-900/20 hover:shadow-xl hover:shadow-gray-900/30 hover:-translate-y-0.5 transition-all active:scale-[0.98] ${isLogin ? 'mt-8' : 'mt-8'}`}
+                        disabled={isSubmitting}
+                        className={`w-full bg-gray-900 hover:bg-black text-white py-4 rounded-full font-['Lexend_Deca'] font-bold text-[15px] shadow-lg shadow-gray-900/20 hover:shadow-xl hover:shadow-gray-900/30 hover:-translate-y-0.5 transition-all active:scale-[0.98] ${isLogin ? 'mt-8' : 'mt-8'} ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                     >
-                        {isLogin ? "Masuk ke Akun" : "Daftar Sekarang"}
+                        {isSubmitting ? (
+                            <div className="flex items-center justify-center gap-2">
+                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                <span>Memproses...</span>
+                            </div>
+                        ) : (
+                            isLogin ? "Masuk ke Akun" : "Daftar Sekarang"
+                        )}
                     </button>
 
                     {/* Social Login Separator */}
