@@ -22,6 +22,7 @@ export interface User {
     phone?: string;
     followers_count?: number;
     following_count?: number;
+    created_at?: string;
 }
 
 interface AuthContextType {

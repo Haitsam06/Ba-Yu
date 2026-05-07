@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { MobileLayout } from "../components/MobileLayout";
+import { NoteCard } from "../components/NoteCard";
 import { NoteCardSkeleton } from "../components/ui/skeletons";
 import { TagList } from "../components/ui/TagList";
 import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
@@ -399,126 +400,11 @@ export default function PublicProfilePage() {
                                 </div>
                             ) : userNotes.length > 0 ? (
                                 userNotes.map((note) => (
-                                    <article
+                                    <NoteCard
                                         key={note.id}
-                                        className="group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 py-6 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors bg-transparent outline-none"
-                                    >
-                                        <div className="flex-1 min-w-0 flex flex-col w-full h-full">
-                                            {/* Author Header */}
-                                            <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-800 font-bold">
-                                                <div className="flex items-center gap-1.5">
-                                                    <AvatarImage
-                                                        src={profileUser?.avatar}
-                                                        alt={profileUser?.name}
-                                                        size={20}
-                                                        className="ring-2 ring-transparent"
-                                                    />
-                                                    <span className="font-bold text-gray-900 tracking-tight">
-                                                        {profileUser?.name}
-                                                    </span>
-                                                </div>
-                                                <span className="text-gray-500 px-0.5">di</span>
-                                                <span className="font-extrabold text-gray-900 tracking-tight">
-                                                    {note.mataPelajaran}
-                                                </span>
-                                                {note.jenjang && note.jenjang !== "Umum" && (
-                                                    <>
-                                                        <span className="text-[10px] text-gray-500 mx-0.5">•</span>
-                                                        <span className="text-gray-700 tracking-tight font-extrabold">
-                                                            {note.jenjang === "Kuliah"
-                                                                ? `${note.kelas || "S1/D4"} Semester ${note.semester || 1}`
-                                                                : (note.kelas && note.kelas !== "Semua" ? `${note.jenjang} Kelas ${note.kelas}` : note.jenjang)}
-                                                        </span>
-                                                    </>
-                                                )}
-                                                {note.isValidated && (
-                                                    <span className="flex items-center gap-1 text-[12px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md ml-1">
-                                                        <ShieldCheck className="w-3.5 h-3.5" />
-                                                    </span>
-                                                )}
-                                            </div>
-
-                                            {/* Title */}
-                                            <Link
-                                                to={`/note/${note.id}`}
-                                                className="block mb-2 outline-none font-['Lexend_Deca'] cursor-pointer"
-                                            >
-                                                <h2 className="text-[20px] md:text-[22px] font-extrabold text-gray-900 leading-[1.25] tracking-tight group-hover:text-primary transition-colors line-clamp-2">
-                                                    {note.title}
-                                                </h2>
-                                            </Link>
-
-                                            {/* Excerpt */}
-                                            <p className="text-[15px] font-['Manrope'] text-gray-700 line-clamp-2 leading-relaxed mb-4 pr-2 font-medium">
-                                                {note.description}
-                                            </p>
-
-                                            {/* Tags */}
-                                            <TagList tags={note.tags} />
-
-                                            {/* Meta Footer */}
-                                            <div className={`flex items-center justify-between ${!(note.tags && note.tags.length > 0) ? 'mt-auto' : ''}`}>
-                                                <div className="flex items-center gap-1.5 text-gray-500">
-                                                    <Clock className="w-[14px] h-[14px] text-gray-600" strokeWidth={2.5} />
-                                                    <span className="text-[13px] font-['Manrope'] font-medium">
-                                                        {note.createdAt}
-                                                    </span>
-                                                </div>
-
-                                                <div className="flex items-center gap-3 shrink-0 ml-4">
-                                                    <div className="flex items-center gap-1.5 text-gray-700 font-bold" title={`${note.views} kali dilihat`}>
-                                                        <Eye className="w-[15px] h-[15px] text-gray-600" strokeWidth={2.5} />
-                                                        <span className="text-[13px] font-['Manrope']">{note.views}</span>
-                                                    </div>
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            handleLikePost(note.id);
-                                                        }}
-                                                        className={`flex items-center gap-1.5 transition-colors focus:outline-none font-bold ${note.is_liked ? "text-red-600" : "text-gray-700 hover:text-red-600"}`}
-                                                        title={`${note.likes} suka`}
-                                                    >
-                                                        <Heart className={`w-[15px] h-[15px] ${note.is_liked ? "fill-red-600" : "text-gray-600"}`} strokeWidth={2.5} />
-                                                        <span className="text-[13px] font-['Manrope']">{note.likes}</span>
-                                                    </button>
-                                                    <Link
-                                                        to={`/note/${note.id}#comments-section`}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                        className="flex items-center gap-1.5 text-gray-700 hover:text-gray-950 transition-colors focus:outline-none font-bold"
-                                                        title={`${note.comments} komentar`}
-                                                    >
-                                                        <MessageCircle className="w-[15px] h-[15px] text-gray-600" strokeWidth={2.5} />
-                                                        <span className="text-[13px] font-['Manrope']">{note.comments}</span>
-                                                    </Link>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Thumbnail */}
-                                        {note.thumbnail ? (
-                                            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-gray-100 relative shadow-sm">
-                                                <Link to={`/note/${note.id}`} className="block w-full h-full outline-none cursor-pointer">
-                                                    <img
-                                                        src={note.thumbnail}
-                                                        alt={note.title}
-                                                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-                                                    />
-                                                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
-                                                        <Clock className="w-3 h-3" /> {note.read_time || 1}m
-                                                    </div>
-                                                </Link>
-                                            </div>
-                                        ) : (
-                                            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden shadow-sm relative">
-                                                <Link to={`/note/${note.id}`} className="block w-full h-full outline-none cursor-pointer">
-                                                    <DefaultThumbnail className="w-full h-full rounded-2xl" />
-                                                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
-                                                        <Clock className="w-3 h-3" /> {note.read_time || 1}m
-                                                    </div>
-                                                </Link>
-                                            </div>
-                                        )}
-                                    </article>
+                                        note={note}
+                                        onLike={handleLikePost}
+                                    />
                                 ))
                             ) : (
                                 <div className="py-20 text-center flex flex-col items-center justify-center">

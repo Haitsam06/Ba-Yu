@@ -69,9 +69,7 @@ class ProfileController extends Controller
             return response()->json(['message' => 'Belum login woi!'], 401);
         }
 
-        $activities = \App\Models\Comment::with(['post' => function($query) {
-            $query->select('id', 'title'); 
-        }])
+        $activities = \App\Models\Comment::with('post')
         ->where('user_id', $userId)
         ->orderBy('created_at', 'desc')
         ->get();

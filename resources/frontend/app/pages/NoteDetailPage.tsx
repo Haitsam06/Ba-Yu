@@ -1582,10 +1582,14 @@ export default function NoteDetailPage() {
                                             <img
                                                 src={recNote.thumbnail}
                                                 alt={recNote.title}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                className="w-full h-full object-cover transition-transform duration-500"
                                             />
                                         ) : (
-                                            <DefaultThumbnail className="w-full h-full" />
+                                            <DefaultThumbnail 
+                                                className="w-full h-full" 
+                                                subject={recNote.mataPelajaran}
+                                                title={recNote.title}
+                                            />
                                         )}
                                         <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-xl text-[11px] uppercase tracking-wide font-['Lexend_Deca'] font-bold text-primary shadow-sm z-10">
                                             {recNote.mataPelajaran}
@@ -1679,9 +1683,11 @@ export default function NoteDetailPage() {
                                             className="w-full h-full object-cover"
                                         />
                                     ) : (
-                                        <div className="w-full h-full bg-indigo-100 flex items-center justify-center">
-                                            <FileText className="w-5 h-5 text-indigo-400" />
-                                        </div>
+                                        <DefaultThumbnail 
+                                            className="w-full h-full" 
+                                            subject={note.mapel || note.mataPelajaran}
+                                            title={note.title}
+                                        />
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0 py-0.5">

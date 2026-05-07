@@ -285,7 +285,11 @@ const LearningStatisticsPage = () => {
                                 {note.thumbnail ? (
                                    <img src={note.thumbnail} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="" />
                                 ) : (
-                                   <DefaultThumbnail className="w-full h-full p-4" />
+                                   <DefaultThumbnail 
+                                       className="w-full h-full p-4" 
+                                       subject={note.mapel}
+                                       title={note.title}
+                                   />
                                 )}
                              </div>
                              

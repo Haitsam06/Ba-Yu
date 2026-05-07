@@ -99,9 +99,7 @@ class UserController extends Controller
             return response()->json(['message' => 'Pengguna tidak ditemukan'], 404);
         }
 
-        $activities = \App\Models\Comment::with(['post' => function($query) {
-            $query->select('id', 'title'); 
-        }])
+        $activities = \App\Models\Comment::with('post')
         ->where('user_id', $id)
         ->orderBy('created_at', 'desc')
         ->get();

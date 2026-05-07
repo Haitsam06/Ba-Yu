@@ -389,10 +389,10 @@ export default function PakarDashboard() {
                                                     {/* Thumbnail */}
                                                     <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-slate-50 relative shadow-sm border border-slate-100 flex items-center justify-center">
                                                         {note.thumbnail ? (
-                                                            <img src={note.thumbnail} alt={note.title} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                                                            <img src={note.thumbnail} alt={note.title} className="w-full h-full object-cover transition-transform duration-500" />
                                                         ) : (
                                                             <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${subject?.color || "#5D5CE6"}10` }}>
-                                                                <span className="text-5xl transform group-hover:scale-110 transition-transform duration-500">{subject?.icon || "📘"}</span>
+                                                                <span className="text-5xl transition-transform duration-500">{subject?.icon || "📘"}</span>
                                                             </div>
                                                         )}
                                                     </div>

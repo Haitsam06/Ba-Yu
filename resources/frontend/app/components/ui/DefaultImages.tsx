@@ -1,17 +1,65 @@
-import React from 'react';
-import { FileText, User } from 'lucide-react';
+import { FileText, User, BookOpen, Calculator, Atom, Beaker, Globe, History, Languages, Code, HeartPulse, HardHat, Sprout, Briefcase } from 'lucide-react';
+import { mataPelajaran } from '../../data/mockData';
 
 /**
  * Default thumbnail placeholder for notes without images.
- * Shows a soft gray background with a document icon.
+ * Shows a varied background color and icon based on subject.
  */
-export function DefaultThumbnail({ className = "" }: { className?: string }) {
+export function DefaultThumbnail({ 
+    className = "", 
+    subject,
+    title
+}: { 
+    className?: string;
+    subject?: string;
+    title?: string;
+}) {
+    // Find subject data from mockData
+    const subjectData = mataPelajaran.find(m => m.name === subject || m.id === subject);
+    
+    // Fallback colors if subject not found
+    const fallbackColors = [
+        'bg-indigo-100 text-indigo-500',
+        'bg-emerald-100 text-emerald-500',
+        'bg-amber-100 text-amber-500',
+        'bg-rose-100 text-rose-500',
+        'bg-sky-100 text-sky-500',
+        'bg-purple-100 text-purple-500',
+    ];
+
+    // Simple hash function for consistent color based on title or subject
+    const getHash = (str: string) => {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return Math.abs(hash);
+    };
+
+    const hash = getHash(subject || title || "Ba-Yu");
+    const colorClass = subjectData 
+        ? "" // We'll use inline style for custom hex colors
+        : fallbackColors[hash % fallbackColors.length];
+
+    const icon = subjectData?.icon || "📘";
+
     return (
-        <div className={`flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300 ${className}`}>
-            <div className="flex flex-col items-center gap-1.5 opacity-60">
-                <FileText className="w-8 h-8 text-gray-600" strokeWidth={2} />
-                <span className="text-[10px] font-['Manrope'] font-bold text-gray-700 tracking-wide"></span>
+        <div 
+            className={`flex items-center justify-center ${colorClass} ${className} transition-all duration-500`}
+            style={subjectData ? { backgroundColor: `${subjectData.color}15` } : {}}
+        >
+            <div className="flex flex-col items-center gap-2 transition-transform duration-500">
+                {subjectData ? (
+                    <span className="text-5xl sm:text-6xl drop-shadow-sm">{icon}</span>
+                ) : (
+                    <div className="flex flex-col items-center gap-2 opacity-80">
+                        <BookOpen className="w-10 h-10 sm:w-12 sm:h-12" strokeWidth={1.5} />
+                    </div>
+                )}
             </div>
+            
+            {/* Subtle background pattern */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
         </div>
     );
 }

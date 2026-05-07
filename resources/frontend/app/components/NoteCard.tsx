@@ -1,0 +1,248 @@
+import { Link } from "react-router";
+import {
+    Clock,
+    Eye,
+    Heart,
+    MessageCircle,
+    Bookmark,
+    ShieldCheck,
+    FileText,
+} from "lucide-react";
+import { AvatarImage, DefaultThumbnail } from "./ui/DefaultImages";
+import { TagList } from "./ui/TagList";
+import { useBookmarks } from "../contexts/BookmarkContext";
+
+interface NoteCardProps {
+    note: {
+        id: string;
+        title: string;
+        description: string;
+        thumbnail: string | null;
+        author: {
+            id: string | number;
+            _id?: string | number;
+            name: string;
+            avatar: string | null;
+        };
+        mataPelajaran: string;
+        jenjang?: string;
+        kelas?: string;
+        semester?: string;
+        createdAt: string | Date;
+        updatedAt?: string | Date;
+        views?: number;
+        likes?: number;
+        comments?: number;
+        is_liked?: boolean;
+        is_verified?: boolean;
+        tags?: string[];
+        read_time?: number;
+    };
+    onLike?: (postId: string) => void;
+    className?: string;
+    showBookmark?: boolean;
+    isDraft?: boolean;
+}
+
+export function NoteCard({ note, onLike, className = "", showBookmark = true, isDraft = false }: NoteCardProps) {
+    const { isBookmarked, toggleBookmark } = useBookmarks();
+
+    const authorId = note.author?.id || note.author?._id;
+    
+    const formatDate = (dateValue: any) => {
+        if (!dateValue) return "Baru saja";
+        const d = new Date(dateValue);
+        if (isNaN(d.getTime())) return "Baru saja";
+        return d.toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+        });
+    };
+
+    const formattedDate = formatDate(note.createdAt);
+    const formattedUpdateDate = note.updatedAt ? formatDate(note.updatedAt) : formattedDate;
+
+    const targetUrl = isDraft ? `/upload?id=${note.id}` : `/note/${note.id}`;
+
+    return (
+        <article
+            className={`group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-8 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors bg-transparent outline-none ${className} ${isDraft ? 'cursor-pointer' : ''}`}
+        >
+            {/* Feed Text */}
+            <div className="flex-1 min-w-0 flex flex-col w-full h-full">
+                {/* Author Header */}
+                <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-800">
+                    <Link
+                        to={`/profile/${authorId}`}
+                        className="flex items-center gap-1.5 group/author outline-none cursor-pointer"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <AvatarImage
+                            src={note.author?.avatar}
+                            alt={note.author?.name}
+                            size={20}
+                            className="ring-2 ring-transparent group-hover/author:ring-primary/20 transition-all"
+                        />
+                        <span className="font-bold text-gray-950 group-hover/author:underline tracking-tight">
+                            {note.author?.name}
+                        </span>
+                    </Link>
+                    <span className="text-gray-700 px-0.5 font-bold">
+                        di
+                    </span>
+                    <span className="font-extrabold text-gray-900 tracking-tight">
+                        {note.mataPelajaran}
+                    </span>
+                    {note.jenjang && note.jenjang !== "Umum" && note.jenjang !== "-" && (
+                        <>
+                            <span className="text-[10px] text-gray-700 mx-0.5 font-bold">
+                                •
+                            </span>
+                            <span className="text-gray-800 font-bold tracking-tight">
+                                {note.jenjang === "Kuliah"
+                                    ? `${note.kelas || "S1/D4"} Semester ${note.semester || 1}`
+                                    : (note.kelas && note.kelas !== "Semua" && note.kelas !== "-" ? `${note.jenjang} Kelas ${note.kelas}` : note.jenjang)}
+                            </span>
+                        </>
+                    )}
+
+                    {note.is_verified && (
+                        <span className="flex items-center gap-1 text-[12px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md ml-1">
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                        </span>
+                    )}
+
+                    {isDraft && (
+                        <span className="ml-1.5 px-2 py-0.5 rounded-md bg-amber-50 text-amber-600 border border-amber-100 text-[10px] font-bold uppercase tracking-wider">
+                            Draft
+                        </span>
+                    )}
+                </div>
+
+                {/* Title */}
+                <Link
+                    to={targetUrl}
+                    className="block mb-2 outline-none font-['Lexend_Deca'] cursor-pointer"
+                >
+                    <h2 className="text-[20px] md:text-[22px] font-extrabold text-gray-900 leading-[1.25] tracking-tight group-hover:text-primary transition-colors line-clamp-2">
+                        {note.title || (isDraft ? "Draft Tanpa Judul" : "Tanpa Judul")}
+                    </h2>
+                </Link>
+
+                {/* Excerpt */}
+                <p className="text-[15px] font-['Manrope'] text-gray-700 line-clamp-2 leading-relaxed mb-4 pr-2 font-medium">
+                    {note.description}
+                </p>
+
+                {/* Tags */}
+                {note.tags && note.tags.length > 0 && (
+                    <TagList tags={note.tags} />
+                )}
+
+                {/* Meta Footer (Medium Style) */}
+                <div className={`flex items-center justify-between ${!(note.tags && note.tags.length > 0) ? 'mt-auto' : ''}`}>
+                    <div className="flex items-center gap-1.5 text-gray-700 font-bold">
+                        <Clock
+                            className="w-[14px] h-[14px] text-gray-600"
+                            strokeWidth={2.5}
+                        />
+                        <span className="text-[13px] font-['Manrope']">
+                            {isDraft ? `Edit terakhir: ${formattedUpdateDate}` : formattedDate}
+                        </span>
+                    </div>
+
+                    {!isDraft && (
+                        <div className="flex items-center gap-3 shrink-0 ml-4">
+                            <div className="flex items-center gap-1.5 text-gray-700 font-bold" title={`${note.views || 0} kali dilihat`}>
+                                <Eye className="w-[15px] h-[15px] text-gray-600" strokeWidth={2.5} />
+                                <span className="text-[13px] font-['Manrope']">
+                                    {note.views || 0}
+                                </span>
+                            </div>
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    if (onLike) onLike(note.id);
+                                }}
+                                className={`flex items-center gap-1.5 transition-colors focus:outline-none font-bold ${note.is_liked ? "text-red-500" : "text-gray-600 hover:text-red-500"}`}
+                                title={`${note.likes || 0} suka`}
+                            >
+                                <Heart
+                                    className={`w-[15px] h-[15px] ${note.is_liked ? "fill-red-600" : "text-gray-600"}`}
+                                    strokeWidth={2.5}
+                                />
+                                <span className="text-[13px] font-['Manrope']">
+                                    {note.likes || 0}
+                                </span>
+                            </button>
+                            <Link
+                                to={`/note/${note.id}#comments-section`}
+                                onClick={(e) =>
+                                    e.stopPropagation()
+                                }
+                                className="flex items-center gap-1.5 text-gray-600 hover:text-gray-950 transition-colors focus:outline-none font-bold"
+                                title={`${note.comments || 0} komentar`}
+                            >
+                                <MessageCircle
+                                    className="w-[15px] h-[15px] text-gray-600"
+                                    strokeWidth={2.5}
+                                />
+                                <span className="text-[13px] font-['Manrope']">
+                                    {note.comments || 0}
+                                </span>
+                            </Link>
+                            {showBookmark && (
+                                <button
+                                    aria-label="Save"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        toggleBookmark(note.id);
+                                    }}
+                                    className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? "text-primary scale-110" : "opacity-0 md:opacity-100 text-gray-500 hover:text-primary md:group-hover:opacity-100"}`}
+                                >
+                                    <Bookmark
+                                        className={`w-[18px] h-[18px] transition-all duration-300 ${isBookmarked(note.id) ? "fill-primary" : ""}`}
+                                        strokeWidth={2}
+                                    />
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Thumbnail */}
+            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-gray-100 relative shadow-sm">
+                <Link
+                    to={targetUrl}
+                    className="block w-full h-full outline-none cursor-pointer"
+                >
+                    {note.thumbnail ? (
+                        <img
+                            src={note.thumbnail}
+                            alt={note.title}
+                            className="w-full h-full object-cover transition-transform duration-500"
+                        />
+                    ) : (
+                        <DefaultThumbnail 
+                            className="w-full h-full rounded-2xl" 
+                            subject={note.mataPelajaran}
+                            title={note.title}
+                        />
+                    )}
+                    {/* Floating badge */}
+                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
+                        {isDraft ? (
+                            <><FileText className="w-3 h-3" /> DRAF</>
+                        ) : (
+                            <><Clock className="w-3 h-3" /> {note.read_time || 1}m</>
+                        )}
+                    </div>
+                </Link>
+            </div>
+        </article>
+    );
+}

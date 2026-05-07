@@ -301,10 +301,14 @@ export function LandingPage() {
                                  <img 
                                    src={note.thumbnail} 
                                    alt={note.title} 
-                                   className="w-full h-full object-cover transform group-hover:scale-105 group-hover:brightness-95 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" 
+                                   className="w-full h-full object-cover group-hover:brightness-95 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" 
                                  />
                                ) : (
-                                   <DefaultThumbnail className="w-full h-full" />
+                                   <DefaultThumbnail 
+                                       className="w-full h-full" 
+                                       subject={note.mataPelajaran}
+                                       title={note.title}
+                                   />
                                  )}
                                  <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
                                    <Clock className="w-3 h-3" /> {note.read_time || 1}m
