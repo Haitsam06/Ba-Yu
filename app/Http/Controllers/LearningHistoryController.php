@@ -128,7 +128,8 @@ class LearningHistoryController extends Controller
                     'materials_completed' => $totalMateriSelesai,
                 ],
                 'weekly_chart' => $grafikMingguan,
-                'recent_history' => $riwayatTerakhir
+                'recent_history' => $riwayatTerakhir,
+                'active_dates' => $semuaTanggalBelajar
             ]
         ], 200);
     }

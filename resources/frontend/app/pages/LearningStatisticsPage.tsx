@@ -35,22 +35,52 @@ import {
   Area
 } from 'recharts';
 import { Link, useNavigate } from 'react-router';
-import { MobileLayout } from '../components/MobileLayout';
 import { AvatarImage, DefaultThumbnail } from '../components/ui/DefaultImages';
+import { useToast } from '../contexts/ToastContext';
+import { NoteCard } from '../components/NoteCard';
+import { MobileLayout } from '../components/MobileLayout';
+import { Facebook, MessageCircle as MessageCircleIcon, Send, Twitter, Link2 } from 'lucide-react';
 
 const LearningStatisticsPage = () => {
   const [notes, setNotes] = useState<any[]>([]);
+  const [allNotes, setAllNotes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [chartView, setChartView] = useState<'weekly' | 'monthly'>('weekly');
   const [tempHours, setTempHours] = useState(4);
   const [tempMinutes, setTempMinutes] = useState(0);
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+  const [showFullHistory, setShowFullHistory] = useState(false);
   const [currentProgressHours, setCurrentProgressHours] = useState(2.8);
+  const [monthOffset, setMonthOffset] = useState(0);
+  const [showShareModal, setShowShareModal] = useState(false);
+  
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   // 1. Tambahin state baru buat nampung statistik dari API
   const [stats, setStats] = useState<any>(null);
   const [dynamicWeeklyData, setDynamicWeeklyData] = useState<any[]>([]);
+
+  // CALENDAR LOGIC
+  const today = new Date();
+  const displayDate = new Date(today.getFullYear(), today.getMonth() + monthOffset, 1);
+  const displayMonth = displayDate.getMonth();
+  const displayYear = displayDate.getFullYear();
+  const daysInMonth = new Date(displayYear, displayMonth + 1, 0).getDate();
+  const firstDayOfMonth = new Date(displayYear, displayMonth, 1).getDay();
+  const paddingDays = firstDayOfMonth; // 0 for Sunday
+  
+  const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+  const isActiveDate = (day: number) => {
+    if (!stats?.active_dates) return false;
+    const dateStr = `${displayYear}-${String(displayMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return stats.active_dates.includes(dateStr);
+  };
+
+  const handleShare = () => {
+      setShowShareModal(true);
+  };
 
   // 2. Kita ganti fetch-nya pake API Super lu!
   useEffect(() => {
@@ -79,7 +109,9 @@ const LearningStatisticsPage = () => {
         if (apiData.recent_history && apiData.recent_history.length > 0) {
             const recentPosts = apiData.recent_history.map((history: any) => history.post);
             // Hapus data yang null (jaga-jaga kalo postnya udah dihapus)
-            setNotes(recentPosts.filter((post: any) => post !== null));
+            const validPosts = recentPosts.filter((post: any) => post !== null);
+            setAllNotes(validPosts);
+            setNotes(validPosts.slice(0, 3));
         }
 
       } catch (error) {
@@ -129,10 +161,10 @@ const LearningStatisticsPage = () => {
               </button>
               <div>
                  <h1 className="text-lg font-bold tracking-tight text-slate-800 leading-none">Statistik Belajar</h1>
-                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Mei 2026 • Progres</p>
+                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">{monthNames[displayMonth]} {displayYear} • Progres</p>
               </div>
            </div>
-           <button className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-colors">
+           <button onClick={handleShare} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-colors active:scale-95">
               <Share2 size={18} />
            </button>
         </div>
@@ -248,7 +280,7 @@ const LearningStatisticsPage = () => {
                             radius={[6, 6, 0, 0]} 
                             barSize={chartView === 'weekly' ? 32 : 48}
                           >
-                             {activeChartData.map((entry, index) => (
+                             {activeChartData.map((entry: any, index: number) => (
                                 <Cell 
                                   key={`cell-${index}`} 
                                   fill={entry.hours > (chartView === 'weekly' ? 4 : 20) ? '#6366f1' : '#e0e7ff'} 
@@ -278,60 +310,38 @@ const LearningStatisticsPage = () => {
                              </div>
                           </div>
                        ))
+                    ) : allNotes.length > 0 ? (
+                       (showFullHistory ? allNotes : notes).map((note) => {
+                          const mappedNote = {
+                              id: note.id || note._id,
+                              title: note.title,
+                              description: note.content?.replace(/<[^>]*>/g, "").substring(0, 150) || "",
+                              thumbnail: note.thumbnail,
+                              author: {
+                                id: note.user?.id || note.user?._id,
+                                name: note.user?.name,
+                                avatar: note.user?.avatar
+                              },
+                              mataPelajaran: note.mapel || note.mataPelajaran || "Umum",
+                              jenjang: note.jenjang || "-",
+                              createdAt: note.created_at,
+                              views: note.views || 0,
+                              likes: note.likes_count || note.likes || 0,
+                              comments: note.comments_count || note.comments || 0,
+                              read_time: note.read_time,
+                          };
+                          return <NoteCard key={mappedNote.id} note={mappedNote} showBookmark={false} className="border border-slate-200 rounded-[20px] p-4 shadow-sm hover:shadow-md bg-white hover:bg-slate-50/50" />;
+                       })
                     ) : (
-                       notes.map((note) => (
-                          <article key={note.id || note._id} className="bg-white rounded-[20px] p-4 border border-slate-200 shadow-sm hover:shadow-md transition-all group flex gap-4 sm:gap-5">
-                             <div className="w-24 h-24 sm:w-28 sm:h-28 bg-slate-50 rounded-2xl overflow-hidden shrink-0 relative border border-slate-100">
-                                {note.thumbnail ? (
-                                   <img src={note.thumbnail} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="" />
-                                ) : (
-                                   <DefaultThumbnail 
-                                       className="w-full h-full p-4" 
-                                       subject={note.mapel}
-                                       title={note.title}
-                                   />
-                                )}
-                             </div>
-                             
-                             <div className="flex-1 min-w-0 py-1 flex flex-col">
-                                <div className="flex items-center gap-2 mb-1.5">
-                                   <AvatarImage src={note.user?.avatar} size={20} className="rounded-full ring-1 ring-slate-100" />
-                                   <span className="text-[12px] font-semibold text-slate-700 truncate">{note.user?.name}</span>
-                                   <span className="text-slate-300 text-[10px]">•</span>
-                                   <span className="text-[11px] font-medium text-slate-500">{new Date(note.created_at).toLocaleDateString('id-ID', { month: 'short', day: 'numeric' })}</span>
-                                </div>
-                                
-                                <Link to={`/note/${note.id || note._id}`} className="block group-hover:text-indigo-600 transition-colors mb-auto">
-                                   <h3 className="text-[15px] sm:text-[17px] font-bold text-slate-800 leading-[1.3] line-clamp-2">
-                                      {note.title}
-                                   </h3>
-                                </Link>
-
-                                <div className="flex items-center gap-4 mt-3">
-                                   <div className="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-lg">
-                                      <Clock size={12} className="text-slate-400" />
-                                      <span className="text-[10px] font-bold text-slate-500">{note.read_time || 5} Menit</span>
-                                   </div>
-                                   <div className="flex items-center gap-3">
-                                      <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 hover:text-rose-500 transition-colors">
-                                         <Heart size={14} />
-                                         <span>{note.likes_count || 0}</span>
-                                      </div>
-                                      <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 hover:text-blue-500 transition-colors">
-                                         <MessageCircle size={14} />
-                                         <span>{note.comments_count || 0}</span>
-                                      </div>
-                                   </div>
-                                </div>
-                             </div>
-                          </article>
-                       ))
+                       <div className="text-center py-10 text-slate-500 font-medium text-[14px]">Belum ada riwayat catatan yang dibuka.</div>
                     )}
                  </div>
                  
-                 <button className="w-full mt-6 py-3.5 bg-white text-[13px] font-bold text-slate-600 rounded-xl hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm">
-                    Lihat Semua Riwayat
-                 </button>
+                 {allNotes.length > 3 && (
+                    <button onClick={() => setShowFullHistory(!showFullHistory)} className="w-full mt-6 py-3.5 bg-white text-[13px] font-bold text-slate-600 rounded-xl hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm">
+                       {showFullHistory ? "Sembunyikan Sebagian" : "Lihat Semua Riwayat"}
+                    </button>
+                 )}
               </section>
            </div>
 
@@ -367,14 +377,40 @@ const LearningStatisticsPage = () => {
               <div className="bg-white rounded-[24px] p-6 border border-slate-200 shadow-sm">
                  <div className="flex items-center justify-between mb-5">
                     <h3 className="text-[16px] font-['Lexend_Deca'] font-bold text-slate-800">Kalender Belajar</h3>
-                    <Calendar size={18} className="text-slate-400" />
+                    <div className="flex items-center gap-2">
+                       <button onClick={() => setMonthOffset(m => m - 1)} className="p-1 text-slate-400 hover:text-indigo-600 transition-colors rounded-full hover:bg-indigo-50"><ChevronRight size={16} className="rotate-180" /></button>
+                       <span className="text-[12px] font-bold text-slate-500 min-w-[70px] text-center">{monthNames[displayMonth]}</span>
+                       <button onClick={() => setMonthOffset(m => m + 1)} className="p-1 text-slate-400 hover:text-indigo-600 transition-colors rounded-full hover:bg-indigo-50"><ChevronRight size={16} /></button>
+                    </div>
+                 </div>
+                 <div className="grid grid-cols-7 gap-1.5 text-center mb-2">
+                    {["M", "S", "S", "R", "K", "J", "S"].map((d, i) => (
+                       <span key={i} className="text-[10px] font-bold text-slate-400">{d}</span>
+                    ))}
                  </div>
                  <div className="grid grid-cols-7 gap-1.5">
-                    {[...Array(31)].map((_, i) => (
-                       <div key={i} className={`aspect-square rounded-lg flex items-center justify-center text-[12px] font-semibold ${i === 15 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-50 text-slate-600 hover:bg-slate-100 cursor-pointer'}`}>
-                          {i + 1}
-                       </div>
+                    {[...Array(paddingDays)].map((_, i) => (
+                       <div key={`empty-${i}`} className="aspect-square" />
                     ))}
+                    {[...Array(daysInMonth)].map((_, i) => {
+                       const day = i + 1;
+                       const isToday = displayMonth === today.getMonth() && displayYear === today.getFullYear() && day === today.getDate();
+                       const isStreak = isActiveDate(day);
+                       
+                       return (
+                          <div key={day} className={`aspect-square rounded-lg flex items-center justify-center text-[12px] font-semibold relative
+                             ${isToday && isStreak ? 'bg-orange-500 text-white shadow-md' : 
+                               isToday ? 'bg-indigo-600 text-white shadow-md' : 
+                               isStreak ? 'bg-orange-100 text-orange-600' : 
+                               'bg-slate-50 text-slate-600 hover:bg-slate-100 cursor-pointer'}
+                          `}>
+                             {day}
+                             {isStreak && !isToday && (
+                                <div className="absolute -bottom-0.5 w-1 h-1 bg-orange-500 rounded-full" />
+                             )}
+                          </div>
+                       );
+                    })}
                  </div>
               </div>
 
@@ -517,6 +553,75 @@ const LearningStatisticsPage = () => {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* MODAL SHARE */}
+      {showShareModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-300">
+            <div className="bg-white rounded-[32px] w-full max-w-md max-h-[90vh] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] overflow-hidden border border-white transform animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 flex flex-col">
+                <div className="bg-indigo-50 p-6 pb-5 text-center border-b border-indigo-100/50 shrink-0">
+                    <div className="w-14 h-14 bg-white text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm border border-indigo-200/30">
+                        <Share2 className="w-7 h-7" strokeWidth={2.5} />
+                    </div>
+                    <h3 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 mb-1">
+                        Bagikan Statistik Belajarmu
+                    </h3>
+                    <p className="font-['Manrope'] text-[13px] text-gray-600 font-bold px-6">
+                        Pamerin progres belajar dan streak kamu ke teman-teman.
+                    </p>
+                </div>
+
+                <div className="p-6 pt-6 overflow-y-auto custom-scrollbar">
+                    <div className="grid grid-cols-4 gap-y-6 gap-x-3 mb-6">
+                        <button onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`Cek statistik belajarku di Ba-Yu! Streak: ${stats?.summary?.current_streak || 0} hari. ${window.location.href}`)}`, "_blank")} className="flex flex-col items-center gap-2 group">
+                            <div className="w-11 h-11 bg-[#25D366] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-green-100 group-hover:-translate-y-1 transition-all">
+                                <MessageCircleIcon className="w-5 h-5 fill-white" />
+                            </div>
+                            <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">WA</span>
+                        </button>
+                        <button onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Gila, streak belajarku udah ${stats?.summary?.current_streak || 0} hari di Ba-Yu! 🚀`)}&url=${encodeURIComponent(window.location.href)}`, "_blank")} className="flex flex-col items-center gap-2 group">
+                            <div className="w-11 h-11 bg-black text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-gray-200 group-hover:-translate-y-1 transition-all">
+                                <Twitter className="w-5 h-5 fill-white" />
+                            </div>
+                            <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">X</span>
+                        </button>
+                        <button onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, "_blank")} className="flex flex-col items-center gap-2 group">
+                            <div className="w-11 h-11 bg-[#1877F2] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-blue-100 group-hover:-translate-y-1 transition-all">
+                                <Facebook className="w-5 h-5 fill-white" />
+                            </div>
+                            <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">FB</span>
+                        </button>
+                        <button onClick={() => window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(`Cek statistik belajarku di Ba-Yu! Streak: ${stats?.summary?.current_streak || 0} hari.`)}`, "_blank")} className="flex flex-col items-center gap-2 group">
+                            <div className="w-11 h-11 bg-[#0088cc] text-white rounded-[16px] flex items-center justify-center shadow-lg shadow-sky-100 group-hover:-translate-y-1 transition-all">
+                                <Send className="w-5 h-5 fill-white" />
+                            </div>
+                            <span className="text-[9px] font-black text-gray-500 uppercase tracking-wider">Tele</span>
+                        </button>
+                    </div>
+
+                    <div className="relative group mb-2">
+                        <label className="block text-left text-[11px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">
+                            Salin Tautan
+                        </label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400">
+                                <Link2 className="w-4 h-4" />
+                            </div>
+                            <input type="text" readOnly value={window.location.href} className="w-full pl-11 pr-24 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-[12.5px] font-bold text-gray-800 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-400 transition-all" />
+                            <button onClick={() => { navigator.clipboard.writeText(window.location.href); showToast("Link berhasil disalin!", "success"); }} className="absolute right-2 top-2 bottom-2 px-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 active:scale-95">
+                                Salin
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="p-5 border-t border-gray-50 shrink-0">
+                    <button onClick={() => setShowShareModal(false)} className="w-full py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] text-gray-500 bg-gray-50 hover:bg-gray-100 transition-all active:scale-95">
+                        Tutup Modal
+                    </button>
+                </div>
+            </div>
         </div>
       )}
   
