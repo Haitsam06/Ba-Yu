@@ -250,10 +250,10 @@ export function LandingPage() {
                     {mockNotes.slice(0, 4).map((note, i) => {
                       const author = getUserById(note.authorId);
                       return (
-                         <article 
-                           key={note.id} 
-                           className={`group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-8 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors bg-transparent outline-none`}
-                         >
+                          <article 
+                            key={note.id} 
+                            className={`group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-10 px-4 -mx-4 rounded-[2rem] border-b border-transparent hover:bg-white hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] bg-transparent outline-none`}
+                          >
                             {/* Feed Text */}
                             <div className="flex-1 min-w-0 flex flex-col w-full h-full">
                                {/* Title */}
@@ -297,9 +297,13 @@ export function LandingPage() {
                             {/* Thumbnail */}
                             <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-[12px] overflow-hidden shadow-sm relative">
                                <Link to={`/note/${note.id}`} className="block w-full h-full outline-none cursor-pointer">
-                                 {note.thumbnail ? (
-                                   <img src={note.thumbnail} alt={note.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
-                                 ) : (
+                               {note.thumbnail ? (
+                                 <img 
+                                   src={note.thumbnail} 
+                                   alt={note.title} 
+                                   className="w-full h-full object-cover transform group-hover:scale-105 group-hover:brightness-95 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" 
+                                 />
+                               ) : (
                                    <DefaultThumbnail className="w-full h-full" />
                                  )}
                                  <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">

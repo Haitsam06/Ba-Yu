@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { MobileLayout } from "../components/MobileLayout";
-import { Mail, Lock, User, GraduationCap, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, User, GraduationCap, Eye, EyeOff, Sparkles, ChevronRight, CheckCircle, X } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function Login() {
@@ -49,176 +49,164 @@ export default function Login() {
 
     return (
         <MobileLayout showBottomNav={false}>
-            <div className="min-h-screen flex flex-col px-6 py-8 bg-white relative">
-                {/* Simple background decoration */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10"></div>
-                <div className="absolute bottom-0 left-0 w-56 h-56 bg-secondary/10 rounded-full blur-3xl -z-10"></div>
+            <div className="min-h-screen flex flex-col justify-center px-6 py-12 bg-white relative overflow-hidden">
+                {/* Clean Background Decoration */}
+                <div className="absolute top-[-10%] right-[-10%] w-72 h-72 bg-indigo-50 rounded-full blur-3xl -z-10 opacity-70"></div>
+                <div className="absolute bottom-[-10%] left-[-10%] w-64 h-64 bg-purple-50 rounded-full blur-3xl -z-10 opacity-70"></div>
 
-                {/* Logo & Title */}
-                <div className="text-center mb-10 mt-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl mb-4 shadow-lg">
-                        <span className="text-2xl font-bold text-white">
+                {/* Logo & Title - Premium Minimalist */}
+                <div className="text-center mb-10">
+                    <div className="inline-flex items-center justify-center w-14 h-14 bg-gray-900 rounded-2xl mb-5 shadow-sm border border-gray-800">
+                        <span className="text-xl font-black text-white tracking-tighter">
                             BY
                         </span>
                     </div>
-                    <h1 className="font-['Lexend_Deca'] text-3xl font-bold text-foreground mb-2">
-                        Ba-Yu
+                    <h1 className="font-['Lexend_Deca'] text-[28px] sm:text-3xl font-extrabold text-gray-900 mb-2 leading-tight tracking-tight">
+                        {isLogin ? "Selamat Datang" : "Mulai Perjalananmu"}
                     </h1>
-                    <p className="font-['Manrope'] text-muted-foreground">
-                        Platform Berbagi Catatan Belajar
+                    <p className="font-['Manrope'] text-[15px] text-gray-500 font-medium">
+                        {isLogin 
+                            ? "Masuk untuk melanjutkan ke Ba-Yu." 
+                            : "Daftar dan bagikan catatan pertamamu."}
                     </p>
                 </div>
 
-                {/* Tab Switcher */}
-                <div className="flex bg-gray-100 rounded-2xl p-1 mb-8">
+                {/* Tab Switcher - Clean Pill */}
+                <div className="flex bg-gray-50/80 p-1.5 mb-8 rounded-2xl border border-gray-100/50 backdrop-blur-sm">
                     <button
-                        onClick={() => setIsLogin(true)}
-                        className={`flex-1 py-3 rounded-xl font-['Lexend_Deca'] font-medium transition-all ${
+                        onClick={() => {setIsLogin(true); setError("");}}
+                        className={`flex-1 py-2.5 rounded-xl font-['Lexend_Deca'] text-[14px] font-bold transition-all duration-300 outline-none ${
                             isLogin
-                                ? "bg-white text-primary shadow-sm"
-                                : "text-muted-foreground"
+                                ? "bg-white text-gray-900 shadow-sm border border-gray-200/50"
+                                : "text-gray-500 hover:text-gray-700"
                         }`}
                     >
                         Masuk
                     </button>
                     <button
-                        onClick={() => setIsLogin(false)}
-                        className={`flex-1 py-3 rounded-xl font-['Lexend_Deca'] font-medium transition-all ${
+                        onClick={() => {setIsLogin(false); setError("");}}
+                        className={`flex-1 py-2.5 rounded-xl font-['Lexend_Deca'] text-[14px] font-bold transition-all duration-300 outline-none ${
                             !isLogin
-                                ? "bg-white text-primary shadow-sm"
-                                : "text-muted-foreground"
+                                ? "bg-white text-gray-900 shadow-sm border border-gray-200/50"
+                                : "text-gray-500 hover:text-gray-700"
                         }`}
                     >
-                        Daftar
+                        Daftar Baru
                     </button>
                 </div>
 
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="flex-1">
-                    {!isLogin && (
-                        <div className="mb-4">
-                            <label className="block text-sm font-['Manrope'] font-medium text-foreground mb-2">
-                                Nama Lengkap
+                {/* Form Section */}
+                <form onSubmit={handleSubmit} className="flex-1 w-full max-w-md mx-auto">
+                    <div className="space-y-4">
+                        {!isLogin && (
+                            <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
+                                <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-gray-700 pl-1">
+                                    Nama Lengkap
+                                </label>
+                                <div className="relative group">
+                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 group-focus-within:text-gray-900 transition-colors" strokeWidth={2.5} />
+                                    <input
+                                        type="text"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 transition-all focus:bg-white focus:outline-none focus:ring-4 focus:ring-gray-100 focus:border-gray-900 placeholder:text-gray-400"
+                                        placeholder="John Doe"
+                                        required={!isLogin}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="space-y-1.5">
+                            <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-gray-700 pl-1">
+                                Email
                             </label>
-                            <div className="relative">
-                                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                            <div className="relative group">
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 group-focus-within:text-gray-900 transition-colors" strokeWidth={2.5} />
                                 <input
-                                    type="text"
-                                    value={formData.name}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            name: e.target.value,
-                                        })
-                                    }
-                                    className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl font-['Manrope'] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                                    placeholder="Masukkan nama lengkap"
-                                    required={!isLogin}
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 transition-all focus:bg-white focus:outline-none focus:ring-4 focus:ring-gray-100 focus:border-gray-900 placeholder:text-gray-400"
+                                    placeholder="nama@email.com"
+                                    required
                                 />
                             </div>
                         </div>
-                    )}
 
-                    <div className="mb-4">
-                        <label className="block text-sm font-['Manrope'] font-medium text-foreground mb-2">
-                            Email
-                        </label>
-                        <div className="relative">
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                            <input
-                                type="email"
-                                value={formData.email}
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        email: e.target.value,
-                                    })
-                                }
-                                className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl font-['Manrope'] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                                placeholder="nama@email.com"
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <div className="mb-6">
-                        <label className="block text-sm font-['Manrope'] font-medium text-foreground mb-2">
-                            Password
-                        </label>
-                        <div className="relative">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                value={formData.password}
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        password: e.target.value,
-                                    })
-                                }
-                                className="w-full pl-12 pr-12 py-3 bg-white border border-gray-200 rounded-xl font-['Manrope'] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                                placeholder="Masukkan password"
-                                required
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-                            >
-                                {showPassword ? (
-                                    <EyeOff className="w-5 h-5" />
-                                ) : (
-                                    <Eye className="w-5 h-5" />
-                                )}
-                            </button>
-                        </div>
-                    </div>
-
-                    {!isLogin && (
-                        <div className="mb-6">
-                            <label className="block text-sm font-['Manrope'] font-medium text-foreground mb-2">
-                                Jenjang Pendidikan
+                        <div className="space-y-1.5">
+                            <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-gray-700 pl-1">
+                                Password
                             </label>
-                            <div className="relative">
-                                <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                                <select
-                                    value={formData.jenjang}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            jenjang: e.target.value,
-                                        })
-                                    }
-                                    className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl font-['Manrope'] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary appearance-none"
+                            <div className="relative group">
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 group-focus-within:text-gray-900 transition-colors" strokeWidth={2.5} />
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                    className="w-full pl-11 pr-12 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 transition-all focus:bg-white focus:outline-none focus:ring-4 focus:ring-gray-100 focus:border-gray-900 placeholder:text-gray-400"
+                                    placeholder="••••••••"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none p-1 rounded-full hover:bg-gray-100 transition-colors"
                                 >
-                                    <option value="SD">SD</option>
-                                    <option value="SMP">SMP</option>
-                                    <option value="SMA">SMA</option>
-                                    <option value="Kuliah">Kuliah</option>
-                                </select>
+                                    {showPassword ? (
+                                        <EyeOff className="w-[18px] h-[18px]" strokeWidth={2.5} />
+                                    ) : (
+                                        <Eye className="w-[18px] h-[18px]" strokeWidth={2.5} />
+                                    )}
+                                </button>
                             </div>
                         </div>
-                    )}
+
+                        {!isLogin && (
+                            <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
+                                <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-gray-700 pl-1">
+                                    Jenjang Pendidikan
+                                </label>
+                                <div className="relative group">
+                                    <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 group-focus-within:text-gray-900 transition-colors pointer-events-none" strokeWidth={2.5} />
+                                    <select
+                                        value={formData.jenjang}
+                                        onChange={(e) => setFormData({ ...formData, jenjang: e.target.value })}
+                                        className="w-full pl-11 pr-10 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl font-['Manrope'] font-bold text-[15px] text-gray-900 transition-all focus:bg-white focus:outline-none focus:ring-4 focus:ring-gray-100 focus:border-gray-900 appearance-none cursor-pointer"
+                                    >
+                                        <option value="SD">Sekolah Dasar (SD)</option>
+                                        <option value="SMP">Menengah Pertama (SMP)</option>
+                                        <option value="SMA">Menengah Atas (SMA/SMK)</option>
+                                        <option value="Kuliah">Perguruan Tinggi (Kuliah)</option>
+                                    </select>
+                                    <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 pointer-events-none transform rotate-90" />
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     {isLogin && (
-                        <div className="flex items-center justify-between mb-6">
-                            <label className="flex items-center cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={rememberMe}
-                                    onChange={(e) =>
-                                        setRememberMe(e.target.checked)
-                                    }
-                                    className="w-4 h-4 text-primary bg-white border-gray-300 rounded focus:ring-primary"
-                                />
-                                <span className="ml-2 text-sm text-foreground font-['Manrope']">
+                        <div className="flex items-center justify-between mt-5 mb-6">
+                            <label className="flex items-center cursor-pointer group">
+                                <div className="relative flex items-center justify-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={rememberMe}
+                                        onChange={(e) => setRememberMe(e.target.checked)}
+                                        className="peer sr-only"
+                                    />
+                                    <div className="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:bg-gray-900 peer-checked:border-gray-900 transition-colors flex items-center justify-center">
+                                        <CheckCircle className={`w-3 h-3 text-white transition-transform duration-200 ${rememberMe ? 'scale-100' : 'scale-0'}`} strokeWidth={4} />
+                                    </div>
+                                </div>
+                                <span className="ml-2.5 text-[14px] text-gray-600 font-['Manrope'] font-medium group-hover:text-gray-900 transition-colors">
                                     Ingat saya
                                 </span>
                             </label>
 
                             <button
                                 type="button"
-                                className="text-sm text-primary font-['Manrope'] font-medium hover:underline"
+                                className="text-[13px] text-gray-900 font-['Lexend_Deca'] font-bold hover:underline underline-offset-4"
                             >
                                 Lupa Password?
                             </button>
@@ -226,52 +214,53 @@ export default function Login() {
                     )}
 
                     {error && (
-                        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl">
-                            <p className="text-sm font-['Manrope'] text-red-600 text-center">
-                                {error}
+                        <div className="mt-5 p-4 bg-red-50 border border-red-100 rounded-2xl animate-in zoom-in-95 duration-200">
+                            <p className="text-[14px] font-['Manrope'] font-bold text-red-600 flex items-center justify-center gap-2">
+                                <X className="w-4 h-4" /> {error}
                             </p>
                         </div>
                     )}
 
                     <button
                         type="submit"
-                        className="w-full bg-gradient-to-r from-primary to-secondary text-white py-4 rounded-full font-['Lexend_Deca'] font-semibold shadow-lg shadow-primary/30 mb-6 hover:shadow-xl transition-all"
+                        className={`w-full bg-gray-900 hover:bg-black text-white py-4 rounded-full font-['Lexend_Deca'] font-bold text-[15px] shadow-lg shadow-gray-900/20 hover:shadow-xl hover:shadow-gray-900/30 hover:-translate-y-0.5 transition-all active:scale-[0.98] ${isLogin ? 'mt-8' : 'mt-8'}`}
                     >
-                        {isLogin ? "Masuk" : "Daftar"}
+                        {isLogin ? "Masuk ke Akun" : "Daftar Sekarang"}
                     </button>
 
-                    {/* Social Login */}
-                    <div className="relative mb-6">
+                    {/* Social Login Separator */}
+                    <div className="relative mt-8 mb-6">
                         <div className="absolute inset-0 flex items-center">
                             <div className="w-full border-t border-gray-200"></div>
                         </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="px-4 bg-white text-muted-foreground font-['Manrope']">
-                                Atau lanjutkan dengan
+                        <div className="relative flex justify-center text-[13px]">
+                            <span className="px-4 bg-white text-gray-400 font-['Lexend_Deca'] font-semibold">
+                                atau lanjutkan dengan
                             </span>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    {/* Social Buttons */}
+                    <div className="grid grid-cols-2 gap-3.5">
                         <button
                             type="button"
-                            className="flex items-center justify-center gap-2 py-3 bg-white border border-gray-200 rounded-xl font-['Manrope'] font-medium text-foreground hover:bg-gray-50 transition-all"
+                            className="flex items-center justify-center gap-2.5 py-3.5 bg-white border border-gray-200 rounded-2xl font-['Lexend_Deca'] font-bold text-[14px] text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all active:scale-95"
                         >
                             <img
                                 src="https://www.google.com/favicon.ico"
                                 alt="Google"
-                                className="w-5 h-5"
+                                className="w-[18px] h-[18px]"
                             />
                             Google
                         </button>
                         <button
                             type="button"
-                            className="flex items-center justify-center gap-2 py-3 bg-white border border-gray-200 rounded-xl font-['Manrope'] font-medium text-foreground hover:bg-gray-50 transition-all"
+                            className="flex items-center justify-center gap-2.5 py-3.5 bg-white border border-gray-200 rounded-2xl font-['Lexend_Deca'] font-bold text-[14px] text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all active:scale-95"
                         >
                             <img
                                 src="https://www.apple.com/favicon.ico"
                                 alt="Apple"
-                                className="w-5 h-5"
+                                className="w-[18px] h-[18px]"
                             />
                             Apple
                         </button>

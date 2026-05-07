@@ -17,6 +17,8 @@ import EditProfilePage from './pages/EditProfilePage';
 import PakarDashboard from './pages/PakarDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import LearningStatisticsPage from './pages/LearningStatisticsPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
 import NotFound from './pages/NotFound';
 
 export const router = createBrowserRouter([
@@ -51,6 +53,14 @@ export const router = createBrowserRouter([
       {
         path: 'profile/:id',
         element: <PublicProfilePage />,
+      },
+      {
+        path: 'terms',
+        element: <TermsPage />,
+      },
+      {
+        path: 'privacy',
+        element: <PrivacyPage />,
       },
       {
         // Protected Wrapper
