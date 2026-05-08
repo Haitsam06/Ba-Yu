@@ -101,4 +101,32 @@ class AuthController extends Controller
             'message' => 'Gagal ngirim email nih, coba lagi ntar ya.'
         ], 500);
     }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email|exists:user,email',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->save();
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return response()->json([
+                'message' => 'Password berhasil diubah!'
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'Gagal mengubah password, link mungkin sudah kadaluarsa.'
+        ], 400);
+    }
 }

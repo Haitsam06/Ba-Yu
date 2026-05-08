@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import AvatarNotifications from './ui/avatar-notifications';
 import ApplicationLogo from './ApplicationLogo';
+import { AvatarImage } from './ui/DefaultImages';
 
 interface TopNavProps {
   isSidebarExpanded: boolean;
@@ -110,10 +111,11 @@ export function TopNav({ isSidebarExpanded, toggleSidebar }: TopNavProps) {
              onClick={() => setIsProfileOpen(!isProfileOpen)}
              className="focus:outline-none hover:opacity-80 transition-opacity ml-1 ring-2 ring-transparent active:ring-primary/20 rounded-full p-0.5"
            >
-              <img 
-                src={user?.avatar || "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop"} 
+              <AvatarImage 
+                src={user?.avatar} 
                 alt="Profile" 
-                className="w-[34px] h-[34px] rounded-full object-cover bg-gray-50 dark:bg-white/10 border border-gray-100 dark:border-white/10"
+                size={34}
+                className="bg-gray-50 dark:bg-white/10 border border-gray-100 dark:border-white/10"
               />
            </button>
 
@@ -122,10 +124,11 @@ export function TopNav({ isSidebarExpanded, toggleSidebar }: TopNavProps) {
              <div className="absolute right-0 top-[48px] w-[260px] bg-white dark:bg-[#1C1A29] rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-white/5 py-3 z-50 animate-in fade-in zoom-in-95 duration-200">
                 {/* Header (Profile Info) */}
                 <Link to="/profile" className="flex items-center gap-3 px-5 py-2 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors mb-2 group">
-                   <img 
-                      src={user?.avatar || "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop"} 
+                   <AvatarImage 
+                      src={user?.avatar} 
                       alt="Profile" 
-                      className="w-10 h-10 rounded-full object-cover shadow-sm group-hover:scale-105 transition-transform"
+                      size={40}
+                      className="shadow-sm group-hover:scale-105 transition-transform"
                    />
                    <div className="flex flex-col overflow-hidden">
                       <span className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[15px] truncate">{user?.name}</span>

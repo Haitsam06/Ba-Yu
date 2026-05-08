@@ -17,6 +17,7 @@ import { cn } from "../../lib/utils";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
+import { AvatarImage } from "./DefaultImages";
 
 interface NotificationItem {
     _id: string;
@@ -235,9 +236,10 @@ export default function AvatarNotifications() {
                                             )}
                                         >
                                             {item.actor ? (
-                                                <img 
-                                                    src={item.actor.avatar || "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop"} 
+                                                <AvatarImage 
+                                                    src={item.actor.avatar} 
                                                     alt={item.actor.name}
+                                                    size={44}
                                                     className="h-full w-full object-cover"
                                                 />
                                             ) : (

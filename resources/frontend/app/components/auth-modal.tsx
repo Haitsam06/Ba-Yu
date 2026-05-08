@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import ApplicationLogo from './ApplicationLogo';
+import axios from 'axios';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -46,6 +47,9 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (activeTab === 'forgot') return; // Forgot password handles its own submission via button onClick
+
     setIsSubmitting(true);
     
     if (activeTab === 'login') {
@@ -64,7 +68,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
          }
          onClose();
       }
-    } else {
+    } else if (activeTab === 'register') {
       const error = await register(formData.name, formData.email, formData.password, formData.jenjang);
       if (error) {
          showToast(error, "error");
@@ -319,20 +323,19 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         }
                         setIsSubmitting(true);
                         try {
-                          const response = await fetch('http://localhost:8000/api/forgot-password', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                            body: JSON.stringify({ email: formData.email })
+                          const response = await axios.post('/api/forgot-password', { 
+                            email: formData.email 
                           });
-                          const data = await response.json();
-                          if (response.ok) {
-                            showToast("SUKSES: " + data.message, "success");
+                          
+                          if (response.status === 200) {
+                            showToast("SUKSES: " + response.data.message, "success");
                             setActiveTab('login');
                           } else {
-                            showToast(data.message, "error");
+                            showToast(response.data.message, "error");
                           }
-                        } catch (error) {
-                          showToast("Koneksi gagal", "error");
+                        } catch (error: any) {
+                          const errorMsg = error.response?.data?.message || "Koneksi gagal";
+                          showToast(errorMsg, "error");
                         } finally {
                           setIsSubmitting(false);
                         }

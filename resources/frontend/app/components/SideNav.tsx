@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Home, Search, Bookmark, User, LayoutDashboard, ChevronLeft, Hash, Star, FileText } from 'lucide-react';
+import { Home, Search, Bookmark, User, LayoutDashboard, ChevronLeft, Hash, Star, FileText, Settings } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -113,6 +113,21 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
           ) : (
             <div className="px-5 py-2 text-[12px] font-['Manrope'] text-gray-600 dark:text-gray-500 font-bold">Belum ada pilihan pakar</div>
           )}
+      </div>
+
+      {/* Bottom Actions */}
+      <div className="mt-auto border-t border-slate-100 dark:border-white/5 p-3">
+         <Link
+           to="/settings"
+           className={`flex items-center gap-3 px-3 py-[9px] rounded-xl transition-all duration-200 w-full group ${
+             isActive('/settings') ? 'bg-primary/10 text-primary shadow-sm shadow-primary/5' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200'
+           }`}
+         >
+           <Settings className={`shrink-0 transition-all duration-200 ${isActive('/settings') ? 'w-[20px] h-[20px] text-primary scale-105' : 'w-[20px] h-[20px] text-gray-700 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200'}`} strokeWidth={isActive('/settings') ? 2.5 : 2} />
+           <span className={`font-['Manrope'] text-[14px] truncate mt-[1px] ${isActive('/settings') ? 'font-bold' : 'font-medium'}`}>
+             Pengaturan
+           </span>
+         </Link>
       </div>
 
     </aside>

@@ -4,6 +4,7 @@ import ApplicationLogo from './ApplicationLogo'; // Logo
 import { useState, useEffect } from 'react';
 import { AuthModal } from './auth-modal';
 import { useAuth } from '../contexts/AuthContext';
+import { AvatarImage } from './ui/DefaultImages';
 
 interface NavbarProps {
   variant?: 'default' | 'dashboard';
@@ -85,10 +86,11 @@ export function Navbar({ variant = 'default' }: NavbarProps) {
           <div className="flex items-center gap-2 sm:gap-3">
             {isAuthenticated && user ? (
               <Link to="/profile" className="group rounded-full p-1 border border-transparent hover:border-gray-200 transition-colors">
-                <img
-                  src={user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'}
+                <AvatarImage
+                  src={user.avatar}
                   alt={user.name}
-                  className={`rounded-full object-cover shadow-sm group-hover:ring-2 group-hover:ring-primary/20 transition-all ${isScrolled ? 'w-8 h-8' : 'w-10 h-10'}`}
+                  size={isScrolled ? 32 : 40}
+                  className={`shadow-sm group-hover:ring-2 group-hover:ring-primary/20 transition-all`}
                 />
               </Link>
             ) : (
