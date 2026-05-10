@@ -13,7 +13,8 @@ class CommentController extends Controller
     {
         $request->validate([
             'content' => 'required|string',
-            'parent_comment_id' => 'nullable|string'
+            'parent_comment_id' => 'nullable|string',
+            'quote_context' => 'nullable|string|max:500'
         ]);
 
         $post = Post::find($postId);
@@ -25,7 +26,8 @@ class CommentController extends Controller
             'post_id' => $postId,
             'user_id' => Auth::id(),
             'content' => $request->input('content'),
-            'parent_comment_id' => $request->input('parent_comment_id')
+            'parent_comment_id' => $request->input('parent_comment_id'),
+            'quote_context' => $request->input('quote_context')
         ]);
 
         if ($post) {
@@ -73,6 +75,32 @@ class CommentController extends Controller
             'message' => 'Komentar berhasil ditambahkan',
             'data' => $comment
         ], 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'content' => 'required|string',
+        ]);
+
+        $comment = Comment::find($id);
+
+        if (!$comment) {
+            return response()->json(['message' => 'Komentar tidak ditemukan'], 404);
+        }
+
+        if ((string)$comment->user_id !== (string)Auth::id()) {
+            return response()->json(['message' => 'Akses ditolak'], 403);
+        }
+
+        $comment->update([
+            'content' => $request->input('content'),
+        ]);
+
+        return response()->json([
+            'message' => 'Komentar berhasil diperbarui',
+            'data' => $comment,
+        ], 200);
     }
 
     public function destroy($id)

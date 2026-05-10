@@ -1,0 +1,172 @@
+import { useState } from "react";
+import { MobileLayout } from "../components/MobileLayout";
+import { ArrowLeft, Search, Mail, MessageCircle, ChevronDown, BookOpen, ExternalLink } from "lucide-react";
+import { useNavigate } from "react-router";
+
+const FAQS = [
+    {
+        question: "Bagaimana cara menjadi Pakar di Ba-Yu?",
+        answer: "Untuk menjadi Pakar, kamu harus sering membagikan catatan berkualitas. Jika catatanmu sering masuk kategori 'Populer' dan mendapatkan banyak like, tim Admin kami akan meninjaunya dan memberikan status Pakar."
+    },
+    {
+        question: "Apakah saya bisa mendownload catatan ke PDF?",
+        answer: "Tentu saja! Di setiap halaman detail catatan, kamu bisa menekan tombol Download di pojok kanan atas atau di bagian bawah konten untuk menyimpannya dalam format PDF."
+    },
+    {
+        question: "Kenapa akun saya tidak bisa login?",
+        answer: "Pastikan email dan kata sandi yang kamu masukkan benar. Jika kamu baru saja menghapus akun, akunmu mungkin berada dalam status Dormant. Coba login kembali untuk mengaktifkannya."
+    },
+    {
+        question: "Bagaimana cara menulis rumus matematika?",
+        answer: "Di halaman penulisan catatan, klik ikon kalkulator di toolbar samping untuk membuka editor rumus. Kamu bisa menulis formula menggunakan format KaTeX."
+    }
+];
+
+export default function HelpPage() {
+    const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState("");
+    const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+    const filteredFaqs = FAQS.filter(faq => 
+        faq.question.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    return (
+        <MobileLayout showBottomNav={false}>
+            <div className="min-h-screen pb-10 bg-[#FAFAFA] dark:bg-[#13111C]">
+                {/* Header */}
+                <div className="sticky top-0 bg-[#FAFAFA]/95 dark:bg-[#13111C]/95 backdrop-blur-md z-20 px-5 pt-8 pb-4 flex items-center justify-between border-b border-gray-100 dark:border-white/5 mb-6">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="w-10 h-10 flex items-center justify-center bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 rounded-full transition-colors shadow-sm dark:shadow-none"
+                    >
+                        <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                    </button>
+                    <h1 className="text-gray-900 dark:text-gray-100 font-['Lexend_Deca'] font-bold text-lg">
+                        Pusat Bantuan
+                    </h1>
+                    <div className="w-10"></div>
+                </div>
+
+                <div className="max-w-xl mx-auto px-5">
+                    {/* Hero Section */}
+                    <div className="text-center mb-8">
+                        <h2 className="font-['Lexend_Deca'] font-extrabold text-2xl text-gray-900 dark:text-gray-100 mb-2">
+                            Halo, ada yang bisa dibantu?
+                        </h2>
+                        <p className="font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400">
+                            Cari jawaban atau hubungi tim dukungan kami di bawah ini.
+                        </p>
+                    </div>
+
+                    {/* Search Bar */}
+                    <div className="relative mb-8">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Cari pertanyaan..."
+                            className="w-full pl-12 pr-4 py-4 bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm transition-all"
+                        />
+                    </div>
+
+                    <div className="space-y-6 mb-10">
+                        {/* FAQ Section */}
+                        <div className="bg-white dark:bg-[#1C1A29] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none">
+                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                                <BookOpen className="w-5 h-5 text-primary" />
+                                Pertanyaan Umum (FAQ)
+                            </h3>
+                            
+                            <div className="divide-y divide-gray-100 dark:divide-white/5">
+                                {filteredFaqs.length > 0 ? (
+                                    filteredFaqs.map((faq, index) => (
+                                        <div key={index} className="py-3">
+                                            <button 
+                                                onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                                                className="w-full flex items-center justify-between text-left focus:outline-none group"
+                                            >
+                                                <span className="font-['Manrope'] font-bold text-[14px] text-gray-800 dark:text-gray-200 group-hover:text-primary transition-colors">
+                                                    {faq.question}
+                                                </span>
+                                                <ChevronDown 
+                                                    className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openFaq === index ? "rotate-180 text-primary" : ""}`} 
+                                                />
+                                            </button>
+                                            <div 
+                                                className={`overflow-hidden transition-all duration-300 ease-in-out ${openFaq === index ? "max-h-40 mt-2 opacity-100" : "max-h-0 opacity-0"}`}
+                                            >
+                                                <p className="font-['Manrope'] text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed pr-6">
+                                                    {faq.answer}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="py-6 text-center text-gray-500 font-['Manrope'] text-[13px]">
+                                        Tidak ada hasil untuk pencarian "{searchQuery}"
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Contact Support */}
+                        <div className="bg-white dark:bg-[#1C1A29] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none">
+                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 mb-4">
+                                Masih Butuh Bantuan?
+                            </h3>
+                            
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <a 
+                                    href="https://wa.me/6281234567890" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="flex items-start gap-3 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors group"
+                                >
+                                    <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
+                                        <MessageCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-['Manrope'] font-bold text-[14px] text-emerald-900 dark:text-emerald-100">WhatsApp</h4>
+                                        <p className="font-['Manrope'] text-[12px] text-emerald-700 dark:text-emerald-300/80 mt-0.5">Respons cepat</p>
+                                    </div>
+                                </a>
+
+                                <a 
+                                    href="mailto:support@ba-yu.com" 
+                                    className="flex items-start gap-3 p-4 rounded-2xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors group"
+                                >
+                                    <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center shrink-0">
+                                        <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-['Manrope'] font-bold text-[14px] text-blue-900 dark:text-blue-100">Email</h4>
+                                        <p className="font-['Manrope'] text-[12px] text-blue-700 dark:text-blue-300/80 mt-0.5">Detail & lampiran</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Community Guidelines Link */}
+                        <a href="/terms" className="block w-full bg-gray-900 dark:bg-white/5 border border-transparent dark:border-white/10 rounded-3xl p-6 shadow-sm dark:shadow-none hover:bg-black dark:hover:bg-white/10 transition-colors group cursor-pointer">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h3 className="font-['Lexend_Deca'] font-bold text-white mb-1">
+                                        Panduan Komunitas
+                                    </h3>
+                                    <p className="font-['Manrope'] text-[13px] text-gray-400">
+                                        Baca aturan dan etika berbagi catatan di Ba-Yu.
+                                    </p>
+                                </div>
+                                <ExternalLink className="w-5 h-5 text-gray-500 group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
+                            </div>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+        </MobileLayout>
+    );
+}

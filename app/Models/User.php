@@ -27,11 +27,17 @@ class User extends Authenticatable
         'phone',
         'bio',
         'is_verified',
+        'is_private',
+        'is_dormant',
+        'deactivated_at',
+        'username_updated_at',
     ];
 
     protected $attributes = [
         'role' => 'user',
         'is_verified' => false,
+        'is_private' => false,
+        'is_dormant' => false,
     ];
 
     protected $hidden = [
@@ -41,6 +47,10 @@ class User extends Authenticatable
 
     protected $casts = [
         'is_verified' => 'boolean',
+        'is_private' => 'boolean',
+        'is_dormant' => 'boolean',
+        'deactivated_at' => 'datetime',
+        'username_updated_at' => 'datetime',
     ];
 
     // Relationships
@@ -72,17 +82,20 @@ class User extends Authenticatable
 
     public function isFollowing($userId)
     {
-        return \App\Models\Follow::where('follower_id', (string)$this->id)->where('following_id', (string)$userId)->exists();
+        return \App\Models\Follow::where('follower_id', (string)$this->id)
+                                 ->where('following_id', (string)$userId)
+                                 ->where('status', \App\Models\Follow::STATUS_ACCEPTED)
+                                 ->exists();
     }
 
     public function followings()
     {
-        return $this->hasMany(\App\Models\Follow::class, 'follower_id');
+        return $this->hasMany(\App\Models\Follow::class, 'follower_id')->where('status', \App\Models\Follow::STATUS_ACCEPTED);
     }
 
     public function followers()
     {
-        return $this->hasMany(\App\Models\Follow::class, 'following_id');
+        return $this->hasMany(\App\Models\Follow::class, 'following_id')->where('status', \App\Models\Follow::STATUS_ACCEPTED);
     }
 
     public function createToken(string $name, array $abilities = ['*'], ?\DateTimeInterface $expiresAt = null)

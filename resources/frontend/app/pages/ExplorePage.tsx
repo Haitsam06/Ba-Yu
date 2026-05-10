@@ -20,36 +20,42 @@ import {
     X,
     ShieldCheck,
     Compass,
+    Users,
+    Lock as LockIcon,
 } from "lucide-react";
 import { mataPelajaran } from "../data/mockData";
 import axios from "axios";
 import { Link, useLocation } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
+import { CustomSelect } from "../components/ui/CustomSelect";
 import { useBookmarks } from "../contexts/BookmarkContext";
 import { AuthModal } from "../components/auth-modal";
 import { NoteCardSkeleton } from "../components/ui/skeletons";
 import { TagList } from "../components/ui/TagList";
 import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
 import { NoteCard } from "../components/NoteCard";
+import { useToast } from "../contexts/ToastContext";
 
 export default function ExplorePage() {
     const { isAuthenticated } = useAuth();
     const { isBookmarked, toggleBookmark } = useBookmarks();
+    const { showToast } = useToast();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
-    const tabFromUrl = queryParams.get("tab") as "kategori" | "populer" | "terbaru" | null;
+    const tabFromUrl = queryParams.get("tab") as "kategori" | "populer" | "terbaru" | "pengguna" | null;
 
     const [activeSegment, setActiveSegment] = useState<
-        "kategori" | "populer" | "terbaru"
+        "kategori" | "populer" | "terbaru" | "pengguna"
     >(() => {
-        if (tabFromUrl && ["kategori", "populer", "terbaru"].includes(tabFromUrl)) {
+        if (tabFromUrl && ["kategori", "populer", "terbaru", "pengguna"].includes(tabFromUrl)) {
             return tabFromUrl;
         }
         return (
             (sessionStorage.getItem("exploreTab") as
                 | "kategori"
                 | "populer"
-                | "terbaru") || "kategori"
+                | "terbaru"
+                | "pengguna") || "kategori"
         );
     });
 
@@ -70,7 +76,7 @@ export default function ExplorePage() {
 
     // Update activeSegment when tab URL param changes
     useEffect(() => {
-        if (tabFromUrl && ["kategori", "populer", "terbaru"].includes(tabFromUrl)) {
+        if (tabFromUrl && ["kategori", "populer", "terbaru", "pengguna"].includes(tabFromUrl)) {
             setActiveSegment(tabFromUrl);
         }
     }, [tabFromUrl]);
@@ -82,6 +88,16 @@ export default function ExplorePage() {
     const [notes, setNotes] = useState<any[]>([]);
     const [isLoadingNotes, setIsLoadingNotes] = useState(true);
     const [experts, setExperts] = useState<any[]>([]);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+    // User search state
+    const [searchedUsers, setSearchedUsers] = useState<any[]>([]);
+    const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+    const [usersPage, setUsersPage] = useState(1);
+    const [hasMoreUsers, setHasMoreUsers] = useState(true);
+    const [isLoadingMoreUsers, setIsLoadingMoreUsers] = useState(false);
 
 // 1. Tutup dropdown saat klik di luar kotak pencarian
     useEffect(() => {
@@ -148,39 +164,58 @@ export default function ExplorePage() {
     const handleFollowExpert = async (expertId: string) => {
         if (!isAuthenticated) return openAuthModal("login");
 
-        const previousExperts = [...experts]; // Simpan state awal untuk rollback
-
-        // Optimistic Update
-        setExperts((prev) =>
-            prev.map((ex) => {
-                if ((ex._id || ex.id) === expertId) {
-                    const isCurrentlyFollowed = ex.is_followed_by_me;
-                    return {
-                        ...ex,
-                        is_followed_by_me: !isCurrentlyFollowed,
-                        followers_count: !isCurrentlyFollowed
-                            ? (ex.followers_count || 0) + 1
-                            : Math.max(0, (ex.followers_count || 0) - 1),
-                    };
-                }
-                return ex;
-            }),
-        );
+        const previousExperts = [...experts];
+        const previousSearchedUsers = [...searchedUsers];
 
         try {
             const token =
                 localStorage.getItem("bayu-token") ||
                 sessionStorage.getItem("bayu-token");
-            await axios.post(
-                `/api/users/${expertId}/follow`,
+            const res = await axios.post(
+                `/api/v1/users/${expertId}/follow`,
                 {},
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 },
             );
+
+            const status = res.data.status;
+            
+            const updateList = (list: any[]) => list.map(u => {
+                if ((u._id || u.id) === expertId) {
+                    if (status === 'unfollowed') {
+                        return { 
+                            ...u, 
+                            is_followed_by_me: false, 
+                            is_follow_pending: false,
+                            followers_count: Math.max(0, (u.followers_count || 0) - 1)
+                        };
+                    } else if (status === 'pending') {
+                        return { ...u, is_followed_by_me: false, is_follow_pending: true };
+                    } else {
+                        return { 
+                            ...u, 
+                            is_followed_by_me: true, 
+                            is_follow_pending: false,
+                            followers_count: (u.followers_count || 0) + 1
+                        };
+                    }
+                }
+                return u;
+            });
+
+            setExperts(prev => updateList(prev));
+            setSearchedUsers(prev => updateList(prev));
+
+            if (status === 'unfollowed') showToast("Berhenti mengikuti", "info");
+            else if (status === 'pending') showToast("Permintaan mengikuti dikirim", "success");
+            else showToast("Berhasil mengikuti", "success");
+
         } catch (e) {
-            console.error("Gagal toggle follow pakar:", e);
-            setExperts(previousExperts); // Rollback jika error
+            console.error("Gagal toggle follow:", e);
+            setExperts(previousExperts);
+            setSearchedUsers(previousSearchedUsers);
+            showToast("Gagal memproses permintaan", "error");
         }
     };
 
@@ -268,49 +303,154 @@ export default function ExplorePage() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    useEffect(() => {
-        const fetchPosts = async () => {
+    const fetchPosts = async (pageNum: number, isReset: boolean = false) => {
+        if (isReset) {
             setIsLoadingNotes(true);
-            try {
-                const keyword = debouncedSearchQuery;
+        } else {
+            setIsLoadingMore(true);
+        }
+        
+        try {
+            const keyword = debouncedSearchQuery;
 
-                const queryParamsAPI: any = {
-                    sort: activeSegment,
-                    order: sortOrder // <--- Kirim parameter asc/desc ke Backend
-                };
+            const queryParamsAPI: any = {
+                sort: activeSegment,
+                order: sortOrder,
+                page: pageNum,
+                limit: 12
+            };
 
-                if (keyword !== "") {
-                    queryParamsAPI.search = keyword;
+            if (keyword !== "") {
+                queryParamsAPI.search = keyword;
+            }
+
+            if (selectedJenjang !== "Semua") {
+                queryParamsAPI.jenjang = selectedJenjang;
+            }
+
+            if (selectedKelas !== "Semua") {
+                queryParamsAPI.kelas = selectedKelas;
+            }
+
+            if (selectedTags.length > 0) {
+                queryParamsAPI.tags = selectedTags.join(',');
+            }
+
+            const response = await axios.get("/api/v1/posts", {
+                params: queryParamsAPI,
+            });
+
+            const newData = response.data.data || [];
+            
+            if (isReset || pageNum === 1) {
+                setNotes(newData);
+            } else {
+                setNotes((prev) => [...prev, ...newData]);
+            }
+
+            if (response.data.meta) {
+                setHasMore(response.data.meta.has_more);
+            } else {
+                setHasMore(newData.length === 12);
+            }
+        } catch (error) {
+            console.error("Pesan Error dari Backend:", error);
+        } finally {
+            setIsLoadingNotes(false);
+            setIsLoadingMore(false);
+        }
+    };
+
+    useEffect(() => {
+        setPage(1);
+        fetchPosts(1, true);
+    }, [debouncedSearchQuery, activeSegment, sortOrder, selectedJenjang, selectedKelas, selectedTags]);
+
+    // Fetch users when Pengguna tab is active and search query changes
+    const fetchUsers = async (pageNum: number, isReset: boolean = false) => {
+        if (isReset) setIsLoadingUsers(true);
+        else setIsLoadingMoreUsers(true);
+
+        try {
+            const authHeader = isAuthenticated
+                ? { Authorization: `Bearer ${localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token")}` }
+                : {};
+            const res = await axios.get("/api/v1/users/search", {
+                params: { q: debouncedSearchQuery, page: pageNum, limit: 12 },
+                headers: authHeader,
+            });
+            
+            const newData = res.data.data || [];
+            
+            if (isReset || pageNum === 1) {
+                setSearchedUsers(newData);
+            } else {
+                setSearchedUsers(prev => [...prev, ...newData]);
+            }
+
+            if (res.data.meta) {
+                setHasMoreUsers(res.data.meta.has_more);
+            } else {
+                setHasMoreUsers(newData.length === 12);
+            }
+        } catch (e) {
+            console.error("Gagal search user:", e);
+            if (isReset) setSearchedUsers([]);
+        } finally {
+            setIsLoadingUsers(false);
+            setIsLoadingMoreUsers(false);
+        }
+    };
+
+    useEffect(() => {
+        if (activeSegment !== 'pengguna') return;
+        setUsersPage(1);
+        fetchUsers(1, true);
+    }, [debouncedSearchQuery, activeSegment, isAuthenticated]);
+
+    useEffect(() => {
+        if (page > 1 && activeSegment !== 'pengguna') {
+            fetchPosts(page, false);
+        }
+    }, [page]);
+
+    useEffect(() => {
+        if (usersPage > 1 && activeSegment === 'pengguna') {
+            fetchUsers(usersPage, false);
+        }
+    }, [usersPage]);
+
+    useEffect(() => {
+        const handleScroll = (e: Event) => {
+            const target = e.target as HTMLElement | Document;
+            let isBottom = false;
+
+            if (target === document) {
+                isBottom = window.innerHeight + document.documentElement.scrollTop + 300 >= document.documentElement.offsetHeight;
+            } else {
+                const el = target as HTMLElement;
+                isBottom = el.scrollHeight - el.scrollTop - el.clientHeight <= 300;
+            }
+
+            if (isBottom) {
+                if (activeSegment === 'pengguna') {
+                    if (!isLoadingMoreUsers && hasMoreUsers && !isLoadingUsers) {
+                        setUsersPage((prev) => prev + 1);
+                    }
+                } else {
+                    if (!isLoadingMore && hasMore && !isLoadingNotes) {
+                        setPage((prev) => prev + 1);
+                    }
                 }
-
-                if (selectedJenjang !== "Semua") {
-                    queryParamsAPI.jenjang = selectedJenjang;
-                }
-
-                if (selectedKelas !== "Semua") {
-                    queryParamsAPI.kelas = selectedKelas;
-                }
-
-                if (selectedTags.length > 0) {
-                    queryParamsAPI.tags = selectedTags.join(',');
-                }
-
-                const response = await axios.get("/api/v1/posts", {
-                    params: queryParamsAPI,
-                });
-                // ----------------------------------------
-
-                setNotes(response.data.data || []);
-            } catch (error) {
-                console.error("Pesan Error dari Backend:", error);
-            } finally {
-                setIsLoadingNotes(false);
             }
         };
 
-        fetchPosts();
-        // --- 3. TAMBAHKAN sortOrder KE DALAM KURUNG SIKU DI BAWAH INI ---
-    }, [debouncedSearchQuery, activeSegment, sortOrder, selectedJenjang, selectedKelas, selectedTags]);
+        const scrollContainer = document.getElementById("main-scroll-container");
+        const elementToObserve = scrollContainer || window;
+
+        elementToObserve.addEventListener("scroll", handleScroll);
+        return () => elementToObserve.removeEventListener("scroll", handleScroll as EventListener);
+    }, [isLoadingMore, hasMore, isLoadingNotes, isLoadingMoreUsers, hasMoreUsers, isLoadingUsers, activeSegment]);
 
     const formattedNotes = useMemo(() => {
         let result = notes.map((note) => ({
@@ -404,6 +544,7 @@ export default function ExplorePage() {
         { key: "kategori" as const, label: "Untuk Anda", icon: Sparkles },
         { key: "populer" as const, label: "Terpopuler", icon: TrendingUp },
         { key: "terbaru" as const, label: "Terbaru", icon: Clock },
+        { key: "pengguna" as const, label: "Pengguna", icon: Users },
     ];
 
     // === SHARED CONTENT ===
@@ -595,16 +736,16 @@ export default function ExplorePage() {
                                     </div>
 
                                     {/* Bagian Kanan: Dropdown Filter Order */}
-                                    <div className="pb-3 pl-4 hidden sm:block">
-                                        <select
+                                    <div className="pb-3 pl-4 hidden sm:block w-[140px]">
+                                        <CustomSelect
                                             value={sortOrder}
-                                            onChange={(e) => setSortOrder(e.target.value as "desc" | "asc")}
-                                            className="bg-gray-50/80 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 text-[13px] font-['Manrope'] font-bold py-1.5 px-3.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-all appearance-none outline-none text-center shadow-sm dark:shadow-none"
-                                            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.2em 1.2em', paddingRight: '2rem' }}
-                                        >
-                                            <option value="desc">Descending</option>
-                                            <option value="asc">Ascending</option>
-                                        </select>
+                                            onChange={(val) => setSortOrder(val as "desc" | "asc")}
+                                            options={[
+                                                { value: "desc", label: "Terbaru" },
+                                                { value: "asc", label: "Terlama" },
+                                            ]}
+                                            className="bg-gray-50/80 dark:bg-[#1C1A29] !border-none !rounded-full shadow-sm text-sm font-['Manrope'] font-bold text-gray-700 dark:text-gray-300"
+                                        />
                                     </div>
 
                                 </div>
@@ -612,25 +753,166 @@ export default function ExplorePage() {
                             </div>
                         </div>
 
-                        {/* Notes Vertical Feed (Medium Style) */}
+                        {/* Notes Vertical Feed OR User Cards */}
                         <div
                             className={`px-6 md:px-0 w-full flex flex-col pb-16`}
                         >
-                            {isLoadingNotes ? (
+                            {activeSegment === 'pengguna' ? (
+                                /* === USER SEARCH RESULTS === */
+                                isLoadingUsers ? (
+                                    <div className="space-y-4 pt-4">
+                                        {[...Array(5)].map((_, i) => (
+                                            <div key={`users-skeleton-${i}`} className="flex items-center gap-4 p-5 rounded-3xl bg-white dark:bg-[#1C1A29] border border-gray-100 dark:border-white/5 animate-pulse shadow-sm">
+                                                <div className="w-[60px] h-[60px] rounded-full bg-gray-200 dark:bg-white/10 shrink-0"></div>
+                                                <div className="flex-1 space-y-2.5">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="h-5 bg-gray-200 dark:bg-white/10 rounded-lg w-32"></div>
+                                                        <div className="h-5 bg-gray-200 dark:bg-white/10 rounded-lg w-16"></div>
+                                                    </div>
+                                                    <div className="h-3 bg-gray-100 dark:bg-white/5 rounded-lg w-24"></div>
+                                                    <div className="h-3 bg-gray-100 dark:bg-white/5 rounded-lg w-40"></div>
+                                                </div>
+                                                <div className="w-24 h-10 bg-gray-200 dark:bg-white/10 rounded-xl"></div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : searchedUsers.length > 0 ? (
+                                    <div className="space-y-3 pt-4">
+                                        {searchedUsers.map((u: any) => {
+                                            const userId = u._id || u.id;
+                                            return (
+                                                <div
+                                                    key={userId + '_' + Math.random().toString(36).substr(2, 5)}
+                                                    className="flex items-center gap-4 p-5 rounded-3xl bg-white dark:bg-[#1C1A29] border border-gray-100/50 dark:border-white/5 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] dark:shadow-none hover:shadow-[0_8px_30px_-10px_rgba(0,0,0,0.08)] dark:hover:shadow-none hover:border-gray-200 dark:hover:border-white/10 transition-all duration-300 group"
+                                                >
+                                                    <Link to={`/profile/${userId}`} className="shrink-0 relative">
+                                                        <AvatarImage
+                                                            src={u.avatar}
+                                                            alt={u.name}
+                                                            size={64}
+                                                            className="rounded-full object-cover bg-gray-50 dark:bg-white/10 ring-[3px] ring-transparent group-hover:ring-primary/20 transition-all duration-300"
+                                                        />
+                                                    </Link>
+                                                    <Link to={`/profile/${userId}`} className="flex-1 min-w-0 flex flex-col justify-center">
+                                                        <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                                                            <h4 className="font-['Lexend_Deca'] font-extrabold text-[17px] text-gray-900 dark:text-gray-100 truncate group-hover:text-primary transition-colors">
+                                                                {u.name || u.username || "Anonim"}
+                                                            </h4>
+                                                            {u.is_private && (
+                                                                <LockIcon className="w-4 h-4 text-gray-400 shrink-0" />
+                                                            )}
+                                                            {u.role === 'admin' && (
+                                                                <span className="px-2.5 py-1 rounded-[8px] bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[11px] font-extrabold font-['Lexend_Deca'] flex items-center gap-1.5 shrink-0 border border-indigo-100 dark:border-indigo-500/20">
+                                                                    <ShieldCheck className="w-3.5 h-3.5" /> Admin
+                                                                </span>
+                                                            )}
+                                                            {u.role === 'pakar' && (
+                                                                <span className="px-2.5 py-1 rounded-[8px] bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[11px] font-extrabold font-['Lexend_Deca'] flex items-center gap-1.5 shrink-0 border border-amber-100 dark:border-amber-500/20">
+                                                                    <Star className="w-3.5 h-3.5" fill="currentColor" /> Pakar
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <p className="font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400 font-bold truncate mb-2">
+                                                            @{u.username || '—'}
+                                                        </p>
+                                                        <div className="font-['Manrope'] text-[13px] text-gray-500 dark:text-gray-400 font-semibold flex items-center gap-2 flex-wrap">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <Users className="w-4 h-4 opacity-70" />
+                                                                <span><strong className="text-gray-800 dark:text-gray-200">{u.followers_count || 0}</strong> Pengikut</span>
+                                                            </div>
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600"></span>
+                                                            <div className="flex items-center gap-1.5">
+                                                                <BookOpen className="w-4 h-4 opacity-70" />
+                                                                <span><strong className="text-gray-800 dark:text-gray-200">{u.posts_count || 0}</strong> Tulisan</span>
+                                                            </div>
+                                                            {u.bio && (
+                                                                <>
+                                                                    <span className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600 hidden sm:block"></span>
+                                                                    <span className="truncate max-w-[200px] sm:max-w-[300px] hidden sm:block italic opacity-80">"{u.bio}"</span>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    </Link>
+                                                    <button
+                                                        onClick={() => handleFollowExpert(userId)}
+                                                        className={`px-5 py-2 rounded-xl border font-['Manrope'] text-[13px] font-bold transition-all focus:outline-none shrink-0 ${
+                                                            u.is_followed_by_me
+                                                                ? "border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10"
+                                                                : u.is_follow_pending
+                                                                    ? "border-gray-200 dark:border-white/10 text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-white/5 cursor-default"
+                                                                    : "border-primary/20 dark:border-primary/30 text-primary bg-primary/5 hover:bg-primary hover:text-white"
+                                                        }`}
+                                                    >
+                                                        {u.is_followed_by_me ? "Mengikuti" : u.is_follow_pending ? "Diminta" : "Ikuti"}
+                                                    </button>
+                                                </div>
+                                            );
+                                        })}
+                                        {isLoadingMoreUsers && (
+                                            <div className="space-y-4 pt-2">
+                                                {[...Array(3)].map((_, i) => (
+                                                    <div key={`more-users-${i}`} className="flex items-center gap-4 p-5 rounded-3xl bg-white dark:bg-[#1C1A29] border border-gray-100 dark:border-white/5 animate-pulse shadow-sm">
+                                                        <div className="w-[64px] h-[64px] rounded-full bg-gray-200 dark:bg-white/10 shrink-0"></div>
+                                                        <div className="flex-1 space-y-2.5">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="h-5 bg-gray-200 dark:bg-white/10 rounded-lg w-32"></div>
+                                                                <div className="h-5 bg-gray-200 dark:bg-white/10 rounded-lg w-16"></div>
+                                                            </div>
+                                                            <div className="h-3 bg-gray-100 dark:bg-white/5 rounded-lg w-24"></div>
+                                                            <div className="h-3 bg-gray-100 dark:bg-white/5 rounded-lg w-40"></div>
+                                                        </div>
+                                                        <div className="w-24 h-10 bg-gray-200 dark:bg-white/10 rounded-xl"></div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center py-20 text-center">
+                                        <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
+                                            <Users className="w-8 h-8 text-gray-300 dark:text-gray-600" />
+                                        </div>
+                                        <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-lg mb-2">
+                                            {debouncedSearchQuery ? 'Pengguna Tidak Ditemukan' : 'Cari Pengguna'}
+                                        </h3>
+                                        <p className="text-gray-500 dark:text-gray-400 font-['Manrope']">
+                                            {debouncedSearchQuery
+                                                ? 'Coba gunakan kata kunci lain.'
+                                                : 'Ketik nama atau username di kolom pencarian di atas.'}
+                                        </p>
+                                    </div>
+                                )
+                            ) : (isLoadingNotes ? (
                                 <div className="space-y-0">
                                     {[...Array(5)].map((_, i) => (
                                         <NoteCardSkeleton key={i} />
                                     ))}
                                 </div>
                             ) : formattedNotes.length > 0 ? (
-                                formattedNotes.map((note, i) => (
-                                    <NoteCard
-                                        key={note.id}
-                                        note={note}
-                                        onLike={handleLikePost}
-                                        className={!isAuthenticated ? "explore-reveal opacity-0 translate-y-4" : ""}
-                                    />
-                                ))
+                                <>
+                                    {formattedNotes.map((note, i) => (
+                                        <NoteCard
+                                            key={note.id + '_' + Math.random().toString(36).substr(2, 5)}
+                                            note={note}
+                                            onLike={handleLikePost}
+                                            className={!isAuthenticated ? "explore-reveal opacity-0 translate-y-4" : ""}
+                                        />
+                                    ))}
+                                    
+                                    {isLoadingMore && (
+                                        <>
+                                            {[...Array(3)].map((_, i) => (
+                                                <NoteCardSkeleton key={`more-${i}`} />
+                                            ))}
+                                        </>
+                                    )}
+                                    
+                                    {!hasMore && formattedNotes.length > 0 && (
+                                        <div className="py-8 text-center">
+                                            <p className="text-gray-400 dark:text-gray-500 font-['Manrope'] text-[13px] font-medium">Anda sudah melihat semua catatan di kategori ini.</p>
+                                        </div>
+                                    )}
+                                </>
                             ) : (
                                 <div className="flex flex-col items-center justify-center py-20 text-center">
                                     <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
@@ -640,11 +922,10 @@ export default function ExplorePage() {
                                         Pencarian Tidak Ditemukan
                                     </h3>
                                     <p className="text-gray-500 dark:text-gray-400 font-['Manrope']">
-                                        Coba gunakan kata kunci atau filter
-                                        lain.
+                                        Coba gunakan kata kunci atau filter lain.
                                     </p>
                                 </div>
-                            )}
+                            ))}
                         </div>
                     </div>
 
@@ -708,12 +989,16 @@ export default function ExplorePage() {
                                                     }
                                                     className={`px-3.5 py-1.5 rounded-[10px] border font-['Manrope'] text-[12px] font-bold transition-all focus:outline-none ${expert.is_followed_by_me
                                                             ? "border-gray-300 dark:border-white/10 text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10"
-                                                            : "border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-primary hover:text-primary hover:bg-primary/5"
+                                                            : expert.is_follow_pending
+                                                                ? "border-gray-200 dark:border-white/10 text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-white/5 cursor-default"
+                                                                : "border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-primary hover:text-primary hover:bg-primary/5"
                                                         }`}
                                                 >
                                                     {expert.is_followed_by_me
                                                         ? "Mengikuti"
-                                                        : "Ikuti"}
+                                                        : expert.is_follow_pending
+                                                            ? "Diminta"
+                                                            : "Ikuti"}
                                                 </button>
                                             </div>
                                         ))

@@ -14,7 +14,8 @@ import {
     Edit2,
     Trash2,
     AlertTriangle,
-    X
+    X,
+    Lock
 } from "lucide-react";
 import { AvatarImage, DefaultThumbnail } from "./ui/DefaultImages";
 import { TagList } from "./ui/TagList";
@@ -32,7 +33,9 @@ interface NoteCardProps {
             id: string | number;
             _id?: string | number;
             name: string;
+            username?: string;
             avatar: string | null;
+            is_private?: boolean;
         };
         mataPelajaran: string;
         jenjang?: string;
@@ -109,13 +112,18 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                     >
                         <AvatarImage
                             src={note.author?.avatar}
-                            alt={note.author?.name}
+                            alt={note.author?.name || note.author?.username}
                             size={20}
                             className="ring-2 ring-slate-100 dark:ring-white/5 group-hover/author:ring-primary/20 transition-all"
                         />
-                        <span className="font-bold text-gray-950 dark:text-gray-200 group-hover/author:underline tracking-tight">
-                            {note.author?.name}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-gray-950 dark:text-gray-200 group-hover/author:underline tracking-tight">
+                                {note.author?.name ? note.author.name : (note.author?.username ? `@${note.author.username}` : "Anonim")}
+                            </span>
+                            {note.author?.is_private && (
+                                <Lock className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+                            )}
+                        </div>
                     </Link>
                     <span className="text-gray-700 dark:text-gray-500 px-0.5 font-bold">
                         di

@@ -14,6 +14,7 @@ export interface User {
     _id?: string;
     email: string;
     name: string;
+    username?: string;
     role: UserRole;
     jenjang_pendidikan?: string;
     avatar?: string;
@@ -23,18 +24,23 @@ export interface User {
     followers_count?: number;
     following_count?: number;
     created_at?: string;
+    is_private?: boolean;
+    is_dormant?: boolean;
+    deactivated_at?: string;
+    username_updated_at?: string;
 }
 
 interface AuthContextType {
     user: User | null;
     isLoading: boolean;
     login: (
-        email: string,
+        loginId: string,
         password: string,
         rememberMe?: boolean,
     ) => Promise<string | null>; // Returns error string if failed, null if success
     register: (
         name: string,
+        username: string,
         email: string,
         password: string,
         jenjang: string,
@@ -86,13 +92,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const login = async (
-        email: string,
+        loginId: string,
         password: string,
         rememberMe: boolean = false,
     ): Promise<string | null> => {
         try {
             const response = await axios.post("/api/v1/login", {
-                email,
+                login: loginId,
                 password,
             });
 
@@ -119,6 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const register = async (
         name: string,
+        username: string,
         email: string,
         password: string,
         jenjang: string,
@@ -126,6 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
             const response = await axios.post("/api/v1/register", {
                 name,
+                username,
                 email,
                 password,
                 jenjang_pendidikan: jenjang,

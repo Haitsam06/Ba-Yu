@@ -21,6 +21,7 @@ import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
 import { AvatarImage } from "../components/ui/DefaultImages";
+import { CustomSelect } from "../components/ui/CustomSelect";
 
 export default function EditProfilePage() {
     const { user, updateUserSession } = useAuth();
@@ -31,6 +32,7 @@ export default function EditProfilePage() {
     // Local state for the form, pre-filled with actual active user data
     const [formData, setFormData] = useState({
         name: user?.name || "",
+        username: user?.username || "",
         bio: user?.bio || "",
         jenjang_pendidikan: user?.jenjang_pendidikan || "SMP",
         school: user?.school || "",
@@ -264,6 +266,9 @@ export default function EditProfilePage() {
 
             const submitData = new FormData();
             submitData.append("name", formData.name);
+            if (formData.username && formData.username !== user?.username) {
+                submitData.append("username", formData.username);
+            }
             submitData.append("bio", formData.bio);
             submitData.append(
                 "jenjang_pendidikan",
@@ -413,6 +418,29 @@ export default function EditProfilePage() {
 
                             <div>
                                 <label className="block text-sm font-['Manrope'] font-black text-gray-900 dark:text-gray-200 mb-2">
+                                    Username
+                                </label>
+                                <div className="relative group">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500 group-focus-within:text-primary transition-colors">@</span>
+                                    <input
+                                        type="text"
+                                        value={formData.username}
+                                        onChange={(e) => {
+                                            const val = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+                                            setFormData({ ...formData, username: val });
+                                        }}
+                                        className="w-full pl-10 pr-4 py-3.5 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                        placeholder="usernameanda"
+                                        disabled={loading}
+                                    />
+                                </div>
+                                <p className="font-['Manrope'] text-xs text-gray-500 mt-2">
+                                    Hanya boleh diubah <strong className="text-primary">1x setiap 15 hari</strong>.
+                                </p>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-['Manrope'] font-black text-gray-900 dark:text-gray-200 mb-2">
                                     Bio Singkat
                                 </label>
                                 <textarea
@@ -448,37 +476,17 @@ export default function EditProfilePage() {
                                     Jenjang Pendidikan Terkini
                                 </label>
                                 <div className="relative">
-                                    <select
+                                    <CustomSelect
                                         value={formData.jenjang_pendidikan}
-                                        onChange={(e) =>
-                                            setFormData({
-                                                ...formData,
-                                                jenjang_pendidikan:
-                                                    e.target.value,
-                                            })
-                                        }
-                                        className="w-full px-4 py-3.5 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
-                                        disabled={loading}
-                                    >
-                                        <option value="SD">
-                                            Sekolah Dasar (SD)
-                                        </option>
-                                        <option value="SMP">
-                                            Menengah Pertama (SMP)
-                                        </option>
-                                        <option value="SMA">
-                                            Menengah Atas (SMA/SMK)
-                                        </option>
-                                        <option value="Kuliah">
-                                            Perguruan Tinggi (Kuliah)
-                                        </option>
-                                        <option value="Umum">
-                                            Umum
-                                        </option>
-                                    </select>
-                                    <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400">
-                                        ▼
-                                    </div>
+                                        onChange={(val) => setFormData({ ...formData, jenjang_pendidikan: val as string })}
+                                        options={[
+                                            { value: "SD", label: "Sekolah Dasar (SD)" },
+                                            { value: "SMP", label: "Menengah Pertama (SMP)" },
+                                            { value: "SMA", label: "Menengah Atas (SMA/SMK)" },
+                                            { value: "Kuliah", label: "Perguruan Tinggi (Kuliah)" },
+                                            { value: "Umum", label: "Umum" },
+                                        ]}
+                                    />
                                 </div>
                             </div>
 

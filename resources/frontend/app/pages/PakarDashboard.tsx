@@ -163,6 +163,8 @@ export default function PakarDashboard() {
     const { user } = useAuth();
     const [filter, setFilter] = useState<VerificationStatus>("pending");
     const [searchQuery, setSearchQuery] = useState("");
+    const [sortBy, setSortBy] = useState<"terbaru" | "terlama">("terbaru");
+    const [visibleItemsCount, setVisibleItemsCount] = useState(15);
     const { showToast } = useToast();
     const [notes, setNotes] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -235,70 +237,53 @@ export default function PakarDashboard() {
         { label: "Total Kontrol", value: notes.length, color: "text-slate-600", icon: Activity, sparkColor: "#64748b" },
     ];
 
-    const filteredNotes = (filter === "all" ? notes.filter(n => !n.isRejected) : filter === "pending" ? pendingNotes : verifiedNotes).filter(n => {
-        const q = searchQuery.toLowerCase();
-        return n.title?.toLowerCase().includes(q) || n.mataPelajaran?.toLowerCase().includes(q) || n.author?.name?.toLowerCase().includes(q);
-    });
+    const filteredNotes = (filter === "all" ? notes.filter(n => !n.isRejected) : filter === "pending" ? pendingNotes : verifiedNotes)
+        .filter(n => {
+            const q = searchQuery.toLowerCase();
+            return n.title?.toLowerCase().includes(q) || n.mataPelajaran?.toLowerCase().includes(q) || n.author?.name?.toLowerCase().includes(q);
+        })
+        .sort((a, b) => {
+            const dateA = new Date(a.created_at || a.createdAt || 0).getTime();
+            const dateB = new Date(b.created_at || b.createdAt || 0).getTime();
+            return sortBy === "terbaru" ? dateB - dateA : dateA - dateB;
+        });
+
+    const handleLoadMore = () => {
+        setVisibleItemsCount((prev) => prev + 15);
+    };
 
     return (
         <MobileLayout>
-            <div className="pb-12 bg-slate-50/50 dark:bg-[#13111C] min-h-screen font-['Manrope']">
+            <div className="w-full h-full flex justify-center pb-20 bg-slate-50/50 dark:bg-[#13111C] min-h-screen font-['Manrope']">
                 <FeedbackModal isOpen={isFeedbackModalOpen} onClose={() => setIsFeedbackModalOpen(false)} onSubmit={handleVerifySubmit} type={feedbackType} noteTitle={selectedNoteForFeedback?.title || ""} />
-                
-                <div className="bg-gradient-to-b from-indigo-50/50 dark:from-primary/5 via-white dark:via-[#13111C] to-transparent px-4 sm:px-6 md:px-10 pt-10 pb-12 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-100/20 dark:bg-primary/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/4 pointer-events-none" />
-                    
-                    <div className="relative z-10 max-w-7xl mx-auto">
-                        <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
-                            <div className="flex items-center gap-6">
+
+                <div className="w-full max-w-[1140px] px-4 sm:px-6 md:px-8 flex flex-col lg:flex-row gap-8 lg:gap-10 xl:gap-14 lg:justify-center mx-auto mt-8">
+                    {/* LEFT COLUMN (MAIN CONTENT) */}
+                    <div className="flex-1 w-full lg:max-w-[640px] xl:max-w-[700px] min-w-0">
+                        
+                        {/* Compact Header */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 pb-6 border-b border-gray-100 dark:border-white/5">
+                            <div className="flex items-center gap-4">
                                 <div className="relative group shrink-0">
-                                    <AvatarImage src={user?.avatar} alt={user?.name} size={76} className="relative rounded-[24px] border-4 border-white dark:border-[#1C1A29] shadow-sm" />
-                                    <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-white dark:bg-[#1C1A29] rounded-lg shadow-sm flex items-center justify-center border border-slate-100 dark:border-white/10"><Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-primary animate-pulse" /></div>
+                                    <AvatarImage src={user?.avatar} alt={user?.name} size={64} className="relative rounded-2xl shadow-sm border border-slate-100 dark:border-white/10" />
+                                    <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white dark:bg-[#1C1A29] rounded-md shadow-sm flex items-center justify-center border border-slate-100 dark:border-white/10"><Sparkles className="w-3 h-3 text-indigo-600 dark:text-primary animate-pulse" /></div>
                                 </div>
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2.5 mb-1.5">
-                                        <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-0.5 rounded-md border border-indigo-100 dark:border-indigo-500/20">Verified Expert</span>
-                                        <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">• Level 4 Pakar</span>
+                                <div>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-indigo-600 dark:text-primary font-['Lexend_Deca'] text-[11px] font-black tracking-[0.2em] uppercase">Verified Expert</span>
                                     </div>
-                                    <h1 className="font-['Lexend_Deca'] text-3xl font-bold text-slate-800 dark:text-slate-100 tracking-tight leading-none">{user?.name || "Pakar Ba-Yu"}</h1>
-                                    <p className="text-slate-500 font-medium text-[14px]">Siap mengkurasi <span className="text-indigo-600 font-bold">{pendingNotes.length} materi</span> berkualitas hari ini.</p>
+                                    <h2 className="text-slate-900 dark:text-slate-100 font-['Lexend_Deca'] font-extrabold text-2xl tracking-tight leading-none">
+                                        {user?.name || "Pakar Ba-Yu"}
+                                    </h2>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
-                                <button className="bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 rounded-xl px-5 py-3 text-slate-600 dark:text-slate-300 font-bold text-[13px] flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-white/5 shadow-sm dark:shadow-none transition-all"><LayoutGrid size={16} className="text-indigo-600 dark:text-primary" />Tag</button>
-                                <button className="bg-slate-800 dark:bg-indigo-600 text-white rounded-xl px-5 py-3 text-[13px] font-bold flex items-center gap-2 hover:bg-slate-900 dark:hover:bg-indigo-700 shadow-md shadow-slate-200 dark:shadow-none transition-all"><BookOpen size={16} />Baca Massal</button>
+                                <button className="bg-slate-800 dark:bg-indigo-600 text-white rounded-xl px-5 py-2.5 text-[12px] font-bold font-['Lexend_Deca'] uppercase tracking-wider flex items-center gap-2 hover:bg-slate-900 dark:hover:bg-indigo-700 shadow-sm transition-all"><BookOpen size={16} />Baca Massal</button>
                             </div>
-                        </header>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
-                            {stats.map((stat, idx) => (
-                                <div key={idx} className="bg-white dark:bg-[#1C1A29] rounded-[24px] p-6 border border-slate-200 dark:border-white/5 shadow-sm hover:shadow-md dark:shadow-none transition-all group relative overflow-hidden flex flex-col justify-between min-h-[160px]">
-                                   <div className="absolute inset-x-0 bottom-0 z-0 opacity-[0.15] group-hover:opacity-[0.25] transition-opacity h-1/2 pointer-events-none">
-                                      <ResponsiveContainer width="100%" height="100%">
-                                         <AreaChart data={sparkData}>
-                                            <Area type="monotone" dataKey="v" stroke={stat.sparkColor} strokeWidth={3} fill={stat.sparkColor} fillOpacity={0.2} animationDuration={2000} />
-                                         </AreaChart>
-                                      </ResponsiveContainer>
-                                   </div>
-                                   <div className="relative z-10">
-                                      <div className="flex justify-between items-center mb-4">
-                                        <div className={`w-10 h-10 bg-slate-50 dark:bg-white/5 rounded-xl flex items-center justify-center border border-slate-100 dark:border-white/5 group-hover:scale-105 transition-transform duration-300`}><stat.icon className={`w-5 h-5 ${stat.color} dark:text-primary`} /></div>
-                                        <div className="px-2.5 py-1 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg flex items-center gap-1.5"><TrendingUp size={12} className="text-emerald-600 dark:text-emerald-400" /><span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 tracking-wider">AKTIF</span></div>
-                                      </div>
-                                      <div className="flex flex-col">
-                                        <div className="flex items-baseline gap-2"><span className="text-3xl font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100 tracking-tight">{isLoading ? ".." : stat.value}</span></div>
-                                        <p className="text-[12px] font-semibold text-slate-500 mt-1 uppercase tracking-wider">{stat.label}</p>
-                                      </div>
-                                   </div>
-                                </div>
-                            ))}
                         </div>
-                    </div>
-                </div>
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 -mt-2 relative z-20">
-                    <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-                        <div className="xl:col-span-3 space-y-6">
+                        <div className="space-y-6">
+
                             <div className="flex flex-col lg:flex-row items-center gap-4">
                                 <div className="flex-1 relative w-full group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><Search className="h-5 w-5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" /></div>
@@ -335,7 +320,7 @@ export default function PakarDashboard() {
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
-                                        {filteredNotes.map((note) => {
+                                        {filteredNotes.slice(0, visibleItemsCount).map((note) => {
                                             const subject = mataPelajaran.find(m => m.name === note.mataPelajaran);
                                             return (
                                                 <article key={note.id} className="group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-8 border-b border-slate-100 dark:border-white/5 last:border-0 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors bg-transparent outline-none px-4 sm:px-6 rounded-[24px]">
@@ -399,13 +384,51 @@ export default function PakarDashboard() {
                                                 </article>
                                             );
                                         })}
+                                        
+                                        {filteredNotes.length > visibleItemsCount && (
+                                            <div className="mt-8 flex justify-center">
+                                                <button onClick={handleLoadMore} className="px-6 py-3 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 text-[13px] shadow-sm transition-all">
+                                                    Load More
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
                         </div>
+                    </div>
 
-                        <div className="xl:col-span-1 space-y-6">
-                            <div className="bg-white dark:bg-[#1C1A29] rounded-[24px] p-6 border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none relative overflow-hidden">
+                    {/* RIGHT COLUMN (SIDEBAR) */}
+                    <div className="hidden lg:block w-[280px] xl:w-[320px] shrink-0 border-l border-gray-100 dark:border-white/5 pl-6 xl:pl-10">
+                        <div className="sticky pt-2 pb-12" style={{ top: "min(72px, calc(100vh - 100% - 24px))" }}>
+                            
+                            <div className="pb-8 border-b border-gray-100 dark:border-white/5 mb-8">
+                                <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-6">
+                                    Statistik Kurasi
+                                </h3>
+                                <div className="flex flex-col gap-4">
+                                    {stats.map((stat, index) => {
+                                        const Icon = stat.icon;
+                                        return (
+                                            <div key={index} className="bg-white dark:bg-[#1C1A29] rounded-[20px] p-5 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none flex items-center gap-4 group hover:border-indigo-200 dark:hover:border-primary/20 transition-all">
+                                                <div className={`w-12 h-12 rounded-[16px] flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform bg-slate-50 dark:bg-white/5`}>
+                                                    <Icon className={`w-5 h-5 ${stat.color} dark:text-primary`} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-2xl font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 leading-none mb-1">
+                                                        {stat.value}
+                                                    </p>
+                                                    <p className="text-[12px] font-['Manrope'] text-gray-500 font-bold uppercase tracking-wider line-clamp-1">
+                                                        {stat.label}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            <div className="bg-white dark:bg-[#1C1A29] rounded-[24px] p-6 border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none relative overflow-hidden mb-6">
                                 <div className="absolute top-0 right-0 w-16 h-16 bg-indigo-50/50 dark:bg-indigo-500/10 rounded-bl-[24px]" />
                                 <div className="flex items-center gap-3 mb-6">
                                     <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-500/10 rounded-[12px] flex items-center justify-center"><Map className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /></div>
@@ -415,7 +438,7 @@ export default function PakarDashboard() {
                                     {[
                                         { title: "Verifikasi Teori", desc: "Pastikan rumus standar.", num: 1, c: "bg-blue-500" },
                                         { title: "Originalitas", desc: "Bukan copy-paste murni.", num: 2, c: "bg-indigo-500" },
-                                        { title: "Kualitas Visual", desc: "Tulisan/gambar harus jelas.", num: 3, c: "bg-amber-500" },
+                                        { title: "Kualitas Visual", desc: "Tulisan/gambar jelas.", num: 3, c: "bg-amber-500" },
                                     ].map((rule) => (
                                         <div key={rule.num} className="flex gap-4 group">
                                             <div className={`w-1.5 h-1.5 rounded-full ${rule.c} mt-1.5 shrink-0`} />
@@ -423,15 +446,15 @@ export default function PakarDashboard() {
                                         </div>
                                     ))}
                                 </div>
-                                <button className="w-full mt-6 py-3.5 bg-slate-800 text-white rounded-xl font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-wider shadow-md hover:bg-slate-900 transition-all flex items-center justify-center gap-2">E-Pedoman<ChevronRight size={14} /></button>
+                                <button className="w-full mt-6 py-3.5 bg-slate-800 dark:bg-indigo-600 text-white rounded-xl font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-wider shadow-md hover:bg-slate-900 transition-all flex items-center justify-center gap-2">E-Pedoman<ChevronRight size={14} /></button>
                             </div>
                             
                             <div className="bg-indigo-600 rounded-[24px] p-6 text-white relative overflow-hidden shadow-lg shadow-indigo-600/20 group">
                                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
                                 <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-1000" />
-                                <ShieldCheck className="w-10 h-10 mb-4 opacity-80 group-hover:rotate-12 transition-transform duration-500" />
-                                <h4 className="font-['Lexend_Deca'] font-bold text-[17px] mb-2 leading-tight tracking-tight">Kualitas Segalanya.</h4>
-                                <p className="text-indigo-100 text-[13px] font-medium leading-relaxed">Terima kasih telah kurasi materi berkualitas untuk Ba-Yu.</p>
+                                <ShieldCheck className="w-8 h-8 mb-4 opacity-80 group-hover:rotate-12 transition-transform duration-500" />
+                                <h4 className="font-['Lexend_Deca'] font-bold text-[15px] mb-2 leading-tight tracking-tight">Kualitas Segalanya.</h4>
+                                <p className="text-indigo-100 text-[12px] font-medium leading-relaxed">Terima kasih telah kurasi materi berkualitas untuk Ba-Yu.</p>
                             </div>
                         </div>
                     </div>

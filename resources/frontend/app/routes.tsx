@@ -20,6 +20,10 @@ import LearningStatisticsPage from './pages/LearningStatisticsPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import NotFound from './pages/NotFound';
+import SecurityPage from './pages/SecurityPage';
+import PrivacySettingsPage from './pages/PrivacySettingsPage';
+import FollowRequestsPage from './pages/FollowRequestsPage';
+import HelpPage from './pages/HelpPage';
 
 export const router = createBrowserRouter([
   {
@@ -89,6 +93,22 @@ export const router = createBrowserRouter([
           {
             path: 'edit-profile',
             element: <EditProfilePage />,
+          },
+          {
+            path: 'settings/security',
+            element: <SecurityPage />,
+          },
+          {
+            path: 'settings/privacy',
+            element: <PrivacySettingsPage />,
+          },
+          {
+            path: 'settings/follow-requests',
+            element: <FollowRequestsPage />,
+          },
+          {
+            path: 'settings/help',
+            element: <HelpPage />,
           },
           {
             path: 'pakar',

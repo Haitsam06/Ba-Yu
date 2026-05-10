@@ -9,9 +9,13 @@ class Follow extends Model
     protected $connection = 'mongodb';
     protected $collection = 'follows';
 
+    const STATUS_PENDING = 'pending';
+    const STATUS_ACCEPTED = 'accepted';
+
     protected $fillable = [
         'follower_id',
         'following_id',
+        'status',
     ];
 
     // Relasi balik ke User (Opsional tapi sangat berguna kedepannya)

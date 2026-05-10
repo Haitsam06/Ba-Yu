@@ -25,6 +25,10 @@ import { Link, useLocation } from "react-router";
 import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
 import { AvatarImage } from "../components/ui/DefaultImages";
+import { ExportDataModal } from "../components/ExportDataModal";
+import { CustomSelect } from "../components/ui/CustomSelect";
+import { PromptDialog } from "../components/ui/PromptDialog";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 
 type TabType = "catatan" | "laporan" | "users" | "sertifikasi";
 
@@ -40,11 +44,47 @@ export default function AdminDashboard() {
     const [usersList, setUsersList] = useState<any[]>([]);
     const [notesList, setNotesList] = useState<any[]>([]);
 
+    const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+    const [statusFilter, setStatusFilter] = useState<"semua" | "terverifikasi" | "belum">("semua");
+    const [sortBy, setSortBy] = useState<"terbaru" | "terlama">("terbaru");
+    const [visibleItemsCount, setVisibleItemsCount] = useState(15);
+    const [showFilterPopup, setShowFilterPopup] = useState(false);
+    const [promptConfig, setPromptConfig] = useState<{
+        isOpen: boolean;
+        title: string;
+        placeholder: string;
+        defaultValue: string;
+        onConfirm: (value: string) => void;
+    }>({
+        isOpen: false,
+        title: "",
+        placeholder: "",
+        defaultValue: "",
+        onConfirm: () => {},
+    });
+
+    const [confirmConfig, setConfirmConfig] = useState<{
+        isOpen: boolean;
+        title: string;
+        description: string;
+        onConfirm: () => void;
+        variant?: "danger" | "primary";
+    }>({
+        isOpen: false,
+        title: "",
+        description: "",
+        onConfirm: () => {},
+    });
+
     useEffect(() => {
         if (location.state?.tab) {
             setActiveTab(location.state.tab as TabType);
         }
     }, [location.state]);
+
+    useEffect(() => {
+        setVisibleItemsCount(15);
+    }, [activeTab, statusFilter, sortBy, searchQuery]);
 
     useEffect(() => {
         // Tarik semua data di awal biar kotak statistiknya langsung akurat!
@@ -144,25 +184,48 @@ export default function AdminDashboard() {
     ];
 
     const handleDeleteNote = (noteId: string) => {
-        if (confirm("Yakin ingin menghapus catatan ini?")) {
-            showToast("Catatan berhasil dihapus!", "success");
-        }
+        setPromptConfig({
+            isOpen: true,
+            title: "Hapus Catatan Permanen",
+            placeholder: "Ketik 'HAPUS' untuk konfirmasi...",
+            defaultValue: "",
+            onConfirm: (val) => {
+                if (val.toUpperCase() === "HAPUS") {
+                    // Logic hapus sebenernya manggil API, tapi di sini masih toast doang dari sebelumnya
+                    showToast("Catatan berhasil dihapus!", "success");
+                } else {
+                    showToast("Konfirmasi gagal, catatan tidak dihapus.", "info");
+                }
+            }
+        });
     };
 
     const handleResolveReport = async (
         reportId: string,
         actionType: "abaikan" | "takedown" | "banned",
     ) => {
-        let adminNote = "";
-        if (actionType === "abaikan") {
-            const reason = window.prompt(
-                "Alasan laporan diabaikan (opsional, untuk diinfokan ke pelapor):",
-                "Sesuai dengan panduan komunitas",
-            );
-            if (reason === null) return; // cancelled
-            adminNote = reason;
-        }
+        const config = {
+            abaikan: { title: "Abaikan Laporan", placeholder: "Alasan diabaikan...", default: "Sesuai panduan komunitas" },
+            takedown: { title: "Takedown Konten", placeholder: "Alasan takedown...", default: "Konten melanggar aturan komunitas" },
+            banned: { title: "Banned Pengguna", placeholder: "Alasan banned...", default: "Pelanggaran berat berulang" }
+        };
 
+        setPromptConfig({
+            isOpen: true,
+            title: config[actionType].title,
+            placeholder: config[actionType].placeholder,
+            defaultValue: config[actionType].default,
+            onConfirm: (reason) => {
+                processReportResolution(reportId, actionType, reason);
+            }
+        });
+    };
+
+    const processReportResolution = async (
+        reportId: string,
+        actionType: string,
+        adminNote: string
+    ) => {
         try {
             const token =
                 localStorage.getItem("bayu-token") ||
@@ -188,175 +251,233 @@ export default function AdminDashboard() {
         id: string,
         action: "approve" | "reject",
     ) => {
-        try {
-            const token =
-                localStorage.getItem("bayu-token") ||
-                sessionStorage.getItem("bayu-token");
-            await axios.put(
-                `/api/v1/sertifikasi/${id}/verifikasi`,
-                { status: action === "approve" ? "approved" : "rejected" },
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                },
-            );
+        setPromptConfig({
+            isOpen: true,
+            title: action === "approve" ? "Setujui Pakar" : "Tolak Pengajuan",
+            placeholder: "Catatan untuk user...",
+            defaultValue: action === "approve" ? "Selamat! Anda kini resmi menjadi Pakar di Ba-Yu." : "Maaf, portofolio Anda belum memenuhi kriteria kami.",
+            onConfirm: async (adminNote) => {
+                try {
+                    const token =
+                        localStorage.getItem("bayu-token") ||
+                        sessionStorage.getItem("bayu-token");
+                    await axios.put(
+                        `/api/v1/sertifikasi/${id}/verifikasi`,
+                        { 
+                            status: action === "approve" ? "approved" : "rejected",
+                            admin_note: adminNote 
+                        },
+                        {
+                            headers: { Authorization: `Bearer ${token}` },
+                        },
+                    );
 
-            setPendingCerts((prev) => prev.filter((c) => c.id !== id));
-            showToast(
-                `Pengajuan Pakar ${action === "approve" ? "diterima" : "ditolak"}.`,
-                "success",
-            );
-        } catch (e: any) {
-            showToast(
-                e.response?.data?.message || "Gagal mengubah status verifikasi",
-                "error",
-            );
-        }
+                    setPendingCerts((prev) => prev.filter((c) => c.id !== id));
+                    showToast(
+                        `Pengajuan Pakar ${action === "approve" ? "diterima" : "ditolak"}.`,
+                        "success",
+                    );
+                } catch (e: any) {
+                    showToast(
+                        e.response?.data?.message || "Gagal mengubah status verifikasi",
+                        "error",
+                    );
+                }
+            }
+        });
+    };
+
+    const handleDemoteUser = async (u: any) => {
+        setConfirmConfig({
+            isOpen: true,
+            title: "Turunkan Pangkat?",
+            description: `Yakin ingin menurunkan pangkat ${u.name} menjadi user biasa? Tindakan ini tidak bisa dibatalkan secara otomatis.`,
+            variant: "danger",
+            onConfirm: async () => {
+                try {
+                    const token =
+                        localStorage.getItem("bayu-token") ||
+                        sessionStorage.getItem("bayu-token");
+                    const res = await axios.put(
+                        `/api/v1/users/${u.id || u._id}/demote`,
+                        {},
+                        { headers: { Authorization: `Bearer ${token}` } },
+                    );
+                    showToast(res.data.message || "Pangkat berhasil diturunkan!", "success");
+                    fetchUsers(); // Refresh list
+                } catch (e: any) {
+                    showToast(
+                        e.response?.data?.message || "Gagal menurunkan pangkat",
+                        "error",
+                    );
+                }
+            }
+        });
+    };
+
+    const filteredNotes = notesList
+        .filter((note) => {
+            if (searchQuery && !note.title?.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+            if (statusFilter === "terverifikasi" && !note.isValidated && !note.is_verified) return false;
+            if (statusFilter === "belum" && (note.isValidated || note.is_verified)) return false;
+            return true;
+        })
+        .sort((a, b) => {
+            const dateA = new Date(a.created_at || a.createdAt || 0).getTime();
+            const dateB = new Date(b.created_at || b.createdAt || 0).getTime();
+            return sortBy === "terbaru" ? dateB - dateA : dateA - dateB;
+        });
+
+    const filteredReports = reportsList
+        .filter((report) => {
+            const searchTarget = (report.noteTitle || report.userName || report.post_id || "").toLowerCase();
+            if (searchQuery && !searchTarget.includes(searchQuery.toLowerCase())) return false;
+            return true;
+        })
+        .sort((a, b) => {
+            const dateA = new Date(a.created_at || a.date || 0).getTime();
+            const dateB = new Date(b.created_at || b.date || 0).getTime();
+            return sortBy === "terbaru" ? dateB - dateA : dateA - dateB;
+        });
+
+    const filteredUsers = usersList
+        .filter((u) => {
+            if (searchQuery && !u.name?.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+            if (statusFilter === "terverifikasi" && u.role === "user") return false;
+            if (statusFilter === "belum" && u.role !== "user") return false;
+            return true;
+        })
+        .sort((a, b) => {
+            const dateA = new Date(a.created_at || 0).getTime();
+            const dateB = new Date(b.created_at || 0).getTime();
+            return sortBy === "terbaru" ? dateB - dateA : dateA - dateB;
+        });
+
+    const handleLoadMore = () => {
+        setVisibleItemsCount((prev) => prev + 15);
     };
 
     return (
         <MobileLayout>
-            <div className="pb-8 bg-gray-50/50 dark:bg-[#13111C] min-h-screen">
-                {/* Widescreen Header & Stats Ribbon */}
-                <div className="bg-gradient-to-br from-indigo-900 via-purple-800 to-fuchsia-900 px-6 md:px-10 pt-8 pb-16 shadow-inner relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 pointer-events-none"></div>
-                    <div className="absolute -right-20 -top-20 w-80 h-80 bg-fuchsia-500/20 rounded-full blur-3xl pointer-events-none"></div>
-
-                    <div className="relative z-10">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b border-white/10 pb-6">
+            <div className="w-full h-full flex justify-center pb-20 bg-slate-50/50 dark:bg-[#13111C] min-h-screen font-['Manrope']">
+                <div className="w-full max-w-[1140px] px-4 sm:px-6 md:px-8 flex flex-col lg:flex-row gap-8 lg:gap-10 xl:gap-14 lg:justify-center mx-auto mt-8">
+                    {/* LEFT COLUMN (MAIN CONTENT) */}
+                    <div className="flex-1 w-full lg:max-w-[640px] xl:max-w-[700px] min-w-0">
+                        
+                        {/* Compact Header */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 pb-6 border-b border-gray-100 dark:border-white/5">
                             <div className="flex items-center gap-4">
                                 <AvatarImage
                                     src={user?.avatar}
                                     alt={user?.name}
                                     size={64}
-                                    className="rounded-2xl border-2 border-white/20 shadow-lg bg-white/10"
+                                    className="rounded-2xl shadow-sm border border-slate-100 dark:border-white/10"
                                 />
                                 <div>
-                                    <p className="text-white/70 font-['Manrope'] text-sm tracking-wide uppercase">
+                                    <p className="text-indigo-600 dark:text-primary font-['Lexend_Deca'] text-[11px] font-black tracking-[0.2em] uppercase mb-1">
                                         Workspace Admin
                                     </p>
-                                    <h2 className="text-white font-['Lexend_Deca'] font-bold text-2xl mt-0.5">
+                                    <h2 className="text-slate-900 dark:text-slate-100 font-['Lexend_Deca'] font-extrabold text-2xl tracking-tight leading-none">
                                         {user?.name || "Administrator"}
                                     </h2>
                                 </div>
                             </div>
-
-                            <div className="flex items-center gap-3">
-                                <button className="px-5 py-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 rounded-xl text-white font-['Lexend_Deca'] font-semibold text-sm transition-all flex items-center justify-center gap-2">
-                                    <DownloadCloud className="w-4 h-4" /> Ekspor
-                                    Data Laporan
-                                </button>
-                            </div>
+                            <button 
+                                onClick={() => setIsExportModalOpen(true)}
+                                className="px-5 py-2.5 bg-white dark:bg-[#1C1A29] hover:bg-slate-50 dark:hover:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-slate-700 dark:text-slate-300 font-['Lexend_Deca'] font-bold text-[12px] uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-sm"
+                            >
+                                <DownloadCloud className="w-4 h-4 text-indigo-600 dark:text-primary" /> Ekspor Data
+                            </button>
                         </div>
 
-                        {/* Stats Grid - 4 Columns on Desktop */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                            {stats.map((stat, index) => {
-                                const Icon = stat.icon;
-                                return (
-                                    <div
-                                        key={index}
-                                        className="bg-white/10 backdrop-blur-md rounded-3xl p-5 border border-white/20 shadow-lg hover:bg-white/15 transition-all group"
-                                    >
-                                        <div className="flex justify-between items-start mb-4">
-                                            <div
-                                                className={`w-12 h-12 ${stat.color} rounded-2xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300`}
-                                            >
-                                                <Icon className="w-5 h-5 text-white" />
-                                            </div>
-                                            <span className="text-[11px] font-['Lexend_Deca'] font-bold text-white/90 bg-white/10 px-2 py-1 rounded-md border border-white/5">
-                                                {stat.increment}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <p className="text-3xl font-['Lexend_Deca'] font-bold text-white mb-1">
-                                                {stat.value}
-                                            </p>
-                                            <p className="text-sm font-['Manrope'] text-white/80 font-medium tracking-wide">
-                                                {stat.label}
-                                            </p>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Main Dashboard Workspace */}
-                <div className="px-6 md:px-10 -mt-8 relative z-20">
-                    <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-                        {/* Left Column (Main Data Area) */}
-                        <div className="xl:col-span-3 space-y-6">
+                        <div className="space-y-6">
                             {/* Search & Tabs Controls */}
                             <div className="bg-white dark:bg-[#1C1A29] rounded-3xl shadow-sm dark:shadow-none border border-gray-100 dark:border-white/5 p-2 md:p-3">
                                 <div className="flex flex-col md:flex-row gap-3">
-                                    <div className="flex-1 relative">
-                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" strokeWidth={2.5} />
-                                        <input
-                                            type="text"
-                                            value={searchQuery}
-                                            onChange={(e) =>
-                                                setSearchQuery(e.target.value)
-                                            }
-                                            placeholder="Cari user, catatan, atau ID laporan..."
-                                            className="w-full pl-11 pr-4 py-3 bg-gray-50 dark:bg-white/5 border border-transparent hover:border-gray-200 dark:hover:border-white/10 rounded-2xl font-['Manrope'] text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                                        />
+                                    <div className="flex-1 flex flex-col sm:flex-row gap-3">
+                                        <div className="flex-1 relative">
+                                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" strokeWidth={2.5} />
+                                            <input
+                                                type="text"
+                                                value={searchQuery}
+                                                onChange={(e) =>
+                                                    setSearchQuery(e.target.value)
+                                                }
+                                                placeholder="Cari user, catatan, atau ID laporan..."
+                                                className="w-full pl-11 pr-4 py-3 bg-gray-50 dark:bg-white/5 border border-transparent hover:border-gray-200 dark:hover:border-white/10 rounded-2xl font-['Manrope'] text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                                            />
+                                        </div>
+                                        <div className="relative shrink-0">
+                                            <button 
+                                                onClick={() => setShowFilterPopup(!showFilterPopup)}
+                                                className={`bg-gray-50 dark:bg-white/5 border hover:border-gray-200 dark:hover:border-white/10 rounded-2xl px-5 py-3 font-['Manrope'] font-bold text-sm flex items-center gap-2 transition-all h-full ${
+                                                    showFilterPopup || statusFilter !== "semua" || sortBy !== "terbaru"
+                                                    ? "border-indigo-500/50 text-indigo-600 dark:text-primary bg-indigo-50/50 dark:bg-indigo-500/10" 
+                                                    : "border-transparent text-gray-700 dark:text-gray-300"
+                                                }`}
+                                            >
+                                                <Filter className="w-4 h-4" />
+                                            </button>
+                                            
+                                            {showFilterPopup && (
+                                                <>
+                                                    <div className="fixed inset-0 z-[40]" onClick={() => setShowFilterPopup(false)} />
+                                                    <div className="absolute top-full mt-2 left-0 w-[280px] bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 rounded-[20px] shadow-2xl p-5 z-[100] animate-in fade-in slide-in-from-top-2">
+                                                        <div className="mb-5">
+                                                            <label className="block text-[11px] font-['Lexend_Deca'] font-bold text-slate-500 uppercase tracking-widest mb-3">Status Verifikasi</label>
+                                                            <CustomSelect
+                                                                value={statusFilter}
+                                                                onChange={(val) => setStatusFilter(val as any)}
+                                                                options={[
+                                                                    { value: "semua", label: "Semua Status" },
+                                                                    { value: "terverifikasi", label: "Hanya Terverifikasi" },
+                                                                    { value: "belum", label: "Belum Terverifikasi" },
+                                                                ]}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-[11px] font-['Lexend_Deca'] font-bold text-slate-500 uppercase tracking-widest mb-3">Urutkan Berdasarkan</label>
+                                                            <CustomSelect
+                                                                value={sortBy}
+                                                                onChange={(val) => setSortBy(val as any)}
+                                                                options={[
+                                                                    { value: "terbaru", label: "Terbaru (Newest)" },
+                                                                    { value: "terlama", label: "Terlama (Oldest)" },
+                                                                ]}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                     {/* Tabs */}
-                                    <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-hide py-1">
+                                    <div className="flex gap-1.5 p-1 bg-slate-100 dark:bg-white/5 rounded-xl overflow-x-auto scrollbar-hide mt-6 md:mt-0">
                                         {[
-                                            {
-                                                id: "sertifikasi",
-                                                label: "Verifikasi Pakar",
-                                                icon: ShieldCheck,
-                                            },
-                                            {
-                                                id: "catatan",
-                                                label: "Catatan",
-                                                icon: FileText,
-                                            },
-                                            {
-                                                id: "laporan",
-                                                label: "Laporan",
-                                                icon: Flag,
-                                            },
-                                            {
-                                                id: "users",
-                                                label: "Users",
-                                                icon: Users,
-                                            },
+                                            { id: "sertifikasi", label: "Verifikasi", icon: ShieldCheck },
+                                            { id: "catatan", label: "Catatan", icon: FileText },
+                                            { id: "laporan", label: "Laporan", icon: Flag },
+                                            { id: "users", label: "Users", icon: Users },
                                         ].map((tab) => {
                                             const Icon = tab.icon;
-                                            const isActive =
-                                                activeTab === tab.id;
+                                            const isActive = activeTab === tab.id;
                                             return (
                                                 <button
                                                     key={tab.id}
-                                                    onClick={() =>
-                                                        setActiveTab(
-                                                            tab.id as TabType,
-                                                        )
-                                                    }
-                                                    className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl font-['Lexend_Deca'] font-semibold text-sm whitespace-nowrap transition-all ${
+                                                    onClick={() => setActiveTab(tab.id as TabType)}
+                                                    className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-wider whitespace-nowrap transition-all ${
                                                         isActive
-                                                            ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
-                                                            : "bg-transparent text-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 font-bold"
+                                                            ? "bg-white dark:bg-[#252336] text-slate-800 dark:text-slate-100 shadow-sm dark:shadow-[0_4px_12px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-white/5"
+                                                            : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 bg-transparent border border-transparent"
                                                     }`}
                                                 >
-                                                    <Icon
-                                                        className={`w-4 h-4 ${isActive ? "text-white" : "text-gray-600 dark:text-gray-400"}`}
-                                                        strokeWidth={2.5}
-                                                    />
+                                                    <Icon className="w-3.5 h-3.5" strokeWidth={2.5} />
                                                     {tab.label}
-                                                    {tab.id === "sertifikasi" &&
-                                                        pendingCerts.length >
-                                                            0 && (
-                                                            <span className="ml-1.5 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-md font-bold">
-                                                                {
-                                                                    pendingCerts.length
-                                                                }
-                                                            </span>
-                                                        )}
+                                                    {tab.id === "sertifikasi" && pendingCerts.length > 0 && (
+                                                        <span className="ml-1 bg-rose-500 text-white text-[9px] px-1.5 py-0.5 rounded-md font-bold leading-none">
+                                                            {pendingCerts.length}
+                                                        </span>
+                                                    )}
                                                 </button>
                                             );
                                         })}
@@ -365,11 +486,11 @@ export default function AdminDashboard() {
                             </div>
 
                             {/* Tab Contents */}
-                            <div className="bg-white dark:bg-[#1C1A29] rounded-3xl shadow-sm dark:shadow-none border border-gray-100 dark:border-white/5 p-6 md:p-8 min-h-[500px]">
+                            <div className="w-full min-h-[500px]">
                                 {/* Sertifikasi Tab */}
                                 {activeTab === "sertifikasi" && (
                                     <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-50">
+                                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-white/5">
                                             <div>
                                                 <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">
                                                     Verifikasi Sertifikat Pakar
@@ -382,92 +503,59 @@ export default function AdminDashboard() {
                                         </div>
 
                                         {pendingCerts.length === 0 ? (
-                                            <div className="py-16 text-center bg-gray-50 border border-gray-100 border-dashed rounded-3xl">
-                                                <ShieldCheck className="w-16 h-16 text-gray-500 mx-auto mb-4" strokeWidth={1} />
+                                            <div className="py-16 text-center bg-gray-50/50 dark:bg-white/[0.02] border border-gray-200/50 dark:border-white/10 border-dashed rounded-3xl">
+                                                <ShieldCheck className="w-16 h-16 text-gray-400 dark:text-slate-600 mx-auto mb-4" strokeWidth={1} />
                                                 <h4 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 dark:text-gray-100 mb-1">
                                                     Semua Pengajuan Selesai
                                                 </h4>
-                                                <p className="text-sm text-gray-500 font-['Manrope']">
+                                                <p className="text-sm text-gray-500 dark:text-slate-400 font-['Manrope']">
                                                     Saat ini antrean verifikasi
                                                     pakar sedang kosong.
                                                 </p>
                                             </div>
                                         ) : (
-                                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                                            <div className="flex flex-col gap-4">
                                                 {pendingCerts.map((cert) => (
-                                                    <div
-                                                        key={cert.id}
-                                                        className="bg-white dark:bg-[#252336] rounded-3xl shadow-sm dark:shadow-none hover:shadow-md transition-shadow border border-indigo-100 dark:border-white/5 p-6 relative overflow-hidden group"
-                                                    >
-                                                        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-bl-full pointer-events-none transition-transform group-hover:scale-110"></div>
-
-                                                        <div className="flex items-start justify-between mb-5 relative z-10">
-                                                            <div className="flex items-center gap-4">
-                                                                <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center border border-indigo-100/50">
-                                                                    <FileText className="w-6 h-6" />
+                                                    <article key={cert.id} className="group flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-6 px-6 bg-transparent hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors border border-slate-100 dark:border-white/5 rounded-[24px]">
+                                                        <div className="flex-1 min-w-0 flex flex-col w-full">
+                                                            <div className="flex items-center gap-3 mb-2">
+                                                                <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center border border-indigo-100/50 dark:border-indigo-500/20 shrink-0">
+                                                                    <FileText className="w-5 h-5" />
                                                                 </div>
                                                                 <div>
-                                                                    <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100">
-                                                                        User ID:{" "}
-                                                                        {
-                                                                            cert.user_id
-                                                                        }
-                                                                    </h4>
-                                                                    <p className="font-['Manrope'] text-sm text-gray-700 font-bold">
-                                                                        Bidang:{" "}
-                                                                        {
-                                                                            cert.bidang_keahlian
-                                                                        }
-                                                                    </p>
+                                                                    <h4 className="font-['Lexend_Deca'] font-bold text-slate-900 dark:text-slate-100 text-[16px] leading-none mb-1">User ID: {cert.user_id}</h4>
+                                                                    <p className="font-['Manrope'] text-[13px] text-slate-500 dark:text-slate-400 font-bold">Bidang: <span className="text-indigo-600 dark:text-indigo-400">{cert.bidang_keahlian}</span></p>
                                                                 </div>
                                                             </div>
-                                                            <span className="text-[10px] font-['Lexend_Deca'] font-bold bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg border border-yellow-200 uppercase">
-                                                                {cert.status}
-                                                            </span>
-                                                        </div>
-
-                                                        <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 mb-5 relative z-10">
-                                                            <div className="text-[11px] font-['Lexend_Deca'] font-black text-gray-600 tracking-wider mb-2">
-                                                                DOKUMEN LAMPIRAN
+                                                            <div className="flex items-center gap-3 mt-4">
+                                                                <span className="text-[10px] font-['Lexend_Deca'] font-bold bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 px-3 py-1.5 rounded-lg border border-amber-200 dark:border-amber-500/20 uppercase tracking-widest shrink-0">
+                                                                    {cert.status}
+                                                                </span>
+                                                                <a
+                                                                    href={`http://localhost:8000/storage/${cert.file_sertifikat}`}
+                                                                    target="_blank"
+                                                                    rel="noreferrer"
+                                                                    className="flex items-center gap-2 text-[11px] text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 font-bold font-['Lexend_Deca'] uppercase tracking-widest transition-colors bg-white dark:bg-[#1C1A29] px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 shrink-0"
+                                                                >
+                                                                    <Eye className="w-3.5 h-3.5" /> Lihat Dokumen
+                                                                </a>
                                                             </div>
-                                                            <a
-                                                                href={`http://localhost:8000/storage/${cert.file_sertifikat}`}
-                                                                target="_blank"
-                                                                rel="noreferrer"
-                                                                className="flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700 hover:underline font-semibold transition-colors bg-white dark:bg-[#1C1A29] px-3 py-2 rounded-xl border border-indigo-50 dark:border-white/10 shadow-sm dark:shadow-none truncate"
-                                                            >
-                                                                <Eye className="w-4 h-4 text-indigo-400 shrink-0" />{" "}
-                                                                Dokumen Bukti
-                                                            </a>
                                                         </div>
-
-                                                        <div className="flex items-center gap-3 relative z-10">
+                                                        <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto shrink-0 border-t sm:border-t-0 pt-4 sm:pt-0 border-slate-100 dark:border-white/5">
                                                             <button
-                                                                onClick={() =>
-                                                                    handleVerifyCert(
-                                                                        cert.id,
-                                                                        "reject",
-                                                                    )
-                                                                }
-                                                                className="flex-1 py-3 bg-white dark:bg-[#1C1A29] hover:bg-red-50 dark:hover:bg-red-500/10 text-red-600 rounded-xl font-['Lexend_Deca'] font-semibold text-sm transition-colors border border-gray-200 dark:border-white/10 hover:border-red-200 flex items-center justify-center gap-2"
+                                                                onClick={() => handleVerifyCert(cert.id, "approve")}
+                                                                className="flex-1 sm:flex-none px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest shadow-sm hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
                                                             >
-                                                                <XCircle className="w-4 h-4" />{" "}
-                                                                Tolak
+                                                                <CheckCircle className="w-4 h-4" /> Setujui
                                                             </button>
                                                             <button
-                                                                onClick={() =>
-                                                                    handleVerifyCert(
-                                                                        cert.id,
-                                                                        "approve",
-                                                                    )
-                                                                }
-                                                                className="flex-[1.5] py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-['Lexend_Deca'] font-semibold text-sm shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                                                                onClick={() => handleVerifyCert(cert.id, "reject")}
+                                                                className="flex-1 sm:flex-none px-6 py-2.5 bg-white dark:bg-[#1C1A29] text-rose-500 border border-slate-200 dark:border-white/10 rounded-xl font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:border-rose-200 transition-all flex items-center justify-center gap-2"
                                                             >
-                                                                <CheckCircle className="w-4 h-4 text-indigo-200" />{" "}
-                                                                Setujui Pakar
+                                                                <XCircle className="w-4 h-4" /> Tolak
                                                             </button>
                                                         </div>
-                                                    </div>
+                                                    </article>
                                                 ))}
                                             </div>
                                         )}
@@ -477,7 +565,7 @@ export default function AdminDashboard() {
                                 {/* Catatan Tab */}
                                 {activeTab === "catatan" && (
                                     <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-50">
+                                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-white/5">
                                             <div>
                                                 <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">
                                                     Database Catatan
@@ -489,15 +577,15 @@ export default function AdminDashboard() {
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                            {notesList.length === 0 ? (
-                                                <div className="col-span-1 lg:col-span-2 text-center py-10 font-['Manrope'] text-gray-500">
+                                        <div className="flex flex-col">
+                                            {filteredNotes.length === 0 ? (
+                                                <div className="text-center py-10 font-['Manrope'] text-gray-500">
                                                     Tidak ada catatan dalam
                                                     database.
                                                 </div>
                                             ) : (
-                                                notesList
-                                                    .slice(0, 10)
+                                                filteredNotes
+                                                    .slice(0, visibleItemsCount)
                                                     .map((note) => {
                                                         const author =
                                                             note.user || {
@@ -512,101 +600,79 @@ export default function AdminDashboard() {
                                                                         note.mapel),
                                                             );
                                                         return (
-                                                            <div
-                                                                key={
-                                                                    note.id ||
-                                                                    note._id
-                                                                }
-                                                                className="bg-white dark:bg-[#252336] rounded-3xl border border-gray-100 dark:border-white/5 p-5 hover:border-gray-200 dark:hover:border-white/10 hover:shadow-md transition-all flex flex-col justify-between group"
-                                                            >
-                                                                <div>
-                                                                    <div className="flex items-start gap-4 mb-4">
-                                                                        <div
-                                                                            className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
-                                                                            style={{
-                                                                                backgroundColor: `${subject?.color || "#eee"}15`,
-                                                                            }}
-                                                                        >
-                                                                            <span className="text-2xl group-hover:scale-110 transition-transform">
-                                                                                {subject?.icon ||
-                                                                                    "📚"}
-                                                                            </span>
+                                                            <article key={note.id || note._id} className="group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-8 border-b border-slate-100 dark:border-white/5 last:border-0 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors bg-transparent outline-none px-4 sm:px-6 rounded-[24px]">
+                                                                {/* Feed Text */}
+                                                                <div className="flex-1 min-w-0 flex flex-col w-full h-full">
+                                                                    {/* Author Header */}
+                                                                    <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-slate-800">
+                                                                        <div className="flex items-center gap-1.5 group/author">
+                                                                            <AvatarImage src={author?.avatar} size={20} className="ring-2 ring-transparent group-hover/author:ring-indigo-500/20 transition-all" />
+                                                                            <span className="font-bold text-slate-950 dark:text-slate-200 group-hover/author:underline tracking-tight">{author?.name}</span>
+                                                                            {author?.is_dormant && (
+                                                                                <span className="bg-rose-100 text-rose-600 text-[9px] px-1.5 py-0.5 rounded font-black tracking-widest uppercase">DORMANT</span>
+                                                                            )}
                                                                         </div>
-                                                                        <div className="flex-1 min-w-0 pt-0.5">
-                                                                            <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-sm mb-1.5 line-clamp-1">
-                                                                                {
-                                                                                    note.title
-                                                                                }
-                                                                            </h4>
-                                                                            <div className="flex items-center gap-2 mb-2">
-                                                                                <span className="text-[10px] font-['Lexend_Deca'] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg border border-gray-200">
-                                                                                    {note.mataPelajaran ||
-                                                                                        note.mapel ||
-                                                                                        "Lainnya"}
-                                                                                </span>
-                                                                                <span className="text-[10px] font-['Lexend_Deca'] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg border border-gray-200">
-                                                                                    Kelas{" "}
-                                                                                    {note.kelas ||
-                                                                                        "-"}
-                                                                                </span>
-                                                                            </div>
-                                                                            <div className="flex items-center gap-2">
-                                                                                <AvatarImage
-                                                                                    src={author?.avatar}
-                                                                                    alt={author?.name}
-                                                                                    size={20}
-                                                                                />
-                                                                                <span className="text-xs font-['Manrope'] font-medium text-gray-500 truncate">
-                                                                                    {
-                                                                                        author?.name
-                                                                                    }
-                                                                                </span>
-                                                                                {(note.isValidated ||
-                                                                                    note.is_verified) && (
-                                                                                    <div
-                                                                                        className="ml-auto w-4 h-4 bg-green-500 rounded-full flex items-center justify-center text-white p-0.5"
-                                                                                        title="Verified"
-                                                                                    >
-                                                                                        <Check className="w-full h-full" />
-                                                                                    </div>
-                                                                                )}
-                                                                            </div>
-                                                                        </div>
+                                                                        <span className="text-slate-700 px-0.5 font-bold">di</span>
+                                                                        <span className="font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">{note.mataPelajaran || note.mapel || "Lainnya"}</span>
+                                                                        {note.kelas && note.kelas !== "-" && note.kelas !== "Semua" && (
+                                                                            <>
+                                                                                <span className="text-[10px] text-slate-400 mx-0.5 font-bold">•</span>
+                                                                                <span className="text-slate-800 dark:text-slate-300 font-bold tracking-tight">Kelas {note.kelas}</span>
+                                                                            </>
+                                                                        )}
+                                                                        <span className="text-[10px] text-slate-400 mx-0.5 font-bold">•</span>
+                                                                        <span className="text-[12px] text-slate-500 dark:text-slate-400 font-bold">{new Date(note.createdAt || note.created_at || Date.now()).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+                                                                    </div>
+
+                                                                    {/* Title */}
+                                                                    <h2 className="text-[20px] md:text-[22px] font-extrabold text-slate-900 dark:text-slate-100 leading-[1.25] tracking-tight group-hover:text-indigo-600 transition-colors line-clamp-2 mb-2 font-['Lexend_Deca']">
+                                                                        {note.title}
+                                                                    </h2>
+
+                                                                    {/* Excerpt */}
+                                                                    <p className="text-[15px] font-['Manrope'] text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed mb-5 pr-2 font-medium">
+                                                                        {note.description || "Tidak ada deskripsi."}
+                                                                    </p>
+
+                                                                    {/* Action Buttons */}
+                                                                    <div className="flex items-center gap-3 mt-auto flex-wrap">
+                                                                        {(note.isValidated || note.is_verified) && (
+                                                                            <div className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full px-4 py-2 border border-emerald-100 dark:border-emerald-500/20 font-['Lexend_Deca'] font-bold text-[11px] flex items-center gap-2 uppercase tracking-widest"><ShieldCheck size={16} /> Verified</div>
+                                                                        )}
+                                                                        <Link to={`/note/${note.id || note._id}`} className="px-5 py-2 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 rounded-full font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest flex items-center gap-1.5 hover:bg-slate-50 dark:hover:bg-white/5 hover:border-indigo-200 hover:text-indigo-600 transition-all shadow-sm dark:shadow-none group/btn">Detail<ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" /></Link>
+                                                                        <button onClick={() => handleDeleteNote(note.id || note._id)} className="px-4 py-2 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 text-rose-500 rounded-full hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:border-rose-200 transition-all flex items-center shadow-sm dark:shadow-none tooltip" title="Hapus Permanen"><Trash2 size={16} /></button>
                                                                     </div>
                                                                 </div>
-                                                                <div className="flex gap-2 pt-4 border-t border-gray-50">
-                                                                    <Link
-                                                                        to={`/note/${note.id || note._id}`}
-                                                                        className="flex-1 py-2.5 bg-gray-50 text-gray-700 rounded-xl font-['Lexend_Deca'] font-semibold text-xs text-center hover:bg-gray-100 transition-colors border border-gray-200"
-                                                                    >
-                                                                        Lihat
-                                                                        Catatan
-                                                                    </Link>
-                                                                    <button
-                                                                        onClick={() =>
-                                                                            handleDeleteNote(
-                                                                                note.id ||
-                                                                                    note._id,
-                                                                            )
-                                                                        }
-                                                                        className="px-4 py-2.5 bg-white dark:bg-[#1C1A29] text-red-500 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 hover:border-red-200 transition-colors border border-gray-200 dark:border-white/10 flex items-center justify-center tooltip"
-                                                                        title="Hapus Permanen"
-                                                                    >
-                                                                        <Trash2 className="w-4 h-4" />
-                                                                    </button>
+
+                                                                {/* Thumbnail */}
+                                                                <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-slate-50 dark:bg-white/5 relative shadow-sm border border-slate-100 dark:border-white/5 flex items-center justify-center group-hover:border-indigo-200 dark:group-hover:border-indigo-500/30 transition-colors">
+                                                                    {note.thumbnail ? (
+                                                                        <img src={note.thumbnail} alt={note.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                                    ) : (
+                                                                        <div className="w-full h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-500" style={{ backgroundColor: `${subject?.color || "#5D5CE6"}10` }}>
+                                                                            <span className="text-5xl">{subject?.icon || "📘"}</span>
+                                                                        </div>
+                                                                    )}
                                                                 </div>
-                                                            </div>
+                                                            </article>
                                                         );
                                                     })
                                             )}
                                         </div>
+                                        {filteredNotes.length > visibleItemsCount && (
+                                            <div className="mt-8 flex justify-center">
+                                                <button onClick={handleLoadMore} className="px-6 py-3 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 text-[13px] shadow-sm transition-all">
+                                                    Load More
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
                                 {/* Laporan Tab */}
                                 {activeTab === "laporan" && (
                                     <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-50">
+                                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-white/5">
                                             <div>
                                                 <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">
                                                     Resolusi Laporan
@@ -619,7 +685,7 @@ export default function AdminDashboard() {
                                         </div>
 
                                         <div className="space-y-4">
-                                            {reportsList.length === 0 ? (
+                                            {filteredReports.length === 0 ? (
                                                 <div className="text-center py-10">
                                                     <p className="font-['Manrope'] text-gray-500">
                                                         Tidak ada laporan masuk
@@ -627,119 +693,71 @@ export default function AdminDashboard() {
                                                     </p>
                                                 </div>
                                             ) : (
-                                                reportsList.map((report) => (
-                                                    <div
-                                                        key={
-                                                            report.id ||
-                                                            report._id
-                                                        }
-                                                        className="bg-white dark:bg-[#252336] rounded-3xl border border-orange-200 dark:border-white/5 p-5 lg:p-6 hover:shadow-md transition-shadow"
-                                                    >
-                                                        <div className="flex flex-col md:flex-row gap-5 items-start md:items-center">
-                                                            <div className="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center flex-shrink-0 border border-orange-200">
-                                                                <Flag className="w-6 h-6 text-orange-600" />
+                                                filteredReports.slice(0, visibleItemsCount).map((report) => (
+                                                    <article key={report.id || report._id} className="group flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-6 px-6 bg-transparent hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors border border-slate-100 dark:border-white/5 rounded-[24px]">
+                                                        <div className="flex-1 min-w-0 flex flex-col w-full h-full">
+                                                            <div className="flex items-center gap-2 mb-3 flex-wrap">
+                                                                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border uppercase tracking-widest ${report.type === "catatan" || report.post_id ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20" : "bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-500/20"}`}>
+                                                                    REPORTED {report.type || "CATATAN"}
+                                                                </span>
+                                                                <span className="text-[12px] font-['Manrope'] text-slate-500 dark:text-slate-400 font-bold">
+                                                                    {report.date || new Date(report.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                                                                </span>
                                                             </div>
-                                                            <div className="flex-1 min-w-0">
-                                                                <div className="flex items-center gap-2 mb-1">
-                                                                    <span
-                                                                        className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border uppercase tracking-wider ${report.type === "catatan" || report.post_id ? "bg-blue-50 text-blue-600 border-blue-200" : "bg-purple-50 text-purple-600 border-purple-200"}`}
-                                                                    >
-                                                                        REPORTED{" "}
-                                                                        {report.type ||
-                                                                            "CATATAN"}
-                                                                    </span>
-                                                                    <span className="text-xs font-['Manrope'] text-gray-600 font-bold">
-                                                                        {report.date ||
-                                                                            new Date(
-                                                                                report.created_at,
-                                                                            ).toLocaleDateString()}
-                                                                    </span>
-                                                                </div>
-                                                                <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-lg mb-1 leading-tight">
-                                                                    {report.post_id
-                                                                        ? `Catatan ID: ${report.post_id}`
-                                                                        : report.type ===
-                                                                            "catatan"
-                                                                          ? report.noteTitle
-                                                                          : report.userName}
-                                                                </h4>
-                                                                <div className="bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-100 mt-2">
-                                                                    <p className="text-sm font-['Manrope'] text-gray-700 font-medium mb-1">
-                                                                        Kategori
-                                                                        Laporan:{" "}
-                                                                        <span className="text-red-500">
-                                                                            {
-                                                                                report.reason
-                                                                            }
-                                                                        </span>
-                                                                    </p>
-                                                                    <p className="text-[13px] font-['Manrope'] text-gray-600 border-l-2 border-red-300 pl-3 leading-relaxed break-words whitespace-pre-wrap">
-                                                                        {report.description ||
-                                                                            "-"}
-                                                                    </p>
-                                                                </div>
-                                                                <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-50">
-                                                                    <span className="text-xs font-['Manrope'] font-bold text-gray-700">
-                                                                        Dilaporkan
-                                                                        oleh:{" "}
-                                                                        {report
-                                                                            .reporter
-                                                                            ?.name ||
-                                                                            "Anonim"}
-                                                                    </span>
-                                                                </div>
+                                                            <h2 className="text-[18px] md:text-[20px] font-extrabold text-slate-900 dark:text-slate-100 leading-[1.25] tracking-tight group-hover:text-indigo-600 transition-colors line-clamp-2 mb-2 font-['Lexend_Deca']">
+                                                                {report.post_id ? `Catatan ID: ${report.post_id}` : report.type === "catatan" ? report.noteTitle : report.userName}
+                                                            </h2>
+                                                            <div className="mb-4">
+                                                                <p className="text-[14px] font-['Manrope'] text-rose-500 font-bold mb-1">{report.reason}</p>
+                                                                <p className="text-[14px] font-['Manrope'] text-slate-600 dark:text-slate-400 leading-relaxed break-words whitespace-pre-wrap font-medium border-l-2 border-rose-200 dark:border-rose-500/30 pl-3">
+                                                                    {report.description || "-"}
+                                                                </p>
                                                             </div>
-
-                                                            <div className="flex md:flex-col lg:flex-row gap-2 w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-gray-100 shrink-0">
-                                                                <button
-                                                                    onClick={() =>
-                                                                        handleResolveReport(
-                                                                            report.id ||
-                                                                                report._id,
-                                                                            "abaikan",
-                                                                        )
-                                                                    }
-                                                                    className="flex-1 md:flex-none px-6 py-3 bg-white dark:bg-[#1C1A29] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 hover:border-gray-300 dark:hover:border-white/20 rounded-xl font-['Lexend_Deca'] font-semibold text-sm transition-all text-center"
-                                                                >
-                                                                    Abaikan
-                                                                </button>
-                                                                <button
-                                                                    onClick={() =>
-                                                                        handleResolveReport(
-                                                                            report.id ||
-                                                                                report._id,
-                                                                            "takedown",
-                                                                        )
-                                                                    }
-                                                                    className="flex-1 md:flex-none px-6 py-3 bg-red-500 text-white rounded-xl font-['Lexend_Deca'] font-semibold text-sm hover:bg-red-600 hover:shadow-md transition-all text-center"
-                                                                >
-                                                                    Takedown
-                                                                </button>
-                                                                <button
-                                                                    onClick={() =>
-                                                                        handleResolveReport(
-                                                                            report.id ||
-                                                                                report._id,
-                                                                            "banned",
-                                                                        )
-                                                                    }
-                                                                    className="flex-1 md:flex-none px-6 py-3 bg-black text-white rounded-xl font-['Lexend_Deca'] font-semibold text-sm hover:bg-gray-800 hover:shadow-md transition-all text-center"
-                                                                >
-                                                                    Banned
-                                                                </button>
+                                                            <div className="mt-auto flex items-center gap-2">
+                                                                <span className="text-[11px] font-['Lexend_Deca'] font-bold uppercase tracking-widest text-slate-400">
+                                                                    Dilaporkan oleh: <span className="text-slate-700 dark:text-slate-300">{report.reporter?.name || "Anonim"}</span>
+                                                                </span>
                                                             </div>
                                                         </div>
-                                                    </div>
+
+                                                        <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-[140px] shrink-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-white/5">
+                                                            <button
+                                                                onClick={() => handleResolveReport(report.id || report._id, "abaikan")}
+                                                                className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest transition-all text-center"
+                                                            >
+                                                                Abaikan
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleResolveReport(report.id || report._id, "takedown")}
+                                                                className="flex-1 px-4 py-2.5 bg-rose-500 text-white rounded-xl font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest hover:bg-rose-600 transition-all text-center"
+                                                            >
+                                                                Takedown
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleResolveReport(report.id || report._id, "banned")}
+                                                                className="flex-1 px-4 py-2.5 bg-slate-900 dark:bg-black text-white rounded-xl font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest hover:bg-slate-800 transition-all text-center"
+                                                            >
+                                                                Banned
+                                                            </button>
+                                                        </div>
+                                                    </article>
                                                 ))
                                             )}
                                         </div>
+                                        {filteredReports.length > visibleItemsCount && (
+                                            <div className="mt-8 flex justify-center">
+                                                <button onClick={handleLoadMore} className="px-6 py-3 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 text-[13px] shadow-sm transition-all">
+                                                    Load More
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
                                 {/* Users Tab */}
                                 {activeTab === "users" && (
                                     <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-50">
+                                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-white/5">
                                             <div>
                                                 <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">
                                                     Manajemen Pengguna
@@ -747,193 +765,207 @@ export default function AdminDashboard() {
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            {usersList.length === 0 ? (
-                                                <div className="col-span-1 sm:col-span-2 text-center py-10 font-['Manrope'] text-gray-500">
+                                        <div className="flex flex-col">
+                                            {filteredUsers.length === 0 ? (
+                                                <div className="text-center py-10 font-['Manrope'] text-gray-500">
                                                     Tidak ada pengguna terpilih.
                                                 </div>
                                             ) : (
-                                                usersList.map((u) => {
-                                                    const userPostsCount =
-                                                        notesList.filter(
-                                                            (n: any) =>
-                                                                (n.user_id ||
-                                                                    n.user
-                                                                        ?.id ||
-                                                                    n.user
-                                                                        ?._id) ===
-                                                                (u.id || u._id),
-                                                        ).length;
+                                                filteredUsers.slice(0, visibleItemsCount).map((u) => {
+                                                    const userPostsCount = notesList.filter((n: any) => (n.user_id || n.user?.id || n.user?._id) === (u.id || u._id)).length;
                                                     return (
-                                                        <div
-                                                            key={u.id || u._id}
-                                                            className="bg-white dark:bg-[#252336] rounded-3xl border border-gray-100 dark:border-white/5 p-5 hover:border-indigo-100 dark:hover:border-white/10 hover:shadow-md transition-all flex items-center gap-4"
-                                                        >
-                                                            <AvatarImage
-                                                                src={u.avatar}
-                                                                alt={u.name}
-                                                                size={56}
-                                                                className="rounded-2xl object-cover bg-gray-50 border border-gray-100"
-                                                            />
-                                                            <div className="flex-1 min-w-0">
-                                                                <h4 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-sm mb-0.5 truncate">
-                                                                    {u.name}
-                                                                </h4>
-                                                                <p className="text-[11px] font-['Lexend_Deca'] font-bold text-indigo-600 uppercase tracking-wider mb-2">
-                                                                    {u.role ===
-                                                                    "admin"
-                                                                        ? "Administrator"
-                                                                        : u.role ===
-                                                                            "pakar"
-                                                                          ? "Expert"
-                                                                          : "Pelajar"}
-                                                                </p>
-                                                                <div className="flex gap-4">
-                                                                    <div>
-                                                                        <div className="font-['Lexend_Deca'] font-bold text-sm text-gray-800 leading-none">
-                                                                            {
-                                                                                userPostsCount
-                                                                            }
-                                                                        </div>
-                                                                        <div className="text-[10px] font-['Manrope'] text-gray-400">
-                                                                            Catatan
-                                                                        </div>
+                                                        <article key={u.id || u._id} className="group flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-6 px-6 bg-transparent hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors border-b border-slate-100 dark:border-white/5 last:border-0 rounded-[24px]">
+                                                            <div className="flex items-center gap-5 min-w-0 flex-1">
+                                                                <div className="relative shrink-0">
+                                                                    <AvatarImage src={u.avatar} alt={u.name} size={64} className="rounded-2xl object-cover bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10" />
+                                                                    <div className={`absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-lg flex items-center justify-center border-2 border-white dark:border-[#1C1A29] ${u.role === 'admin' ? 'bg-indigo-500 text-white' : u.role === 'pakar' ? 'bg-emerald-500 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'}`}>
+                                                                        <ShieldCheck className="w-3.5 h-3.5" />
                                                                     </div>
-                                                                    <div className="w-px bg-gray-200"></div>
-                                                                    <div>
-                                                                        <div className="font-['Lexend_Deca'] font-bold text-sm text-gray-800 leading-none">
-                                                                            {u.followers ||
-                                                                                0}
+                                                                </div>
+                                                                <div className="min-w-0">
+                                                                    <h4 className="font-['Lexend_Deca'] font-bold text-slate-900 dark:text-slate-100 text-[18px] mb-0.5 truncate group-hover:text-indigo-600 transition-colors flex items-center gap-2">
+                                                                        {u.name}
+                                                                        {u.is_dormant && (
+                                                                            <span className="bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 text-[10px] px-2 py-0.5 rounded border border-rose-200 dark:border-rose-500/30 font-black tracking-widest uppercase">DORMANT</span>
+                                                                        )}
+                                                                    </h4>
+                                                                    <p className="text-[11px] font-['Lexend_Deca'] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+                                                                        {u.role === "admin" ? "Administrator" : u.role === "pakar" ? "Expert" : "Pelajar"}
+                                                                    </p>
+                                                                    <div className="flex gap-4">
+                                                                        <div className="bg-slate-50 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-slate-100 dark:border-white/5 flex items-center gap-2">
+                                                                            <div className="font-['Lexend_Deca'] font-bold text-[13px] text-slate-800 dark:text-slate-200">{userPostsCount}</div>
+                                                                            <div className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Catatan</div>
                                                                         </div>
-                                                                        <div className="text-[10px] font-['Manrope'] text-gray-400">
-                                                                            Followers
+                                                                        <div className="bg-slate-50 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-slate-100 dark:border-white/5 flex items-center gap-2">
+                                                                            <div className="font-['Lexend_Deca'] font-bold text-[13px] text-slate-800 dark:text-slate-200">{u.followers || 0}</div>
+                                                                            <div className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Followers</div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <button className="w-10 h-10 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 flex items-center justify-center transition-colors">
-                                                                <ArrowUpRight className="w-4 h-4 text-gray-600" />
-                                                            </button>
-                                                        </div>
+                                                            <div className="shrink-0 flex items-center gap-2 mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-white/5 w-full sm:w-auto">
+                                                                <Link to={`/profile/${u.id || u._id}`} className="flex-1 sm:flex-none px-6 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 flex items-center justify-center transition-colors font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest text-slate-600 dark:text-slate-400">
+                                                                    Lihat Profil <ArrowUpRight className="w-4 h-4 ml-1" />
+                                                                </Link>
+                                                                {u.role !== 'user' && u.id !== user?.id && u._id !== user?.id && (
+                                                                    <button 
+                                                                        onClick={() => handleDemoteUser(u)}
+                                                                        className="flex-1 sm:flex-none px-4 py-2.5 bg-rose-50 dark:bg-rose-500/10 text-rose-500 border border-rose-100 dark:border-rose-500/20 rounded-xl hover:bg-rose-500 hover:text-white transition-all font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest"
+                                                                    >
+                                                                        Turunkan Pangkat
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        </article>
                                                     );
                                                 })
                                             )}
                                         </div>
+                                        {filteredUsers.length > visibleItemsCount && (
+                                            <div className="mt-8 flex justify-center">
+                                                <button onClick={handleLoadMore} className="px-6 py-3 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 text-[13px] shadow-sm transition-all">
+                                                    Load More
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
                         </div>
+                    </div>
 
-                        {/* Right Column (Sidebar Log) */}
-                        <div className="xl:col-span-1 space-y-6">
-                            {/* System Status */}
-                            <div className="bg-white dark:bg-[#1C1A29] rounded-3xl shadow-sm dark:shadow-none border border-gray-100 dark:border-white/5 p-6 relative overflow-hidden">
-                                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100">
-                                        <Server className="w-5 h-5 text-emerald-600" />
-                                    </div>
-                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100">
-                                        System Status
-                                    </h3>
+                    {/* RIGHT COLUMN (SIDEBAR STATS) */}
+                    <div className="hidden lg:block w-[280px] xl:w-[320px] shrink-0 border-l border-gray-100 dark:border-white/5 pl-6 xl:pl-10">
+                        <div className="sticky pt-2 pb-12" style={{ top: "min(72px, calc(100vh - 100% - 24px))" }}>
+                            
+                            <div className="pb-8 border-b border-gray-100 dark:border-white/5 mb-8">
+                                <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-6">
+                                    Ringkasan Platform
+                                </h3>
+                                <div className="flex flex-col gap-4">
+                                    {stats.map((stat, index) => {
+                                        const Icon = stat.icon;
+                                        return (
+                                            <div key={index} className="bg-white dark:bg-[#1C1A29] rounded-[20px] p-5 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none flex items-center gap-4 group hover:border-indigo-200 dark:hover:border-primary/20 transition-all">
+                                                <div className={`w-12 h-12 ${stat.color} rounded-[16px] flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform`}>
+                                                    <Icon className="w-5 h-5 text-white" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-2xl font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 leading-none mb-1">
+                                                        {stat.value}
+                                                    </p>
+                                                    <p className="text-[12px] font-['Manrope'] text-gray-500 font-bold uppercase tracking-wider">
+                                                        {stat.label}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
+                            </div>
 
-                                <div className="space-y-4">
-                                    <div>
-                                        <div className="flex justify-between text-xs font-['Manrope'] font-semibold text-gray-500 mb-1.5">
-                                            <span>Server Payload (API)</span>
-                                            <span className="text-emerald-500">
-                                                Operational
-                                            </span>
+                            {/* Quick Action */}
+                            <div className="bg-indigo-600 rounded-[24px] p-6 text-white relative overflow-hidden shadow-lg shadow-indigo-600/20 group cursor-pointer mb-8">
+                                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
+                                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-1000" />
+                                <ShieldCheck className="w-8 h-8 mb-4 opacity-80 group-hover:rotate-12 transition-transform duration-500" />
+                                <h4 className="font-['Lexend_Deca'] font-bold text-[16px] mb-2 leading-tight tracking-tight">Butuh Bantuan Teknis?</h4>
+                                <p className="text-indigo-100 text-[12px] font-medium leading-relaxed">Hubungi tim DevOps Ba-Yu untuk pemeliharaan server.</p>
+                            </div>
+
+                            {/* System Status Redesigned */}
+                            <div className="mb-8">
+                                <h3 className="font-['Lexend_Deca'] font-extrabold text-[14px] text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4">
+                                    System Health
+                                </h3>
+                                <div className="space-y-3">
+                                    <div className="bg-white dark:bg-[#1C1A29] p-4 rounded-[16px] border border-gray-100 dark:border-white/5 flex items-center justify-between group hover:border-emerald-200 dark:hover:border-emerald-500/20 transition-colors">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-[10px] bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                                                <Server className="w-4 h-4" />
+                                            </div>
+                                            <div>
+                                                <p className="font-['Lexend_Deca'] text-[13px] font-bold text-gray-900 dark:text-gray-100">API Gateway</p>
+                                                <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Operational</p>
+                                            </div>
                                         </div>
-                                        <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                                            <div className="bg-emerald-400 h-2 rounded-full w-[24%]"></div>
-                                        </div>
+                                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                                     </div>
-                                    <div>
-                                        <div className="flex justify-between text-xs font-['Manrope'] font-semibold text-gray-500 mb-1.5">
-                                            <span>Storage (MongoDB)</span>
-                                            <span className="text-indigo-500">
-                                                Normal
-                                            </span>
+                                    <div className="bg-white dark:bg-[#1C1A29] p-4 rounded-[16px] border border-gray-100 dark:border-white/5 flex items-center justify-between group hover:border-indigo-200 dark:hover:border-indigo-500/20 transition-colors">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-[10px] bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+                                                <Server className="w-4 h-4" />
+                                            </div>
+                                            <div>
+                                                <p className="font-['Lexend_Deca'] text-[13px] font-bold text-gray-900 dark:text-gray-100">Database</p>
+                                                <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">Normal</p>
+                                            </div>
                                         </div>
-                                        <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                                            <div className="bg-indigo-400 h-2 rounded-full w-[45%]"></div>
-                                        </div>
+                                        <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Activity Feed */}
-                            <div className="bg-white dark:bg-[#1C1A29] rounded-3xl shadow-sm dark:shadow-none border border-gray-100 dark:border-white/5 flex flex-col h-[400px]">
-                                <div className="p-6 border-b border-gray-50 flex items-center justify-between">
-                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                                        <Activity className="w-4 h-4 text-blue-500" />{" "}
-                                        Recent Logs
-                                    </h3>
-                                </div>
-
-                                <div className="flex-1 overflow-y-auto p-6 pt-2 space-y-6 scrollbar-hide">
+                            {/* Activity Feed Redesigned */}
+                            <div>
+                                <h3 className="font-['Lexend_Deca'] font-extrabold text-[14px] text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4">
+                                    Recent Activity
+                                </h3>
+                                <div className="space-y-4">
                                     {[
-                                        {
-                                            action: "Sistem Reboot",
-                                            time: "12 min ago",
-                                            user: "Auto",
-                                            type: "system",
-                                        },
-                                        {
-                                            action: "Catatan Dihapus",
-                                            time: "1 hour ago",
-                                            user: "Admin",
-                                            type: "warn",
-                                        },
-                                        {
-                                            action: "User baru registrasi",
-                                            time: "3 hours ago",
-                                            user: "System",
-                                            type: "info",
-                                        },
-                                        {
-                                            action: "Database backup selesai",
-                                            time: "Yesterday",
-                                            user: "Cron",
-                                            type: "success",
-                                        },
+                                        { action: "Sistem Reboot", time: "12m ago", type: "system", c: "bg-blue-500", bg: "bg-blue-50 dark:bg-blue-500/10" },
+                                        { action: "Catatan Dihapus", time: "1h ago", type: "warn", c: "bg-rose-500", bg: "bg-rose-50 dark:bg-rose-500/10" },
+                                        { action: "User Registrasi", time: "3h ago", type: "info", c: "bg-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-500/10" },
                                     ].map((log, i) => (
-                                        <div
-                                            key={i}
-                                            className="flex gap-4 relative"
-                                        >
-                                            {i !== 3 && (
-                                                <div className="absolute left-[7px] top-6 bottom-[-24px] w-px bg-gray-200"></div>
-                                            )}
-                                            <div
-                                                className={`w-4 h-4 rounded-full mt-1 border-2 border-white shadow-sm z-10 ${log.type === "system" ? "bg-blue-400" : log.type === "warn" ? "bg-red-400" : log.type === "success" ? "bg-green-400" : "bg-gray-400"}`}
-                                            ></div>
-                                            <div>
-                                                <p className="font-['Manrope'] text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                        <div key={i} className="flex gap-3 relative">
+                                            {i !== 2 && <div className="absolute left-[15px] top-[32px] bottom-[-16px] w-px bg-gray-100 dark:bg-white/5"></div>}
+                                            <div className={`w-8 h-8 shrink-0 rounded-[10px] ${log.bg} flex items-center justify-center relative z-10`}>
+                                                <div className={`w-2 h-2 rounded-full ${log.c}`}></div>
+                                            </div>
+                                            <div className="pt-1.5">
+                                                <p className="font-['Manrope'] text-[13px] font-bold text-gray-800 dark:text-gray-200 leading-none mb-1">
                                                     {log.action}
                                                 </p>
-                                                <div className="flex items-center gap-2 mt-0.5">
-                                                    <span className="text-[10px] font-bold text-gray-400 uppercase">
-                                                        {log.user}
-                                                    </span>
-                                                    <span className="text-[10px] text-gray-400">
-                                                        •
-                                                    </span>
-                                                    <span className="text-[10px] text-gray-400">
-                                                        {log.time}
-                                                    </span>
-                                                </div>
+                                                <span className="text-[11px] font-semibold text-gray-400">
+                                                    {log.time}
+                                                </span>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
+
+            <PromptDialog
+                isOpen={promptConfig.isOpen}
+                onOpenChange={(open) => setPromptConfig(prev => ({ ...prev, isOpen: open }))}
+                title={promptConfig.title}
+                placeholder={promptConfig.placeholder}
+                defaultValue={promptConfig.defaultValue}
+                onConfirm={promptConfig.onConfirm}
+            />
+
+            <ConfirmDialog
+                isOpen={confirmConfig.isOpen}
+                onOpenChange={(open) => setConfirmConfig(prev => ({ ...prev, isOpen: open }))}
+                title={confirmConfig.title}
+                description={confirmConfig.description}
+                variant={confirmConfig.variant}
+                onConfirm={confirmConfig.onConfirm}
+            />
+
+            <ExportDataModal 
+                isOpen={isExportModalOpen} 
+                onClose={() => setIsExportModalOpen(false)} 
+                notesList={notesList} 
+                reportsList={reportsList} 
+                usersList={usersList} 
+            />
         </MobileLayout>
     );
 }

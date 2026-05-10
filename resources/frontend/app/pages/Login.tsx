@@ -4,6 +4,7 @@ import { MobileLayout } from "../components/MobileLayout";
 import { Mail, Lock, User, GraduationCap, Eye, EyeOff, Sparkles, ChevronRight, CheckCircle, X } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../contexts/ToastContext";
+import { CustomSelect } from "../components/ui/CustomSelect";
 
 export default function Login() {
     const [isLogin, setIsLogin] = useState(true);
@@ -190,18 +191,20 @@ export default function Login() {
                                     Jenjang Pendidikan
                                 </label>
                                 <div className="relative group">
-                                    <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors pointer-events-none" strokeWidth={2.5} />
-                                    <select
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
+                                        <GraduationCap className="w-[18px] h-[18px] text-gray-400 group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors pointer-events-none" strokeWidth={2.5} />
+                                    </div>
+                                    <CustomSelect
                                         value={formData.jenjang}
-                                        onChange={(e) => setFormData({ ...formData, jenjang: e.target.value })}
-                                        className="w-full pl-11 pr-10 py-3.5 bg-gray-50 dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] font-bold text-[15px] text-gray-900 dark:text-gray-100 transition-all focus:bg-white dark:focus:bg-[#252336] focus:outline-none focus:ring-4 focus:ring-gray-100 dark:focus:ring-white/10 focus:border-gray-900 dark:focus:border-white/20 appearance-none cursor-pointer"
-                                    >
-                                        <option value="SD">Sekolah Dasar (SD)</option>
-                                        <option value="SMP">Menengah Pertama (SMP)</option>
-                                        <option value="SMA">Menengah Atas (SMA/SMK)</option>
-                                        <option value="Kuliah">Perguruan Tinggi (Kuliah)</option>
-                                    </select>
-                                    <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 pointer-events-none transform rotate-90" />
+                                        onChange={(val) => setFormData({ ...formData, jenjang: val as string })}
+                                        className="pl-8"
+                                        options={[
+                                            { value: "SD", label: "Sekolah Dasar (SD)" },
+                                            { value: "SMP", label: "Menengah Pertama (SMP)" },
+                                            { value: "SMA", label: "Menengah Atas (SMA/SMK)" },
+                                            { value: "Kuliah", label: "Perguruan Tinggi (Kuliah)" },
+                                        ]}
+                                    />
                                 </div>
                             </div>
                         )}

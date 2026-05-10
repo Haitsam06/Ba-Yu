@@ -21,6 +21,12 @@
   --border: rgba(0, 0, 0, 0.1);
   --input: transparent;
   --input-background: #f3f3f5;
+  --hl-yellow: rgba(254, 240, 138, 0.55);
+  --hl-green: rgba(134, 239, 172, 0.50);
+  --hl-blue: rgba(147, 197, 253, 0.50);
+  --hl-red: rgba(252, 165, 165, 0.50);
+  --hl-purple: rgba(196, 181, 253, 0.50);
+  --hl-orange: rgba(254, 215, 170, 0.50);
   --switch-background: #cbced4;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
@@ -373,13 +379,26 @@
   border-radius: 4px;
 }
 
+/* Global Highlight Design (Ba-Yu Signature Style) */
+mark.user-highlight,
+.ql-editor span[style*="background-color"],
+.note-content-container span[style*="background-color"],
+.content span[style*="background-color"],
+[dangerouslySetInnerHTML] span[style*="background-color"],
+.prose mark {
+  padding: 0 2px !important;
+  border-radius: 2px !important;
+  display: inline !important;
+  transition: all 0.2s ease;
+}
+
 /* Highlighter Fix (Monochromatic Glow Approach - Maximum Specificity) */
 .dark .ql-editor span[style*="background-color"],
 .dark .note-content-container span[style*="background-color"],
 .dark [dangerouslySetInnerHTML] span[style*="background-color"],
 .dark .prose mark {
-  padding: 2px 4px !important;
-  border-radius: 6px !important;
+  padding: 0 2px !important;
+  border-radius: 2px !important;
   display: inline !important;
 }
 
@@ -389,9 +408,10 @@
 .dark .ql-editor span[style*="background-color:yellow"],
 .dark .ql-editor span[style*="background-color: yellow"],
 .dark .ql-editor span[style*="background-color:#ffff00"],
-.dark .ql-editor span[style*="background-color: #ffff00"] {
-  background-color: rgba(255, 215, 0, 0.35) !important;
-  color: #FFE066 !important;
+.dark .ql-editor span[style*="background-color: #ffff00"],
+.dark .ql-editor span[style*="background-color: #fef08a"] {
+  background-color: var(--hl-yellow) !important;
+  color: inherit !important;
 }
 
 /* Green */
@@ -400,9 +420,10 @@
 .dark .ql-editor span[style*="background-color:lime"],
 .dark .ql-editor span[style*="background-color: lime"],
 .dark .ql-editor span[style*="background-color:#00ff00"],
-.dark .ql-editor span[style*="background-color: #00ff00"] {
-  background-color: rgba(74, 222, 128, 0.35) !important;
-  color: #52ff94 !important;
+.dark .ql-editor span[style*="background-color: #00ff00"],
+.dark .ql-editor span[style*="background-color: #bbf7d0"] {
+  background-color: var(--hl-green) !important;
+  color: inherit !important;
 }
 
 /* Red / Pink */
@@ -411,9 +432,10 @@
 .dark .ql-editor span[style*="background-color:red"],
 .dark .ql-editor span[style*="background-color: red"],
 .dark .ql-editor span[style*="background-color:#ff0000"],
-.dark .ql-editor span[style*="background-color: #ff0000"] {
-  background-color: rgba(248, 113, 113, 0.35) !important;
-  color: #FF8A8A !important;
+.dark .ql-editor span[style*="background-color: #ff0000"],
+.dark .ql-editor span[style*="background-color: #fbcfe8"] {
+  background-color: var(--hl-red) !important;
+  color: inherit !important;
 }
 
 /* Blue / Cyan */
@@ -423,9 +445,9 @@
 .dark .ql-editor span[style*="background-color: blue"],
 .dark .ql-editor span[style*="background-color:#0000ff"],
 .dark .ql-editor span[style*="background-color: #0000ff"],
-.dark .ql-editor span[style*="background-color: rgb(0, 255, 255)"] {
-  background-color: rgba(96, 165, 250, 0.35) !important;
-  color: #7AD1FF !important;
+.dark .ql-editor span[style*="background-color: #bfdbfe"] {
+  background-color: var(--hl-blue) !important;
+  color: inherit !important;
 }
 
 /* Purple / Magenta */
@@ -434,9 +456,10 @@
 .dark .ql-editor span[style*="background-color:magenta"],
 .dark .ql-editor span[style*="background-color: magenta"],
 .dark .ql-editor span[style*="background-color:#ff00ff"],
-.dark .ql-editor span[style*="background-color: #ff00ff"] {
-  background-color: rgba(192, 132, 252, 0.35) !important;
-  color: #D6A3FF !important;
+.dark .ql-editor span[style*="background-color: #ff00ff"],
+.dark .ql-editor span[style*="background-color: #e9d5ff"] {
+  background-color: var(--hl-purple) !important;
+  color: inherit !important;
 }
 
 /* Inline Code Fix */
@@ -518,5 +541,24 @@
 .dark .ql-editor a {
   color: var(--primary) !important;
   text-decoration-color: rgba(123, 123, 255, 0.3) !important;
+}
+
+/* =======================================================
+   IMAGE & MEDIA CONTENT ADAPTATION
+   ======================================================= */
+.ql-editor img,
+.note-content-container img,
+.content img,
+[dangerouslySetInnerHTML] img {
+  border: 1px solid #f3f4f6 !important;
+  transition: border-color 0.3s ease;
+}
+
+.dark .ql-editor img,
+.dark .note-content-container img,
+.dark .content img,
+.dark [dangerouslySetInnerHTML] img {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
 }
 

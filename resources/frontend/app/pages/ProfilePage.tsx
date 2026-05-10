@@ -2,21 +2,16 @@ import { useState, useEffect } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import { NoteCard } from "../components/NoteCard";
 import { NoteCardSkeleton } from "../components/ui/skeletons";
-import { TagList } from "../components/ui/TagList";
 import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
 import {
     Settings,
-    Edit,
     FileText,
     Bookmark,
-    Eye,
     Heart,
     MessageCircle,
     Users,
     Shield,
-    BarChart3,
     Clock,
-    CheckCircle,
     ChevronRight,
     Sparkles,
     MapPin,
@@ -28,6 +23,7 @@ import {
     Calendar,
     Loader2,
 } from "lucide-react";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { Link, useSearchParams, useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import { useBookmarks } from "../contexts/BookmarkContext";
@@ -54,6 +50,9 @@ export default function ProfilePage() {
         "catatan" | "bookmarks" | "aktivitas" | "draf"
     >(tabParam || "catatan");
     const [applyModalOpen, setApplyModalOpen] = useState(false);
+    const [showUnfollowDialog, setShowUnfollowDialog] = useState(false);
+    const [unfollowTarget, setUnfollowTarget] = useState<{id: string, name: string, is_private: boolean} | null>(null);
+    const [isTogglingFollow, setIsTogglingFollow] = useState(false);
     
     // State untuk Modal Followers & Following
     const [showFollowers, setShowFollowers] = useState(false);
@@ -61,6 +60,7 @@ export default function ProfilePage() {
 
     const [followersList, setFollowersList] = useState<any[]>([]);
     const [followingList, setFollowingList] = useState<any[]>([]);
+    const [pendingRequests, setPendingRequests] = useState<any[]>([]);
     const [isLoadingFollows, setIsLoadingFollows] = useState(false);
 
     const { user } = useAuth();
@@ -70,12 +70,17 @@ export default function ProfilePage() {
         const userId = user._id || user.id;
         setIsLoadingFollows(true);
         try {
-            const [followersRes, followingRes] = await Promise.all([
+            const tk = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+            const headers = { Authorization: `Bearer ${tk}` };
+            
+            const [followersRes, followingRes, pendingRes] = await Promise.all([
                 axios.get(`/api/v1/users/${userId}/followers`),
-                axios.get(`/api/v1/users/${userId}/following`)
+                axios.get(`/api/v1/users/${userId}/following`),
+                axios.get(`/api/v1/follow-requests`, { headers })
             ]);
             setFollowersList(followersRes.data);
             setFollowingList(followingRes.data);
+            setPendingRequests(pendingRes.data);
         } catch (error) {
             console.error("Gagal mengambil data followers/following", error);
         } finally {
@@ -113,6 +118,85 @@ export default function ProfilePage() {
     const handleTabChange = (tab: "catatan" | "bookmarks" | "aktivitas" | "draf") => {
         setActiveTab(tab);
         setSearchParams({ tab });
+    };
+
+    const handleFollowToggle = async (targetUserId: string, targetName?: string, isTargetPrivate?: boolean) => {
+        if (!user) return;
+
+        if (!showUnfollowDialog) {
+            setUnfollowTarget({
+                id: targetUserId,
+                name: targetName || "Pengguna",
+                is_private: isTargetPrivate ?? false
+            });
+            setShowUnfollowDialog(true);
+            return;
+        }
+
+        setIsTogglingFollow(true);
+        try {
+            const tk = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+            const res = await axios.post(`/api/v1/users/${targetUserId}/follow`, {}, {
+                headers: { Authorization: `Bearer ${tk}` },
+            });
+            
+            const status = res.data.status;
+            
+            const updateList = (list: any[]) => list.map(u => {
+                if ((u._id || u.id) === targetUserId) {
+                    if (status === 'unfollowed') {
+                        return { ...u, is_followed_by_me: false, is_follow_pending: false };
+                    } else if (status === 'pending') {
+                        return { ...u, is_followed_by_me: false, is_follow_pending: true };
+                    } else {
+                        return { ...u, is_followed_by_me: true, is_follow_pending: false };
+                    }
+                }
+                return u;
+            });
+
+            setFollowersList(prev => updateList(prev));
+            setFollowingList(prev => updateList(prev));
+            
+            if (status === 'unfollowed') showToast("Berhenti mengikuti", "info");
+            else if (status === 'pending') showToast("Permintaan mengikuti dikirim", "success");
+            else showToast("Berhasil mengikuti", "success");
+
+            setShowUnfollowDialog(false);
+            setUnfollowTarget(null);
+        } catch (error) {
+            console.error(error);
+            showToast("Gagal memproses permintaan", "error");
+        } finally {
+            setIsTogglingFollow(false);
+        }
+    };
+
+    const handleFollowAction = async (targetUserId: string) => {
+        setIsTogglingFollow(true);
+        try {
+            const tk = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+            const res = await axios.post(`/api/v1/users/${targetUserId}/follow`, {}, {
+                headers: { Authorization: `Bearer ${tk}` },
+            });
+            
+            const status = res.data.status;
+            const updateList = (list: any[]) => list.map(u => {
+                if ((u._id || u.id) === targetUserId) {
+                    if (status === 'pending') return { ...u, is_followed_by_me: false, is_follow_pending: true };
+                    return { ...u, is_followed_by_me: true, is_follow_pending: false };
+                }
+                return u;
+            });
+
+            setFollowersList(prev => updateList(prev));
+            setFollowingList(prev => updateList(prev));
+            showToast(status === 'pending' ? "Permintaan dikirim" : "Berhasil mengikuti", "success");
+        } catch (error) {
+            showToast("Gagal mengikuti", "error");
+        } finally {
+            setIsTogglingFollow(false);
+        }
     };
 
     const [activities, setActivities] = useState<any[]>([]);
@@ -213,26 +297,84 @@ export default function ProfilePage() {
         following: user?.following_count || 0,
         created_at: user?.created_at || null,
         bio: user?.bio || "",
+        username: user?.username || "",
     };
 
     const [fetchedNotes, setFetchedNotes] = useState<any[]>([]);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [totalNotesCount, setTotalNotesCount] = useState(0);
+
+    const fetchApiNotes = async (pageNum: number) => {
+        if (pageNum === 1) setIsLoadingNotes(true);
+        else setIsLoadingMore(true);
+
+        try {
+            const response = await axios.get(`/api/v1/posts?user_id=${currentUser.id}&sort=terbaru&page=${pageNum}&limit=12`);
+            const newData = response.data.data || response.data || [];
+            
+            if (pageNum === 1) {
+                setFetchedNotes(newData);
+            } else {
+                setFetchedNotes((prev) => [...prev, ...newData]);
+            }
+
+            if (response.data.meta) {
+                setHasMore(response.data.meta.has_more);
+                setTotalNotesCount(response.data.meta.total || newData.length);
+            } else {
+                setHasMore(newData.length === 12);
+                setTotalNotesCount(newData.length);
+            }
+        } catch (error) {
+            console.error("Gagal nyedot data:", error);
+        } finally {
+            setIsLoadingNotes(false);
+            setIsLoadingMore(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchApiNotes = async () => {
-            try {
-                const response = await axios.get(`/api/v1/posts?user_id=${currentUser.id}&sort=terbaru`);
-                setFetchedNotes(response.data.data || response.data || []);
-            } catch (error) {
-                console.error("Gagal nyedot data:", error);
-            } finally {
-                setIsLoadingNotes(false);
+        if (currentUser?.id) {
+            setPage(1);
+            fetchApiNotes(1);
+        }
+    }, [currentUser?.id]);
+
+    useEffect(() => {
+        if (page > 1 && currentUser?.id) {
+            fetchApiNotes(page);
+        }
+    }, [page, currentUser?.id]);
+
+    useEffect(() => {
+        const handleScroll = (e: Event) => {
+            if (activeTab !== "catatan") return;
+
+            const target = e.target as HTMLElement | Document;
+            let isBottom = false;
+
+            if (target === document) {
+                isBottom = window.innerHeight + document.documentElement.scrollTop + 300 >= document.documentElement.offsetHeight;
+            } else {
+                const el = target as HTMLElement;
+                isBottom = el.scrollHeight - el.scrollTop - el.clientHeight <= 300;
+            }
+
+            if (isBottom) {
+                if (!isLoadingMore && hasMore && !isLoadingNotes) {
+                    setPage((prev) => prev + 1);
+                }
             }
         };
 
-        if (currentUser?.id) {
-            fetchApiNotes();
-        }
-    }, [currentUser?.id]);
+        const scrollContainer = document.getElementById("main-scroll-container");
+        const elementToObserve = scrollContainer || window;
+
+        elementToObserve.addEventListener("scroll", handleScroll);
+        return () => elementToObserve.removeEventListener("scroll", handleScroll as EventListener);
+    }, [isLoadingMore, hasMore, isLoadingNotes, activeTab]);
 
     const userNotes = fetchedNotes.map((note) => ({
         ...note,
@@ -277,20 +419,31 @@ export default function ProfilePage() {
             }
             setIsLoadingBookmarks(true);
             try {
-                const response = await axios.get("/api/v1/posts");
+                const idsParam = Array.from(bookmarkedIds).join(',');
+                const response = await axios.get(`/api/v1/posts?ids=${idsParam}`);
                 const allPosts = response.data.data || [];
-                const filtered = allPosts.filter((p: any) =>
-                    bookmarkedIds.has(p._id || p.id),
-                );
                 setBookmarkedNotes(
-                    filtered.map((n: any) => ({
+                    allPosts.map((n: any) => ({
                         ...n,
                         id: n._id || n.id,
                         title: n.title,
+                        description: String(n.description || n.plain_content || "").replace(/&nbsp;/g, ' '),
+                        createdAt: n.created_at
+                            ? new Date(n.created_at).toLocaleDateString("id-ID", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                            })
+                            : "",
                         thumbnail: n.thumbnail || null,
                         mataPelajaran: n.mapel || "Umum",
+                        jenjang: n.jenjang || "-",
+                        kelas: n.kelas || "-",
+                        isValidated: n.is_verified,
                         likes: n.likes_count || 0,
+                        is_liked: n.is_liked || false,
                         comments: n.comments_count || 0,
+                        views: n.views || 0,
                         author: n.user
                             ? {
                                   ...n.user,
@@ -353,8 +506,13 @@ export default function ProfilePage() {
                     <div className="mb-5">
                         <div className="flex items-center gap-3 flex-wrap">
                             <h1 className="text-[22px] sm:text-[24px] font-extrabold font-['Lexend_Deca'] text-gray-900 dark:text-gray-100 leading-tight">
-                                {currentUser.name}
+                                {currentUser.name || currentUser.username}
                             </h1>
+                            {currentUser.username && (
+                                <p className="w-full text-[14px] text-gray-500 dark:text-gray-400 font-medium font-['Manrope'] -mt-1">
+                                    @{currentUser.username}
+                                </p>
+                            )}
                             {currentUser.role === "pakar" && (
                                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[12px] border border-emerald-100 dark:border-emerald-500/20">
                                     <ShieldCheck className="w-3.5 h-3.5" /> Pakar
@@ -439,9 +597,9 @@ export default function ProfilePage() {
                     <div className="max-w-4xl mx-auto px-4 sm:px-6">
                         <div className="flex gap-8 overflow-x-auto scrollbar-hide px-1">
                             {[
-                                { id: "catatan", label: "Catatan", count: userNotes.length },
+                                { id: "catatan", label: "Catatan", count: totalNotesCount },
                                 { id: "draf", label: "Draf", count: drafts.length },
-                                { id: "bookmarks", label: "Tersimpan", count: bookmarkedNotes.length },
+                                { id: "bookmarks", label: "Tersimpan", count: bookmarkedIds.size },
                                 { id: "aktivitas", label: "Aktivitas", count: activities.length },
                             ].map((tab) => (
                                 <button
@@ -483,13 +641,29 @@ export default function ProfilePage() {
                                     ))}
                                 </div>
                             ) : userNotes.length > 0 ? (
-                                userNotes.map((note) => (
-                                    <NoteCard
-                                        key={note.id}
-                                        note={note}
-                                        onLike={handleLikePost}
-                                    />
-                                ))
+                                <>
+                                    {userNotes.map((note) => (
+                                        <NoteCard
+                                            key={note.id + '_' + Math.random().toString(36).substr(2, 5)}
+                                            note={note}
+                                            onLike={handleLikePost}
+                                        />
+                                    ))}
+                                    
+                                    {isLoadingMore && (
+                                        <>
+                                            {[...Array(3)].map((_, i) => (
+                                                <NoteCardSkeleton key={`more-${i}`} />
+                                            ))}
+                                        </>
+                                    )}
+                                    
+                                    {!hasMore && userNotes.length > 0 && (
+                                        <div className="py-8 text-center">
+                                            <p className="text-gray-400 dark:text-gray-500 font-['Manrope'] text-[13px] font-medium">Semua catatan telah dimuat.</p>
+                                        </div>
+                                    )}
+                                </>
                             ) : (
                                 <div className="py-20 text-center flex flex-col items-center justify-center">
                                     <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
@@ -608,72 +782,79 @@ export default function ProfilePage() {
                                         <article
                                             key={activity.id}
                                             onClick={() => navigate(`/note/${activity.post_id}#comment-${activity.id}`)}
-                                            className="group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 py-6 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors bg-transparent outline-none cursor-pointer"
+                                            className="group relative flex flex-col sm:flex-row items-start gap-5 p-5 bg-white dark:bg-[#1C1A29] rounded-[24px] border border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10 shadow-[0_8px_30px_-10px_rgba(0,0,0,0.06)] dark:shadow-none hover:shadow-[0_12px_40px_-10px_rgba(0,0,0,0.1)] transition-all duration-300 cursor-pointer overflow-hidden"
                                         >
-                                            <div className="flex-1 min-w-0 flex flex-col w-full h-full text-left">
-                                                 <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-slate-950 dark:text-slate-300 font-bold">
-                                                      <div className="flex items-center gap-1.5">
-                                                          <AvatarImage src={user?.avatar} alt={user?.name} size={20} className="ring-2 ring-transparent" />
-                                                          <span className="font-black text-slate-950 dark:text-slate-100 tracking-tight">{user?.name}</span>
-                                                      </div>
-                                                      <span className="text-slate-600 dark:text-slate-500 px-0.5">{activity.parent_comment_id ? "membalas komentar di" : "berkomentar di"}</span>
-                                                      <span className="font-black text-slate-950 dark:text-slate-100 tracking-tight line-clamp-1">{activity.post?.title || "Catatan"}</span>
-                                                 </div>
+                                            <div className="w-full sm:w-[140px] h-[160px] sm:h-[120px] shrink-0 rounded-[20px] overflow-hidden bg-gray-50 dark:bg-white/5 relative border border-gray-100/50 dark:border-white/5 shadow-sm">
+                                                {activity.post?.thumbnail ? (
+                                                    <img src={activity.post.thumbnail} alt={activity.post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                                                ) : (
+                                                    <DefaultThumbnail 
+                                                        className="w-full h-full group-hover:scale-105 transition-transform duration-700 ease-out" 
+                                                        subject={activity.post?.mapel}
+                                                        title={activity.post?.title}
+                                                    />
+                                                )}
+                                                <div className="absolute top-2 left-2 bg-white/90 dark:bg-[#13111C]/90 backdrop-blur-md text-gray-800 dark:text-gray-200 text-[10px] font-['Lexend_Deca'] font-bold px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1.5 border border-white/20">
+                                                    <MessageCircle className="w-3 h-3 text-indigo-500" /> Diskusi
+                                                </div>
+                                            </div>
 
-                                                <div className="block mb-3 font-['Lexend_Deca']">
-                                                    <h2 className="text-[17px] md:text-[19px] font-extrabold text-slate-950 dark:text-slate-100 leading-[1.5] tracking-tight group-hover:text-primary transition-colors line-clamp-3 italic">
+                                            <div className="flex-1 min-w-0 flex flex-col h-full text-left py-1 w-full">
+                                                <div className="flex items-center gap-1.5 mb-2.5 text-[12.5px] font-['Manrope'] text-slate-500 dark:text-slate-400 font-medium line-clamp-1">
+                                                    <span>{activity.parent_comment_id ? "Membalas obrolan di" : "Ikut berdiskusi di"}</span>
+                                                    <span className="font-['Lexend_Deca'] font-bold text-slate-900 dark:text-gray-100">{activity.post?.title || "Catatan"}</span>
+                                                </div>
+
+                                                <div className="mb-4 bg-slate-50/80 dark:bg-white/5 rounded-2xl p-4 border border-slate-100 dark:border-white/5 relative">
+                                                    <div className="absolute -left-[5px] top-4 w-3 h-3 bg-slate-50/80 dark:bg-[#1E1C2E] border-t border-l border-slate-100 dark:border-white/5 rotate-[-45deg] z-0 hidden sm:block"></div>
+                                                    <h2 className="relative z-10 text-[14.5px] font-medium text-slate-700 dark:text-gray-300 leading-relaxed font-['Manrope'] line-clamp-3 italic">
                                                         "{activity.content}"
                                                     </h2>
                                                 </div>
 
                                                 <div className="flex items-center justify-between mt-auto">
                                                     <div className="flex items-center gap-4">
-                                                        <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-500">
-                                                            <Clock className="w-[14px] h-[14px] text-gray-500" strokeWidth={2} />
-                                                            <span className="text-[13px] font-['Manrope'] font-semibold">
+                                                        <div className="flex items-center gap-1.5 text-gray-500">
+                                                            <Clock className="w-3.5 h-3.5" />
+                                                            <span className="text-[12px] font-['Manrope'] font-bold">
                                                                 {activity.created_at ? new Date(activity.created_at).toLocaleDateString("id-ID", { month: "short", day: "numeric", year: "numeric" }) : "Baru saja"}
                                                             </span>
                                                         </div>
-                                                        <div className="flex items-center gap-3 ml-2">
-                                                            <button className="flex items-center gap-1 text-gray-500 hover:text-red-500 transition-colors">
-                                                                <Heart className="w-[14px] h-[14px]" />
-                                                                <span className="text-[12px] font-bold">{activity.likes_count || 0}</span>
-                                                            </button>
+                                                        <div className="flex items-center gap-1.5 text-gray-500 group-hover:text-pink-500 transition-colors">
+                                                            <Heart className="w-3.5 h-3.5" />
+                                                            <span className="text-[12px] font-bold">{activity.likes_count || 0}</span>
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex items-center gap-2">
+                                                    <div className="flex items-center">
                                                         <DropdownMenu>
                                                             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                                                <button className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-all active:scale-95">
+                                                                <button className="p-1.5 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 rounded-full text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200/50 dark:border-white/5 transition-colors">
                                                                     <MoreHorizontal className="w-5 h-5" />
                                                                 </button>
                                                             </DropdownMenuTrigger>
-                                                            <DropdownMenuContent align="end" className="w-36 font-['Manrope']">
-                                                                <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50" onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    showToast("Fitur hapus komentar segera hadir", "info");
-                                                                }}>
-                                                                    <Trash2 className="w-4 h-4 mr-2" /> Hapus
+                                                            <DropdownMenuContent align="end" className="w-40 font-['Manrope'] rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 dark:border-white/10 p-2">
+                                                                <DropdownMenuItem 
+                                                                    className="cursor-pointer text-slate-700 dark:text-slate-300 font-semibold focus:bg-indigo-50 focus:text-indigo-600 dark:focus:bg-indigo-500/10 dark:focus:text-indigo-400 rounded-xl py-2.5"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        navigate(`/note/${activity.post_id}?edit_comment=${activity.id}#comment-${activity.id}`);
+                                                                    }}
+                                                                >
+                                                                    <Pencil className="w-4 h-4 mr-2.5" /> Edit
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem 
+                                                                    className="cursor-pointer text-red-600 dark:text-red-400 font-semibold focus:bg-red-50 focus:text-red-700 dark:focus:bg-red-500/10 dark:focus:text-red-300 rounded-xl py-2.5"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        showToast("Fitur hapus komentar segera hadir", "info");
+                                                                    }}
+                                                                >
+                                                                    <Trash2 className="w-4 h-4 mr-2.5" /> Hapus
                                                                 </DropdownMenuItem>
                                                             </DropdownMenuContent>
                                                         </DropdownMenu>
                                                     </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-gray-100 dark:bg-[#1C1A29] relative shadow-sm dark:shadow-none border border-gray-100/50 dark:border-white/5">
-                                                {activity.post?.thumbnail ? (
-                                                    <img src={activity.post.thumbnail} alt={activity.post.title} className="w-full h-full object-cover transition-transform duration-500" />
-                                                ) : (
-                                                    <DefaultThumbnail 
-                                                        className="w-full h-full transition-transform duration-500" 
-                                                        subject={activity.post?.mapel}
-                                                        title={activity.post?.title}
-                                                    />
-                                                )}
-                                                <div className="absolute top-2 right-2 bg-white/90 dark:bg-black/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 text-[10px] font-['Lexend_Deca'] font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1.5">
-                                                    <MessageCircle className="w-3 h-3" /> DISKUSI
                                                 </div>
                                             </div>
                                         </article>
@@ -708,6 +889,40 @@ export default function ProfilePage() {
                                 <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-gray-400"/></div>
                             ) : followersList.length > 0 ? (
                                 <div className="flex flex-col">
+                                    {pendingRequests.length > 0 && (
+                                        <div 
+                                            onClick={() => { setShowFollowers(false); navigate("/settings/follow-requests"); }}
+                                            className="flex items-center justify-between p-3 mb-4 bg-primary/[0.03] dark:bg-primary/[0.08] hover:bg-primary/[0.06] dark:hover:bg-primary/[0.12] rounded-2xl cursor-pointer transition-all border border-primary/10 dark:border-primary/20 group"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex -space-x-3">
+                                                    {pendingRequests.slice(0, 3).map((req, idx) => (
+                                                        <div key={idx} className="relative ring-2 ring-white dark:ring-[#1C1A29] rounded-full overflow-hidden w-8 h-8">
+                                                            <AvatarImage 
+                                                                src={req.follower_user?.avatar} 
+                                                                alt={req.follower_user?.name} 
+                                                                size={32}
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                    {pendingRequests.length > 3 && (
+                                                        <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-white/10 flex items-center justify-center text-[10px] font-bold text-gray-600 dark:text-gray-400 ring-2 ring-white dark:ring-[#1C1A29]">
+                                                            +{pendingRequests.length - 3}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-[14px] font-bold text-gray-900 dark:text-gray-100 leading-tight">
+                                                        Permintaan Mengikuti
+                                                    </span>
+                                                    <span className="text-[12px] text-primary font-semibold">
+                                                        {pendingRequests.length} orang menunggu
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <ChevronRight className="w-5 h-5 text-primary group-hover:translate-x-1 transition-transform" />
+                                        </div>
+                                    )}
                                     {followersList.map((f, i) => (
                                         <div 
                                             key={i} 
@@ -722,21 +937,23 @@ export default function ProfilePage() {
                                             </div>
                                             {f._id !== user?.id && f.id !== user?.id && (
                                                 <button 
-                                                    className={`px-4 py-1.5 rounded-full text-[12px] font-bold font-['Manrope'] transition-all ${f.is_followed_by_me ? 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/15' : 'bg-primary text-white hover:bg-primary/90 shadow-sm'}`}
-                                                    onClick={async (e) => {
+                                                    className={`px-4 py-1.5 rounded-full text-[12px] font-bold font-['Manrope'] transition-all ${
+                                                        f.is_followed_by_me 
+                                                            ? 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/15' 
+                                                            : f.is_follow_pending
+                                                                ? 'bg-gray-50 dark:bg-white/5 text-gray-400 dark:text-gray-500 cursor-default'
+                                                                : 'bg-primary text-white hover:bg-primary/90 shadow-sm'
+                                                    }`}
+                                                    onClick={(e) => {
                                                         e.stopPropagation();
-                                                        try {
-                                                            const token = localStorage.getItem('bayu-token') || sessionStorage.getItem('bayu-token');
-                                                            const res = await axios.post(`/api/users/${f._id || f.id}/follow`, {}, {
-                                                                headers: { Authorization: `Bearer ${token}` }
-                                                            });
-                                                            setFollowersList(prev => prev.map(u => (u._id || u.id) === (f._id || f.id) ? { ...u, is_followed_by_me: !u.is_followed_by_me } : u));
-                                                        } catch(err) {
-                                                            console.error(err);
+                                                        if (f.is_followed_by_me) {
+                                                            handleFollowToggle(f._id || f.id, f.name, f.is_private);
+                                                        } else if (!f.is_follow_pending) {
+                                                            handleFollowAction(f._id || f.id);
                                                         }
                                                     }}
                                                 >
-                                                    {f.is_followed_by_me ? 'Mengikuti' : 'Ikuti'}
+                                                    {f.is_followed_by_me ? 'Mengikuti' : f.is_follow_pending ? 'Diminta' : 'Ikuti'}
                                                 </button>
                                             )}
                                         </div>
@@ -783,21 +1000,23 @@ export default function ProfilePage() {
                                             </div>
                                             {f._id !== user?.id && f.id !== user?.id && (
                                                 <button 
-                                                    className={`px-4 py-1.5 rounded-full text-[12px] font-bold font-['Manrope'] transition-all ${f.is_followed_by_me ? 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/15' : 'bg-primary text-white hover:bg-primary/90 shadow-sm'}`}
-                                                    onClick={async (e) => {
+                                                    className={`px-4 py-1.5 rounded-full text-[12px] font-bold font-['Manrope'] transition-all ${
+                                                        f.is_followed_by_me 
+                                                            ? 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/15' 
+                                                            : f.is_follow_pending
+                                                                ? 'bg-gray-50 dark:bg-white/5 text-gray-400 dark:text-gray-500 cursor-default'
+                                                                : 'bg-primary text-white hover:bg-primary/90 shadow-sm'
+                                                    }`}
+                                                    onClick={(e) => {
                                                         e.stopPropagation();
-                                                        try {
-                                                            const token = localStorage.getItem('bayu-token') || sessionStorage.getItem('bayu-token');
-                                                            const res = await axios.post(`/api/users/${f._id || f.id}/follow`, {}, {
-                                                                headers: { Authorization: `Bearer ${token}` }
-                                                            });
-                                                            setFollowingList(prev => prev.map(u => (u._id || u.id) === (f._id || f.id) ? { ...u, is_followed_by_me: !u.is_followed_by_me } : u));
-                                                        } catch(err) {
-                                                            console.error(err);
+                                                        if (f.is_followed_by_me) {
+                                                            handleFollowToggle(f._id || f.id, f.name, f.is_private);
+                                                        } else if (!f.is_follow_pending) {
+                                                            handleFollowAction(f._id || f.id);
                                                         }
                                                     }}
                                                 >
-                                                    {f.is_followed_by_me ? 'Mengikuti' : 'Ikuti'}
+                                                    {f.is_followed_by_me ? 'Mengikuti' : f.is_follow_pending ? 'Diminta' : 'Ikuti'}
                                                 </button>
                                             )}
                                         </div>
@@ -817,6 +1036,22 @@ export default function ProfilePage() {
                     </div>
                 </div>
             )}
+
+            <ConfirmDialog
+                isOpen={showUnfollowDialog}
+                onOpenChange={(open) => {
+                    setShowUnfollowDialog(open);
+                    if (!open) setUnfollowTarget(null);
+                }}
+                onConfirm={() => handleFollowToggle(unfollowTarget?.id!)}
+                title={`Batal ikuti ${unfollowTarget?.name}?`}
+                description={unfollowTarget?.is_private 
+                    ? `Akun ini bersifat privat. Jika kamu berhenti mengikuti, kamu harus mengirim permintaan mengikuti lagi untuk melihat catatan dan aktivitasnya.` 
+                    : `Kamu tidak akan lagi melihat catatan dan aktivitas dari ${unfollowTarget?.name} di berandamu.`}
+                confirmText={isTogglingFollow ? "Memproses..." : "Ya, Batal Ikuti"}
+                cancelText="Tidak"
+                variant="danger"
+            />
 
             <ApplyPakarModal
                 isOpen={applyModalOpen}

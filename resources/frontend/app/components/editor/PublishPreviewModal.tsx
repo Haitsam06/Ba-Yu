@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { X, ChevronDown, Trash2 } from 'lucide-react';
 import Cropper from 'react-easy-crop';
 import { mataPelajaran } from '../../data/mockData';
@@ -67,8 +68,8 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
   const kelasOptions = currentJenjang?.kelas || [];
   const maxSemester = currentJenjang?.maxSemester || 2;
 
-  return (
-    <div className="fixed inset-0 bg-white dark:bg-[#13111C] z-[100] overflow-y-auto animate-in fade-in zoom-in-95 duration-300">
+  return createPortal(
+    <div className="fixed inset-0 bg-white dark:bg-[#13111C] z-[9999] overflow-y-auto animate-in fade-in zoom-in-95 duration-300">
       <div className="max-w-6xl mx-auto px-6 py-8 min-h-screen flex flex-col">
         
         {/* Modal Header */}
@@ -260,25 +261,75 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                </div>
 
                <div className="flex gap-3">
-                  <select
-                    value={meta.kelas}
-                    onChange={(e) => setMeta({ ...meta, kelas: e.target.value })}
-                    className="flex-1 px-3 py-2 bg-gray-50 dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-lg text-sm font-['Manrope'] font-semibold text-gray-900 dark:text-gray-100 focus:outline-none focus:border-primary transition-all cursor-pointer"
-                  >
-                    {kelasOptions.map((k: string) => (
-                      <option key={k} value={k}>{meta.jenjang === 'Kuliah' ? k : `Kelas ${k}`}</option>
-                    ))}
-                  </select>
+                  <div className="flex-1 relative">
+                      <div 
+                         className="flex items-center justify-between w-full px-4 py-3 bg-gray-50 dark:bg-[#1C1A29] border border-transparent hover:border-gray-200 dark:hover:border-white/10 rounded-lg transition-all cursor-pointer"
+                         onClick={(e) => {
+                             e.stopPropagation();
+                             const currentStatus = document.getElementById('kelas-dropdown')?.classList.contains('hidden');
+                             document.getElementById('kelas-dropdown')?.classList.toggle('hidden', !currentStatus);
+                             document.getElementById('semester-dropdown')?.classList.add('hidden');
+                         }}
+                      >
+                         <span className="text-[14px] font-['Manrope'] text-gray-950 dark:text-gray-100 font-bold">
+                             {meta.kelas ? (meta.jenjang === 'Kuliah' ? meta.kelas : `Kelas ${meta.kelas}`) : 'Pilih Kelas'}
+                         </span>
+                         <ChevronDown className="w-5 h-5 text-gray-500" strokeWidth={2.5} />
+                      </div>
+                      
+                      {/* Kelas Dropdown List */}
+                      <div id="kelas-dropdown" className="hidden absolute z-20 w-full mt-2 bg-white dark:bg-[#1C1A29] border border-gray-100 dark:border-white/5 rounded-xl shadow-lg dark:shadow-2xl max-h-60 overflow-y-auto no-scrollbar animate-in fade-in zoom-in-95 duration-200">
+                          <div className="py-1">
+                              {kelasOptions.map((k: string) => (
+                                 <div
+                                    key={k}
+                                    onClick={() => {
+                                        setMeta({ ...meta, kelas: k });
+                                        document.getElementById('kelas-dropdown')?.classList.add('hidden');
+                                    }}
+                                    className={`px-4 py-2.5 cursor-pointer transition-colors ${meta.kelas === k ? 'bg-primary/5 text-primary font-bold' : 'hover:bg-gray-50 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300 font-medium'} text-[14px] font-['Manrope']`}
+                                 >
+                                     {meta.jenjang === 'Kuliah' ? k : `Kelas ${k}`}
+                                 </div>
+                              ))}
+                          </div>
+                      </div>
+                  </div>
 
-                  <select
-                    value={meta.semester}
-                    onChange={(e) => setMeta({ ...meta, semester: parseInt(e.target.value) })}
-                    className="flex-1 px-3 py-2 bg-gray-50 dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-lg text-sm font-['Manrope'] font-semibold text-gray-900 dark:text-gray-100 focus:outline-none focus:border-primary transition-all cursor-pointer"
-                  >
-                    {Array.from({ length: maxSemester }, (_, i) => i + 1).map((s) => (
-                      <option key={s} value={s}>Semester {s}</option>
-                    ))}
-                  </select>
+                  <div className="flex-1 relative">
+                      <div 
+                         className="flex items-center justify-between w-full px-4 py-3 bg-gray-50 dark:bg-[#1C1A29] border border-transparent hover:border-gray-200 dark:hover:border-white/10 rounded-lg transition-all cursor-pointer"
+                         onClick={(e) => {
+                             e.stopPropagation();
+                             const currentStatus = document.getElementById('semester-dropdown')?.classList.contains('hidden');
+                             document.getElementById('semester-dropdown')?.classList.toggle('hidden', !currentStatus);
+                             document.getElementById('kelas-dropdown')?.classList.add('hidden');
+                         }}
+                      >
+                         <span className="text-[14px] font-['Manrope'] text-gray-950 dark:text-gray-100 font-bold">
+                             {meta.semester ? `Semester ${meta.semester}` : 'Pilih Semester'}
+                         </span>
+                         <ChevronDown className="w-5 h-5 text-gray-500" strokeWidth={2.5} />
+                      </div>
+
+                      {/* Semester Dropdown List */}
+                      <div id="semester-dropdown" className="hidden absolute z-20 w-full mt-2 bg-white dark:bg-[#1C1A29] border border-gray-100 dark:border-white/5 rounded-xl shadow-lg dark:shadow-2xl max-h-60 overflow-y-auto no-scrollbar animate-in fade-in zoom-in-95 duration-200">
+                          <div className="py-1">
+                              {Array.from({ length: maxSemester }, (_, i) => i + 1).map((s) => (
+                                 <div
+                                    key={s}
+                                    onClick={() => {
+                                        setMeta({ ...meta, semester: s });
+                                        document.getElementById('semester-dropdown')?.classList.add('hidden');
+                                    }}
+                                    className={`px-4 py-2.5 cursor-pointer transition-colors ${meta.semester === s ? 'bg-primary/5 text-primary font-bold' : 'hover:bg-gray-50 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300 font-medium'} text-[14px] font-['Manrope']`}
+                                 >
+                                     Semester {s}
+                                 </div>
+                              ))}
+                          </div>
+                      </div>
+                  </div>
                </div>
             </div>
 
@@ -329,6 +380,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
 
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

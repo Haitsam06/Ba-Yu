@@ -9,6 +9,7 @@ import {
   LogOut, 
   Moon, 
   Sun,
+  Monitor,
   Globe, 
   Trash2,
   Settings as SettingsIcon,
@@ -18,9 +19,13 @@ import {
   ArrowLeft,
   Search,
   ExternalLink,
-  ShieldCheck
+  ShieldCheck,
+  AlertTriangle,
+  UserPlus
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { AvatarImage } from '../components/ui/DefaultImages';
@@ -31,6 +36,23 @@ export default function SettingsPage() {
   const navigate = useNavigate();
   
   if (!user) return null;
+
+  const [requestCount, setRequestCount] = useState(0);
+
+  useEffect(() => {
+    const fetchRequestCount = async () => {
+      try {
+        const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+        const res = await axios.get("/api/v1/follow-requests", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setRequestCount(res.data.length);
+      } catch (error) {
+        console.error("Failed to fetch request count", error);
+      }
+    };
+    if (user?.is_private) fetchRequestCount();
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -69,8 +91,8 @@ export default function SettingsPage() {
 
   return (
     <MobileLayout>
-      <div className="min-h-screen pb-10 bg-white dark:bg-[#13111C] font-['Manrope']">
-        
+      <div className="min-h-screen bg-slate-50 dark:bg-black/20 flex justify-center font-['Manrope']">
+        <div className="w-full max-w-[800px] min-h-screen border-x border-slate-200 dark:border-white/5 bg-white dark:bg-[#13111C] pb-10">
         {/* TOP NAVIGATION */}
         <div className="sticky top-0 z-20 bg-white/90 dark:bg-[#13111C]/90 backdrop-blur-md border-b border-slate-100 dark:border-white/5 px-6 py-4 flex items-center gap-6">
           <button onClick={() => navigate(-1)} className="text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-white/10 p-1 rounded-full transition-colors">
@@ -129,13 +151,13 @@ export default function SettingsPage() {
                 </div>
                 <ChevronRight size={16} className="text-slate-200 dark:text-slate-600 group-hover:translate-x-0.5 transition-transform" />
               </Link>
-              <div className="flex items-center justify-between text-[13px] font-semibold text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-primary transition-colors group cursor-pointer">
+              <Link to="/settings/security" className="flex items-center justify-between text-[13px] font-semibold text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-primary transition-colors group cursor-pointer">
                 <div className="flex items-center gap-3">
                   <Lock size={18} className="text-slate-400 dark:text-slate-500" />
                   Kata Sandi & Keamanan
                 </div>
                 <ChevronRight size={16} className="text-slate-200 dark:text-slate-600 group-hover:translate-x-0.5 transition-transform" />
-              </div>
+              </Link>
             </div>
           </div>
         </div>
@@ -146,31 +168,15 @@ export default function SettingsPage() {
           <div className="divide-y divide-slate-50 dark:divide-white/5">
             <SettingRow icon={Bell} title="Notifikasi" to="/notifications" />
             <SettingRow 
-              icon={theme === 'dark' ? Moon : Sun} 
+              icon={theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor} 
               title="Tampilan" 
               onClick={toggleTheme}
               rightElement={
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-slate-400 dark:text-slate-500 font-medium">
-                    {theme === 'dark' ? 'Gelap' : 'Terang'}
+                  <span className="text-sm text-slate-400 dark:text-slate-500 font-medium bg-slate-100 dark:bg-white/10 px-3 py-1 rounded-full">
+                    {theme === 'dark' ? 'Gelap' : theme === 'light' ? 'Terang' : 'Sistem'}
                   </span>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); toggleTheme(); }}
-                    className={`relative w-12 h-7 rounded-full transition-colors duration-300 ${
-                      theme === 'dark' 
-                        ? 'bg-primary' 
-                        : 'bg-slate-200'
-                    }`}
-                  >
-                    <div className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 flex items-center justify-center ${
-                      theme === 'dark' ? 'translate-x-5' : 'translate-x-0'
-                    }`}>
-                      {theme === 'dark' 
-                        ? <Moon size={12} className="text-primary" />
-                        : <Sun size={12} className="text-amber-500" />
-                      }
-                    </div>
-                  </button>
+                  <ChevronRight size={16} className="text-slate-300 dark:text-slate-600" />
                 </div>
               } 
             />
@@ -179,14 +185,30 @@ export default function SettingsPage() {
 
           <SectionHeader title="Privasi & Konten" />
           <div className="divide-y divide-slate-50 dark:divide-white/5">
-            <SettingRow icon={ShieldCheck} title="Privasi Akun" rightElement={<span className="text-sm text-slate-400 dark:text-slate-500 font-medium">Publik</span>} />
-            <SettingRow icon={MessageSquare} title="Komentar & Tag" />
+            <SettingRow icon={ShieldCheck} title="Privasi Akun" to="/settings/privacy" rightElement={<span className="text-sm text-slate-400 dark:text-slate-500 font-medium">{user.is_private ? "Privat" : "Publik"}</span>} />
+            {user.is_private && (
+              <SettingRow 
+                icon={UserPlus} 
+                title="Permintaan Mengikuti" 
+                to="/settings/follow-requests" 
+                rightElement={
+                  <div className="flex items-center gap-3">
+                    {requestCount > 0 && (
+                      <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        {requestCount}
+                      </span>
+                    )}
+                    <ChevronRight size={16} className="text-slate-300 dark:text-slate-600" />
+                  </div>
+                } 
+              />
+            )}
           </div>
 
           <SectionHeader title="Dukungan & Info" />
           <div className="divide-y divide-slate-50 dark:divide-white/5">
-             <SettingRow icon={HelpCircle} title="Bantuan" />
-             <SettingRow icon={Shield} title="Kebijakan Privasi" />
+             <SettingRow icon={HelpCircle} title="Bantuan" to="/help" />
+             <SettingRow icon={Shield} title="Kebijakan Privasi" to="/privacy" />
              <SettingRow icon={ExternalLink} title="Status Aplikasi" rightElement={<span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold rounded-md">Aktif</span>} />
           </div>
 
@@ -199,9 +221,10 @@ export default function SettingsPage() {
                 onClick={handleLogout}
              />
              <SettingRow 
-                icon={Trash2} 
-                title="Hapus Akun" 
+                icon={AlertTriangle} 
+                title="Nonaktifkan Akun" 
                 color="text-red-500" 
+                to="/settings/privacy"
              />
           </div>
 
@@ -216,6 +239,8 @@ export default function SettingsPage() {
             <p className="text-[10px] font-bold text-slate-300 dark:text-slate-600 uppercase tracking-[0.3em]">Version 1.2.4</p>
           </div>
         </div>
+        </div>
+
 
       </div>
     </MobileLayout>

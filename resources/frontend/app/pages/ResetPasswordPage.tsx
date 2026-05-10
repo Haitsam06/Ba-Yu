@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { useToast } from '../contexts/ToastContext';
+import { useNavigate } from 'react-router';
 
 export default function ResetPasswordPage() {
     const pathname = window.location.pathname;
@@ -11,6 +13,8 @@ export default function ResetPasswordPage() {
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
     const [loading, setLoading] = useState(false);
+    const { showToast } = useToast();
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
@@ -24,11 +28,11 @@ export default function ResetPasswordPage() {
                 password_confirmation: passwordConfirmation
             });
 
-            alert('✅ SUKSES: Password berhasil diubah! Silakan login.');
-            window.location.href = '/app';
+            showToast('Password berhasil diubah! Silakan login.', 'success');
+            navigate('/app');
             
         } catch (error: any) {
-            alert('❌ GAGAL: ' + (error.response?.data?.message || 'Link kadaluarsa atau terjadi kesalahan.'));
+            showToast(error.response?.data?.message || 'Link kadaluarsa atau terjadi kesalahan.', 'error');
         } finally {
             setLoading(false);
         }

@@ -29,6 +29,9 @@ export default function HomePage() {
     const { showToast } = useToast();
     const [notes, setNotes] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
 
     const handleLikePost = async (postId: string) => {
         if (!user)
@@ -72,20 +75,66 @@ export default function HomePage() {
         }
     };
 
+    const fetchPosts = async (pageNum: number) => {
+        try {
+            const response = await axios.get(`/api/v1/posts?page=${pageNum}&limit=12`);
+            const newData = response.data.data || [];
+            
+            if (pageNum === 1) {
+                setNotes(newData);
+            } else {
+                setNotes((prev) => [...prev, ...newData]);
+            }
+            
+            if (response.data.meta) {
+                setHasMore(response.data.meta.has_more);
+            } else {
+                setHasMore(newData.length === 12);
+            }
+        } catch (error) {
+            console.error("Error fetching posts:", error);
+        } finally {
+            setIsLoading(false);
+            setIsLoadingMore(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                const response = await axios.get("/api/v1/posts");
-                setNotes(response.data.data || []);
-            } catch (error) {
-                console.error("Error fetching posts:", error);
-            } finally {
-                setIsLoading(false);
+        fetchPosts(1);
+    }, []);
+
+    useEffect(() => {
+        if (page > 1) {
+            setIsLoadingMore(true);
+            fetchPosts(page);
+        }
+    }, [page]);
+
+    useEffect(() => {
+        const handleScroll = (e: Event) => {
+            const target = e.target as HTMLElement | Document;
+            let isBottom = false;
+
+            if (target === document) {
+                isBottom = window.innerHeight + document.documentElement.scrollTop + 300 >= document.documentElement.offsetHeight;
+            } else {
+                const el = target as HTMLElement;
+                isBottom = el.scrollHeight - el.scrollTop - el.clientHeight <= 300;
+            }
+
+            if (isBottom) {
+                if (!isLoadingMore && hasMore && !isLoading) {
+                    setPage((prev) => prev + 1);
+                }
             }
         };
 
-        fetchPosts();
-    }, []);
+        const scrollContainer = document.getElementById("main-scroll-container");
+        const elementToObserve = scrollContainer || window;
+
+        elementToObserve.addEventListener("scroll", handleScroll);
+        return () => elementToObserve.removeEventListener("scroll", handleScroll as EventListener);
+    }, [isLoadingMore, hasMore, isLoading]);
 
     // Format array fallback if API fields are missing or empty
     const formattedNotes = notes.map((note) => ({
@@ -116,7 +165,7 @@ export default function HomePage() {
 
     // Destructure content
     const heroNote = formattedNotes[0];
-    const feedNotes = formattedNotes.slice(1, 10);
+    const feedNotes = formattedNotes.slice(1);
     const trendingNotes = [...formattedNotes]
         .sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0))
         .slice(0, 5);
@@ -311,13 +360,27 @@ export default function HomePage() {
                         </div>
 
                         <div className="flex flex-col">
-                            {formattedNotes.map((note) => (
+                            {feedNotes.map((note) => (
                                 <NoteCard
-                                    key={note.id}
+                                    key={note.id + '_' + Math.random().toString(36).substr(2, 5)}
                                     note={note}
                                     onLike={handleLikePost}
                                 />
                             ))}
+                            
+                            {isLoadingMore && (
+                                <>
+                                    {[...Array(3)].map((_, i) => (
+                                        <NoteCardSkeleton key={`more-${i}`} />
+                                    ))}
+                                </>
+                            )}
+                            
+                            {!hasMore && feedNotes.length > 0 && (
+                                <div className="py-8 text-center">
+                                    <p className="text-gray-400 dark:text-gray-500 font-['Manrope'] text-[13px] font-medium">Anda sudah melihat semua catatan terbaru.</p>
+                                </div>
+                            )}
                         </div>
                     </div>
 

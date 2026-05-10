@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactQuill from 'react-quill';
-import { Plus, X, Image as ImageIcon, Film, Code, Terminal, Minus, Quote, Bold, Italic, Underline, Highlighter, Link as LinkIcon, Heading1, Heading2, Calculator } from 'lucide-react';
+import { Plus, X, Image as ImageIcon, Film, Code, Terminal, Minus, Quote, Bold, Italic, Underline, Highlighter, Link as LinkIcon, Heading1, Heading2, Calculator, List, ListOrdered } from 'lucide-react';
 import { HIGHLIGHT_COLORS } from './editor.constants';
+import { PromptDialog } from '../ui/PromptDialog';
 
 interface SideToolbarProps {
   quillRef: React.RefObject<ReactQuill | null>;
@@ -13,6 +14,19 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
   const [formats, setFormats] = useState<Record<string, any>>({});
   const [expandedPlus, setExpandedPlus] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [promptConfig, setPromptConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    placeholder: string;
+    value: string;
+    onConfirm: (value: string) => void;
+  }>({
+    isOpen: false,
+    title: '',
+    placeholder: '',
+    value: '',
+    onConfirm: () => {},
+  });
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -79,9 +93,18 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
       if (current.link) {
         quill.format('link', false);
       } else {
-        const url = prompt('Masukkan URL:');
-        if (url) quill.format('link', url);
+        setPromptConfig({
+          isOpen: true,
+          title: 'Sisipkan Link',
+          placeholder: 'https://example.com',
+          value: '',
+          onConfirm: (url) => {
+            if (url) quill.format('link', url);
+          }
+        });
       }
+    } else if (format === 'list') {
+      quill.format('list', current.list === value ? false : value);
     } else {
       quill.format(format, !current[format]);
     }
@@ -140,31 +163,40 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
         break;
       }
       case 'video': {
-        const rawUrl = prompt('Masukkan URL video (YouTube/Vimeo):');
-        if (rawUrl) {
-            let finalUrl = rawUrl;
-            if (rawUrl.includes('youtu.be/')) {
-                const videoId = rawUrl.split('youtu.be/')[1].split('?')[0];
-                finalUrl = `https://www.youtube.com/embed/${videoId}`;
-            } 
-            else if (rawUrl.includes('youtube.com/watch')) {
-                const safeUrl = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`; 
-                const urlParams = new URLSearchParams(new URL(safeUrl).search);
-                const videoId = urlParams.get('v');
-                if (videoId) finalUrl = `https://www.youtube.com/embed/${videoId}`;
+        setPromptConfig({
+          isOpen: true,
+          title: 'Sisipkan Video',
+          placeholder: 'Masukkan URL YouTube atau Vimeo...',
+          value: '',
+          onConfirm: (rawUrl) => {
+            if (rawUrl) {
+                let finalUrl = rawUrl;
+                if (rawUrl.includes('youtu.be/')) {
+                    const videoId = rawUrl.split('youtu.be/')[1].split('?')[0];
+                    finalUrl = `https://www.youtube.com/embed/${videoId}`;
+                } 
+                else if (rawUrl.includes('youtube.com/watch')) {
+                    const safeUrl = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`; 
+                    try {
+                        const urlParams = new URLSearchParams(new URL(safeUrl).search);
+                        const videoId = urlParams.get('v');
+                        if (videoId) finalUrl = `https://www.youtube.com/embed/${videoId}`;
+                    } catch (e) {}
+                }
+                const captionText = "Ketik caption video di sini...";
+                quill.insertEmbed(range.index, 'video', finalUrl, 'user');
+                quill.insertText(range.index + 1, '\n' + captionText, 'user');
+                quill.formatLine(range.index + 2, 1, 'align', 'center');
+                quill.formatText(range.index + 2, captionText.length, 'color', '#9ca3af');
+                quill.formatText(range.index + 2, captionText.length, 'italic', true);
+                quill.insertText(range.index + 2 + captionText.length, '\n', 'user');
+                quill.formatLine(range.index + 3 + captionText.length, 1, 'align', false);
+                quill.formatText(range.index + 3 + captionText.length, 1, 'color', false);
+                quill.formatText(range.index + 3 + captionText.length, 1, 'italic', false);
+                quill.setSelection(range.index + 2, captionText.length, 'user');
             }
-            const captionText = "Ketik caption video di sini...";
-            quill.insertEmbed(range.index, 'video', finalUrl, 'user');
-            quill.insertText(range.index + 1, '\n' + captionText, 'user');
-            quill.formatLine(range.index + 2, 1, 'align', 'center');
-            quill.formatText(range.index + 2, captionText.length, 'color', '#9ca3af');
-            quill.formatText(range.index + 2, captionText.length, 'italic', true);
-            quill.insertText(range.index + 2 + captionText.length, '\n', 'user');
-            quill.formatLine(range.index + 3 + captionText.length, 1, 'align', false);
-            quill.formatText(range.index + 3 + captionText.length, 1, 'color', false);
-            quill.formatText(range.index + 3 + captionText.length, 1, 'italic', false);
-            quill.setSelection(range.index + 2, captionText.length, 'user');
-        }
+          }
+        });
         break;
       }
       case 'code': {
@@ -217,11 +249,11 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
   return (
     <div
       ref={containerRef}
-      className="fixed z-40 flex flex-col items-center gap-2 transition-all duration-150 ease-out"
+      className="fixed z-40 flex flex-col items-center gap-1.5 transition-all duration-150 ease-out"
       style={{ top: position.top - 16, left: leftPos }}
       onMouseDown={(e) => e.preventDefault()}
     >
-      <div className="bg-white/90 dark:bg-[#1C1A29]/90 backdrop-blur-xl rounded-[18px] shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] p-1.5 flex flex-col items-center gap-1 border border-slate-200/60 dark:border-white/10">
+      <div className="bg-white/90 dark:bg-[#1C1A29]/90 backdrop-blur-xl rounded-[18px] shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] p-1 flex flex-col items-center gap-0.5 border border-slate-200/60 dark:border-white/10">
          <button className={btnClass(!!formats.bold)} onClick={() => toggle('bold')} title="Bold"><Bold className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
          <button className={btnClass(!!formats.italic)} onClick={() => toggle('italic')} title="Italic"><Italic className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
          <button className={btnClass(!!formats.underline)} onClick={() => toggle('underline')} title="Underline"><Underline className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
@@ -262,6 +294,8 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
           
           <button className={btnClass(formats.header === 1)} onClick={() => toggle('header', 1)} title="Heading 1"><Heading1 className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
           <button className={btnClass(formats.header === 2)} onClick={() => toggle('header', 2)} title="Heading 2"><Heading2 className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
+          <button className={btnClass(formats.list === 'bullet')} onClick={() => toggle('list', 'bullet')} title="Bullet List"><List className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
+          <button className={btnClass(formats.list === 'ordered')} onClick={() => toggle('list', 'ordered')} title="Numbered List"><ListOrdered className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
           <button className={btnClass(!!formats.link)} onClick={() => toggle('link')} title="Link"><LinkIcon className="w-[16px] h-[16px]" strokeWidth={2.5} /></button>
           
           <div className="w-5 h-px bg-slate-200 dark:bg-white/10 my-1"></div>
@@ -292,8 +326,17 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
                 </button>
               ))}
             </div>
-         </div>
-      </div>
-    </div>
-  );
-}
+          </div>
+       </div>
+
+       <PromptDialog
+        isOpen={promptConfig.isOpen}
+        onOpenChange={(open) => setPromptConfig(prev => ({ ...prev, isOpen: open }))}
+        title={promptConfig.title}
+        placeholder={promptConfig.placeholder}
+        defaultValue={promptConfig.value}
+        onConfirm={promptConfig.onConfirm}
+       />
+     </div>
+   );
+ }

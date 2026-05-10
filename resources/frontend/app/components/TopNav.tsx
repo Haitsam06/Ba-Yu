@@ -146,7 +146,7 @@ export function TopNav({ isSidebarExpanded, toggleSidebar }: TopNavProps) {
                       </div>
                       <span className="font-['Manrope'] text-[14px] font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors">Pengaturan</span>
                     </Link>
-                   <Link to="/not-found" className="flex items-center gap-3 px-5 py-2 hover:text-gray-900 dark:hover:text-gray-100 text-gray-600 dark:text-gray-400 transition-colors group">
+                   <Link to="/help" className="flex items-center gap-3 px-5 py-2 hover:text-gray-900 dark:hover:text-gray-100 text-gray-600 dark:text-gray-400 transition-colors group">
                       <HelpCircle className="w-[18px] h-[18px] text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors" strokeWidth={1.5} />
                       <span className="text-[14px] font-['Manrope']">Pusat Bantuan</span>
                    </Link>
@@ -167,8 +167,8 @@ export function TopNav({ isSidebarExpanded, toggleSidebar }: TopNavProps) {
                 <div className="px-5 pt-3 mt-1 pb-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-['Manrope'] text-gray-500 dark:text-gray-500">
                     <Link to="#" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Tentang Kami</Link>
                     <Link to="#" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Blog</Link>
-                    <Link to="#" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Ketentuan</Link>
-                    <Link to="#" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Privasi</Link>
+                    <Link to="/terms" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Ketentuan</Link>
+                    <Link to="/privacy" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Privasi</Link>
                 </div>
              </div>
            )}

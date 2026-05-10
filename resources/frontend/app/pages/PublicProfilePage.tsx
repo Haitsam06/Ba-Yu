@@ -24,8 +24,9 @@ import {
     UserCheck,
     UserMinus,
     Loader2,
+    Lock,
 } from "lucide-react";
-import { Link, useSearchParams, useParams, useNavigate } from "react-router";
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
@@ -35,16 +36,16 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 
 export default function PublicProfilePage() {
     const { id } = useParams(); // Mengambil ID dari URL
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
-    const tabParam = searchParams.get("tab") as "catatan" | "aktivitas";
-
-    const [activeTab, setActiveTab] = useState<"catatan" | "aktivitas">(tabParam || "catatan");
-    
-    // State untuk Modal Followers & Following
+    const tabParam = searchParams.get("tab");
+    const [activeTab, setActiveTab] = useState<"catatan" | "aktivitas">(
+        (tabParam as "catatan" | "aktivitas") || "catatan"
+    );// State untuk Modal Followers & Following
     const [showFollowers, setShowFollowers] = useState(false);
     const [showFollowing, setShowFollowing] = useState(false);
 
@@ -81,11 +82,16 @@ export default function PublicProfilePage() {
     const [profileUser, setProfileUser] = useState<any>(null);
     const [isLoadingProfile, setIsLoadingProfile] = useState(true);
     const [isFollowing, setIsFollowing] = useState(false);
+    const [isPending, setIsPending] = useState(false);
+    const [showUnfollowDialog, setShowUnfollowDialog] = useState(false);
+    const [isTogglingFollow, setIsTogglingFollow] = useState(false);
+
+    const openParam = searchParams.get("open");
 
     // Sync state if URL changes
     useEffect(() => {
         if (tabParam && ["catatan", "aktivitas"].includes(tabParam)) {
-            setActiveTab(tabParam);
+            setActiveTab(tabParam as "catatan" | "aktivitas");
             setTimeout(() => {
                 const tabsEl = document.getElementById("profil-tabs");
                 if (tabsEl) {
@@ -97,6 +103,14 @@ export default function PublicProfilePage() {
             }, 300);
         }
     }, [tabParam]);
+
+    useEffect(() => {
+        if (openParam === "followers") {
+            setShowFollowers(true);
+        } else if (openParam === "following") {
+            setShowFollowing(true);
+        }
+    }, [openParam]);
 
     const handleTabChange = (tab: "catatan" | "aktivitas") => {
         setActiveTab(tab);
@@ -112,12 +126,27 @@ export default function PublicProfilePage() {
                 const headers = token ? { Authorization: `Bearer ${token}` } : {};
                 
                 const res = await axios.get(`/api/v1/users/${id}`, { headers });
-                setProfileUser(res.data.data || res.data);
-                setIsFollowing(res.data.data?.is_followed || res.data?.is_followed || false);
-            } catch (error) {
-                console.error("Gagal mengambil data profil", error);
-                showToast("Pengguna tidak ditemukan", "error");
-                navigate(-1);
+                const userData = res.data.data || res.data;
+                setProfileUser(userData);
+                setIsFollowing(userData.is_followed_by_me || false);
+                setIsPending(userData.is_follow_pending || false);
+            } catch (error: any) {
+                if (error.response?.status === 403) {
+                    if (error.response.data.is_private_restricted) {
+                        const restrictedUser = error.response.data.data;
+                        restrictedUser.is_private_restricted = true;
+                        setProfileUser(restrictedUser);
+                        setIsFollowing(false);
+                        setIsPending(error.response.data.is_follow_pending || false);
+                    } else {
+                        showToast(error.response.data.message || "Akses ditolak", "error");
+                        navigate(-1);
+                    }
+                } else {
+                    console.error("Gagal mengambil data profil", error);
+                    showToast("Pengguna tidak ditemukan", "error");
+                    navigate(-1);
+                }
             } finally {
                 setIsLoadingProfile(false);
             }
@@ -227,37 +256,91 @@ export default function PublicProfilePage() {
         }
     };
 
-    const handleFollowToggle = async () => {
+    const [unfollowTarget, setUnfollowTarget] = useState<{id: string, name: string, is_private: boolean} | null>(null);
+
+    const handleFollowToggle = async (targetUserId?: string, targetName?: string, isTargetPrivate?: boolean) => {
         if (!currentUser) {
             showToast("Silakan login untuk mengikuti pengguna ini", "warning");
             navigate("/login");
             return;
         }
-        
-        const previousState = isFollowing;
-        setIsFollowing(!previousState);
-        setProfileUser((prev: any) => ({
-            ...prev,
-            followers_count: previousState 
-                ? Math.max(0, (prev?.followers_count || 0) - 1) 
-                : (prev?.followers_count || 0) + 1
-        }));
 
-        try {
-            const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
-            await axios.post(`/api/v1/users/${id}/follow`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
+        const isMainProfile = !targetUserId;
+        const targetId = targetUserId || id;
+        const currentIsFollowing = isMainProfile ? isFollowing : (
+            followersList.find(u => (u._id || u.id) === targetId)?.is_followed_by_me || 
+            followingList.find(u => (u._id || u.id) === targetId)?.is_followed_by_me || false
+        );
+
+        if (currentIsFollowing && !showUnfollowDialog) {
+            setUnfollowTarget({
+                id: targetId!,
+                name: targetName || profileUser?.name || "Pengguna",
+                is_private: isTargetPrivate ?? profileUser?.is_private ?? false
             });
+            setShowUnfollowDialog(true);
+            return;
+        }
+
+        setIsTogglingFollow(true);
+        try {
+            const tk = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+            const res = await axios.post(`/api/v1/users/${targetId}/follow`, {}, {
+                headers: { Authorization: `Bearer ${tk}` },
+            });
+            
+            const status = res.data.status;
+            
+            if (isMainProfile) {
+                if (status === 'unfollowed') {
+                    setIsFollowing(false);
+                    setIsPending(false);
+                    setProfileUser((prev: any) => ({
+                        ...prev,
+                        followers_count: Math.max(0, (prev?.followers_count || 0) - 1)
+                    }));
+                    showToast("Berhenti mengikuti", "info");
+                } else if (status === 'pending') {
+                    setIsPending(true);
+                    setIsFollowing(false);
+                    showToast("Permintaan mengikuti dikirim", "success");
+                } else {
+                    setIsFollowing(true);
+                    setIsPending(false);
+                    setProfileUser((prev: any) => ({
+                        ...prev,
+                        followers_count: (prev?.followers_count || 0) + 1
+                    }));
+                    showToast("Berhasil mengikuti", "success");
+                }
+            } else {
+                const updateList = (list: any[]) => list.map(u => {
+                    if ((u._id || u.id) === targetId) {
+                        if (status === 'unfollowed') {
+                            return { ...u, is_followed_by_me: false, is_follow_pending: false };
+                        } else if (status === 'pending') {
+                            return { ...u, is_followed_by_me: false, is_follow_pending: true };
+                        } else {
+                            return { ...u, is_followed_by_me: true, is_follow_pending: false };
+                        }
+                    }
+                    return u;
+                });
+                setFollowersList(prev => updateList(prev));
+                setFollowingList(prev => updateList(prev));
+                
+                if (status === 'unfollowed') showToast("Berhenti mengikuti", "info");
+                else if (status === 'pending') showToast("Permintaan mengikuti dikirim", "success");
+                else showToast("Berhasil mengikuti", "success");
+            }
+            
+            setShowUnfollowDialog(false);
+            setUnfollowTarget(null);
         } catch (error) {
-            // Revert state on error
-            setIsFollowing(previousState);
-            setProfileUser((prev: any) => ({
-                ...prev,
-                followers_count: previousState 
-                    ? (prev?.followers_count || 0) + 1 
-                    : Math.max(0, (prev?.followers_count || 0) - 1)
-            }));
-            showToast("Gagal mengubah status ikuti", "error");
+            console.error(error);
+            showToast("Gagal memproses permintaan", "error");
+        } finally {
+            setIsTogglingFollow(false);
         }
     };
 
@@ -355,20 +438,29 @@ export default function PublicProfilePage() {
                         </div>
 
                         <div className="pt-3 flex items-center gap-2">
-                            <button
-                                onClick={handleFollowToggle}
+                             <button
+                                onClick={() => handleFollowToggle()}
+                                disabled={isTogglingFollow}
                                 className={`flex items-center gap-1.5 px-5 py-1.5 sm:px-6 sm:py-2 rounded-full font-bold text-[13px] sm:text-[14px] transition-all ${
                                     isFollowing 
                                     ? "bg-white dark:bg-[#1C1A29] text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-white/10 hover:border-red-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 group" 
-                                    : "bg-gray-900 text-white border border-gray-900 hover:bg-black"
+                                    : isPending
+                                        ? "bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-white/10 cursor-default"
+                                        : "bg-gray-900 text-white border border-gray-900 hover:bg-black dark:bg-primary dark:border-primary dark:hover:bg-indigo-700"
                                 }`}
                             >
-                                {isFollowing ? (
+                                {isTogglingFollow ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : isFollowing ? (
                                     <>
                                         <UserCheck className="w-4 h-4 group-hover:hidden" />
                                         <UserMinus className="w-4 h-4 hidden group-hover:block" />
                                         <span className="group-hover:hidden">Mengikuti</span>
                                         <span className="hidden group-hover:block">Batal Ikuti</span>
+                                    </>
+                                ) : isPending ? (
+                                    <>
+                                        <Clock className="w-4 h-4" /> Diminta
                                     </>
                                 ) : (
                                     <>
@@ -381,19 +473,32 @@ export default function PublicProfilePage() {
 
                     {/* Profile Info - Twitter Layout (Left Aligned, Clean) */}
                     <div className="mb-5">
-                        <div className="flex items-center gap-3 flex-wrap">
-                            <h1 className="text-[22px] sm:text-[24px] font-extrabold font-['Lexend_Deca'] text-gray-900 dark:text-gray-100 leading-tight">
-                                {profileUser?.name || "Pengguna"}
-                            </h1>
-                            {profileUser?.role === "pakar" && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[12px] border border-emerald-100 dark:border-emerald-500/20">
-                                    <ShieldCheck className="w-3.5 h-3.5" /> Pakar
-                                </span>
-                            )}
-                            {profileUser?.role === "admin" && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 font-bold text-[12px] border border-purple-100 dark:border-purple-500/20">
-                                    <Shield className="w-3.5 h-3.5" /> Admin
-                                </span>
+                        <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-3 flex-wrap">
+                                <h1 className="text-[22px] sm:text-[24px] font-extrabold font-['Lexend_Deca'] text-gray-900 dark:text-gray-100 leading-tight">
+                                    {profileUser?.name ? profileUser.name : (profileUser?.username ? `@${profileUser.username}` : "Pengguna")}
+                                </h1>
+                                
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    {profileUser?.role === "pakar" && (
+                                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[12px] border border-emerald-100 dark:border-emerald-500/20">
+                                            <ShieldCheck className="w-3.5 h-3.5" /> Pakar
+                                        </span>
+                                    )}
+                                    {profileUser?.role === "admin" && (
+                                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 font-bold text-[12px] border border-purple-100 dark:border-purple-500/20">
+                                            <Shield className="w-3.5 h-3.5" /> Admin
+                                        </span>
+                                    )}
+                                    {(profileUser?.follows_me || searchParams.get('hint') === 'follower') && (
+                                        <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 text-[10px] font-black uppercase tracking-wider">
+                                            Mengikuti Anda
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                            {profileUser?.name && profileUser?.username && (
+                                <p className="text-[14px] text-gray-500 font-medium font-['Manrope']">@{profileUser.username}</p>
                             )}
                         </div>
 
@@ -421,14 +526,14 @@ export default function PublicProfilePage() {
                                 onClick={() => setShowFollowing(true)}
                                 className="hover:underline outline-none text-gray-500 transition-colors"
                             >
-                                <strong className="text-gray-900 dark:text-gray-100 font-bold">{profileUser?.following_count || 0}</strong> Mengikuti
+                                <strong className="text-gray-900 dark:text-gray-100 font-bold">{profileUser?.following_count ?? profileUser?.following ?? 0}</strong> Mengikuti
                             </button>
                             
                             <button 
                                 onClick={() => setShowFollowers(true)}
                                 className="hover:underline outline-none text-gray-500 transition-colors"
                             >
-                                <strong className="text-gray-900 dark:text-gray-100 font-bold">{profileUser?.followers_count || 0}</strong> Pengikut
+                                <strong className="text-gray-900 dark:text-gray-100 font-bold">{profileUser?.followers_count ?? profileUser?.followers ?? 0}</strong> Pengikut
                             </button>
                         </div>
                     </div>
@@ -473,8 +578,20 @@ export default function PublicProfilePage() {
                     </div>
                 </div>
 
-                {/* 4. Tab Panels - Ba-Yu Classic Card Styles */}
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 min-h-[400px]">
+                {/* Private Account UI Override */}
+                {profileUser?.is_private_restricted ? (
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 text-center flex flex-col items-center justify-center">
+                        <div className="w-20 h-20 bg-slate-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-5 border border-slate-100 dark:border-white/10">
+                            <Lock className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+                        </div>
+                        <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-xl mb-2">Akun ini bersifat Privat</h3>
+                        <p className="font-['Manrope'] text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
+                            Ikuti akun ini untuk melihat catatan, aktivitas, dan siapa saja yang ia ikuti.
+                        </p>
+                    </div>
+                ) : (
+                    /* 4. Tab Panels - Ba-Yu Classic Card Styles */
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 min-h-[400px]">
                     {activeTab === "catatan" && (
                         <div className="flex flex-col animate-in fade-in duration-500 w-full">
                             {isLoadingNotes ? (
@@ -486,7 +603,7 @@ export default function PublicProfilePage() {
                             ) : userNotes.length > 0 ? (
                                 userNotes.map((note) => (
                                     <NoteCard
-                                        key={note.id}
+                                        key={note.id || note._id}
                                         note={note}
                                         onLike={handleLikePost}
                                     />
@@ -573,7 +690,9 @@ export default function PublicProfilePage() {
                                                 {activity.post?.thumbnail ? (
                                                     <img src={activity.post.thumbnail} alt={activity.post.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
                                                 ) : (
-                                                    <DefaultThumbnail className="w-full h-full transform group-hover:scale-110 transition-transform duration-500" />
+                                                    <div className="w-full h-full bg-gray-100 dark:bg-white/5 flex items-center justify-center">
+                                                        <FileText className="w-8 h-8 text-gray-300 dark:text-gray-600" />
+                                                    </div>
                                                 )}
                                                 <div className="absolute top-2 right-2 bg-white/90 dark:bg-black/50 backdrop-blur-sm text-gray-800 dark:text-gray-100 text-[10px] font-['Lexend_Deca'] font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1.5">
                                                     <MessageCircle className="w-3 h-3" /> DISKUSI
@@ -587,13 +706,18 @@ export default function PublicProfilePage() {
                                     <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
                                         <MessageCircle className="w-8 h-8 text-gray-400" />
                                     </div>
-                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[18px] mb-2">Belum Ada Riwayat</h3>
-                                    <p className="font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400 max-w-sm mx-auto">{profileUser?.name} belum memiliki interaksi diskusi.</p>
+                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[18px] mb-2">
+                                        Belum Ada Aktivitas
+                                    </h3>
+                                    <p className="font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400 mb-6 max-w-sm mx-auto">
+                                        {profileUser?.name} belum memberikan komentar pada catatan apa pun.
+                                    </p>
                                 </div>
                             )}
                         </div>
                     )}
                 </div>
+                )}
             </div>
 
             {/* Modal Followers Clean */}
@@ -625,21 +749,23 @@ export default function PublicProfilePage() {
                                             </div>
                                             {f._id !== currentUser?.id && f.id !== currentUser?.id && (
                                                 <button 
-                                                    className={`px-4 py-1.5 rounded-full text-[12px] font-bold font-['Manrope'] transition-all ${f.is_followed_by_me ? 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20' : 'bg-primary text-white hover:bg-primary/90 shadow-sm'}`}
-                                                    onClick={async (e) => {
+                                                    className={`px-4 py-1.5 rounded-full text-[12px] font-bold font-['Manrope'] transition-all ${
+                                                        f.is_followed_by_me 
+                                                            ? 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20' 
+                                                            : f.is_follow_pending
+                                                                ? 'bg-gray-50 dark:bg-white/5 text-gray-400 dark:text-gray-500 cursor-default'
+                                                                : 'bg-primary text-white hover:bg-primary/90 shadow-sm'
+                                                    }`}
+                                                    onClick={(e) => {
                                                         e.stopPropagation();
-                                                        try {
-                                                            const token = localStorage.getItem('bayu-token') || sessionStorage.getItem('bayu-token');
-                                                            const res = await axios.post(`/api/users/${f._id || f.id}/follow`, {}, {
-                                                                headers: { Authorization: `Bearer ${token}` }
-                                                            });
-                                                            setFollowersList(prev => prev.map(u => (u._id || u.id) === (f._id || f.id) ? { ...u, is_followed_by_me: !u.is_followed_by_me } : u));
-                                                        } catch(err) {
-                                                            console.error(err);
+                                                        if (f.is_followed_by_me) {
+                                                            handleFollowToggle(f._id || f.id, f.name, f.is_private);
+                                                        } else if (!f.is_follow_pending) {
+                                                            handleFollowToggle(f._id || f.id);
                                                         }
                                                     }}
                                                 >
-                                                    {f.is_followed_by_me ? 'Mengikuti' : 'Ikuti'}
+                                                    {f.is_followed_by_me ? 'Mengikuti' : f.is_follow_pending ? 'Diminta' : 'Ikuti'}
                                                 </button>
                                             )}
                                         </div>
@@ -685,21 +811,23 @@ export default function PublicProfilePage() {
                                             </div>
                                             {f._id !== currentUser?.id && f.id !== currentUser?.id && (
                                                 <button 
-                                                    className={`px-4 py-1.5 rounded-full text-[12px] font-bold font-['Manrope'] transition-all ${f.is_followed_by_me ? 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20' : 'bg-primary text-white hover:bg-primary/90 shadow-sm'}`}
-                                                    onClick={async (e) => {
+                                                    className={`px-4 py-1.5 rounded-full text-[12px] font-bold font-['Manrope'] transition-all ${
+                                                        f.is_followed_by_me 
+                                                            ? 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20' 
+                                                            : f.is_follow_pending
+                                                                ? 'bg-gray-50 dark:bg-white/5 text-gray-400 dark:text-gray-500 cursor-default'
+                                                                : 'bg-primary text-white hover:bg-primary/90 shadow-sm'
+                                                    }`}
+                                                    onClick={(e) => {
                                                         e.stopPropagation();
-                                                        try {
-                                                            const token = localStorage.getItem('bayu-token') || sessionStorage.getItem('bayu-token');
-                                                            const res = await axios.post(`/api/users/${f._id || f.id}/follow`, {}, {
-                                                                headers: { Authorization: `Bearer ${token}` }
-                                                            });
-                                                            setFollowingList(prev => prev.map(u => (u._id || u.id) === (f._id || f.id) ? { ...u, is_followed_by_me: !u.is_followed_by_me } : u));
-                                                        } catch(err) {
-                                                            console.error(err);
+                                                        if (f.is_followed_by_me) {
+                                                            handleFollowToggle(f._id || f.id, f.name, f.is_private);
+                                                        } else if (!f.is_follow_pending) {
+                                                            handleFollowToggle(f._id || f.id);
                                                         }
                                                     }}
                                                 >
-                                                    {f.is_followed_by_me ? 'Mengikuti' : 'Ikuti'}
+                                                    {f.is_followed_by_me ? 'Mengikuti' : f.is_follow_pending ? 'Diminta' : 'Ikuti'}
                                                 </button>
                                             )}
                                         </div>
@@ -716,6 +844,21 @@ export default function PublicProfilePage() {
                 </div>
             )}
 
+            <ConfirmDialog
+                isOpen={showUnfollowDialog}
+                onOpenChange={(open) => {
+                    setShowUnfollowDialog(open);
+                    if (!open) setUnfollowTarget(null);
+                }}
+                onConfirm={() => handleFollowToggle(unfollowTarget?.id)}
+                title={`Batal ikuti ${unfollowTarget?.name || profileUser?.name}?`}
+                description={(unfollowTarget?.is_private || profileUser?.is_private)
+                    ? `Akun ini bersifat privat. Jika kamu berhenti mengikuti, kamu harus mengirim permintaan mengikuti lagi untuk melihat catatan dan aktivitasnya.` 
+                    : `Kamu tidak akan lagi melihat catatan dan aktivitas dari ${unfollowTarget?.name || profileUser?.name} di berandamu.`}
+                confirmText={isTogglingFollow ? "Memproses..." : "Ya, Batal Ikuti"}
+                cancelText="Tidak"
+                variant="danger"
+            />
         </MobileLayout>
     );
 }

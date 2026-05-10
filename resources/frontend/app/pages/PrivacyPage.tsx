@@ -11,7 +11,7 @@ export default function PrivacyPage() {
       <header className="bg-white/90 dark:bg-[#13111C]/90 backdrop-blur-xl border-b border-indigo-50 dark:border-white/5 sticky top-0 z-10 shadow-sm">
         <div className="max-w-4xl mx-auto px-6 h-20 flex items-center justify-between">
           <button 
-            onClick={() => navigate('/')}
+            onClick={() => navigate(-1)}
             className="flex items-center gap-3 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-['Lexend_Deca'] font-bold transition-all group"
           >
             <div className="w-10 h-10 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center group-hover:bg-indigo-50 dark:group-hover:bg-indigo-500/10 group-hover:shadow-md group-hover:shadow-indigo-500/10 transition-all">

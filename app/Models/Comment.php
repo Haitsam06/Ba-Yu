@@ -14,6 +14,7 @@ class Comment extends Model
         'user_id',
         'content',
         'parent_comment_id',
+        'quote_context',
     ];
 
     // Relationships

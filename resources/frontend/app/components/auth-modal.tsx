@@ -23,6 +23,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
   
   const [formData, setFormData] = useState({
     name: '',
+    username: '',
     email: '',
     password: '',
     jenjang: 'SMA',
@@ -69,7 +70,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
          onClose();
       }
     } else if (activeTab === 'register') {
-      const error = await register(formData.name, formData.email, formData.password, formData.jenjang);
+      const error = await register(formData.name, formData.username, formData.email, formData.password, formData.jenjang);
       if (error) {
          showToast(error, "error");
          setIsSubmitting(false);
@@ -171,36 +172,58 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {activeTab !== 'forgot' && (<>
-                {/* Name — Register Only */}
+                {/* Name & Username — Register Only */}
                 {activeTab === 'register' && (
-                  <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
-                    <label className={labelClass}>Nama Lengkap</label>
-                    <div className="relative group">
-                      <User className={iconClass} strokeWidth={2.5} />
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder="John Doe"
-                        className={inputClass}
-                        required={activeTab === 'register'}
-                      />
+                  <>
+                    <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
+                      <label className={labelClass}>Nama Lengkap (Display Name)</label>
+                      <div className="relative group">
+                        <User className={iconClass} strokeWidth={2.5} />
+                        <input
+                          type="text"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          placeholder="John Doe"
+                          className={inputClass}
+                          required={activeTab === 'register'}
+                        />
+                      </div>
                     </div>
-                  </div>
+                    <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
+                      <label className={labelClass}>Username</label>
+                      <div className="relative group">
+                        <span className={`absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500 group-focus-within:text-indigo-600 transition-colors`}>@</span>
+                        <input
+                          type="text"
+                          name="username"
+                          value={formData.username}
+                          onChange={(e) => {
+                            // Only allow lowercase, numbers, and underscores
+                            const val = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+                            setFormData(prev => ({ ...prev, username: val }));
+                          }}
+                          placeholder="johndoe123"
+                          className={inputClass}
+                          required={activeTab === 'register'}
+                        />
+                      </div>
+                      <p className="text-[11px] text-gray-500 pl-1 font-medium">Hanya huruf kecil, angka, dan underscore (_)</p>
+                    </div>
+                  </>
                 )}
 
-                {/* Email */}
+                {/* Email / Username (Login Only) or Email (Register Only) */}
                 <div className="space-y-1.5">
-                  <label className={labelClass}>Alamat Email</label>
+                  <label className={labelClass}>{activeTab === 'login' ? 'Email atau Username' : 'Alamat Email'}</label>
                   <div className="relative group">
                     <Mail className={iconClass} strokeWidth={2.5} />
                     <input
-                      type="email"
+                      type={activeTab === 'login' ? 'text' : 'email'}
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      placeholder="nama@email.com"
+                      placeholder={activeTab === 'login' ? 'nama@email.com / username_anda' : 'nama@email.com'}
                       className={inputClass}
                       required
                     />

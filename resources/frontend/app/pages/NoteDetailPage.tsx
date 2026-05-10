@@ -8,12 +8,11 @@ import {
     Share2,
     Bookmark,
     Heart,
-    Eye,
+    Download,
     MessageCircle,
     Flag,
     Check,
     Star,
-    DownloadCloud,
     LogIn,
     ArrowUp,
     Calendar,
@@ -29,25 +28,33 @@ import {
     FileText,
     Loader2,
     MessageSquare,
+    X,
+    Pencil,
+    Highlighter,
+    Lock as LockIcon,
 } from "lucide-react";
 import {
     getNoteById,
     getUserById,
     getCommentsByNoteId,
     mockNotes,
+    mataPelajaran,
 } from "../data/mockData";
 import { useAuth } from "../contexts/AuthContext";
 import { useBookmarks } from "../contexts/BookmarkContext";
 import { AuthModal } from "../components/auth-modal";
+import { useToast } from "../contexts/ToastContext";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
+import { CustomSelect } from "../components/ui/CustomSelect";
 // @ts-ignore
 import "react-quill/dist/quill.snow.css";
 // @ts-ignore // Just in case, though we apply custom styles
 import "katex/dist/katex.min.css";
 import axios from "axios";
-import { useToast } from "../contexts/ToastContext";
 import { ArticleSkeleton } from "../components/ui/skeletons";
 import { TagList } from "../components/ui/TagList";
 import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
+import { NoteCard } from "../components/NoteCard";
 export default function NoteDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -67,81 +74,523 @@ export default function NoteDetailPage() {
         null,
     );
     const [isFollowing, setIsFollowing] = useState(false);
+    const [isFollowPending, setIsFollowPending] = useState(false);
     const [followerCount, setFollowerCount] = useState(0);
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+    const [isCommentDrawerOpen, setIsCommentDrawerOpen] = useState(false);
+    const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+    const [editingCommentText, setEditingCommentText] = useState("");
+    
+    // Phase 3: Interactive Respond State
+    const [selectedText, setSelectedText] = useState("");
+    const [selectionRect, setSelectionRect] = useState<DOMRect | null>(null);
+    const [showHighlightMenu, setShowHighlightMenu] = useState(false);
+    const [quoteContext, setQuoteContext] = useState("");
 
-    const handleDownloadPDF = () => {
-        const content = document.getElementById("area-materi-pdf");
-        if (!content) return;
-
-        const originalHTML = document.body.innerHTML;
-
-        document.body.innerHTML = `
-        <div style="padding: 40px; color: black; background: white; font-family: sans-serif;">
-            <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 20px;">
-                ${note?.title || "Materi Catatan"} 
-            </h1>
-            <hr style="margin-bottom: 20px; border-color: #eee;" />
-            ${content.outerHTML}
-        </div>
-    `;
-
-        setTimeout(() => {
-            window.print();
-            document.body.innerHTML = originalHTML;
-            window.location.reload();
-        }, 100);
+    // Phase 4: Personal Highlight State
+    const [highlights, setHighlights] = useState<any[]>([]);
+    const [showColorPicker, setShowColorPicker] = useState(false);
+    const [activeHighlightId, setActiveHighlightId] = useState<string | null>(null);
+    const [selectionRange, setSelectionRange] = useState<Range | null>(null);
+    const HIGHLIGHT_COLORS: Record<string, { bg: string; darkBg: string; label: string }> = {
+        yellow: { bg: "var(--hl-yellow)", darkBg: "var(--hl-yellow)", label: "Kuning" },
+        green:  { bg: "var(--hl-green)", darkBg: "var(--hl-green)", label: "Hijau" },
+        blue:   { bg: "var(--hl-blue)", darkBg: "var(--hl-blue)", label: "Biru" },
+        red:    { bg: "var(--hl-red)", darkBg: "var(--hl-red)", label: "Merah" },
+        purple: { bg: "var(--hl-purple)", darkBg: "var(--hl-purple)", label: "Ungu" },
     };
+    const handleDownloadPDF = () => {
+        const contentContainer = document.getElementById("area-materi-pdf");
+        if (!contentContainer) return;
+
+        let exportHtml = "";
+        const qlEditor = contentContainer.querySelector('.ql-editor');
+        const rawHtmlToExport = qlEditor ? qlEditor.innerHTML : processedContent;
+
+        if (note?.is_restricted) {
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = rawHtmlToExport;
+            
+            // Truncate to first 3 child elements to ensure security in PDF export
+            const children = Array.from(tempDiv.children).slice(0, 3);
+            exportHtml = children.map(c => c.outerHTML).join("");
+            exportHtml += "<p style='color: #94a3b8; font-style: italic; margin-top: 20px; font-weight: bold;'>[ ... Sisa materi disembunyikan dalam mode pratinjau ... ]</p>";
+        } else {
+            exportHtml = rawHtmlToExport;
+        }
+
+        const printWindow = window.open('', '', 'width=900,height=800');
+        if (!printWindow) {
+            showToast("Gagal membuka jendela cetak. Pastikan pop-up diizinkan.", "error");
+            return;
+        }
+
+        const dateStr = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html lang="id">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>${note?.title || "Materi Catatan"} - Ba-Yu</title>
+                    <style>
+                        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Lexend+Deca:wght@400;600;800&display=swap');
+                        
+                        :root {
+                            --primary: #4f46e5;
+                            --text-main: #1f2937;
+                            --text-muted: #6b7280;
+                            --bg-color: #ffffff;
+                        }
+
+                        @page {
+                            margin: 2cm;
+                            size: A4 portrait;
+                        }
+
+                        body { 
+                            font-family: 'Manrope', sans-serif; 
+                            color: var(--text-main); 
+                            line-height: 1.8; 
+                            background-color: var(--bg-color);
+                            margin: 0;
+                            padding: 0;
+                            font-size: 11pt;
+                            -webkit-print-color-adjust: exact !important;
+                            print-color-adjust: exact !important;
+                        }
+
+                        .header {
+                            text-align: center;
+                            margin-bottom: 2rem;
+                            padding-bottom: 1.5rem;
+                            border-bottom: 2px solid #f3f4f6;
+                        }
+
+                        .header h1 { 
+                            font-family: 'Lexend Deca', sans-serif;
+                            font-size: 24pt; 
+                            font-weight: 800;
+                            color: #111827; 
+                            margin: 0 0 0.5rem 0;
+                            line-height: 1.2;
+                            letter-spacing: -0.02em;
+                        }
+
+                        .meta {
+                            font-size: 10pt;
+                            color: var(--text-muted);
+                            display: flex;
+                            justify-content: center;
+                            gap: 1rem;
+                            font-weight: 500;
+                        }
+
+                        .content {
+                            max-width: 100%;
+                        }
+
+                        /* Typography */
+                        h2, h3, h4 { 
+                            font-family: 'Lexend Deca', sans-serif;
+                            color: #111827;
+                            margin-top: 1.5em; 
+                            margin-bottom: 0.5em; 
+                            page-break-after: avoid;
+                        }
+                        h2 { font-size: 18pt; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.3em; }
+                        h3 { font-size: 14pt; }
+                        p { margin-bottom: 1.2em; text-align: justify; }
+                        
+                        /* Elements */
+                        img { 
+                            max-width: 100%; 
+                            height: auto; 
+                            border-radius: 8px; 
+                            margin: 1.5em auto;
+                            display: block;
+                            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                            page-break-inside: avoid;
+                        }
+                        
+                        blockquote {
+                            border-left: 4px solid var(--primary);
+                            background: #f8fafc;
+                            padding: 1rem 1.5rem;
+                            margin: 1.5rem 0;
+                            font-style: italic;
+                            color: #475569;
+                            border-radius: 0 8px 8px 0;
+                            page-break-inside: avoid;
+                        }
+
+                        pre { 
+                            background: #1e293b; 
+                            color: #f8fafc;
+                            padding: 1.2rem; 
+                            border-radius: 8px; 
+                            overflow-x: auto; 
+                            font-family: 'Courier New', Courier, monospace;
+                            font-size: 9.5pt;
+                            page-break-inside: avoid;
+                        }
+                        
+                        code { 
+                            font-family: 'Courier New', Courier, monospace; 
+                            background: #f1f5f9;
+                            padding: 0.2em 0.4em;
+                            border-radius: 4px;
+                            color: #ef4444;
+                            font-size: 0.9em;
+                        }
+
+                        ul, ol { padding-left: 1.5em; margin-bottom: 1.2em; }
+                        li { margin-bottom: 0.5em; }
+
+                        .footer {
+                            margin-top: 3rem;
+                            padding-top: 1rem;
+                            border-top: 1px solid #e5e7eb;
+                            text-align: center;
+                            font-size: 9pt;
+                            color: var(--text-muted);
+                        }
+
+                        .footer-brand {
+                            font-family: 'Lexend Deca', sans-serif;
+                            font-weight: 800;
+                            color: var(--primary);
+                        }
+
+                        /* Highlight Styles */
+                        .highlight-respond { background-color: transparent !important; color: inherit !important; }
+                        
+                        mark.user-highlight {
+                            border-radius: 2px;
+                            padding: 0 2px;
+                            color: inherit;
+                        }
+                        mark.user-highlight[data-color="yellow"] { background-color: rgba(254, 240, 138, 0.8) !important; }
+                        mark.user-highlight[data-color="green"] { background-color: rgba(134, 239, 172, 0.8) !important; }
+                        mark.user-highlight[data-color="blue"] { background-color: rgba(147, 197, 253, 0.8) !important; }
+                        mark.user-highlight[data-color="red"] { background-color: rgba(252, 165, 165, 0.8) !important; }
+                        mark.user-highlight[data-color="purple"] { background-color: rgba(196, 181, 253, 0.8) !important; }
+
+                        /* Remove tooltip UI from print */
+                        .highlight-tooltip { display: none !important; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>${note?.title || "Materi Catatan"}</h1>
+                        <div class="meta">
+                            <span>Ditulis oleh: {author?.name || author?.username || "Penulis"}</span>
+                            <span>&bull;</span>
+                            <span>Diunduh: ${dateStr}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="content">
+                        ${exportHtml}
+                    </div>
+
+                    ${note?.is_restricted ? `
+                    <div style="margin-top: 40px; padding: 25px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center;">
+                        <h4 style="margin: 0 0 8px 0; color: #0f172a; font-family: 'Lexend Deca', sans-serif; font-size: 14pt;">Materi Terproteksi</h4>
+                        <p style="margin: 0; color: #475569; font-size: 10.5pt; font-family: 'Manrope', sans-serif;">
+                            Versi PDF ini hanya memuat sebagian materi. Ikuti penulis <b>@${author?.username || 'penulis'}</b> di aplikasi Ba-Yu untuk mengunduh versi lengkapnya.
+                        </p>
+                    </div>
+                    ` : ''}
+
+                    <div class="footer">
+                        Dokumen ini diunduh dari <span class="footer-brand">Ba-Yu</span> - Platform Belajar Masa Depan
+                    </div>
+                    
+                    <script>
+                        window.onload = function() {
+                            setTimeout(function() {
+                                window.print();
+                                window.close();
+                            }, 800);
+                        };
+                    </script>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+    };
+
+    // Phase 3: Highlight Detection Effect
+    useEffect(() => {
+        const handleSelection = () => {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+                if (showHighlightMenu) {
+                    // Beri delay sedikit agar user bisa klik tombol menu sebelum menu hilang
+                    setTimeout(() => setShowHighlightMenu(false), 200);
+                }
+                return;
+            }
+
+            const range = selection.getRangeAt(0);
+            const container = document.getElementById("area-materi-pdf");
+            
+            // Cek apakah teks yang diseleksi berada di dalam container materi
+            if (container && container.contains(range.commonAncestorContainer)) {
+                const text = selection.toString().trim();
+                if (text.length > 0) {
+                    const rect = range.getBoundingClientRect();
+                    setSelectionRange(range);
+                    setSelectionRect(rect);
+                    setSelectedText(text);
+                    setShowHighlightMenu(true);
+                }
+            } else {
+                setShowHighlightMenu(false);
+            }
+        };
+
+        document.addEventListener("mouseup", handleSelection);
+        return () => {
+            document.removeEventListener("mouseup", handleSelection);
+        };
+    }, [showHighlightMenu]);
+
+    const handleRespondClick = () => {
+        setShowHighlightMenu(false);
+        setQuoteContext(selectedText);
+        setIsCommentDrawerOpen(true);
+    };
+
+    // Phase 4: Highlight Helper Functions
+    const getTextOffset = (container: Node, targetNode: Node, targetOffset: number): number => {
+        try {
+            const range = document.createRange();
+            range.selectNodeContents(container);
+            range.setEnd(targetNode, targetOffset);
+            return range.toString().length;
+        } catch (e) {
+            console.warn("getTextOffset failed", e);
+            return 0;
+        }
+    };
+
+    const applyHighlightsToDOM = (highlightData: any[]) => {
+        const container = document.getElementById("area-materi-pdf");
+        if (!container) return;
+
+        // Remove existing highlights first
+        container.querySelectorAll("mark.user-highlight").forEach((mark) => {
+            const parent = mark.parentNode;
+            if (parent) {
+                while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
+                parent.removeChild(mark);
+                parent.normalize();
+            }
+        });
+
+        if (highlightData.length === 0) return;
+
+        // Sort by start_offset descending so we apply from end to start (avoids offset shifting)
+        const sorted = [...highlightData].sort((a, b) => b.start_offset - a.start_offset);
+        const isDark = document.documentElement.classList.contains("dark");
+
+        sorted.forEach((hl) => {
+            const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+            let charCount = 0;
+            let node: Node | null;
+            const startOffset = hl.start_offset;
+            const endOffset = hl.end_offset;
+            const colorInfo = HIGHLIGHT_COLORS[hl.color] || HIGHLIGHT_COLORS.yellow;
+
+            const operations: { node: Node; rangeStart: number; rangeEnd: number }[] = [];
+
+            while ((node = walker.nextNode())) {
+                const textLen = (node.textContent || "").length;
+                const nodeStart = charCount;
+                const nodeEnd = charCount + textLen;
+
+                if (nodeEnd <= startOffset) {
+                    charCount = nodeEnd;
+                    continue;
+                }
+                if (nodeStart >= endOffset) break;
+
+                const rangeStart = Math.max(startOffset - nodeStart, 0);
+                const rangeEnd = Math.min(endOffset - nodeStart, textLen);
+
+                operations.push({ node, rangeStart, rangeEnd });
+                charCount = nodeEnd;
+            }
+
+            operations.reverse().forEach(({ node, rangeStart, rangeEnd }) => {
+                try {
+                    const range = document.createRange();
+                    range.setStart(node, rangeStart);
+                    range.setEnd(node, rangeEnd);
+
+                    const mark = document.createElement("mark");
+                    mark.className = "user-highlight";
+                    mark.dataset.highlightId = hl._id || hl.id;
+                    mark.dataset.color = hl.color || "yellow";
+                    mark.style.backgroundColor = colorInfo.bg;
+                    mark.style.cursor = "pointer";
+                    mark.style.transition = "background-color 0.2s";
+
+                    mark.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        const hlId = mark.dataset.highlightId;
+                        setActiveHighlightId(activeHighlightId === hlId ? null : hlId || null);
+                    });
+
+                    range.surroundContents(mark);
+                } catch (err) {
+                    console.warn("Highlight apply skipped for segment:", err);
+                }
+            });
+        });
+    };
+
+    const fetchHighlights = async () => {
+        if (!isAuthenticated || !id) return;
+        try {
+            const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+            const res = await axios.get(`/api/v1/posts/${id}/highlights`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setHighlights(res.data.data || []);
+        } catch (e) {
+            console.error("Gagal memuat highlights", e);
+        }
+    };
+
+    const handleHighlightClick = async (color: string) => {
+        setShowHighlightMenu(false);
+        setShowColorPicker(false);
+        if (!isAuthenticated) return openAuthModal("login");
+        if (!selectionRange) return;
+
+        const container = document.getElementById("area-materi-pdf");
+        if (!container) return;
+
+        const startOff = getTextOffset(container, selectionRange.startContainer, selectionRange.startOffset);
+        const endOff = getTextOffset(container, selectionRange.endContainer, selectionRange.endOffset);
+        const text = selectionRange.toString().trim();
+
+        if (!text || startOff === endOff) return;
+
+        try {
+            const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+            const res = await axios.post(
+                `/api/v1/posts/${id}/highlights`,
+                { text, start_offset: startOff, end_offset: endOff, color },
+                { headers: { Authorization: `Bearer ${token}` } },
+            );
+            const newHl = res.data.data;
+            setHighlights((prev) => {
+                // Replace if merged, add if new
+                const filtered = prev.filter((h) => (h._id || h.id) !== (newHl._id || newHl.id));
+                return [...filtered, newHl];
+            });
+            window.getSelection()?.removeAllRanges();
+            showToast("Teks berhasil di-highlight!", "success");
+        } catch (e: any) {
+            console.error(e);
+            showToast(e.response?.data?.message || "Gagal menyimpan highlight", "error");
+        }
+    };
+
+    const handleDeleteHighlight = async (highlightId: string) => {
+        try {
+            const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+            await axios.delete(`/api/v1/highlights/${highlightId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setHighlights((prev) => prev.filter((h) => (h._id || h.id) !== highlightId));
+            setActiveHighlightId(null);
+            showToast("Highlight berhasil dihapus", "success");
+        } catch (e: any) {
+            console.error(e);
+            showToast("Gagal menghapus highlight", "error");
+        }
+    };
+
+
 
     const handleShare = () => {
         setShowShareModal(true);
     };
 
     const handleFollowToggle = async () => {
-        if (!author || !author.id) return;
+        if (!isAuthenticated) return openAuthModal("login");
+        if (!author) return;
 
         if (isFollowing) {
-            if (
-                !window.confirm(
-                    `Yakin ingin berhenti mengikuti ${author.name}?`,
-                )
-            ) {
-                return;
-            }
+            setConfirmConfig({
+                isOpen: true,
+                title: "Berhenti Mengikuti?",
+                description: `Yakin ingin berhenti mengikuti ${author.name || author.username}?`,
+                variant: "danger",
+                onConfirm: () => processFollowToggle()
+            });
+        } else if (isFollowPending) {
+            setConfirmConfig({
+                isOpen: true,
+                title: "Batalkan Permintaan?",
+                description: `Batalkan permintaan mengikuti ke ${author.name || author.username}?`,
+                variant: "danger",
+                onConfirm: () => processFollowToggle()
+            });
+        } else {
+            processFollowToggle();
         }
+    };
 
+    const processFollowToggle = async () => {
         try {
-            const token =
-                localStorage.getItem("bayu-token") ||
-                sessionStorage.getItem("bayu-token") ||
-                sessionStorage.getItem("bayu-token");
-            const response = await axios.post(
-                `/api/users/${author.id}/follow`,
-                {},
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                },
-            );
+            const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+            const authorId = author._id || author.id;
+            
+            const res = await axios.post(`/api/v1/users/${authorId}/follow`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
 
-            if (response.data.status === "followed") {
+            const { status, message } = res.data;
+            
+            if (status === 'accepted') {
                 setIsFollowing(true);
-                setFollowerCount((prev) => prev + 1);
-                showToast("Berhasil mengikuti penulis!", "success");
-            } else {
+                setIsFollowPending(false);
+                setFollowerCount(prev => prev + 1);
+            } else if (status === 'pending') {
                 setIsFollowing(false);
-                setFollowerCount((prev) => prev - 1);
-                showToast("Berhenti mengikuti penulis.", "info");
+                setIsFollowPending(true);
+            } else if (status === 'unfollowed') {
+                if (isFollowing) setFollowerCount(prev => Math.max(0, prev - 1));
+                setIsFollowing(false);
+                setIsFollowPending(false);
             }
+
+            showToast(message, "success");
         } catch (error: any) {
-            console.error("Gagal toggle follow:", error);
-            showToast(
-                error.response?.data?.message || "Gagal memproses permintaan.",
-                "error",
-            );
+            showToast(error.response?.data?.message || "Gagal memproses permintaan", "error");
         }
     };
 
     const [showReportModal, setShowReportModal] = useState(false);
     const [showShareModal, setShowShareModal] = useState(false);
+    const [confirmConfig, setConfirmConfig] = useState<{
+        isOpen: boolean;
+        title: string;
+        description: string;
+        onConfirm: () => void;
+        variant?: "danger" | "primary";
+    }>({
+        isOpen: false,
+        title: "",
+        description: "",
+        onConfirm: () => {},
+    });
     const [reportTarget, setReportTarget] = useState<{
         type: "note" | "comment";
         id: string;
@@ -153,6 +602,38 @@ export default function NoteDetailPage() {
     const [comments, setComments] = useState<any[]>([]);
     const [validator, setValidator] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    const [recommendedNotes, setRecommendedNotes] = useState<any[]>([]);
+    const [moreFromAuthor, setMoreFromAuthor] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (!note || !author) return;
+
+        const fetchRecommendations = async () => {
+            try {
+                // Gunakan kata kunci mapel untuk mencari referensi
+                const recRes = await axios.get("/api/v1/posts", {
+                    params: { search: note.mataPelajaran || note.mapel, sort: "populer" }
+                });
+                let recs = recRes.data.data || [];
+                recs = recs.filter((n: any) => (n.id || n._id) !== note.id).slice(0, 4);
+                setRecommendedNotes(recs);
+
+                // Jika ada parameter user_id di API bisa dipakai, tapi kita bisa search by name
+                const authorRes = await axios.get("/api/v1/posts", {
+                    params: { search: author.name, sort: "terbaru" }
+                });
+                let authors = authorRes.data.data || [];
+                authors = authors.filter((n: any) => (n.id || n._id) !== note.id && ((n.user?.id || n.userId || n.author?.id) === author.id)).slice(0, 4);
+                setMoreFromAuthor(authors);
+
+            } catch (err) {
+                console.error("Gagal mengambil rekomendasi", err);
+            }
+        };
+
+        fetchRecommendations();
+    }, [note?.id, author?.id]);
 
     // Update Meta Tags for Social Preview (Open Graph)
     useEffect(() => {
@@ -351,19 +832,17 @@ export default function NoteDetailPage() {
                     n.user
                         ? {
                               ...n.user,
-                              avatar:
-                                  n.user.avatar ||
-                                  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+                              avatar: n.user.avatar || null,
                               role: n.user.role || "siswa",
                               followers_count: n.user.followers_count || 0,
                               is_followed_by_me:
                                   n.user.is_followed_by_me || false,
-                              totalCatatan: 0,
-                              followers: 0,
+                              totalCatatan: n.user.posts_count || 0,
+                              followers: n.user.followers_count || 0,
                           }
                         : {
                               name: "Anonim",
-                              avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
+                              avatar: null,
                               role: "siswa",
                               totalCatatan: 0,
                               followers: 0,
@@ -386,9 +865,7 @@ export default function NoteDetailPage() {
                     setValidator({
                         id: v._id || v.id || null,
                         name: v.name || "Tim Pakar Ba-Yu",
-                        avatar:
-                            v.avatar ||
-                            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+                        avatar: v.avatar || null,
                     });
                 }
             } catch (err) {
@@ -398,7 +875,8 @@ export default function NoteDetailPage() {
             }
         };
         fetchNoteDetail();
-    }, [id]);
+        fetchHighlights();
+    }, [id, isAuthenticated]);
 
     useEffect(() => {
         if (!isLoading && location.hash === "#comments-section") {
@@ -416,6 +894,7 @@ export default function NoteDetailPage() {
         if (author) {
             setFollowerCount(author.followers_count || 0);
             setIsFollowing(author.is_followed_by_me || false);
+            setIsFollowPending(author.is_follow_pending || false);
         }
     }, [author]);
 
@@ -442,6 +921,27 @@ export default function NoteDetailPage() {
                   {children}
               </div>
           );
+
+    // Apply highlights whenever data changes
+    useEffect(() => {
+        if (highlights.length >= 0 && note) {
+            // Small delay to ensure DOM is ready
+            const timer = setTimeout(() => applyHighlightsToDOM(highlights), 300);
+            return () => clearTimeout(timer);
+        }
+    }, [highlights, note]);
+
+    // Close highlight tooltip on click outside
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            if (!target.closest(".user-highlight") && !target.closest(".highlight-tooltip")) {
+                setActiveHighlightId(null);
+            }
+        };
+        document.addEventListener("click", handleClickOutside);
+        return () => document.removeEventListener("click", handleClickOutside);
+    }, []);
 
     if (isLoading) {
         return (
@@ -482,18 +982,25 @@ export default function NoteDetailPage() {
             const token =
                 localStorage.getItem("bayu-token") ||
                 sessionStorage.getItem("bayu-token");
+            const payload: any = { content: commentText };
+            if (quoteContext) {
+                payload.quote_context = quoteContext;
+            }
+
             const res = await axios.post(
                 `/api/v1/posts/${id}/comments`,
-                { content: commentText },
+                payload,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 },
             );
             const newComment = { ...res.data.data, user: user }; // inject user for UI
-            setComments((prev: any[]) => [...prev, newComment]);
+            setComments((prev: any[]) => [res.data.data, ...prev]);
             setCommentText("");
-            setNote((prev: any) => ({ ...prev, comments: prev.comments + 1 }));
+            setQuoteContext("");
+            showToast("Komentar berhasil dikirim!", "success");
         } catch (e: any) {
+            console.error("Gagal mengirim komentar", e);
             showToast(
                 e.response?.data?.message || "Gagal mengirim komentar",
                 "error",
@@ -503,11 +1010,58 @@ export default function NoteDetailPage() {
         }
     };
 
+    const handleLikeComment = async (commentId: string) => {
+        if (!isAuthenticated) return openAuthModal("login");
+        try {
+            const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+            const res = await axios.post(`/api/v1/comments/${commentId}/like`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            
+            setComments(prev => prev.map(c => {
+                const cid = c.id || c._id;
+                if (cid === commentId) {
+                    const isNowLiked = res.data.message.includes("liked") || !c.is_liked_by_me;
+                    return {
+                        ...c,
+                        is_liked_by_me: isNowLiked,
+                        likes_count: isNowLiked ? (c.likes_count || 0) + 1 : Math.max(0, (c.likes_count || 1) - 1)
+                    };
+                }
+                return c;
+            }));
+            
+            showToast(res.data.message || "Berhasil memperbarui suka", "success");
+        } catch (error) {
+            console.error("Gagal menyukai komentar", error);
+            setComments(prev => prev.map(c => {
+                const cid = c.id || c._id;
+                if (cid === commentId) {
+                    const isNowLiked = !c.is_liked_by_me;
+                    return {
+                        ...c,
+                        is_liked_by_me: isNowLiked,
+                        likes_count: isNowLiked ? (c.likes_count || 0) + 1 : Math.max(0, (c.likes_count || 1) - 1)
+                    };
+                }
+                return c;
+            }));
+        }
+    };
+
     const handleDeleteComment = async (commentId: string) => {
         if (!isAuthenticated) return openAuthModal("login");
 
-        if (!window.confirm("Yakin mau hapus komentar ini?")) return;
+        setConfirmConfig({
+            isOpen: true,
+            title: "Hapus Komentar?",
+            description: "Komentar yang dihapus tidak bisa dikembalikan lagi.",
+            variant: "danger",
+            onConfirm: () => processDeleteComment(commentId)
+        });
+    };
 
+    const processDeleteComment = async (commentId: string) => {
         try {
             const token =
                 localStorage.getItem("bayu-token") ||
@@ -517,7 +1071,7 @@ export default function NoteDetailPage() {
             });
 
             setComments((prev: any[]) =>
-                prev.filter((c: any) => c.id !== commentId),
+                prev.filter((c: any) => c.id !== commentId && c._id !== commentId),
             );
 
             setNote((prev: any) => ({ ...prev, comments: prev.comments - 1 }));
@@ -526,6 +1080,42 @@ export default function NoteDetailPage() {
             console.error(e);
             showToast(
                 e.response?.data?.message || "Gagal menghapus komentar",
+                "error",
+            );
+        }
+    };
+
+    const handleUpdateComment = async (commentId: string) => {
+        if (!isAuthenticated) return openAuthModal("login");
+        if (!editingCommentText.trim()) return;
+
+        try {
+            const token =
+                localStorage.getItem("bayu-token") ||
+                sessionStorage.getItem("bayu-token");
+            await axios.put(
+                `/api/v1/comments/${commentId}`,
+                { content: editingCommentText },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                },
+            );
+
+            setComments((prev: any[]) =>
+                prev.map((c: any) =>
+                    (c.id === commentId || c._id === commentId)
+                        ? { ...c, content: editingCommentText }
+                        : c,
+                ),
+            );
+
+            setEditingCommentId(null);
+            setEditingCommentText("");
+            showToast("Komentar berhasil diperbarui!", "success");
+        } catch (e: any) {
+            console.error(e);
+            showToast(
+                e.response?.data?.message || "Gagal memperbarui komentar",
                 "error",
             );
         }
@@ -550,13 +1140,49 @@ export default function NoteDetailPage() {
                 },
             );
             const newComment = { ...res.data.data, user: user };
-            setComments((prev: any[]) => [...prev, newComment]);
+            setComments((prev: any[]) => [newComment, ...prev]);
             setReplyingTo(null);
             setReplyText("");
             setNote((prev: any) => ({ ...prev, comments: prev.comments + 1 }));
         } catch (e: any) {
             showToast(
                 e.response?.data?.message || "Gagal mengirim balasan",
+                "error",
+            );
+        } finally {
+            setIsSubmittingReply(false);
+        }
+    };
+
+    const handleCommentFromPanel = async () => {
+        if (!isAuthenticated) return openAuthModal("login");
+        if (!replyText.trim() || isSubmittingReply) return;
+        setIsSubmittingReply(true);
+        try {
+            const token =
+                localStorage.getItem("bayu-token") ||
+                sessionStorage.getItem("bayu-token");
+            const payload: any = { content: replyText };
+            if (quoteContext) {
+                payload.quote_context = quoteContext;
+            }
+            const res = await axios.post(
+                `/api/v1/posts/${id}/comments`,
+                payload,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                },
+            );
+            const newComment = { ...res.data.data, user: user };
+            setComments((prev: any[]) => [newComment, ...prev]);
+            setReplyText("");
+            setQuoteContext("");
+            setNote((prev: any) => ({ ...prev, comments: prev.comments + 1 }));
+            showToast("Komentar berhasil dikirim!", "success");
+        } catch (e: any) {
+            console.error(e);
+            showToast(
+                e.response?.data?.message || "Gagal mengirim komentar",
                 "error",
             );
         } finally {
@@ -627,12 +1253,48 @@ export default function NoteDetailPage() {
     };
 
     const handleVerifyPakar = async () => {
-        if (
-            !window.confirm(
-                "Verifikasi catatan ini sebagai materi yang akurat?",
-            )
-        )
-            return;
+        setConfirmConfig({
+            isOpen: true,
+            title: "Verifikasi Catatan",
+            description: "Verifikasi catatan ini sebagai materi yang akurat dan berkualitas?",
+            onConfirm: () => processVerifyPakar()
+        });
+    };
+
+    const handleUnverify = async () => {
+        setConfirmConfig({
+            isOpen: true,
+            title: "Batal Verifikasi?",
+            description: "Yakin ingin membatalkan status verifikasi pada catatan ini?",
+            variant: "danger",
+            onConfirm: () => processUnverify()
+        });
+    };
+
+    const processUnverify = async () => {
+        try {
+            const token =
+                localStorage.getItem("bayu-token") ||
+                sessionStorage.getItem("bayu-token");
+            await axios.put(
+                `/api/v1/posts/${id}/unverify`,
+                {},
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                },
+            );
+
+            setNote((prev: any) => ({ ...prev, isValidated: false, is_verified: false }));
+            showToast("Verifikasi berhasil dicabut!", "success");
+        } catch (e: any) {
+            showToast(
+                e.response?.data?.message || "Gagal mencabut verifikasi.",
+                "error",
+            );
+        }
+    };
+
+    const processVerifyPakar = async () => {
         try {
             const token =
                 localStorage.getItem("bayu-token") ||
@@ -653,19 +1315,7 @@ export default function NoteDetailPage() {
         }
     };
 
-    // Get Recommendations
-    const allOtherNotes = mockNotes.filter((n) => n.id !== note.id);
-    const recommendedNotes = allOtherNotes
-        .filter((n) => n.mataPelajaran === note.mataPelajaran)
-        .slice(0, 2);
-    if (recommendedNotes.length < 2) {
-        const remaining = allOtherNotes.filter(
-            (n) => !recommendedNotes.includes(n),
-        );
-        recommendedNotes.push(
-            ...remaining.slice(0, 2 - recommendedNotes.length),
-        );
-    }
+    // Recommendations already fetched via useEffect above
 
     // Here, we simulate HTML content if the mock data just provides plain text.
     // We'll wrap it in standard paragraph tags to work with Quill's styling.
@@ -686,7 +1336,7 @@ export default function NoteDetailPage() {
         .notion-reader .ql-editor p { margin-bottom: 1.25em; }
         .notion-reader .ql-editor p:has(img) { display: flex; justify-content: center; text-align: center; width: 100%; }
         .notion-reader .ql-editor b, .notion-reader .ql-editor strong { font-weight: 700; color: #111827; }
-        .notion-reader .ql-editor img { border-radius: 12px; margin: 2em auto; display: block; max-width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #f3f4f6; }
+        .notion-reader .ql-editor img { border-radius: 12px; margin: 2em auto; display: block; max-width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
         .notion-reader .ql-editor ul, .notion-reader .ql-editor ol { padding-left: 1.5em; margin-bottom: 1.25em; }
         .notion-reader .ql-editor li { margin-bottom: 0.5em; }
         .notion-reader .ql-editor blockquote { border-left: 4px solid #4f46e5; padding-left: 1em; margin: 1.5em 0; font-style: italic; color: #4b5563; background: #fafafa; padding: 1em 1em 1em 1.5em; border-radius: 0 8px 8px 0; }
@@ -714,12 +1364,23 @@ export default function NoteDetailPage() {
 
                     <div className="flex items-center gap-1">
                         {(user?.role === "pakar" || user?.role === "admin") && (
-                            <button
-                                onClick={handleVerifyPakar}
-                                className="hidden sm:flex mr-2 items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 rounded-lg text-[13px] font-['Lexend_Deca'] font-bold transition-colors"
-                            >
-                                <ShieldCheck className="w-4 h-4" /> Verifikasi
-                            </button>
+                            <>
+                                {note.is_verified || note.isValidated ? (
+                                    <button
+                                        onClick={handleUnverify}
+                                        className="hidden sm:flex mr-2 items-center gap-1.5 px-3 py-1.5 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 rounded-lg text-[13px] font-['Lexend_Deca'] font-bold transition-colors"
+                                    >
+                                        <X className="w-4 h-4" /> Batal Verifikasi
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={handleVerifyPakar}
+                                        className="hidden sm:flex mr-2 items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 rounded-lg text-[13px] font-['Lexend_Deca'] font-bold transition-colors"
+                                    >
+                                        <ShieldCheck className="w-4 h-4" /> Verifikasi
+                                    </button>
+                                )}
+                            </>
                         )}
                         <button
                             onClick={handleShare}
@@ -816,11 +1477,13 @@ export default function NoteDetailPage() {
                                         }
                                         className={`text-sm font-['Manrope'] font-bold transition-colors ${
                                             isFollowing
-                                                ? "text-gray-600 hover:text-gray-900"
+                                                ? "text-gray-500 hover:text-gray-800"
+                                                : isFollowPending
+                                                ? "text-amber-600 hover:text-amber-700"
                                                 : "text-emerald-600 hover:text-emerald-700"
                                         }`}
                                     >
-                                        • {isFollowing ? "Mengikuti" : "Ikuti"}
+                                        • {isFollowing ? "Mengikuti" : isFollowPending ? "Menunggu" : "Ikuti"}
                                     </button>
                                 )}
                             {!isAuthenticated && (
@@ -882,15 +1545,7 @@ export default function NoteDetailPage() {
                         </button>
 
                         <button
-                            onClick={() => {
-                                const commentsSection =
-                                    document.getElementById("comments-section");
-                                if (commentsSection) {
-                                    commentsSection.scrollIntoView({
-                                        behavior: "smooth",
-                                    });
-                                }
-                            }}
+                            onClick={() => setIsCommentDrawerOpen(true)}
                             className="flex items-center gap-2 text-[15px] font-['Manrope'] font-bold text-gray-600 dark:text-gray-400 hover:text-gray-950 dark:hover:text-gray-100 transition-colors group"
                         >
                             <MessageCircle
@@ -900,13 +1555,16 @@ export default function NoteDetailPage() {
                             <span>{comments.length}</span>
                         </button>
 
-                        <div className="flex items-center gap-2 text-[15px] font-['Manrope'] font-bold text-gray-600 ml-2 hidden sm:flex">
-                            <Eye
-                                className="w-5 h-5 text-gray-600"
+                        <button
+                            onClick={handleDownloadPDF}
+                            className="p-2 hover:bg-gray-50 dark:hover:bg-white/10 rounded-full transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-950 dark:hover:text-gray-100 ml-1 group"
+                            title="Download Catatan"
+                        >
+                            <Download
+                                className="w-[18px] h-[18px] transition-transform"
                                 strokeWidth={2.5}
                             />
-                            <span>{note.views}</span>
-                        </div>
+                        </button>
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -920,16 +1578,62 @@ export default function NoteDetailPage() {
                 </div>
 
                 {/* Editor Content Area (Borderless Notion / Substack View) */}
-                <div
-                    id="area-materi-pdf"
-                    className="notion-reader ql-snow mb-16 note-content-container"
-                >
+                <div className="mb-16 relative">
                     <div
-                        className="ql-editor"
-                        dangerouslySetInnerHTML={{ __html: processedContent }}
-                    />
+                        id="area-materi-pdf"
+                        className={`notion-reader ql-snow note-content-container relative ${note.is_restricted ? "max-h-[750px] overflow-hidden select-none" : ""}`}
+                    >
+                        <div
+                            className="ql-editor"
+                            dangerouslySetInnerHTML={{ __html: processedContent }}
+                        />
+
+                        {note.is_restricted && (
+                            <div className="absolute inset-x-0 top-[250px] bottom-0 z-10 pointer-events-none flex flex-col">
+                                {/* Smooth transition into the blur */}
+                                <div className="h-24 bg-gradient-to-b from-transparent to-white/60 dark:to-[#13111C]/60 backdrop-blur-[2px]"></div>
+                                {/* Full blur for the rest of the content */}
+                                <div className="flex-1 bg-white/60 dark:bg-[#13111C]/60 backdrop-blur-[8px]"></div>
+                                {/* Bottom fade out */}
+                                <div className="h-48 bg-gradient-to-t from-white dark:from-[#13111C] via-white/90 dark:via-[#13111C]/90 to-transparent backdrop-blur-[8px]"></div>
+                            </div>
+                        )}
+                    </div>
+
+                    {note.is_restricted && (
+                        <div className="px-4 -mt-64 relative z-20">
+                            <div className="bg-white/90 dark:bg-[#1C1A29]/90 backdrop-blur-xl p-8 md:p-10 rounded-3xl border border-slate-200/80 dark:border-white/10 text-center max-w-2xl mx-auto shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] dark:shadow-none animate-in fade-in zoom-in-95 duration-700">
+                                <div className="w-16 h-16 bg-white dark:bg-[#1C1A29] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-slate-100 dark:border-white/5">
+                                    <LockIcon className="w-7 h-7 text-slate-700 dark:text-slate-300" />
+                                </div>
+                                
+                                <h4 className="font-['Lexend_Deca'] font-bold text-2xl text-slate-900 dark:text-slate-100 mb-3 tracking-tight">
+                                    Akses Dibatasi
+                                </h4>
+                                
+                                <p className="font-['Manrope'] text-[15px] text-slate-600 dark:text-slate-400 mb-8 font-medium leading-relaxed max-w-md mx-auto">
+                                    Penulis membatasi akses penuh untuk catatan ini. Ikuti <b>@{author?.username}</b> untuk membuka keseluruhan materi.
+                                </p>
+                                
+                                <button 
+                                    onClick={() => requireAuth(handleFollowToggle)}
+                                    disabled={isFollowPending}
+                                    className={`px-8 py-3.5 rounded-xl font-bold font-['Manrope'] text-[14px] transition-all flex items-center justify-center gap-2 mx-auto ${
+                                        isFollowPending 
+                                        ? "bg-slate-200 dark:bg-white/10 text-slate-500 cursor-not-allowed" 
+                                        : "bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 shadow-md hover:shadow-lg"
+                                    }`}
+                                >
+                                    {isFollowPending ? (
+                                        <>Permintaan Terkirim</>
+                                    ) : (
+                                        <>Minta Akses (Ikuti)</>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
-                {/* 🔥 KURUNG TUTUPNYA PINDAH KE SINI YA DER! 🔥 */}
 
                 {/* PREMIUM DOWNLOAD CARD */}
                 <div className="mt-16 mb-16 bg-gradient-to-br from-indigo-50/40 via-white to-white dark:from-[#1C1A29] dark:via-[#1C1A29] dark:to-[#1C1A29] rounded-[40px] p-10 md:p-14 text-center border border-indigo-50 dark:border-white/5 shadow-[0_10px_30px_rgba(0,0,0,0.02)] dark:shadow-none relative overflow-hidden group">
@@ -938,7 +1642,7 @@ export default function NoteDetailPage() {
 
                     <div className="relative z-10">
                         <div className="w-16 h-16 bg-white dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-md dark:shadow-none border border-indigo-50 dark:border-white/10 transition-transform">
-                            <DownloadCloud className="w-8 h-8 text-indigo-600 dark:text-primary" />
+                            <Download className="w-8 h-8 text-indigo-600 dark:text-primary" />
                         </div>
                         <h3 className="font-['Lexend_Deca'] font-extrabold text-2xl text-slate-900 dark:text-slate-100 mb-4">
                             Materi Lengkap dalam Genggaman
@@ -980,8 +1684,16 @@ export default function NoteDetailPage() {
                                     <div className="relative">
                                         <MessageSquare className="absolute -left-2 -top-2 w-10 h-10 text-emerald-100 dark:text-emerald-900/30 opacity-50" />
                                         <p className="font-['Manrope'] text-slate-600 dark:text-slate-400 text-[16px] leading-relaxed max-w-xl font-bold italic relative z-10 pl-2">
-                                            "{note.verify_reason}"
+                                            "{note.verify_reason.length > 150 ? note.verify_reason.substring(0, 150) + "..." : note.verify_reason}"
                                         </p>
+                                        {note.verify_reason.length > 150 && (
+                                            <button 
+                                                onClick={() => setIsReviewModalOpen(true)}
+                                                className="mt-3 ml-2 text-[13px] font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors uppercase tracking-widest font-['Lexend_Deca']"
+                                            >
+                                                Baca Selengkapnya &rarr;
+                                            </button>
+                                        )}
                                     </div>
                                 ) : (
                                     <p className="font-['Manrope'] text-slate-400 dark:text-slate-500 text-[15px] leading-relaxed max-w-lg font-medium italic">
@@ -1000,7 +1712,7 @@ export default function NoteDetailPage() {
                             <div className="relative">
                                 <AvatarImage
                                     src={validator.avatar}
-                                    alt={validator.name}
+                                    alt={validator.name || validator.username}
                                     size={64}
                                     className="rounded-2xl border-4 border-white dark:border-[#1C1A29] shadow-lg dark:shadow-none"
                                 />
@@ -1016,7 +1728,7 @@ export default function NoteDetailPage() {
                                     Verified By
                                 </p>
                                 <p className="text-[18px] font-['Lexend_Deca'] font-black text-slate-900 dark:text-slate-100 group-hover/pakar:text-indigo-600 dark:group-hover/pakar:text-primary transition-colors leading-none mb-2">
-                                    {validator.name}
+                                    {validator.name || validator.username}
                                 </p>
                                 <div className="flex items-center gap-2 mt-3 bg-white px-3 py-1.5 rounded-xl border border-slate-100 w-fit shadow-sm">
                                     <div className="flex items-center gap-1">
@@ -1047,6 +1759,31 @@ export default function NoteDetailPage() {
                             </div>
                         </Link>
                     </div>
+                    
+                )}
+
+                {/* Expert Review Modal */}
+                {isReviewModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
+                        <div className="bg-white dark:bg-[#1C1A29] rounded-[32px] w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl relative border border-slate-100 dark:border-white/5 animate-in zoom-in-95 duration-300">
+                            <button onClick={() => setIsReviewModalOpen(false)} className="absolute top-6 right-6 p-2 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors z-10">
+                                <X className="w-5 h-5" />
+                            </button>
+                            <div className="p-8 md:p-10 border-b border-emerald-50 dark:border-white/5 bg-emerald-50/50 dark:bg-emerald-500/5 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none -translate-y-1/2 translate-x-1/4" />
+                                <div className="w-16 h-16 bg-emerald-500 rounded-[20px] flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/25 relative z-10">
+                                    <ShieldCheck className="w-8 h-8 text-white" />
+                                </div>
+                                <h3 className="font-['Lexend_Deca'] font-extrabold text-2xl text-slate-900 dark:text-slate-100 mb-2 relative z-10">Review Pakar Lengkap</h3>
+                                <p className="text-slate-500 dark:text-slate-400 font-medium font-['Manrope'] relative z-10">Catatan kurasi dari {validator?.name}</p>
+                            </div>
+                            <div className="p-8 md:p-10 overflow-y-auto">
+                                <p className="font-['Manrope'] text-slate-700 dark:text-slate-300 text-[16px] leading-relaxed font-medium whitespace-pre-wrap italic">
+                                    "{note.verify_reason}"
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 )}
 
                 {/* Separator */}
@@ -1061,7 +1798,7 @@ export default function NoteDetailPage() {
                         <Link to={`/profile/${author._id || author.id}`}>
                             <AvatarImage
                                 src={author.avatar}
-                                alt={author.name}
+                                alt={author.name || author.username}
                                 size={96}
                                 className="sm:!w-28 sm:!h-28 !w-24 !h-24 shrink-0 border border-gray-100 dark:border-white/10 hover:ring-4 hover:ring-primary/20 transition-all cursor-pointer"
                             />
@@ -1072,9 +1809,14 @@ export default function NoteDetailPage() {
                                     to={`/profile/${author._id || author.id}`}
                                     className="hover:text-primary transition-colors"
                                 >
-                                    <h3 className="font-['Lexend_Deca'] font-extrabold text-[28px] text-gray-900 dark:text-gray-100 hover:text-primary transition-colors">
-                                        {author.name}
+                                    <h3 className="font-['Lexend_Deca'] font-extrabold text-[28px] text-gray-900 dark:text-gray-100 hover:text-primary transition-colors leading-none">
+                                        {author.name || author.username}
                                     </h3>
+                                    {author.username && (
+                                        <p className="font-['Manrope'] text-[15px] text-gray-500 dark:text-gray-400 font-bold -mt-1">
+                                            @{author.username}
+                                        </p>
+                                    )}
                                 </Link>
                                 {author.role === "pakar" && (
                                     <div
@@ -1086,9 +1828,11 @@ export default function NoteDetailPage() {
                                 )}
                             </div>
                             <p className="font-['Manrope'] text-[16px] text-gray-800 dark:text-gray-300 mb-6 max-w-xl leading-relaxed font-medium">
-                                {author.role === "pakar"
-                                    ? "Pakar Pendidikan tersertifikasi yang aktif membimbing siswa dan meninjau ribuan catatan."
-                                    : `Siswa ${author.jenjang} yang aktif membagikan catatannya. Mari belajar bersama dan raih prestasi!`}
+                                {author.bio ? author.bio : (
+                                    author.role === "pakar"
+                                        ? "Pakar Pendidikan tersertifikasi yang aktif membimbing siswa dan meninjau ribuan catatan."
+                                        : `Pelajar yang aktif membagikan catatannya. Mari belajar bersama dan raih prestasi!`
+                                )}
                             </p>
 
                             <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -1108,96 +1852,369 @@ export default function NoteDetailPage() {
                                 </button>
 
                                 <div className="flex items-center gap-6 mt-4 sm:mt-0 font-['Manrope'] text-[15px] text-gray-600 dark:text-gray-400 font-bold">
-                                    <div className="flex items-center gap-1.5">
-                                        <span className="font-extrabold text-gray-900 dark:text-gray-100">
+                                    <Link 
+                                        to={`/profile/${author._id || author.id}?open=followers`}
+                                        className="flex items-center gap-1.5 hover:text-primary transition-colors group"
+                                    >
+                                        <span className="font-extrabold text-gray-900 dark:text-gray-100 group-hover:text-primary transition-colors">
                                             {followerCount}
                                         </span>{" "}
                                         Pengikut
-                                    </div>
-                                    <div className="flex items-center gap-1.5">
-                                        <span className="font-extrabold text-gray-900 dark:text-gray-100">
+                                    </Link>
+                                    <Link 
+                                        to={`/profile/${author._id || author.id}?tab=catatan`}
+                                        className="flex items-center gap-1.5 hover:text-primary transition-colors group"
+                                    >
+                                        <span className="font-extrabold text-gray-900 dark:text-gray-100 group-hover:text-primary transition-colors">
                                             {author.totalCatatan || 0}
                                         </span>{" "}
                                         Tulisan
-                                    </div>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Comments Section (Bottom placement) */}
-                <div
-                    id="comments-section"
-                    className="mb-24 pt-10 border-t border-gray-100 dark:border-white/5"
-                >
-                    <h4 className="font-['Lexend_Deca'] font-bold text-2xl text-gray-900 dark:text-gray-100 mb-8">
-                        Diskusi ({comments.length})
-                    </h4>
+                {/* Inline Comments Preview */}
+                <div className="mt-12 border-t border-gray-100 dark:border-white/5 pt-12">
+                    <div className="flex items-center justify-between mb-8">
+                        <h4 className="font-['Lexend_Deca'] font-extrabold text-2xl text-gray-900 dark:text-gray-100 flex items-center gap-3">
+                            <MessageSquare className="w-6 h-6 text-primary" strokeWidth={2.5} />
+                            Diskusi ({comments.length})
+                        </h4>
+                        <button
+                            onClick={() => setIsCommentDrawerOpen(true)}
+                            className="font-['Manrope'] font-bold text-[14px] text-primary hover:text-indigo-600 transition-colors"
+                        >
+                            Tulis Komentar
+                        </button>
+                    </div>
 
-                    {/* Comment Input */}
-                    {isAuthenticated ? (
-                        <div className="mb-12 flex gap-4 bg-white dark:bg-[#1C1A29] p-2 rounded-3xl border border-gray-100 dark:border-white/5 shadow-[0_2px_10px_rgba(0,0,0,0.02)] dark:shadow-none">
-                            <div className="hidden sm:block m-4">
-                                <AvatarImage
-                                    src={user?.avatar}
-                                    alt="Your avatar"
-                                    size={40}
-                                    className="border border-gray-200"
-                                />
-                            </div>
-                            <div className="flex-1 p-2">
-                                <textarea
-                                    dir="ltr"
-                                    value={commentText}
-                                    onChange={(e) =>
-                                        setCommentText(e.target.value)
-                                    }
-                                    placeholder="Apa pendapatmu? Jadilah yang pertama memulai diskusi."
-                                    className="w-full px-2 py-2 bg-transparent border-none font-['Manrope'] text-base text-left resize-none focus:outline-none focus:ring-0 min-h-[80px] text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-500 font-medium"
-                                />
-                                <div className="flex justify-between items-center mt-2 border-t border-gray-50 pt-3">
-                                    <p className="text-xs text-gray-600 dark:text-gray-400 font-['Manrope'] px-2 font-bold">
-                                        Format dengan Markdown didukung (segera)
-                                    </p>
-                                    <button
-                                        onClick={handleComment}
-                                        disabled={
-                                            !commentText.trim() ||
-                                            isSubmittingComment
-                                        }
-                                        className="px-6 py-2 bg-primary text-white rounded-xl text-sm font-['Lexend_Deca'] font-semibold disabled:opacity-40 transition-all shadow-sm"
-                                    >
-                                        {isSubmittingComment
-                                            ? "Mengirim..."
-                                            : "Kirim"}
-                                    </button>
+                    <div className="space-y-6">
+                        {/* Native Comment Input Preview */}
+                        {isAuthenticated ? (
+                            <div className="flex gap-4 mb-8">
+                                <AvatarImage src={user?.avatar} alt={user?.name || user?.username || "User"} size={40} className="rounded-full flex-shrink-0 object-cover" />
+                                <div className="flex-1">
+                                    <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-4 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                                        {quoteContext && (
+                                            <div className="mb-3 pl-3 border-l-4 border-indigo-300 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-500/10 p-2 rounded-r-lg flex justify-between items-start gap-2">
+                                                <p className="text-[12px] font-['Manrope'] text-gray-600 dark:text-gray-400 italic line-clamp-2 font-medium">
+                                                    "{quoteContext}"
+                                                </p>
+                                                <button
+                                                    onClick={() => setQuoteContext("")}
+                                                    className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors shrink-0"
+                                                >
+                                                    <X size={12} />
+                                                </button>
+                                            </div>
+                                        )}
+                                        <textarea
+                                            value={commentText}
+                                            onChange={(e) => setCommentText(e.target.value)}
+                                            placeholder="Tulis diskusi atau pertanyaan..."
+                                            className="w-full bg-transparent border-none text-[14px] font-['Manrope'] text-left focus:outline-none focus:ring-0 resize-none min-h-[60px] text-gray-900 dark:text-gray-100 placeholder:text-gray-500 font-medium"
+                                        />
+                                        <div className="flex justify-end items-center mt-2 border-t border-gray-100 dark:border-white/5 pt-2">
+                                            <button
+                                                onClick={handleComment}
+                                                disabled={!commentText.trim() || isSubmittingComment}
+                                                className="px-5 py-2 bg-primary hover:bg-indigo-600 disabled:opacity-50 text-white rounded-xl text-[13px] font-['Lexend_Deca'] font-bold transition-all shadow-sm flex items-center gap-1.5"
+                                            >
+                                                {isSubmittingComment ? "Mengirim" : "Kirim"} <Send className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ) : (
-                        <div className="mb-12 bg-gray-50 dark:bg-white/5 rounded-3xl p-8 border border-gray-100 dark:border-white/5 flex flex-col items-center justify-center text-center">
-                            <MessageCircle
-                                className="w-8 h-8 text-gray-600 mb-3"
-                                strokeWidth={2.5}
-                            />
-                            <h5 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 dark:text-gray-100 mb-1">
-                                Punya Pertanyaan?
-                            </h5>
-                            <p className="font-['Manrope'] text-[15px] text-gray-700 dark:text-gray-300 mb-6 font-medium">
-                                Gabung dengan diskusi dan tanyakan langsung ke
-                                penulis atau pakar.
-                            </p>
-                            <button
-                                onClick={() => openAuthModal("login")}
-                                className="px-8 py-3 bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 text-gray-800 dark:text-gray-200 rounded-xl text-[15px] font-['Lexend_Deca'] font-bold shadow-sm hover:border-gray-300 dark:hover:border-white/20 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors flex items-center justify-center gap-2"
-                            >
-                                <LogIn className="w-5 h-5" /> Masuk untuk
-                                Berkomentar
-                            </button>
-                        </div>
-                    )}
+                        ) : (
+                            <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-6 text-center mb-8">
+                                <p className="font-['Manrope'] text-[14px] text-gray-600 dark:text-gray-400 mb-4 font-medium">Masuk untuk ikut berdiskusi dengan penulis dan pembaca lain.</p>
+                                <button onClick={() => { setIsCommentDrawerOpen(false); openAuthModal("login"); }} className="px-6 py-2.5 bg-white dark:bg-[#252336] border border-gray-200 dark:border-white/10 text-gray-800 dark:text-gray-200 rounded-xl text-[13px] font-['Lexend_Deca'] font-bold shadow-sm hover:border-gray-300 dark:hover:border-white/20 transition-colors inline-flex items-center gap-2">
+                                    <LogIn className="w-4 h-4" /> Masuk Sekarang
+                                </button>
+                            </div>
+                        )}
 
+                        {comments.length === 0 ? (
+                            <div className="text-center py-4">
+                                <p className="font-['Manrope'] text-[14px] text-gray-500 font-medium italic">
+                                    Belum ada diskusi untuk catatan ini.
+                                </p>
+                            </div>
+                        ) : (
+                            <>
+                                {comments
+                                    .filter((c) => !c.parent_comment_id)
+                                    .slice(0, 2)
+                                    .map((comment) => {
+                                        const cAuth = comment.user || getUserById(comment.userId);
+                                        if (!cAuth) return null;
+                                        const rootId = comment.id || comment._id;
+                                        const childReplies = comments.filter((c) => c.parent_comment_id === rootId);
+                                        const isLiked = comment.is_liked_by_me;
+                                        
+                                        return (
+                                            <div key={rootId} className="flex gap-4">
+                                                <AvatarImage src={cAuth.avatar} alt={cAuth.name} size={40} className="rounded-full flex-shrink-0 object-cover" />
+                                                <div className="flex-1">
+                                                    <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl rounded-tl-none">
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <h5 className="font-['Lexend_Deca'] font-bold text-[14px] text-gray-900 dark:text-gray-100">{cAuth.name || cAuth.username || "Anonim"}</h5>
+                                                            <span className="font-['Manrope'] text-[11px] font-bold text-gray-500 dark:text-gray-500">{comment.created_at ? new Date(comment.created_at).toLocaleDateString("id-ID") : "Baru saja"}</span>
+                                                        </div>
+                                                        {comment.quote_context && (
+                                                            <div className="mb-2 pl-3 border-l-[3px] border-indigo-200 dark:border-indigo-500/50 bg-indigo-50/50 dark:bg-indigo-500/10 py-1.5 pr-2 rounded-r-lg">
+                                                                <p className="font-['Manrope'] text-[13px] text-gray-600 dark:text-gray-400 italic line-clamp-1 font-medium">
+                                                                    "{comment.quote_context}"
+                                                                </p>
+                                                            </div>
+                                                        )}
+                                                        {editingCommentId === rootId ? (
+                                                            <div className="mt-2 mb-4">
+                                                                <textarea
+                                                                    value={editingCommentText}
+                                                                    onChange={(e) => setEditingCommentText(e.target.value)}
+                                                                    className="w-full p-3 bg-gray-50 dark:bg-white/5 border border-primary/30 dark:border-primary/50 rounded-xl font-['Manrope'] text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none min-h-[80px]"
+                                                                    autoFocus
+                                                                />
+                                                                <div className="flex gap-2 mt-2">
+                                                                    <button
+                                                                        onClick={() => handleUpdateComment(rootId)}
+                                                                        className="px-4 py-1.5 bg-primary text-white text-[11px] font-['Lexend_Deca'] font-bold rounded-lg hover:bg-indigo-600 transition-colors"
+                                                                    >
+                                                                        Simpan
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            setEditingCommentId(null);
+                                                                            setEditingCommentText("");
+                                                                        }}
+                                                                        className="px-4 py-1.5 bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 text-[11px] font-['Lexend_Deca'] font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-white/20 transition-colors"
+                                                                    >
+                                                                        Batal
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <p className="font-['Manrope'] text-[14px] text-gray-700 dark:text-gray-300 leading-relaxed font-medium mb-3">
+                                                                {comment.content}
+                                                            </p>
+                                                        )}
+                                                        <div className="flex items-center gap-4 text-[11px] font-['Lexend_Deca'] font-black text-gray-500 dark:text-gray-400">
+                                                            <button 
+                                                                onClick={() => handleLikeComment(rootId)}
+                                                                className={`flex items-center gap-1.5 transition-colors ${isLiked ? 'text-red-500' : 'hover:text-red-500'}`}
+                                                            >
+                                                                <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-red-500' : ''}`} strokeWidth={3} />
+                                                                {comment.likes_count > 0 ? comment.likes_count : 'Suka'}
+                                                            </button>
+                                                             <button 
+                                                                 onClick={() => {
+                                                                     setIsCommentDrawerOpen(true);
+                                                                     setReplyingTo({ id: rootId, name: cAuth.name || cAuth.username || "Anonim" });
+                                                                 }}
+                                                                 className="flex items-center gap-1.5 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                                                             >
+                                                                 <MessageSquare className="w-3.5 h-3.5" strokeWidth={3} />
+                                                                 Balas
+                                                             </button>
+                                                             
+                                                             <div className="relative">
+                                                                <button 
+                                                                    onClick={() => setActiveCommentMenu(activeCommentMenu === `inline-${rootId}` ? null : `inline-${rootId}`)}
+                                                                    className="flex items-center gap-1.5 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-all focus:outline-none"
+                                                                >
+                                                                    <MoreHorizontal className="w-4 h-4" strokeWidth={3} />
+                                                                </button>
+                                                                {activeCommentMenu === `inline-${rootId}` && (
+                                                                    <div className="absolute left-0 top-full mt-1 w-40 bg-white dark:bg-[#1C1A29] rounded-xl shadow-xl dark:shadow-2xl border border-gray-100 dark:border-white/5 py-1 z-50 animate-in fade-in zoom-in-95 duration-200">
+                                                                        {user && ((user._id && cAuth._id && String(user._id) === String(cAuth._id)) || (user.id && cAuth.id && String(user.id) === String(cAuth.id))) ? (
+                                                                            <>
+                                                                                <button
+                                                                                    onClick={() => {
+                                                                                        setActiveCommentMenu(null);
+                                                                                        setEditingCommentId(rootId);
+                                                                                        setEditingCommentText(comment.content);
+                                                                                    }}
+                                                                                    className="w-full text-left px-4 py-2.5 text-xs font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2.5 transition-colors"
+                                                                                >
+                                                                                    <Pencil className="w-3.5 h-3.5" />
+                                                                                    Edit Komentar
+                                                                                </button>
+                                                                                <button
+                                                                                    onClick={() => {
+                                                                                        setActiveCommentMenu(null);
+                                                                                        handleDeleteComment(rootId);
+                                                                                    }}
+                                                                                    className="w-full text-left px-4 py-2.5 text-xs font-['Manrope'] font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 flex items-center gap-2.5 transition-colors"
+                                                                                >
+                                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                                    Hapus
+                                                                                </button>
+                                                                            </>
+                                                                        ) : (
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    setActiveCommentMenu(null);
+                                                                                    setReportTarget({ type: "comment", id: rootId });
+                                                                                    setShowReportModal(true);
+                                                                                }}
+                                                                                className="w-full text-left px-4 py-2.5 text-xs font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400 transition-colors flex items-center gap-2.5"
+                                                                            >
+                                                                                <Flag className="w-3.5 h-3.5" />
+                                                                                Laporkan
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+                                                             </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Inline Replies Preview */}
+                                                    {childReplies.length > 0 && (
+                                                        <div className="mt-3 space-y-3">
+                                                            {childReplies.slice(0, 2).map((reply) => {
+                                                                const rAuth = reply.user || getUserById(reply.userId);
+                                                                if (!rAuth) return null;
+                                                                return (
+                                                                    <div key={reply.id || reply._id} className="flex gap-3">
+                                                                        <AvatarImage src={rAuth.avatar} alt={rAuth.name} size={28} className="rounded-full flex-shrink-0 object-cover" />
+                                                                        <div className="flex-1 bg-gray-50/50 dark:bg-white/5 p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-white/5">
+                                                                            <div className="flex justify-between items-start mb-1">
+                                                                                <h5 className="font-['Lexend_Deca'] font-bold text-[12px] text-gray-900 dark:text-gray-100">{rAuth.name || rAuth.username || "Anonim"}</h5>
+                                                                                <span className="font-['Manrope'] text-[10px] font-bold text-gray-500 dark:text-gray-500">{reply.created_at ? new Date(reply.created_at).toLocaleDateString("id-ID") : "Baru saja"}</span>
+                                                                            </div>
+                                                                            <p className="font-['Manrope'] text-[13px] text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
+                                                                                {reply.content}
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                            {childReplies.length > 2 && (
+                                                                <button
+                                                                    onClick={() => setIsCommentDrawerOpen(true)}
+                                                                    className="ml-[40px] text-[12px] font-['Manrope'] font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors flex items-center gap-1"
+                                                                >
+                                                                    Lihat {childReplies.length - 2} balasan lainnya...
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                {comments.length > 2 && (
+                                    <button
+                                        onClick={() => setIsCommentDrawerOpen(true)}
+                                        className="w-full py-4 mt-2 bg-gray-50 hover:bg-gray-100 dark:bg-white/5 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400 rounded-xl font-['Lexend_Deca'] font-bold text-[14px] transition-colors border border-dashed border-gray-200 dark:border-white/10 flex items-center justify-center gap-2"
+                                    >
+                                        Muat Lebih Banyak ({comments.length - 2})
+                                    </button>
+                                )}
+                            </>
+                        )}
+                    </div>
+                </div>
+
+                {/* More From Author Section */}
+                {moreFromAuthor.length > 0 && (
+                    <div className="mt-8 border-t border-gray-100 dark:border-white/5 pt-16">
+                        <div className="flex items-center justify-between mb-8">
+                            <h4 className="font-['Lexend_Deca'] font-extrabold text-2xl text-gray-900 dark:text-gray-100">
+                                Lainnya dari <span className="text-primary">{author.name || author.username}</span>
+                            </h4>
+                            {moreFromAuthor.length >= 4 && (
+                                <Link to={`/profile/${author.id || author._id}`} className="text-sm font-bold text-primary hover:text-indigo-700 transition-colors">
+                                    Lihat Semua
+                                </Link>
+                            )}
+                        </div>
+                        <div className="grid grid-cols-1 gap-4">
+                            {moreFromAuthor.map((recNote: any) => {
+                                const mappedNote = {
+                                    ...recNote,
+                                    id: recNote.id || recNote._id,
+                                    title: recNote.title,
+                                    description: recNote.content ? recNote.content.replace(/<[^>]*>?/gm, "").substring(0, 150) + "..." : "Tidak ada deskripsi",
+                                    thumbnail: recNote.thumbnail || null,
+                                    author: recNote.user ? { ...recNote.user, avatar: recNote.user.avatar || null } : { name: "Anonim", avatar: null },
+                                    mataPelajaran: recNote.mapel || "Lainnya",
+                                    jenjang: recNote.jenjang || "-",
+                                    kelas: recNote.kelas || "-",
+                                    semester: recNote.semester || "-",
+                                    createdAt: recNote.created_at,
+                                    likes: recNote.likes_count || 0,
+                                    comments: recNote.comments_count || 0,
+                                    views: recNote.views || 0,
+                                    rating: recNote.rating || 5,
+                                };
+                                return <NoteCard key={mappedNote.id} note={mappedNote} />;
+                            })}
+                        </div>
+                    </div>
+                )}
+
+                {/* Recommended Notes Section */}
+                <div className={`mt-8 mb-24 ${moreFromAuthor.length > 0 ? 'border-t border-gray-100 dark:border-white/5 pt-16' : 'border-t border-gray-100 dark:border-white/5 pt-16'}`}>
+                    <h4 className="font-['Lexend_Deca'] font-extrabold text-2xl text-gray-900 dark:text-gray-100 mb-8">
+                        Rekomendasi <span className="text-primary">Catatan Lainnya</span>
+                    </h4>
+                    <div className="grid grid-cols-1 gap-4">
+                        {recommendedNotes.map((recNote: any) => {
+                            const mappedNote = {
+                                ...recNote,
+                                id: recNote.id || recNote._id,
+                                title: recNote.title,
+                                description: recNote.content ? recNote.content.replace(/<[^>]*>?/gm, "").substring(0, 150) + "..." : "Tidak ada deskripsi",
+                                thumbnail: recNote.thumbnail || null,
+                                author: recNote.user ? { ...recNote.user, avatar: recNote.user.avatar || null } : { name: "Anonim", avatar: null },
+                                mataPelajaran: recNote.mapel || "Lainnya",
+                                jenjang: recNote.jenjang || "-",
+                                kelas: recNote.kelas || "-",
+                                semester: recNote.semester || "-",
+                                createdAt: recNote.created_at,
+                                likes: recNote.likes_count || 0,
+                                comments: recNote.comments_count || 0,
+                                views: recNote.views || 0,
+                                rating: recNote.rating || 5,
+                            };
+                            return <NoteCard key={mappedNote.id} note={mappedNote} />;
+                        })}
+                    </div>
+                </div>
+            </article>
+
+        </div>
+    );
+
+
+    const modals = (
+        <>
+            {/* Side Drawer Komentar (Side Panel) */}
+            <div
+                className={`fixed top-[130px] h-[calc(100vh-140px)] right-4 z-[60] w-[calc(100%-32px)] sm:w-[480px] bg-white dark:bg-[#1C1A29] border border-gray-100 dark:border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-[32px] transform transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${
+                    isCommentDrawerOpen ? "translate-x-0" : "translate-x-[110%]"
+                } flex flex-col`}
+            >
+                <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-white/5">
+                    <h4 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">
+                        Diskusi ({comments.length})
+                    </h4>
+                    <button
+                        onClick={() => setIsCommentDrawerOpen(false)}
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors"
+                    >
+                        <X className="w-6 h-6 text-gray-500" />
+                    </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar">
                     {/* Comments List */}
                     <div className="space-y-6 sm:space-y-8">
                         {comments.length === 0 ? (
@@ -1235,7 +2252,7 @@ export default function NoteDetailPage() {
                                             <div
                                                 key={`comment-el-${cid}`}
                                                 id={`comment-${cid}`}
-                                                className={`flex gap-3 sm:gap-4 p-2 rounded-2xl ${isReply ? "bg-gray-50/50" : ""}`}
+                                                className={`flex gap-3 sm:gap-4 p-2 rounded-2xl ${isReply ? "bg-gray-50/50 dark:bg-white/5" : ""}`}
                                             >
                                                 <Link
                                                     to={`/profile/${cAuth._id || cAuth.id}`}
@@ -1247,14 +2264,14 @@ export default function NoteDetailPage() {
                                                         className="shrink-0 border border-gray-100 dark:border-white/10 hover:ring-2 hover:ring-primary/20 transition-all sm:w-12 sm:h-12 w-10 h-10"
                                                     />
                                                 </Link>
-                                                <div className="flex-1 w-full">
+                                                <div className="flex-1 w-full min-w-0">
                                                     <div className="flex items-center justify-between mb-1">
-                                                        <div className="flex items-center gap-2 cursor-pointer">
+                                                        <div className="flex flex-wrap items-center gap-1.5 cursor-pointer">
                                                             <Link
                                                                 to={`/profile/${cAuth._id || cAuth.id}`}
                                                                 className="font-['Manrope'] font-bold text-base text-gray-900 dark:text-gray-100 hover:underline hover:text-primary transition-colors"
                                                             >
-                                                                {cAuth.name}
+                                                                {cAuth.name || cAuth.username || "Anonim"}
                                                             </Link>
                                                             {cAuth.role ===
                                                                 "pakar" && (
@@ -1265,17 +2282,12 @@ export default function NoteDetailPage() {
                                                                     }
                                                                 />
                                                             )}
-                                                            <span className="text-xs font-['Manrope'] text-gray-600 font-bold">
-                                                                {new Date(
+                                                            <span className="text-[11px] font-['Manrope'] text-gray-500 font-bold mt-0.5 whitespace-nowrap">
+                                                                • {new Date(
                                                                     comment.created_at ||
-                                                                        comment.createdAt ||
-                                                                        new Date(),
+                                                                        Date.now(),
                                                                 ).toLocaleDateString(
                                                                     "id-ID",
-                                                                    {
-                                                                        day: "numeric",
-                                                                        month: "short",
-                                                                    },
                                                                 )}
                                                             </span>
                                                         </div>
@@ -1285,161 +2297,107 @@ export default function NoteDetailPage() {
                                                                 onClick={() =>
                                                                     setActiveCommentMenu(
                                                                         activeCommentMenu ===
-                                                                            cid
+                                                                            `panel-${cid}`
                                                                             ? null
-                                                                            : cid,
+                                                                            : `panel-${cid}`,
                                                                     )
                                                                 }
-                                                                className="p-1 rounded-full hover:bg-gray-100 text-gray-600 hover:text-gray-950 transition-colors"
+                                                                className="p-1.5 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                                                             >
-                                                                <MoreHorizontal
-                                                                    className="w-5 h-5"
-                                                                    strokeWidth={
-                                                                        2.5
-                                                                    }
-                                                                />
+                                                                <MoreHorizontal className="w-4 h-4" />
                                                             </button>
-
                                                             {activeCommentMenu ===
-                                                                cid && (
-                                                                <>
-                                                                    <div
-                                                                        className="fixed inset-0 z-40"
-                                                                        onClick={() =>
-                                                                            setActiveCommentMenu(
-                                                                                null,
-                                                                            )
-                                                                        }
-                                                                    />
-                                                                    <div className="absolute right-0 mt-2 w-44 bg-white dark:bg-[#1C1A29] rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 dark:border-white/5 py-2 z-50 overflow-hidden transform origin-top-right transition-all animate-in fade-in zoom-in-95 duration-200">
-                                                                        {isAuthenticated &&
-                                                                            user &&
-                                                                            (user._id ||
-                                                                                user.id) ===
-                                                                                (cAuth._id ||
-                                                                                    cAuth.id ||
-                                                                                    comment.user_id) && (
-                                                                                <button
-                                                                                    onClick={() => {
-                                                                                        setActiveCommentMenu(
-                                                                                            null,
-                                                                                        );
-                                                                                        handleDeleteComment(
-                                                                                            cid,
-                                                                                        );
-                                                                                    }}
-                                                                                    className="w-full text-left px-4 py-2.5 text-[14px] font-['Manrope'] font-medium text-red-600 hover:bg-red-50 flex items-center gap-2"
-                                                                                >
-                                                                                    <Trash2 className="w-4 h-4" />{" "}
-                                                                                    Hapus
-                                                                                    Komentar
-                                                                                </button>
-                                                                            )}
+                                                                `panel-${cid}` && (
+                                                                <div className="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-[#1C1A29] rounded-xl shadow-xl dark:shadow-2xl border border-gray-100 dark:border-white/5 py-1 z-10 animate-in fade-in zoom-in-95 duration-200">
+                                                                    {user && ((user._id && cAuth._id && String(user._id) === String(cAuth._id)) || (user.id && cAuth.id && String(user.id) === String(cAuth.id))) ? (
+                                                                        <>
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    setActiveCommentMenu(null);
+                                                                                    setEditingCommentId(cid);
+                                                                                    setEditingCommentText(comment.content);
+                                                                                }}
+                                                                                className="w-full text-left px-4 py-2.5 text-xs font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2.5 transition-colors"
+                                                                            >
+                                                                                <Pencil className="w-3.5 h-3.5" />
+                                                                                Edit Komentar
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    setActiveCommentMenu(null);
+                                                                                    handleDeleteComment(cid);
+                                                                                }}
+                                                                                className="w-full text-left px-4 py-2.5 text-xs font-['Manrope'] font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 flex items-center gap-2.5 transition-colors"
+                                                                            >
+                                                                                <Trash2 className="w-3.5 h-3.5" />
+                                                                                Hapus
+                                                                            </button>
+                                                                        </>
+                                                                    ) : (
                                                                         <button
-                                                                            onClick={() =>
-                                                                                requireAuth(
-                                                                                    () => {
-                                                                                        setActiveCommentMenu(
-                                                                                            null,
-                                                                                        );
-                                                                                        setReportTarget(
-                                                                                            {
-                                                                                                type: "comment",
-                                                                                                id: cid,
-                                                                                            },
-                                                                                        );
-                                                                                        setShowReportModal(
-                                                                                            true,
-                                                                                        );
-                                                                                    },
-                                                                                )
-                                                                            }
-                                                                            className="w-full text-left px-4 py-2.5 text-[14px] font-['Manrope'] font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
+                                                                            onClick={() => {
+                                                                                setActiveCommentMenu(null);
+                                                                                setReportTarget({ type: "comment", id: cid });
+                                                                                setShowReportModal(true);
+                                                                            }}
+                                                                            className="w-full text-left px-4 py-2.5 text-xs font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400 transition-colors flex items-center gap-2.5"
                                                                         >
-                                                                            <Flag className="w-4 h-4 text-gray-500" />{" "}
+                                                                            <Flag className="w-3.5 h-3.5" />
                                                                             Laporkan
                                                                         </button>
-                                                                    </div>
-                                                                </>
+                                                                    )}
+                                                                </div>
                                                             )}
                                                         </div>
                                                     </div>
-                                                    <p className="font-['Manrope'] text-[15.5px] text-gray-900 dark:text-gray-200 leading-relaxed mb-2.5 break-words font-medium">
-                                                        {comment.content ||
-                                                            comment.text}
-                                                    </p>
-                                                    <div className="flex items-center gap-4 text-[13px] font-['Manrope'] font-extrabold text-gray-600">
+                                                    {/* Render Quote Context jika ada */}
+                                                    {comment.quote_context && (
+                                                        <div className="mb-2 pl-3 border-l-[3px] border-indigo-200 dark:border-indigo-500/50 bg-indigo-50/50 dark:bg-indigo-500/10 py-1.5 pr-2 rounded-r-lg">
+                                                            <p className="font-['Manrope'] text-[13px] text-gray-600 dark:text-gray-400 italic line-clamp-2 font-medium">
+                                                                "{comment.quote_context}"
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                    {editingCommentId === cid ? (
+                                                        <div className="mt-2 mb-4">
+                                                            <textarea
+                                                                value={editingCommentText}
+                                                                onChange={(e) => setEditingCommentText(e.target.value)}
+                                                                className="w-full p-3 bg-gray-50 dark:bg-white/5 border border-primary/30 dark:border-primary/50 rounded-xl font-['Manrope'] text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none min-h-[80px]"
+                                                                autoFocus
+                                                            />
+                                                            <div className="flex gap-2 mt-2">
+                                                                <button
+                                                                    onClick={() => handleUpdateComment(cid)}
+                                                                    className="px-4 py-1.5 bg-primary text-white text-[11px] font-['Lexend_Deca'] font-bold rounded-lg hover:bg-indigo-600 transition-colors"
+                                                                >
+                                                                    Simpan
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setEditingCommentId(null);
+                                                                        setEditingCommentText("");
+                                                                    }}
+                                                                    className="px-4 py-1.5 bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 text-[11px] font-['Lexend_Deca'] font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-white/20 transition-colors"
+                                                                >
+                                                                    Batal
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="font-['Manrope'] text-[15px] text-gray-800 dark:text-gray-300 mb-3 leading-relaxed font-medium">
+                                                            {comment.content}
+                                                        </p>
+                                                    )}
+                                                    <div className="flex items-center gap-4 text-xs font-['Manrope'] font-extrabold text-gray-500 dark:text-gray-400">
                                                         <button
-                                                            onClick={async () => {
-                                                                if (
-                                                                    !isAuthenticated
-                                                                )
-                                                                    return openAuthModal(
-                                                                        "login",
-                                                                    );
-                                                                try {
-                                                                    const tk =
-                                                                        localStorage.getItem(
-                                                                            "bayu-token",
-                                                                        ) ||
-                                                                        sessionStorage.getItem(
-                                                                            "bayu-token",
-                                                                        );
-
-                                                                    const res =
-                                                                        await axios.post(
-                                                                            `/api/v1/comments/${cid}/like`,
-                                                                            {},
-                                                                            {
-                                                                                headers:
-                                                                                    {
-                                                                                        Authorization: `Bearer ${tk}`,
-                                                                                    },
-                                                                            },
-                                                                        );
-
-                                                                    setComments(
-                                                                        (
-                                                                            prev,
-                                                                        ) =>
-                                                                            prev.map(
-                                                                                (
-                                                                                    c,
-                                                                                ) =>
-                                                                                    (c._id ||
-                                                                                        c.id) ===
-                                                                                    cid
-                                                                                        ? {
-                                                                                              ...c,
-                                                                                              likes_count:
-                                                                                                  res
-                                                                                                      .data
-                                                                                                      .likes_count,
-                                                                                              is_liked:
-                                                                                                  res
-                                                                                                      .data
-                                                                                                      .is_liked,
-                                                                                              is_liked_by_me:
-                                                                                                  res
-                                                                                                      .data
-                                                                                                      .is_liked,
-                                                                                          }
-                                                                                        : c,
-                                                                            ),
-                                                                    );
-                                                                } catch (e) {
-                                                                    console.error(
-                                                                        e,
-                                                                    );
-                                                                    showToast(
-                                                                        "Gagal memproses like komentar",
-                                                                        "error",
-                                                                    );
-                                                                }
-                                                            }}
+                                                            onClick={() => handleLikeComment(cid)}
                                                             className={`flex items-center gap-1.5 transition-colors ${isLiked ? "text-red-500" : "hover:text-red-500"}`}
                                                         >
                                                             <Heart
+                                                                strokeWidth={
+                                                                    2.5
+                                                                }
                                                                 className={`w-3.5 h-3.5 ${isLiked ? "fill-red-500" : ""}`}
                                                             />{" "}
                                                             Suka{" "}
@@ -1448,93 +2406,22 @@ export default function NoteDetailPage() {
                                                         </button>
                                                         <button
                                                             onClick={() => {
-                                                                if (
-                                                                    !isAuthenticated
-                                                                )
-                                                                    return openAuthModal(
-                                                                        "login",
-                                                                    );
+                                                                if (!isAuthenticated) return openAuthModal("login");
                                                                 setReplyingTo({
                                                                     id: cid,
                                                                     name: cAuth.name,
                                                                 });
-                                                                setReplyText(
-                                                                    "",
-                                                                );
+                                                                setReplyText("");
                                                             }}
-                                                            className="flex items-center gap-1.5 hover:text-gray-950 transition-colors"
+                                                            className="flex items-center gap-1.5 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
                                                         >
                                                             <MessageCircle
                                                                 className="w-3.5 h-3.5"
-                                                                strokeWidth={
-                                                                    2.5
-                                                                }
+                                                                strokeWidth={2.5}
                                                             />{" "}
                                                             Balas
                                                         </button>
                                                     </div>
-
-                                                    {replyingTo?.id === cid && (
-                                                        <div className="mt-4 bg-white dark:bg-[#1C1A29] p-2.5 sm:p-3 rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none flex flex-col sm:flex-row gap-2 sm:gap-3 items-end sm:items-center">
-                                                            <textarea
-                                                                dir="ltr"
-                                                                autoFocus
-                                                                placeholder={`Membalas ${cAuth.name}...`}
-                                                                value={
-                                                                    replyText
-                                                                }
-                                                                onChange={(e) =>
-                                                                    setReplyText(
-                                                                        e.target
-                                                                            .value,
-                                                                    )
-                                                                }
-                                                                className="w-full sm:flex-1 bg-transparent border-none text-[15px] font-['Manrope'] text-left focus:outline-none focus:ring-0 resize-none h-[40px] pt-2 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 font-bold"
-                                                                onKeyDown={async (
-                                                                    e,
-                                                                ) => {
-                                                                    if (
-                                                                        e.key ===
-                                                                            "Enter" &&
-                                                                        !e.shiftKey
-                                                                    ) {
-                                                                        e.preventDefault();
-                                                                        await handleReplySubmit(
-                                                                            rootId,
-                                                                        ); // reply matches the parent root
-                                                                    }
-                                                                }}
-                                                            />
-                                                            <div className="flex gap-2 shrink-0 w-full sm:w-auto justify-end border-t sm:border-t-0 border-gray-50 pt-2 sm:pt-0">
-                                                                <button
-                                                                    onClick={() =>
-                                                                        setReplyingTo(
-                                                                            null,
-                                                                        )
-                                                                    }
-                                                                    className="px-3 py-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 text-xs font-['Lexend_Deca'] font-extrabold bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 rounded-lg transition-colors"
-                                                                >
-                                                                    Batal
-                                                                </button>
-                                                                <button
-                                                                    onClick={() =>
-                                                                        handleReplySubmit(
-                                                                            rootId,
-                                                                        )
-                                                                    }
-                                                                    disabled={
-                                                                        !replyText.trim() ||
-                                                                        isSubmittingReply
-                                                                    }
-                                                                    className="px-4 py-1.5 text-white bg-primary hover:bg-indigo-600 disabled:opacity-50 text-xs font-['Lexend_Deca'] font-bold rounded-lg transition-colors shadow-sm"
-                                                                >
-                                                                    {isSubmittingReply
-                                                                        ? "Menyimpan..."
-                                                                        : "Kirim"}
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    )}
                                                 </div>
                                             </div>
                                         );
@@ -1542,12 +2429,12 @@ export default function NoteDetailPage() {
 
                                     return (
                                         <div
-                                            key={rootId}
-                                            className="flex flex-col gap-3 sm:gap-4"
+                                            key={`root-comment-${rootId}`}
+                                            className="flex flex-col gap-4"
                                         >
                                             {renderCommentItem(root, false)}
                                             {childReplies.length > 0 && (
-                                                <div className="ml-10 sm:ml-12 flex flex-col gap-3 sm:gap-4 border-l-[3px] border-gray-100 dark:border-white/10 pl-4 sm:pl-5">
+                                                <div className="ml-10 sm:ml-12 flex flex-col gap-3 sm:gap-4 border-l-[3px] border-gray-100 dark:border-white/10 pl-4 sm:pl-5 bg-gray-50/20 dark:bg-white/[0.02] rounded-r-2xl py-2">
                                                     {childReplies.map((child) =>
                                                         renderCommentItem(
                                                             child,
@@ -1563,92 +2450,175 @@ export default function NoteDetailPage() {
                     </div>
                 </div>
 
-                {/* Recommended Notes Section */}
-                <div className="mt-8 mb-24 border-t border-gray-100 dark:border-white/5 pt-16">
-                    <h4 className="font-['Lexend_Deca'] font-bold text-2xl text-gray-900 dark:text-gray-100 mb-8 border-l-4 border-primary pl-4">
-                        Rekomendasi Catatan Lainnya
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {recommendedNotes.map((recNote) => {
-                            const recAuthor = getUserById(recNote.authorId);
-                            return (
-                                <Link
-                                    key={recNote.id}
-                                    to={`/notes/${recNote.id}`}
-                                    className="group bg-white dark:bg-[#1C1A29] rounded-3xl border border-gray-100 dark:border-white/5 overflow-hidden shadow-sm dark:shadow-none hover:shadow-xl transition-all hover:-translate-y-1 flex flex-col"
-                                >
-                                    <div className="relative h-48 overflow-hidden bg-gray-50 dark:bg-[#252336]">
-                                        {recNote.thumbnail ? (
-                                            <img
-                                                src={recNote.thumbnail}
-                                                alt={recNote.title}
-                                                className="w-full h-full object-cover transition-transform duration-500"
-                                            />
-                                        ) : (
-                                            <DefaultThumbnail 
-                                                className="w-full h-full" 
-                                                subject={recNote.mataPelajaran}
-                                                title={recNote.title}
-                                            />
-                                        )}
-                                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-xl text-[11px] uppercase tracking-wide font-['Lexend_Deca'] font-bold text-primary shadow-sm z-10">
-                                            {recNote.mataPelajaran}
-                                        </div>
-                                        {/* Floating read time badge */}
-                                        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-gray-800 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1 z-10">
-                                            <Clock className="w-3.5 h-3.5" />{" "}
-                                            {recNote.read_time || 1}m
-                                        </div>
-                                    </div>
-                                    <div className="p-6 flex flex-col flex-1">
-                                        <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100 mb-3 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
-                                            {recNote.title}
-                                        </h3>
-                                        <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
-                                            <div className="flex items-center gap-3">
-                                                <AvatarImage
-                                                    src={recAuthor?.avatar}
-                                                    alt={recAuthor?.name}
-                                                    size={32}
-                                                    className="border border-gray-100"
-                                                />
-                                                <span className="text-sm font-['Manrope'] font-extrabold text-gray-800">
-                                                    {recAuthor?.name}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center gap-3 text-sm text-gray-600 font-bold">
-                                                <div className="flex items-center gap-1.5">
-                                                    <Heart
-                                                        className="w-4 h-4 text-gray-500"
-                                                        strokeWidth={2.5}
-                                                    />{" "}
-                                                    {recNote.likes}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Link>
-                            );
-                        })}
+                <div className="p-6 border-t border-gray-100 dark:border-white/5 bg-gray-50/30 dark:bg-white/[0.02]">
+                    {replyingTo && (
+                        <div className="flex items-center justify-between mb-3 px-4 py-2 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl border border-indigo-100 dark:border-indigo-500/20">
+                            <p className="text-xs font-['Manrope'] font-bold text-indigo-600 dark:text-indigo-400">
+                                Membalas{" "}
+                                <span className="font-extrabold">
+                                    @{replyingTo.name}
+                                </span>
+                            </p>
+                            <button
+                                onClick={() => setReplyingTo(null)}
+                                className="p-1 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 rounded-full transition-colors"
+                            >
+                                <X className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+                            </button>
+                        </div>
+                    )}
+                    {quoteContext && (
+                        <div className="mb-3 pl-3 border-l-4 border-indigo-300 dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-500/10 p-2.5 rounded-r-xl flex justify-between items-start gap-2">
+                            <p className="text-[13px] font-['Manrope'] text-gray-700 dark:text-gray-300 italic line-clamp-3 font-medium">
+                                "{quoteContext}"
+                            </p>
+                            <button
+                                onClick={() => setQuoteContext("")}
+                                className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors shrink-0 mt-0.5"
+                            >
+                                <X size={14} />
+                            </button>
+                        </div>
+                    )}
+                    <div className="flex gap-3">
+                        <textarea
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value)}
+                            placeholder={
+                                replyingTo
+                                    ? `Tulis balasan...`
+                                    : "Tulis diskusi..."
+                            }
+                            className="flex-1 px-4 py-3 bg-white dark:bg-[#13111C] border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none h-[48px] custom-scrollbar text-gray-900 dark:text-gray-100"
+                        />
+                        <button
+                            onClick={() => {
+                                if (replyingTo) {
+                                    handleReplySubmit(replyingTo.id);
+                                } else {
+                                    // Jika bukan membalas, kita gunakan handleComment tapi dengan replyText
+                                    // Atau ubah handleComment agar lebih fleksibel.
+                                    // Untuk sekarang, kita panggil handleReplySubmit tanpa parentId jika didukung API
+                                    // atau sesuaikan state-nya.
+                                    // Ternyata di side panel dia pakai replyText, maka kita buat handleCommentFromPanel
+                                    handleCommentFromPanel();
+                                }
+                            }}
+                            disabled={
+                                !replyText.trim() || isSubmittingReply
+                            }
+                            className="w-12 h-12 bg-primary hover:bg-indigo-700 disabled:opacity-50 text-white rounded-2xl flex items-center justify-center transition-all shadow-lg shadow-primary/20 shrink-0"
+                        >
+                            {isSubmittingReply ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                                <Send className="w-5 h-5" />
+                            )}
+                        </button>
                     </div>
                 </div>
-            </article>
+            </div>
+
+            {/* Floating Highlight Menu */}
+            {showHighlightMenu && selectionRect && (
+                <div
+                    className="fixed z-[70] transform -translate-x-1/2 -translate-y-full bg-white dark:bg-[#2D2B3F] text-gray-900 dark:text-white px-3 py-2 rounded-xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] dark:shadow-2xl flex items-center gap-1 border border-gray-100 dark:border-white/10 backdrop-blur-md"
+                    style={{
+                        top: selectionRect.top - 15,
+                        left: selectionRect.left + selectionRect.width / 2,
+                    }}
+                >
+                    {!showColorPicker ? (
+                        <>
+                            <button
+                                onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    handleRespondClick();
+                                }}
+                                className="flex items-center gap-1.5 px-2 py-1 text-[13px] font-['Lexend_Deca'] font-bold hover:text-primary transition-colors hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg"
+                            >
+                                <MessageSquare className="w-3.5 h-3.5" strokeWidth={2.5} />
+                                RESPOND
+                            </button>
+                            <div className="w-[1px] h-4 bg-gray-200 dark:bg-white/10 mx-1"></div>
+                            <button
+                                onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    setShowColorPicker(true);
+                                }}
+                                className="flex items-center gap-1.5 px-2 py-1 text-[13px] font-['Lexend_Deca'] font-bold hover:text-amber-500 transition-colors hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg"
+                            >
+                                <Highlighter className="w-4 h-4" strokeWidth={2.5} />
+                                HIGHLIGHT
+                            </button>
+                        </>
+                    ) : (
+                        <div className="flex items-center gap-1.5 px-1 animate-in fade-in zoom-in-95 duration-200">
+                            {Object.entries(HIGHLIGHT_COLORS).map(([color, val]) => (
+                                <button
+                                    key={color}
+                                    onMouseDown={(e) => {
+                                        e.preventDefault();
+                                        handleHighlightClick(color);
+                                    }}
+                                    className="w-6 h-6 rounded-full hover:scale-110 transition-transform flex items-center justify-center border border-black/5 dark:border-white/10"
+                                    style={{ backgroundColor: val.bg }}
+                                    title={val.label}
+                                />
+                            ))}
+                            <div className="w-[1px] h-4 bg-gray-200 dark:bg-white/10 mx-1"></div>
+                            <button
+                                onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    setShowColorPicker(false);
+                                }}
+                                className="p-1 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                    )}
+                    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 border-6 border-transparent border-t-white dark:border-t-[#2D2B3F]"></div>
+                </div>
+            )}
+
+            {/* Highlight Tooltip (Delete) */}
+            {activeHighlightId && (
+                (() => {
+                    const mark = document.querySelector(`mark[data-highlight-id="${activeHighlightId}"]`);
+                    if (!mark) return null;
+                    const rect = mark.getBoundingClientRect();
+                    return (
+                        <div
+                            className="highlight-tooltip fixed z-[60] transform -translate-x-1/2 -translate-y-full bg-white dark:bg-[#2D2B3F] px-2 py-1.5 rounded-lg shadow-xl border border-gray-100 dark:border-white/10 flex gap-2"
+                            style={{
+                                top: rect.top - 10,
+                                left: rect.left + rect.width / 2,
+                            }}
+                        >
+                            <button
+                                onClick={() => handleDeleteHighlight(activeHighlightId)}
+                                className="flex items-center gap-1.5 px-2 py-1 text-xs font-['Lexend_Deca'] font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-md transition-colors"
+                            >
+                                <Trash2 className="w-3 h-3" /> Hapus Highlight
+                            </button>
+                            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-white dark:border-t-[#2D2B3F]"></div>
+                        </div>
+                    );
+                })()
+            )}
 
             {/* Scroll to Top Button */}
             {showScrollTop && (
                 <button
                     onClick={scrollToTop}
-                    className="fixed bottom-8 right-8 z-50 p-4 bg-gray-900 text-white rounded-full shadow-xl hover:bg-black hover:-translate-y-1 transition-all duration-300 flex items-center justify-center group"
+                    className="fixed bottom-8 right-8 z-[70] p-4 bg-gray-900 text-white rounded-full shadow-xl hover:bg-black hover:-translate-y-1 transition-all duration-300 flex items-center justify-center group"
                     aria-label="Kembali ke atas"
                 >
                     <ArrowUp className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
                 </button>
             )}
-        </div>
-    );
 
-    const modals = (
-        <>
             <AuthModal
                 isOpen={showAuthModal}
                 onClose={() => setShowAuthModal(false)}
@@ -1672,7 +2642,7 @@ export default function NoteDetailPage() {
                             </p>
                         </div>
 
-                        <div className="p-6 pt-6 overflow-y-auto custom-scrollbar">
+                        <div className="p-6 pt-6 overflow-y-auto custom-scrollbar flex-1">
                             {/* Social Preview Card - Enhanced Contrast */}
                             <div className="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-2xl p-3 mb-6 flex gap-3 text-left">
                                 <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 shadow-sm border border-white">
@@ -1906,9 +2876,9 @@ export default function NoteDetailPage() {
             {/* Modal Report */}
             {showReportModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-300">
-                    <div className="bg-white dark:bg-[#1C1A29] rounded-[32px] w-full max-w-md shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] overflow-hidden border border-white dark:border-white/5 transform animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+                    <div className="bg-white dark:bg-[#1C1A29] rounded-[32px] w-full max-w-md max-h-[90vh] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] overflow-hidden border border-white dark:border-white/5 transform animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 flex flex-col">
                         {/* Header with Icon */}
-                        <div className="bg-rose-50 dark:bg-rose-500/10 p-8 pb-5 text-center border-b border-rose-100/50 dark:border-white/5">
+                        <div className="bg-rose-50 dark:bg-rose-500/10 p-8 pb-5 text-center border-b border-rose-100/50 dark:border-white/5 shrink-0">
                             <div className="w-16 h-16 bg-white dark:bg-[#252336] text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm dark:shadow-none border border-rose-200/30 dark:border-rose-500/20">
                                 <Flag className="w-8 h-8" strokeWidth={2.5} />
                             </div>
@@ -1918,55 +2888,32 @@ export default function NoteDetailPage() {
                                     ? "Catatan"
                                     : "Komentar"}
                             </h3>
-                            <p className="font-['Manrope'] text-[14px] text-gray-600 font-bold px-6">
+                            <p className="font-['Manrope'] text-[14px] text-gray-600 dark:text-gray-400 font-bold px-6">
                                 Bantu kami menjaga ekosistem Ba-Yu tetap
                                 edukatif, aman, dan nyaman.
                             </p>
                         </div>
 
-                        <div className="p-8 pt-7">
+                        <div className="p-8 pt-7 overflow-y-auto custom-scrollbar flex-1">
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block font-['Manrope'] text-[12px] font-extrabold text-gray-500 uppercase tracking-[0.1em] mb-2 ml-1">
+                                    <label className="block font-['Manrope'] text-[12px] font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-[0.1em] mb-2 ml-1">
                                         Alasan Utama
                                     </label>
                                     <div className="relative group">
-                                        <select
+                                        <CustomSelect
                                             value={reportReason}
-                                            onChange={(e) =>
-                                                setReportReason(e.target.value)
-                                            }
-                                            className="w-full px-5 py-4 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] font-bold text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-4 focus:ring-rose-500/5 focus:border-rose-400 focus:bg-white dark:focus:bg-white/10 transition-all appearance-none cursor-pointer hover:border-gray-300 dark:hover:border-white/20"
-                                        >
-                                            <option value="">
-                                                Pilih alasan pelaporan...
-                                            </option>
-                                            <option value="Spam">
-                                                Spam pemasaran / Iklan
-                                                mengganggu
-                                            </option>
-                                            <option value="Informasi Palsu">
-                                                Informasi keliru / Misinformasi
-                                                materi
-                                            </option>
-                                            <option value="Kata Kasar">
-                                                Ujaran kebencian / Kata-kata
-                                                kasar
-                                            </option>
-                                            <option value="Pelecehan">
-                                                Pelecehan / Intimidasi terhadap
-                                                user
-                                            </option>
-                                            <option value="Hak Cipta">
-                                                Pelanggaran Hak Cipta / Plagiasi
-                                            </option>
-                                            <option value="Lainnya">
-                                                Alasan lainnya...
-                                            </option>
-                                        </select>
-                                        <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 group-focus-within:text-rose-400 transition-colors">
-                                            <ArrowUp className="w-4 h-4 rotate-180" />
-                                        </div>
+                                            onChange={(val) => setReportReason(val as string)}
+                                            options={[
+                                                { value: "", label: "Pilih alasan pelaporan..." },
+                                                { value: "Spam", label: "Spam pemasaran / Iklan mengganggu" },
+                                                { value: "Informasi Palsu", label: "Informasi keliru / Misinformasi materi" },
+                                                { value: "Kata Kasar", label: "Ujaran kebencian / Kata-kata kasar" },
+                                                { value: "Pelecehan", label: "Pelecehan / Intimidasi terhadap user" },
+                                                { value: "Hak Cipta", label: "Pelanggaran Hak Cipta / Plagiasi" },
+                                                { value: "Lainnya", label: "Alasan lainnya..." },
+                                            ]}
+                                        />
                                     </div>
                                 </div>
 
@@ -1980,12 +2927,12 @@ export default function NoteDetailPage() {
                                             setReportDescription(e.target.value)
                                         }
                                         placeholder="Jelaskan secara singkat mengapa Anda melaporkan konten ini..."
-                                        className="w-full px-5 py-4 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[14.5px] focus:outline-none focus:ring-4 focus:ring-rose-500/5 focus:border-rose-400 focus:bg-white dark:focus:bg-white/10 transition-all resize-none h-32 text-gray-800 dark:text-gray-200 placeholder:text-gray-400 font-bold hover:border-gray-300 dark:hover:border-white/20"
+                                        className="w-full px-5 py-4 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[14.5px] focus:outline-none focus:ring-4 focus:ring-rose-500/5 focus:border-rose-400 focus:bg-white dark:focus:bg-white/10 transition-all resize-none h-32 text-gray-800 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 font-bold hover:border-gray-300 dark:hover:border-white/20"
                                     ></textarea>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4 mt-10">
+                            <div className="grid grid-cols-2 gap-4 mt-10 shrink-0">
                                 <button
                                     onClick={() => setShowReportModal(false)}
                                     className="px-6 py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-all active:scale-95"
@@ -2013,15 +2960,26 @@ export default function NoteDetailPage() {
                     </div>
                 </div>
             )}
+            
+            <ConfirmDialog
+                isOpen={confirmConfig.isOpen}
+                onOpenChange={(open) => setConfirmConfig(prev => ({ ...prev, isOpen: open }))}
+                title={confirmConfig.title}
+                description={confirmConfig.description}
+                variant={confirmConfig.variant}
+                onConfirm={confirmConfig.onConfirm}
+            />
         </>
     );
 
     if (isAuthenticated) {
         return (
-            <MobileLayout showBottomNav={false}>
-                {noteContent}
+            <>
+                <MobileLayout showBottomNav={false}>
+                    {noteContent}
+                </MobileLayout>
                 {modals}
-            </MobileLayout>
+            </>
         );
     }
 

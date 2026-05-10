@@ -13,6 +13,7 @@ use App\Http\Controllers\TopicController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BookmarkController;
+use App\Http\Controllers\HighlightController;
 
 Route::post('/v1/register', [AuthController::class, 'register']);
 Route::post('/v1/login', [AuthController::class, 'login']);
@@ -23,6 +24,7 @@ Route::get('/v1/posts', [PostController::class, 'index']);
 Route::get('/v1/posts/{id}', [PostController::class, 'show']);
 
 // Public User Endpoints
+Route::get('/v1/users/search', [UserController::class, 'search']);
 Route::get('/v1/users/{id}', [UserController::class, 'show']);
 Route::get('/v1/users/{id}/activities', [UserController::class, 'activities']);
 Route::get('/v1/experts', [UserController::class, 'experts']);
@@ -46,11 +48,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Verify
     Route::put('/v1/posts/{id}/verify', [PostController::class, 'verify']);
+    Route::put('/v1/posts/{id}/unverify', [PostController::class, 'unverify']);
     Route::put('/v1/posts/{id}/reject', [PostController::class, 'reject']);
     Route::post('/v1/posts/{id}/ajukan', [PostController::class, 'ajukanVerifikasi']);
     
     // Comments
     Route::post('/v1/posts/{postId}/comments', [CommentController::class, 'store']);
+    Route::put('/v1/comments/{id}', [CommentController::class, 'update']);
     Route::delete('/v1/comments/{id}', [CommentController::class, 'destroy']);
 
     // Likes
@@ -61,6 +65,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/v1/posts/{postId}/bookmark', [BookmarkController::class, 'toggle']);
     Route::get('/v1/bookmarks', [BookmarkController::class, 'index']);
 
+    // Highlights (personal)
+    Route::get('/v1/posts/{postId}/highlights', [HighlightController::class, 'index']);
+    Route::post('/v1/posts/{postId}/highlights', [HighlightController::class, 'store']);
+    Route::delete('/v1/highlights/{id}', [HighlightController::class, 'destroy']);
+
     // Reports
     Route::post('/v1/posts/{postId}/report', [ReportController::class, 'store']);
     Route::post('/v1/comments/{commentId}/report', [ReportController::class, 'storeCommentReport']);
@@ -69,10 +78,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Users
     Route::get('/v1/users', [UserController::class, 'index']);
+    Route::put('/v1/users/{id}/demote', [UserController::class, 'demote']);
     Route::put('/v1/users/me', [UserController::class, 'updateProfile']);
+    Route::put('/v1/users/privacy', [UserController::class, 'updatePrivacy']);
+    Route::post('/v1/users/deactivate', [UserController::class, 'deactivate']);
 
     //Following
-    Route::post('/users/{id}/follow', [\App\Http\Controllers\FollowController::class, 'toggleFollow']);
+    Route::post('/v1/users/{id}/follow', [\App\Http\Controllers\FollowController::class, 'toggleFollow']);
+    Route::get('/v1/follow-requests', [\App\Http\Controllers\FollowController::class, 'getPendingRequests']);
+    Route::post('/v1/follow-requests/{id}/respond', [\App\Http\Controllers\FollowController::class, 'respondToRequest']);
 
     // Categories & Topics
     Route::get('/v1/categories', [CategoryController::class, 'index']);

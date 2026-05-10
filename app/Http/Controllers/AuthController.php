@@ -14,6 +14,7 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'username' => 'required|string|max:50|unique:App\Models\User,username|regex:/^[a-zA-Z0-9_]+$/',
             'email' => 'required|string|email|max:255|unique:App\Models\User,email',
             'password' => 'required|string|min:6',
             'jenjang_pendidikan' => 'required|string',
@@ -25,6 +26,7 @@ class AuthController extends Controller
 
         $user = User::create([
             'name' => $request->name,
+            'username' => strtolower($request->username),
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'jenjang_pendidikan' => $request->jenjang_pendidikan,
@@ -43,21 +45,28 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'login' => 'required|string',
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $loginField = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $user = User::where($loginField, $request->login)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
-                'message' => 'Email atau Password salah '
+                'message' => 'Kredensial atau Password salah '
             ], 401);
+        }
+
+        if ($user->is_dormant) {
+            $user->is_dormant = false;
+            $user->deactivated_at = null;
+            $user->save();
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        // TIMPA BAGIAN INI AJA YAA:
         return response()->json([
             'message' => 'Login sukses!',
             'access_token' => $token,
@@ -65,13 +74,17 @@ class AuthController extends Controller
             'user' => [
                 'id' => $user->_id,
                 'name' => $user->name,
+                'username' => $user->username,
                 'email' => $user->email,
                 'role' => $user->role,
                 'jenjang_pendidikan' => $user->jenjang_pendidikan,
                 'avatar' => $user->avatar,
                 'bio' => $user->bio,      
                 'school' => $user->school,
-                'phone' => $user->phone
+                'phone' => $user->phone,
+                'is_private' => $user->is_private ?? false,
+                'is_dormant' => $user->is_dormant,
+                'username_updated_at' => $user->username_updated_at,
             ]
         ]);
     }

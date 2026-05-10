@@ -90,7 +90,7 @@ export default function PublicExplorePage() {
                 localStorage.getItem("bayu-token") ||
                 sessionStorage.getItem("bayu-token");
             const response = await axios.post(
-                `/api/users/${expertId}/follow`,
+                `/api/v1/users/${expertId}/follow`,
                 {},
                 {
                     headers: { Authorization: `Bearer ${token}` },

@@ -72,7 +72,7 @@ export function MobileLayout({ children, showBottomNav = true }: MobileLayoutPro
         {/* SIDEBAR (Only desktop/tablet) */}
         <div 
           style={{ width: isSidebarExpanded ? '240px' : '0px', minWidth: isSidebarExpanded ? '240px' : '0px' }}
-          className={`hidden md:flex flex-col flex-shrink-0 z-40 bg-white dark:bg-[#13111C] border-r transition-all duration-300 ease-in-out h-full overflow-hidden ${isSidebarExpanded ? 'border-slate-100/100 dark:border-white/5 opacity-100' : 'border-slate-100/0 opacity-0'}`}
+          className={`hidden md:flex flex-col flex-shrink-0 z-20 bg-white dark:bg-[#13111C] border-r transition-all duration-300 ease-in-out h-full overflow-hidden ${isSidebarExpanded ? 'border-slate-100/100 dark:border-white/5 opacity-100' : 'border-slate-100/0 opacity-0'}`}
         >
            <SideNav 
              isExpanded={isSidebarExpanded} 
@@ -81,7 +81,7 @@ export function MobileLayout({ children, showBottomNav = true }: MobileLayoutPro
         </div>
 
         {/* MAIN SCROLLABLE CONTENT */}
-        <div id="main-scroll-container" className="flex-1 overflow-y-auto overflow-x-hidden w-full h-full bg-white dark:bg-[#13111C] scroll-smooth relative">
+        <div id="main-scroll-container" className="flex-1 overflow-y-auto overflow-x-hidden w-full h-full bg-white dark:bg-[#13111C] scroll-smooth relative z-30">
            <div className={`transition-all duration-300 ${isMobile && showBottomNav ? 'pb-24' : 'pb-10 pt-2'}`}>
               {children}
            </div>

@@ -1,10 +1,10 @@
 export const HIGHLIGHT_COLORS = [
-  { id: 'yellow', color: '#fef08a', label: 'Kuning' },
-  { id: 'green', color: '#bbf7d0', label: 'Hijau' },
-  { id: 'blue', color: '#bfdbfe', label: 'Biru' },
-  { id: 'pink', color: '#fbcfe8', label: 'Merah Muda' },
-  { id: 'orange', color: '#fed7aa', label: 'Oranye' },
-  { id: 'purple', color: '#e9d5ff', label: 'Ungu' },
+  { id: 'yellow', color: 'var(--hl-yellow)', label: 'Kuning' },
+  { id: 'green', color: 'var(--hl-green)', label: 'Hijau' },
+  { id: 'blue', color: 'var(--hl-blue)', label: 'Biru' },
+  { id: 'red', color: 'var(--hl-red)', label: 'Merah' },
+  { id: 'purple', color: 'var(--hl-purple)', label: 'Ungu' },
+  { id: 'orange', color: 'var(--hl-orange)', label: 'Oranye' },
 ];
 
 export const jenjangOptions = [

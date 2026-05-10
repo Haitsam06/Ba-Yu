@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\Notification;
+use App\Models\Like;
+use App\Models\Follow;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,6 +17,26 @@ class PostController extends Controller
         $query = Post::with(['user', 'topic', 'category', 'comments', 'likes'])
             ->where('visibility', 'public');
 
+        $userId = null;
+        try { $userId = Auth::guard('sanctum')->id(); } catch (\Exception $e) {}
+        if (!$userId) { try { $userId = Auth::guard('api')->id(); } catch (\Exception $e) {} }
+        if (!$userId) { $userId = Auth::id(); }
+
+        $followingIds = [];
+        if ($userId) {
+            $followingIds = Follow::where('follower_id', (string)$userId)->pluck('following_id')->toArray();
+        }
+
+        // Exclude dormant users
+        $dormantUserIds = User::where('is_dormant', true)->pluck('_id')->toArray();
+
+        // Exclude dormant users
+        $dormantUserIds = User::where('is_dormant', true)->pluck('_id')->toArray();
+
+        if (!empty($dormantUserIds)) {
+            $query->whereNotIn('user_id', $dormantUserIds);
+        }
+
         if ($request->filled('is_verified')) {
             $isVerified = filter_var($request->query('is_verified'), FILTER_VALIDATE_BOOLEAN);
             $query->where('is_verified', $isVerified);
@@ -22,6 +44,13 @@ class PostController extends Controller
 
         if ($request->filled('user_id')) {
             $query->where('user_id', $request->query('user_id'));
+        }
+
+        // Filter by specific post IDs (used for bookmarks)
+        if ($request->filled('ids')) {
+            $ids = explode(',', $request->query('ids'));
+            $query = Post::with(['user', 'topic', 'category', 'comments', 'likes'])
+                ->whereIn('_id', $ids);
         }
 
         $isSearch = $request->filled('search');
@@ -35,24 +64,19 @@ class PostController extends Controller
         $isRandom = false;
         $sort = $request->query('sort', 'untuk_anda');
 
+        $limit = $request->query('limit', 12);
+
         if ($sort === 'populer') {
             $query->orderBy('likes_count', 'desc')->orderBy('comments_count', 'desc');
-            if (!$isSearch) $query->limit(50);
 
         } elseif ($sort === 'terbaru') {
             $query->orderBy('created_at', 'desc');
-            if (!$isSearch) $query->limit(50);
 
         } else {
-            $userId = null;
-            try { $userId = Auth::guard('sanctum')->id(); } catch (\Exception $e) {}
-            if (!$userId) { try { $userId = Auth::guard('api')->id(); } catch (\Exception $e) {} }
-            if (!$userId) { $userId = Auth::id(); }
-
             if ($userId && !$isSearch) {
                 $user = User::find((string)$userId);
                 if ($user && $user->role !== 'admin') {
-                    $likedPostIds = \App\Models\Like::where('user_id', (string)$user->id)
+                    $likedPostIds = Like::where('user_id', (string)$user->id)
                                         ->whereNotNull('post_id')
                                         ->pluck('post_id');
 
@@ -70,11 +94,11 @@ class PostController extends Controller
             }
             
             $query->orderBy('created_at', 'desc');
-            if (!$isSearch) $query->limit(50);
             $isRandom = !$isSearch;
         }
 
-        $posts = $query->get();
+        $paginator = $query->paginate($limit);
+        $posts = collect($paginator->items());
 
         if ($isRandom) {
             $posts = $posts->shuffle()->values();
@@ -96,7 +120,13 @@ class PostController extends Controller
 
         return response()->json([
             'message' => 'Berhasil mengambil daftar post',
-            'data' => $posts
+            'data' => $posts,
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'total' => $paginator->total(),
+                'has_more' => $paginator->hasMorePages()
+            ]
         ], 200);
     }
 
@@ -277,7 +307,7 @@ class PostController extends Controller
         $userIdStr = (string) $userId;
 
         if ($userIdStr !== "") {
-            $post->is_liked = \App\Models\Like::where('post_id', (string) $id)->where('user_id', $userIdStr)->exists();
+            $post->is_liked = Like::where('post_id', (string) $id)->where('user_id', $userIdStr)->exists();
         } else {
             $post->is_liked = false;
         }
@@ -285,10 +315,10 @@ class PostController extends Controller
         if ($post->comments) {
             $post->comments->each(function ($comment) use ($userIdStr) {
                 $commentIdStr = (string) $comment->id;
-                $comment->likes_count = \App\Models\Like::where('comment_id', $commentIdStr)->count();
+                $comment->likes_count = Like::where('comment_id', $commentIdStr)->count();
 
                 if ($userIdStr !== "") {
-                    $comment->is_liked = \App\Models\Like::where('comment_id', $commentIdStr)->where('user_id', $userIdStr)->exists();
+                    $comment->is_liked = Like::where('comment_id', $commentIdStr)->where('user_id', $userIdStr)->exists();
                 } else {
                     $comment->is_liked = false;
                 }
@@ -297,14 +327,35 @@ class PostController extends Controller
 
         if ($post->user) {
             $post->user->setAttribute('followers_count', $post->user->followers()->count());
+            $post->user->setAttribute('totalCatatan', Post::where('user_id', (string)$post->user->id)->where('visibility', 'public')->count());
 
             if ($userIdStr !== "") {
                 $loggedInUser = User::find($userIdStr);
                 $isFollowed = $loggedInUser ? $loggedInUser->isFollowing($post->user->id) : false;
+                
+                $isPending = Follow::where('follower_id', $userIdStr)
+                                               ->where('following_id', (string)$post->user->id)
+                                               ->where('status', Follow::STATUS_PENDING)
+                                               ->exists();
+
                 $post->user->setAttribute('is_followed_by_me', $isFollowed);
+                $post->user->setAttribute('is_follow_pending', $isPending);
             } else {
                 $post->user->setAttribute('is_followed_by_me', false);
+                $post->user->setAttribute('is_follow_pending', false);
             }
+        }
+
+        // Content truncation for private accounts
+        $isAuthorPrivate = $post->user && $post->user->is_private;
+        $isOwner = $userIdStr !== "" && (string)$post->user_id === $userIdStr;
+        
+        $loggedInUser = $userIdStr !== "" ? User::find($userIdStr) : null;
+        $isFollowed = ($loggedInUser && $post->user) ? $loggedInUser->isFollowing($post->user->id) : false;
+
+        if ($isAuthorPrivate && !$isOwner && !$isFollowed && (Auth::user()?->role !== 'admin')) {
+            $post->is_restricted = true;
+            // Removed backend truncation as requested by user to show real blurred text
         }
 
         return response()->json([
@@ -346,6 +397,38 @@ class PostController extends Controller
         ]);
 
         return response()->json(['message' => 'Catatan berhasil diverifikasi!'], 200);
+    }
+    
+    public function unverify($id)
+    {
+        $post = Post::find($id);
+
+        if (!$post) {
+            return response()->json(['message' => 'Catatan tidak ditemukan'], 404);
+        }
+
+        if (Auth::user()->role !== 'admin' && Auth::user()->role !== 'pakar') {
+            return response()->json(['message' => 'Akses ditolak'], 403);
+        }
+
+        $post->update([
+            'is_verified' => false,
+            'verified_by' => null,
+            'verify_reason' => null,
+            'expert_rating' => null
+        ]);
+
+        Notification::create([
+            'user_id'  => $post->user_id,
+            'actor_id' => Auth::id(),
+            'title'    => 'Verifikasi Catatan Dicabut ⚠️',
+            'message'  => 'Status verifikasi pada catatan "' . $post->title . '" telah dicabut oleh ' . Auth::user()->role . '.',
+            'type'     => 'system',
+            'link'     => '/note/' . $post->id,
+            'is_read'  => false,
+        ]);
+
+        return response()->json(['message' => 'Verifikasi berhasil dicabut!'], 200);
     }
 
     public function reject($id)
