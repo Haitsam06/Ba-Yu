@@ -331,8 +331,11 @@ export default function EditProfilePage() {
         };
     };
 
+    // --- VARIABEL UNTUK MENYEMBUNYIKAN TOP NAV KETIKA MODAL TERBUKA ---
+    const isEditingPhoto = showCropEditor || showCameraDialog || showSourceSelector;
+
     return (
-        <MobileLayout showBottomNav={false}>
+        <MobileLayout showBottomNav={false} hideTopNav={isEditingPhoto}>
             <div className="min-h-screen pb-10 bg-[#FAFAFA] dark:bg-[#13111C]">
                 {/* Header - Transparent & Refined */}
                 <div className="sticky top-0 bg-[#FAFAFA]/95 dark:bg-[#13111C]/95 backdrop-blur-md z-20 px-5 pt-8 pb-4 flex items-center justify-between border-b border-gray-100 dark:border-white/5 mb-6">

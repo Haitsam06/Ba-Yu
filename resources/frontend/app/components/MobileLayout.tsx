@@ -11,9 +11,10 @@ import { useAuth } from '../contexts/AuthContext';
 interface MobileLayoutProps {
   children: ReactNode;
   showBottomNav?: boolean;
+  hideTopNav?: boolean;
 }
 
-export function MobileLayout({ children, showBottomNav = true }: MobileLayoutProps) {
+export function MobileLayout({ children, showBottomNav = true, hideTopNav = false }: MobileLayoutProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const { user } = useAuth();
@@ -40,31 +41,35 @@ export function MobileLayout({ children, showBottomNav = true }: MobileLayoutPro
     <div className="h-screen w-full flex flex-col bg-white dark:bg-[#13111C] text-slate-900 dark:text-[#E8E6F0] overflow-hidden selection:bg-indigo-600/20 selection:text-indigo-600">
       
       {/* 1. DESKTOP & TABLET TOP REGION */}
-      <div className="hidden md:block w-full border-b border-slate-100/60 dark:border-white/5 z-50 bg-white dark:bg-[#13111C] shrink-0 shadow-[0_2px_10px_rgb(0,0,0,0.02)] dark:shadow-none relative">
-         <TopNav 
-           isSidebarExpanded={isSidebarExpanded} 
-           toggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)} 
-         />
-      </div>
+      {!hideTopNav && (
+        <div className="hidden md:block w-full border-b border-slate-100/60 dark:border-white/5 z-50 bg-white dark:bg-[#13111C] shrink-0 shadow-[0_2px_10px_rgb(0,0,0,0.02)] dark:shadow-none relative">
+           <TopNav 
+             isSidebarExpanded={isSidebarExpanded} 
+             toggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)} 
+           />
+        </div>
+      )}
 
       {/* 2. MOBILE TOP BAR */}
-      <div className="md:hidden w-full bg-white/90 dark:bg-[#13111C]/90 backdrop-blur-md h-[60px] border-b border-slate-100 dark:border-white/5 flex items-center justify-between px-5 z-40 shadow-sm dark:shadow-none shrink-0">
-         <Link to="/home" className="flex items-center gap-2 shrink-0 group outline-none">
-            <ApplicationLogo className="w-7 h-7" />
-            <span className="font-['Lexend_Deca'] font-extrabold text-[20px] tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-indigo-800 dark:from-[#7B7BFF] dark:to-[#A78BFA]">
-               Ba-Yu
-            </span>
-         </Link>
-         
-         <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/explore')} className="text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-primary transition-colors rounded-full hover:bg-indigo-50 dark:hover:bg-white/5 outline-none">
-              <Search className="w-[22px] h-[22px]" strokeWidth={2} />
-            </button>
-            <div className="mt-1">
-              <AvatarNotifications />
-            </div>
-         </div>
-      </div>
+      {!hideTopNav && (
+        <div className="md:hidden w-full bg-white/90 dark:bg-[#13111C]/90 backdrop-blur-md h-[60px] border-b border-slate-100 dark:border-white/5 flex items-center justify-between px-5 z-40 shadow-sm dark:shadow-none shrink-0">
+           <Link to="/home" className="flex items-center gap-2 shrink-0 group outline-none">
+              <ApplicationLogo className="w-7 h-7" />
+              <span className="font-['Lexend_Deca'] font-extrabold text-[20px] tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-indigo-800 dark:from-[#7B7BFF] dark:to-[#A78BFA]">
+                 Ba-Yu
+              </span>
+           </Link>
+           
+           <div className="flex items-center gap-4">
+              <button onClick={() => navigate('/explore')} className="text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-primary transition-colors rounded-full hover:bg-indigo-50 dark:hover:bg-white/5 outline-none">
+                <Search className="w-[22px] h-[22px]" strokeWidth={2} />
+              </button>
+              <div className="mt-1">
+                <AvatarNotifications />
+              </div>
+           </div>
+        </div>
+      )}
 
       {/* 3. MAIN BODY SPLIT */}
       <div className="flex-1 flex overflow-hidden relative">
