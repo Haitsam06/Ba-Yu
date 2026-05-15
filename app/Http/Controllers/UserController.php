@@ -115,6 +115,12 @@ class UserController extends Controller
         }
 
         $user->fill($validated);
+        
+        // If profile was incomplete (social login), mark it complete
+        if (isset($user->profile_completed) && !$user->profile_completed) {
+            $user->profile_completed = true;
+        }
+        
         $user->save();
 
         return response()->json([

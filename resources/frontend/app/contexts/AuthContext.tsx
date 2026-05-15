@@ -28,6 +28,8 @@ export interface User {
     is_dormant?: boolean;
     deactivated_at?: string;
     username_updated_at?: string;
+    profile_completed?: boolean;
+    email_verified_at?: string;
 }
 
 interface AuthContextType {
@@ -38,6 +40,7 @@ interface AuthContextType {
         password: string,
         rememberMe?: boolean,
     ) => Promise<string | null>; // Returns error string if failed, null if success
+    socialLogin: (token: string) => void;
     register: (
         name: string,
         username: string,
@@ -123,6 +126,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    const socialLogin = (token: string) => {
+        localStorage.setItem("bayu-token", token);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        loadUser(); // Muat ulang data user dengan token baru
+    };
+
     const register = async (
         name: string,
         username: string,
@@ -197,6 +206,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 user,
                 isLoading,
                 login,
+                socialLogin,
                 register,
                 logout,
                 updateUserSession,

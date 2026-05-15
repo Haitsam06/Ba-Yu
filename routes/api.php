@@ -20,6 +20,10 @@ Route::post('/v1/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
+// Social Auth (OAuth)
+Route::get('/auth/{provider}/redirect', [AuthController::class, 'redirectToProvider']);
+Route::get('/auth/{provider}/callback', [AuthController::class, 'handleProviderCallback']);
+
 Route::get('/v1/posts', [PostController::class, 'index']);
 Route::get('/v1/posts/{id}', [PostController::class, 'show']);
 

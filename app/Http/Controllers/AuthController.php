@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Password;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -30,6 +32,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'jenjang_pendidikan' => $request->jenjang_pendidikan,
+            'email_verified_at' => now(), // Auto-verify for development (no email provider configured)
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -141,5 +144,77 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Gagal mengubah password, link mungkin sudah kadaluarsa.'
         ], 400);
+    }
+
+    /**
+     * Redirect to OAuth provider (Google/Facebook)
+     */
+    public function redirectToProvider($provider)
+    {
+        if (!in_array($provider, ['google', 'facebook'])) {
+            return response()->json(['message' => 'Provider tidak didukung'], 400);
+        }
+
+        return Socialite::driver($provider)->stateless()->redirect();
+    }
+
+    /**
+     * Handle OAuth callback
+     */
+    public function handleProviderCallback($provider)
+    {
+        if (!in_array($provider, ['google', 'facebook'])) {
+            return redirect(config('app.url') . '/app/login?error=provider_invalid');
+        }
+
+        try {
+            $socialUser = Socialite::driver($provider)->stateless()->user();
+        } catch (\Exception $e) {
+            return redirect(config('app.url') . '/app/login?error=oauth_failed');
+        }
+
+        // Check if user already exists with this email
+        $existingUser = User::where('email', $socialUser->getEmail())->first();
+
+        if ($existingUser) {
+            // Update provider info if not set
+            if (!$existingUser->provider) {
+                $existingUser->update([
+                    'provider' => $provider,
+                    'provider_id' => $socialUser->getId(),
+                ]);
+            }
+
+            // Reactivate dormant user
+            if ($existingUser->is_dormant) {
+                $existingUser->is_dormant = false;
+                $existingUser->deactivated_at = null;
+                $existingUser->save();
+            }
+
+            $token = $existingUser->createToken('auth_token')->plainTextToken;
+            return redirect(config('app.url') . '/app/login?token=' . $token . '&existing=true');
+        }
+
+        // Create new user from social login
+        $username = Str::slug($socialUser->getName(), '_') . '_' . Str::random(4);
+        // Ensure username is unique
+        while (User::where('username', $username)->exists()) {
+            $username = Str::slug($socialUser->getName(), '_') . '_' . Str::random(4);
+        }
+
+        $newUser = User::create([
+            'name' => $socialUser->getName(),
+            'email' => $socialUser->getEmail(),
+            'username' => strtolower($username),
+            'avatar' => $socialUser->getAvatar(),
+            'provider' => $provider,
+            'provider_id' => $socialUser->getId(),
+            'email_verified_at' => now(),
+            'profile_completed' => false, // Needs to complete profile
+        ]);
+
+        $token = $newUser->createToken('auth_token')->plainTextToken;
+        return redirect(config('app.url') . '/app/login?token=' . $token . '&new=true');
     }
 }

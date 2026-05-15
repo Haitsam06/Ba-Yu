@@ -26,11 +26,16 @@ class User extends Authenticatable
         'display_name',
         'phone',
         'bio',
+        'school',
         'is_verified',
         'is_private',
         'is_dormant',
         'deactivated_at',
         'username_updated_at',
+        'provider',
+        'provider_id',
+        'email_verified_at',
+        'profile_completed',
     ];
 
     protected $attributes = [
@@ -38,6 +43,7 @@ class User extends Authenticatable
         'is_verified' => false,
         'is_private' => false,
         'is_dormant' => false,
+        'profile_completed' => true,
     ];
 
     protected $hidden = [
@@ -49,8 +55,10 @@ class User extends Authenticatable
         'is_verified' => 'boolean',
         'is_private' => 'boolean',
         'is_dormant' => 'boolean',
+        'profile_completed' => 'boolean',
         'deactivated_at' => 'datetime',
         'username_updated_at' => 'datetime',
+        'email_verified_at' => 'datetime',
     ];
 
     // Relationships
