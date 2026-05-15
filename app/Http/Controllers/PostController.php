@@ -42,6 +42,11 @@ class PostController extends Controller
             $query->where('is_verified', $isVerified);
         }
 
+        if ($request->filled('submitted_for_review')) {
+            $submitted = filter_var($request->query('submitted_for_review'), FILTER_VALIDATE_BOOLEAN);
+            $query->where('submitted_for_review', $submitted);
+        }
+
         if ($request->filled('user_id')) {
             $query->where('user_id', $request->query('user_id'));
         }
@@ -147,6 +152,7 @@ class PostController extends Controller
             'topic_id' => 'nullable|string',
             'category_id' => 'nullable|string',
             'visibility' => 'in:public,private,draft',
+            'submitted_for_review' => 'nullable|boolean',
         ]);
 
         $post = Post::create([
@@ -399,7 +405,7 @@ class PostController extends Controller
         return response()->json(['message' => 'Catatan berhasil diverifikasi!'], 200);
     }
     
-    public function unverify($id)
+    public function unverify(Request $request, $id)
     {
         $post = Post::find($id);
 
@@ -418,11 +424,17 @@ class PostController extends Controller
             'expert_rating' => null
         ]);
 
+        $reason = $request->input('reason');
+        $message = 'Status verifikasi pada catatan "' . $post->title . '" telah dicabut oleh ' . Auth::user()->role . '.';
+        if ($reason) {
+            $message .= ' Alasan: "' . $reason . '"';
+        }
+
         Notification::create([
             'user_id'  => $post->user_id,
             'actor_id' => Auth::id(),
             'title'    => 'Verifikasi Catatan Dicabut ⚠️',
-            'message'  => 'Status verifikasi pada catatan "' . $post->title . '" telah dicabut oleh ' . Auth::user()->role . '.',
+            'message'  => $message,
             'type'     => 'system',
             'link'     => '/note/' . $post->id,
             'is_read'  => false,
@@ -476,6 +488,9 @@ class PostController extends Controller
         if (!$post) {
             return response()->json(['message' => 'Catatan tidak ditemukan'], 404);
         }
+
+        // Mark the post as submitted for review
+        $post->update(['submitted_for_review' => true]);
 
         $pakars = User::where('role', 'pakar')->get();
 

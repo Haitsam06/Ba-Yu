@@ -32,6 +32,7 @@ class CleanupDormantAccounts extends Command
                              ->get();
                              
         $count = 0;
+        /** @var \App\Models\User $user */
         foreach ($usersToDelete as $user) {
             $userIdStr = (string)$user->_id;
 

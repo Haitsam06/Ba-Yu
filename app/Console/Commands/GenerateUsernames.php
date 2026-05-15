@@ -28,6 +28,7 @@ class GenerateUsernames extends Command
         $users = \App\Models\User::whereNull('username')->orWhere('username', '')->get();
         $count = 0;
 
+        /** @var \App\Models\User $user */
         foreach ($users as $user) {
             $baseName = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $user->name));
             if (empty($baseName)) {

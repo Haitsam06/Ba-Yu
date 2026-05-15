@@ -50,7 +50,7 @@ class LearningHistoryController extends Controller
             ->where('created_at', '>=', $hariIni)
             ->sum('duration');
 
-        $riwayatTerakhir = LearningHistory::with('post')
+        $riwayatTerakhir = LearningHistory::with('post.user')
             ->where('user_id', $userId)
             ->orderBy('updated_at', 'desc')
             ->take(5)

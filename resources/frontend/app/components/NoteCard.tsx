@@ -48,6 +48,7 @@ interface NoteCardProps {
         comments?: number;
         is_liked?: boolean;
         is_verified?: boolean;
+        submitted_for_review?: boolean;
         tags?: string[];
         read_time?: number;
     };
@@ -56,9 +57,10 @@ interface NoteCardProps {
     className?: string;
     showBookmark?: boolean;
     isDraft?: boolean;
+    renderActions?: (note: any) => React.ReactNode;
 }
 
-export function NoteCard({ note, onLike, onDelete, className = "", showBookmark = true, isDraft = false }: NoteCardProps) {
+export function NoteCard({ note, onLike, onDelete, className = "", showBookmark = true, isDraft = false, renderActions }: NoteCardProps) {
     const { isBookmarked, toggleBookmark } = useBookmarks();
     const { user } = useAuth();
     const { showToast } = useToast();
@@ -191,54 +193,37 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
 
                     {!isDraft && (
                         <div className="flex items-center gap-3 shrink-0 ml-4">
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    if (onLike) onLike(note.id);
-                                }}
-                                className={`flex items-center gap-1.5 transition-colors focus:outline-none font-bold ${note.is_liked ? "text-red-500" : "text-gray-600 hover:text-red-500"}`}
-                                title={`${note.likes || 0} suka`}
-                            >
-                                <Heart
-                                    className={`w-[15px] h-[15px] ${note.is_liked ? "fill-red-600" : "text-gray-600 dark:text-gray-500"}`}
-                                    strokeWidth={2.5}
-                                />
-                                <span className="text-[13px] font-['Manrope']">
-                                    {note.likes || 0}
-                                </span>
-                            </button>
-                            <Link
-                                to={`/note/${note.id}#comments-section`}
-                                onClick={(e) =>
-                                    e.stopPropagation()
-                                }
-                                className="flex items-center gap-1.5 text-gray-600 dark:text-gray-500 hover:text-gray-950 dark:hover:text-gray-300 transition-colors focus:outline-none font-bold"
-                                title={`${note.comments || 0} komentar`}
-                            >
-                                <MessageCircle
-                                    className="w-[15px] h-[15px] text-gray-600 dark:text-gray-500"
-                                    strokeWidth={2.5}
-                                />
-                                <span className="text-[13px] font-['Manrope']">
-                                    {note.comments || 0}
-                                </span>
-                            </Link>
-                            {showBookmark && (
+                            {renderActions ? renderActions(note) : (
+                            <>
                                 <button
-                                    aria-label="Save"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        toggleBookmark(note.id);
-                                    }}
-                                    className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? "text-primary scale-110" : "opacity-0 md:opacity-100 text-gray-500 hover:text-primary md:group-hover:opacity-100"}`}
+                                    className="flex items-center gap-1.5 text-gray-600 dark:text-gray-500 hover:text-gray-950 dark:hover:text-gray-300 transition-colors focus:outline-none font-bold"
+                                    title={`${note.comments || 0} komentar`}
                                 >
-                                    <Bookmark
-                                        className={`w-[18px] h-[18px] transition-all duration-300 ${isBookmarked(note.id) ? "fill-primary" : ""}`}
-                                        strokeWidth={2}
+                                    <MessageCircle
+                                        className="w-[15px] h-[15px] text-gray-600 dark:text-gray-500"
+                                        strokeWidth={2.5}
                                     />
+                                    <span className="text-[13px] font-['Manrope']">
+                                        {note.comments || 0}
+                                    </span>
                                 </button>
+                                {showBookmark && (
+                                    <button
+                                        aria-label="Save"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            toggleBookmark(note.id);
+                                        }}
+                                        className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? "text-primary scale-110" : "opacity-0 md:opacity-100 text-gray-500 hover:text-primary md:group-hover:opacity-100"}`}
+                                    >
+                                        <Bookmark
+                                            className={`w-[18px] h-[18px] transition-all duration-300 ${isBookmarked(note.id) ? "fill-primary" : ""}`}
+                                            strokeWidth={2}
+                                        />
+                                    </button>
+                                )}
+                            </>
                             )}
 
                             {/* Dropdown Menu */}
@@ -272,17 +257,51 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                             <Share2 className="w-4 h-4 text-gray-500 dark:text-gray-400" /> Bagikan
                                         </button>
                                         <button
-                                            onClick={(e) => { 
+                                            onClick={async (e) => { 
                                                 e.preventDefault(); 
                                                 e.stopPropagation(); 
                                                 setShowMenu(false); 
-                                                showToast("Fitur unduh segera hadir", "info"); 
+                                                showToast("Menyiapkan PDF...", "info");
+                                                try {
+                                                    const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+                                                    const res = await axios.get(`/api/v1/posts/${note.id}`, {
+                                                        headers: token ? { Authorization: `Bearer ${token}` } : {}
+                                                    });
+                                                    downloadNoteAsPDF(res.data.data, showToast);
+                                                } catch (err) {
+                                                    showToast("Gagal mengunduh catatan", "error");
+                                                }
                                             }}
                                             className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
                                         >
                                             <Download className="w-4 h-4 text-gray-500 dark:text-gray-400" /> Unduh
                                         </button>
                                         
+                                        {user && (user.id === authorId || user._id === authorId) && !note.is_verified && !note.submitted_for_review && (
+                                            <>
+                                                <div className="h-px bg-gray-100 dark:bg-white/5 my-1"></div>
+                                                <button
+                                                    onClick={async (e) => { 
+                                                        e.preventDefault(); 
+                                                        e.stopPropagation(); 
+                                                        setShowMenu(false); 
+                                                        try {
+                                                            const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+                                                            await axios.post(`/api/v1/posts/${note.id}/ajukan`, {}, {
+                                                                headers: { Authorization: `Bearer ${token}` }
+                                                            });
+                                                            showToast("Catatan berhasil diajukan ke Pakar!", "success");
+                                                        } catch (err) {
+                                                            showToast("Gagal mengajukan ke Pakar", "error");
+                                                        }
+                                                    }}
+                                                    className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 flex items-center gap-2"
+                                                >
+                                                    <ShieldCheck className="w-4 h-4" /> Ajukan ke Pakar
+                                                </button>
+                                            </>
+                                        )}
+
                                         {user && (user.id === authorId || user._id === authorId) && (
                                             <>
                                                 <div className="h-px bg-gray-100 dark:bg-white/5 my-1"></div>
@@ -412,3 +431,203 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
         </article>
     );
 }
+
+const downloadNoteAsPDF = (fullNote: any, showToast: any) => {
+    const rawHtmlToExport = fullNote.content || fullNote.plain_content || "";
+    let exportHtml = "";
+
+    if (fullNote.is_restricted) {
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = rawHtmlToExport;
+        const children = Array.from(tempDiv.children).slice(0, 3);
+        exportHtml = children.map(c => c.outerHTML).join("");
+        exportHtml += "<p style='color: #94a3b8; font-style: italic; margin-top: 20px; font-weight: bold;'>[ ... Sisa materi disembunyikan dalam mode pratinjau ... ]</p>";
+    } else {
+        exportHtml = rawHtmlToExport;
+    }
+
+    const printWindow = window.open('', '', 'width=900,height=800');
+    if (!printWindow) {
+        showToast("Gagal membuka jendela cetak. Pastikan pop-up diizinkan.", "error");
+        return;
+    }
+    const authorName = fullNote.user?.name || fullNote.user?.username || "Penulis";
+    const dateStr = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="id">
+        <head>
+            <meta charset="UTF-8">
+            <title>${fullNote.title || "Materi Catatan"} - Ba-Yu</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Lexend+Deca:wght@400;600;800&display=swap');
+                
+                :root {
+                    --primary: #4f46e5;
+                    --text-main: #1f2937;
+                    --text-muted: #6b7280;
+                    --bg-color: #ffffff;
+                }
+
+                @page {
+                    margin: 2cm;
+                    size: A4 portrait;
+                }
+
+                body { 
+                    font-family: 'Manrope', sans-serif; 
+                    color: var(--text-main); 
+                    line-height: 1.8; 
+                    background-color: var(--bg-color);
+                    margin: 0;
+                    padding: 0;
+                    font-size: 11pt;
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                }
+
+                .header {
+                    text-align: center;
+                    margin-bottom: 2rem;
+                    padding-bottom: 1.5rem;
+                    border-bottom: 2px solid #f3f4f6;
+                }
+
+                .header h1 { 
+                    font-family: 'Lexend Deca', sans-serif;
+                    font-size: 24pt; 
+                    font-weight: 800;
+                    color: #111827; 
+                    margin: 0 0 0.5rem 0;
+                    line-height: 1.2;
+                    letter-spacing: -0.02em;
+                }
+
+                .meta {
+                    font-size: 10pt;
+                    color: var(--text-muted);
+                    display: flex;
+                    justify-content: center;
+                    gap: 1rem;
+                    font-weight: 500;
+                }
+
+                .content {
+                    max-width: 100%;
+                }
+
+                /* Typography */
+                h2, h3, h4 { 
+                    font-family: 'Lexend Deca', sans-serif;
+                    color: #111827;
+                    margin-top: 1.5em; 
+                    margin-bottom: 0.5em; 
+                    page-break-after: avoid;
+                }
+                h2 { font-size: 18pt; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.3em; }
+                h3 { font-size: 14pt; }
+                p { margin-bottom: 1.2em; text-align: justify; }
+                
+                /* Elements */
+                img { 
+                    max-width: 100%; 
+                    height: auto; 
+                    border-radius: 8px; 
+                    margin: 1.5em auto;
+                    display: block;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                    page-break-inside: avoid;
+                }
+                
+                blockquote {
+                    border-left: 4px solid var(--primary);
+                    background: #f8fafc;
+                    padding: 1rem 1.5rem;
+                    margin: 1.5rem 0;
+                    font-style: italic;
+                    color: #475569;
+                    border-radius: 0 8px 8px 0;
+                    page-break-inside: avoid;
+                }
+
+                pre { 
+                    background: #1e293b; 
+                    color: #f8fafc;
+                    padding: 1.2rem; 
+                    border-radius: 8px; 
+                    overflow-x: auto; 
+                    font-family: 'Courier New', Courier, monospace;
+                    font-size: 9.5pt;
+                    page-break-inside: avoid;
+                }
+                
+                code { 
+                    font-family: 'Courier New', Courier, monospace; 
+                    background: #f1f5f9;
+                    padding: 0.2em 0.4em;
+                    border-radius: 4px;
+                    color: #ef4444;
+                    font-size: 0.9em;
+                }
+
+                ul, ol { padding-left: 1.5em; margin-bottom: 1.2em; }
+                li { margin-bottom: 0.5em; }
+
+                .footer {
+                    margin-top: 3rem;
+                    padding-top: 1rem;
+                    border-top: 1px solid #e5e7eb;
+                    text-align: center;
+                    font-size: 9pt;
+                    color: var(--text-muted);
+                }
+
+                .footer-brand {
+                    font-family: 'Lexend Deca', sans-serif;
+                    font-weight: 800;
+                    color: var(--primary);
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>${fullNote.title || "Materi Catatan"}</h1>
+                <div class="meta">
+                    <span>Ditulis oleh: ${authorName}</span>
+                    <span>&bull;</span>
+                    <span>Diunduh: ${dateStr}</span>
+                </div>
+            </div>
+            
+            <div class="content">
+                ${exportHtml}
+            </div>
+
+            ${fullNote.is_restricted ? `
+            <div style="margin-top: 40px; padding: 25px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center;">
+                <h4 style="margin: 0 0 8px 0; color: #0f172a; font-family: 'Lexend Deca', sans-serif; font-size: 14pt;">Materi Terproteksi</h4>
+                <p style="margin: 0; color: #475569; font-size: 10.5pt; font-family: 'Manrope', sans-serif;">
+                    Versi PDF ini hanya memuat sebagian materi. Ikuti penulis <b>@${fullNote.user?.username || 'penulis'}</b> di aplikasi Ba-Yu untuk mengunduh versi lengkapnya.
+                </p>
+            </div>
+            ` : ''}
+
+            <div class="footer">
+                Dokumen ini diunduh dari <span class="footer-brand">Ba-Yu</span> - Platform Belajar Masa Depan
+            </div>
+            
+            <script>
+                window.onload = function() {
+                    setTimeout(function() {
+                        window.print();
+                        window.close();
+                    }, 800);
+                };
+            </script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+};
+

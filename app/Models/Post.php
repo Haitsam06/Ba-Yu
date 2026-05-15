@@ -33,12 +33,14 @@ class Post extends Model
         'verify_reason',
         'expert_rating',
         'verified_by',
+        'submitted_for_review',
     ];
 
     protected $attributes = [
         'visibility' => 'public',
         'is_verified' => false,
         'is_rejected' => false,
+        'submitted_for_review' => false,
         'likes_count' => 0,
         'comments_count' => 0,
     ];
@@ -49,6 +51,7 @@ class Post extends Model
         'tags' => 'array',
         'is_verified' => 'boolean',
         'is_rejected' => 'boolean',
+        'submitted_for_review' => 'boolean',
     ];
 
     // Relationships

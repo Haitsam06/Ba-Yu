@@ -40,6 +40,7 @@ import { useToast } from '../contexts/ToastContext';
 import { NoteCard } from '../components/NoteCard';
 import { MobileLayout } from '../components/MobileLayout';
 import { Facebook, MessageCircle as MessageCircleIcon, Send, Twitter, Link2 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const LearningStatisticsPage = () => {
   const [notes, setNotes] = useState<any[]>([]);
@@ -56,6 +57,46 @@ const LearningStatisticsPage = () => {
   
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { user } = useAuth();
+
+  const handleLikePost = async (postId: string) => {
+      if (!user)
+          return showToast(
+              "Silakan masuk (login) terlebih dahulu untuk menyukai tulisan.",
+              "warning"
+          );
+
+      const updateNotes = (prev: any[]) => prev.map((note) => {
+          if ((note._id || note.id) === postId) {
+              const isCurrentlyLiked = note.is_liked || false;
+              return {
+                  ...note,
+                  likes: isCurrentlyLiked
+                      ? Math.max(0, note.likes - 1)
+                      : note.likes + 1,
+                  likes_count: isCurrentlyLiked
+                      ? Math.max(0, (note.likes_count || 0) - 1)
+                      : (note.likes_count || 0) + 1,
+                  is_liked: !isCurrentlyLiked,
+              };
+          }
+          return note;
+      });
+
+      setAllNotes(updateNotes);
+      setNotes(updateNotes);
+
+      try {
+          const tk = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+          await axios.post(
+              `/api/v1/posts/${postId}/like`,
+              {},
+              { headers: { Authorization: `Bearer ${tk}` } }
+          );
+      } catch (e) {
+          console.error(e);
+      }
+  };
 
   // 1. Tambahin state baru buat nampung statistik dari API
   const [stats, setStats] = useState<any>(null);
@@ -283,7 +324,7 @@ const LearningStatisticsPage = () => {
                              {activeChartData.map((entry: any, index: number) => (
                                 <Cell 
                                   key={`cell-${index}`} 
-                                  fill={entry.value > (chartView === 'weekly' ? 4 : 20) ? '#6366f1' : 'rgba(99, 102, 241, 0.15)'} 
+                                  fill="#5D5CE6" 
                                   className="hover:opacity-80 transition-opacity cursor-pointer"
                                 />
                              ))}
@@ -313,24 +354,26 @@ const LearningStatisticsPage = () => {
                     ) : allNotes.length > 0 ? (
                        (showFullHistory ? allNotes : notes).map((note) => {
                           const mappedNote = {
+                              ...note,
                               id: note.id || note._id,
                               title: note.title,
                               description: note.content?.replace(/<[^>]*>/g, "").substring(0, 150) || "",
                               thumbnail: note.thumbnail,
-                              author: {
-                                id: note.user?.id || note.user?._id,
-                                name: note.user?.name,
-                                avatar: note.user?.avatar
-                              },
+                              author: note.user ? {
+                                ...note.user,
+                                avatar: note.user?.avatar || null
+                              } : { name: "Anonim", avatar: null },
                               mataPelajaran: note.mapel || note.mataPelajaran || "Umum",
                               jenjang: note.jenjang || "-",
+                              kelas: note.kelas || "-",
                               createdAt: note.created_at,
                               views: note.views || 0,
+                              rating: note.rating || 5,
                               likes: note.likes_count || note.likes || 0,
                               comments: note.comments_count || note.comments || 0,
                               read_time: note.read_time,
                           };
-                          return <NoteCard key={mappedNote.id} note={mappedNote} showBookmark={false} className="border border-slate-200 dark:border-white/5 rounded-[20px] p-4 shadow-sm dark:shadow-none hover:shadow-md bg-white dark:bg-[#1C1A29] hover:bg-slate-50/50 dark:hover:bg-white/[0.02]" />;
+                          return <NoteCard key={mappedNote.id} note={mappedNote} onLike={handleLikePost} />;
                        })
                     ) : (
                        <div className="text-center py-10 text-slate-500 font-medium text-[14px]">Belum ada riwayat catatan yang dibuka.</div>

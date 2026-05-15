@@ -86,7 +86,7 @@ export function MobileLayout({ children, showBottomNav = true, hideTopNav = fals
         </div>
 
         {/* MAIN SCROLLABLE CONTENT */}
-        <div id="main-scroll-container" className="flex-1 overflow-y-auto overflow-x-hidden w-full h-full bg-white dark:bg-[#13111C] scroll-smooth relative z-30">
+        <div id="main-scroll-container" className="flex-1 overflow-y-auto overflow-x-hidden w-full h-full bg-white dark:bg-[#13111C] scroll-smooth">
            <div className={`transition-all duration-300 ${isMobile && showBottomNav ? 'pb-24' : 'pb-10 pt-2'}`}>
               {children}
            </div>

@@ -268,10 +268,17 @@ export default function UploadPage() {
 
       if (draftId) {
         await axios.put(`/api/v1/posts/${draftId}`, payload);
+        if (meta.ajukanPakar) {
+          try { await axios.post(`/api/v1/posts/${draftId}/ajukan`); } catch (e) { /* silent */ }
+        }
       } else {
-        await axios.post('/api/v1/posts', payload);
+        const res = await axios.post('/api/v1/posts', payload);
+        const newPostId = res.data.data._id || res.data.data.id;
+        if (meta.ajukanPakar && newPostId) {
+          try { await axios.post(`/api/v1/posts/${newPostId}/ajukan`); } catch (e) { /* silent */ }
+        }
       }
-      showToast('Catatan berhasil dipublikasikan!', 'success');
+      showToast(meta.ajukanPakar ? 'Catatan dipublikasikan & diajukan ke Pakar!' : 'Catatan berhasil dipublikasikan!', 'success');
       navigate(-1);
     } catch (error) {
       console.error('Gagal mempublikasikan catatan:', error);

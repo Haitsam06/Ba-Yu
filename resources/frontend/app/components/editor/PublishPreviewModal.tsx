@@ -359,6 +359,25 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
               </div>
             </div>
 
+            {/* Expert Verification Toggle */}
+            <div className="mb-8 bg-indigo-50/50 dark:bg-indigo-500/5 border border-indigo-100 dark:border-indigo-500/10 rounded-2xl p-5">
+               <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100 text-[14px] mb-0.5">Ajukan ke Pakar</p>
+                    <p className="text-[12px] text-slate-500 dark:text-slate-400 font-['Manrope'] font-medium leading-snug">Catatan akan dikirim ke tim pakar untuk validasi dan mendapat badge verified.</p>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={meta.ajukanPakar}
+                    onClick={() => setMeta({ ...meta, ajukanPakar: !meta.ajukanPakar })}
+                    className={`relative shrink-0 w-12 h-7 rounded-full transition-colors duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 ${meta.ajukanPakar ? 'bg-indigo-600' : 'bg-slate-200 dark:bg-white/10'}`}
+                  >
+                    <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${meta.ajukanPakar ? 'translate-x-5' : 'translate-x-0'}`} />
+                  </button>
+               </div>
+            </div>
+
             {/* Publish Area */}
             <div className="pt-6 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
                <button

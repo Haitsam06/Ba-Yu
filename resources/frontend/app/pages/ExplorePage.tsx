@@ -679,7 +679,7 @@ export default function ExplorePage() {
                                     <div className="flex gap-4 items-center w-full max-w-[620px]">
                                         <div className="relative flex-1 group">
                                             <Search
-                                                className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-primary transition-all duration-300"
+                                                className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-primary transition-all duration-300"
                                                 strokeWidth={2.5}
                                             />
                                             <input
@@ -697,7 +697,7 @@ export default function ExplorePage() {
                                                 }}
                                                 onFocus={() => setIsSuggestionOpen(true)}
                                                 onClick={() => setIsSuggestionOpen(true)}
-                                                className="w-full pl-14 pr-6 py-4 bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 rounded-[1.25rem] font-['Manrope'] text-[16px] font-bold text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none transition-all shadow-sm dark:shadow-none"
+                                                className="w-full pl-14 pr-6 py-4 bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 rounded-[1.25rem] font-['Manrope'] text-[16px] font-bold text-gray-900 dark:text-gray-100 placeholder:text-gray-450 dark:placeholder:text-gray-500 focus:outline-none transition-all shadow-sm dark:shadow-none"
                                             />
                                         </div>
                                         <button
@@ -909,7 +909,7 @@ export default function ExplorePage() {
                                     
                                     {!hasMore && formattedNotes.length > 0 && (
                                         <div className="py-8 text-center">
-                                            <p className="text-gray-400 dark:text-gray-500 font-['Manrope'] text-[13px] font-medium">Anda sudah melihat semua catatan di kategori ini.</p>
+                                            <p className="text-gray-600 dark:text-gray-500 font-['Manrope'] text-[13px] font-medium">Anda sudah melihat semua catatan di kategori ini.</p>
                                         </div>
                                     )}
                                 </>

@@ -35,6 +35,8 @@ import { Link } from "react-router";
 import { useToast } from "../contexts/ToastContext";
 import axios from "axios";
 import { AvatarImage } from "../components/ui/DefaultImages";
+import { NoteCard } from "../components/NoteCard";
+import { NoteCardSkeleton } from "../components/ui/skeletons";
 
 type VerificationStatus = "pending" | "approved" | "all";
 
@@ -42,7 +44,7 @@ interface FeedbackModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (rating: number, reason: string) => void;
-    type: "approve" | "reject";
+    type: "approve" | "reject" | "cancel";
     noteTitle: string;
 }
 
@@ -65,14 +67,14 @@ const FeedbackModal = ({ isOpen, onClose, onSubmit, type, noteTitle }: FeedbackM
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
             <div className="bg-white dark:bg-[#1C1A29] w-full max-w-lg rounded-[24px] shadow-xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-100 dark:border-white/5">
                 {/* Modal Header */}
-                <div className={`p-6 md:p-8 pb-4 flex justify-between items-start ${type === 'approve' ? 'bg-indigo-50/50 dark:bg-indigo-500/10' : 'bg-rose-50/50 dark:bg-rose-500/10'}`}>
+                <div className={`p-6 md:p-8 pb-4 flex justify-between items-start ${type === 'approve' ? 'bg-indigo-50/50 dark:bg-indigo-500/10' : type === 'cancel' ? 'bg-rose-50/50 dark:bg-rose-500/10' : 'bg-rose-50/50 dark:bg-rose-500/10'}`}>
                     <div className="flex gap-4">
                         <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-sm ${type === 'approve' ? 'bg-indigo-600 text-white' : 'bg-rose-600 text-white'}`}>
                             {type === 'approve' ? <CheckCircle size={24} /> : <XCircle size={24} />}
                         </div>
                         <div>
                             <h3 className="font-['Lexend_Deca'] text-xl font-bold text-slate-800 dark:text-slate-100">
-                                {type === 'approve' ? 'Validasi Materi' : 'Tolak Materi'}
+                                {type === 'approve' ? 'Validasi Materi' : type === 'cancel' ? 'Batal Verifikasi' : 'Tolak Materi'}
                             </h3>
                             <p className="text-slate-500 text-sm font-medium line-clamp-1 mt-0.5">{noteTitle}</p>
                         </div>
@@ -137,20 +139,20 @@ const FeedbackModal = ({ isOpen, onClose, onSubmit, type, noteTitle }: FeedbackM
                     <div className="space-y-3">
                         <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
                             <MessageSquare size={14} className="text-indigo-500" /> 
-                            {type === 'approve' ? 'Feedback untuk Penulis' : 'Alasan Penolakan'}
+                            {type === 'approve' ? 'Feedback untuk Penulis' : type === 'cancel' ? 'Alasan Pembatalan' : 'Alasan Penolakan'}
                         </label>
                         <textarea
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
-                            placeholder={type === 'approve' ? 'Berikan saran yang membangun...' : 'Jelaskan kekurangan materi ini...'}
+                            placeholder={type === 'approve' ? 'Berikan saran yang membangun...' : type === 'cancel' ? 'Alasan membatalkan verifikasi...' : 'Jelaskan kekurangan materi ini...'}
                             className="w-full h-28 p-4 bg-white dark:bg-[#13111C] border border-slate-200 dark:border-white/10 rounded-xl text-[14px] font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all resize-none shadow-sm dark:shadow-none"
                         />
                     </div>
 
                     <div className="flex gap-3">
                         <button onClick={onClose} className="flex-1 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 text-slate-600 dark:text-slate-300 rounded-xl font-['Lexend_Deca'] font-bold text-[12px] uppercase tracking-wider hover:bg-slate-100 dark:hover:bg-white/10 transition-all shadow-sm dark:shadow-none">Batal</button>
-                        <button onClick={handleFormSubmit} disabled={isSubmitting || (type === 'reject' && !reason.trim())} className={`flex-[2] py-3.5 rounded-xl font-['Lexend_Deca'] font-bold text-[12px] uppercase tracking-wider text-white shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 ${type === 'approve' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-rose-600 hover:bg-rose-700'}`}>
-                            {isSubmitting ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Send size={14} />{type === 'approve' ? 'Konfirmasi Validasi' : 'Konfirmasi Tolak'}</>}
+                        <button onClick={handleFormSubmit} disabled={isSubmitting || (type !== 'approve' && !reason.trim())} className={`flex-[2] py-3.5 rounded-xl font-['Lexend_Deca'] font-bold text-[12px] uppercase tracking-wider text-white shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 ${type === 'approve' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-rose-600 hover:bg-rose-700'}`}>
+                            {isSubmitting ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Send size={14} />{type === 'approve' ? 'Konfirmasi Validasi' : type === 'cancel' ? 'Konfirmasi Batal' : 'Konfirmasi Tolak'}</>}
                         </button>
                     </div>
                 </div>
@@ -171,7 +173,7 @@ export default function PakarDashboard() {
 
     const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
     const [selectedNoteForFeedback, setSelectedNoteForFeedback] = useState<any>(null);
-    const [feedbackType, setFeedbackType] = useState<"approve" | "reject">("approve");
+    const [feedbackType, setFeedbackType] = useState<"approve" | "reject" | "cancel">("approve");
 
     const sparkData = [{ v: 40 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 55 }, { v: 85 }, { v: 75 }];
 
@@ -180,7 +182,7 @@ export default function PakarDashboard() {
     const fetchPosts = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get("/api/v1/posts?sort=terbaru");
+            const response = await axios.get("/api/v1/posts?sort=terbaru&submitted_for_review=true");
             const formattedNotes = (response.data.data || []).map((note: any) => ({
                 ...note,
                 id: note._id || note.id,
@@ -201,7 +203,7 @@ export default function PakarDashboard() {
         }
     };
 
-    const handleActionClick = (note: any, type: "approve" | "reject") => {
+    const handleActionClick = (note: any, type: "approve" | "reject" | "cancel") => {
         setSelectedNoteForFeedback(note);
         setFeedbackType(type);
         setIsFeedbackModalOpen(true);
@@ -216,11 +218,15 @@ export default function PakarDashboard() {
             if (feedbackType === "approve") {
                 await axios.put(`/api/v1/posts/${noteId}/verify`, { rating, reason }, config);
                 showToast("Catatan berhasil divalidasi!", "success");
-                setNotes(prev => prev.map(n => n.id === noteId ? { ...n, isValidated: true } : n));
+                setNotes(prev => prev.map(n => n.id === noteId ? { ...n, isValidated: true, isRejected: false } : n));
+            } else if (feedbackType === "cancel") {
+                await axios.put(`/api/v1/posts/${noteId}/unverify`, { reason }, config);
+                showToast("Verifikasi catatan dibatalkan.", "info");
+                setNotes(prev => prev.map(n => n.id === noteId ? { ...n, isValidated: false } : n));
             } else {
                 await axios.put(`/api/v1/posts/${noteId}/reject`, { reason }, config);
                 showToast("Catatan ditolak dengan alasan.", "success");
-                setNotes(prev => prev.map(n => n.id === noteId ? { ...n, isRejected: true } : n));
+                setNotes(prev => prev.map(n => n.id === noteId ? { ...n, isRejected: true, isValidated: false } : n));
             }
             setIsFeedbackModalOpen(false);
         } catch (error) {
@@ -261,25 +267,34 @@ export default function PakarDashboard() {
                     {/* LEFT COLUMN (MAIN CONTENT) */}
                     <div className="flex-1 w-full lg:max-w-[640px] xl:max-w-[700px] min-w-0">
                         
-                        {/* Compact Header */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 pb-6 border-b border-gray-100 dark:border-white/5">
-                            <div className="flex items-center gap-4">
+                        {/* Premium Pakar Header */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 pb-6 border-b border-slate-100 dark:border-white/5">
+                            <div className="flex items-center gap-5">
                                 <div className="relative group shrink-0">
-                                    <AvatarImage src={user?.avatar} alt={user?.name} size={64} className="relative rounded-2xl shadow-sm border border-slate-100 dark:border-white/10" />
-                                    <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white dark:bg-[#1C1A29] rounded-md shadow-sm flex items-center justify-center border border-slate-100 dark:border-white/10"><Sparkles className="w-3 h-3 text-indigo-600 dark:text-primary animate-pulse" /></div>
+                                    <div className="absolute -inset-1 bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-indigo-500/20 rounded-[18px] blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                    <AvatarImage src={user?.avatar} alt={user?.name} size={64} className="relative rounded-[16px] shadow-md border-2 border-white dark:border-white/10 ring-1 ring-slate-100 dark:ring-white/5" />
+                                    <div className="absolute -bottom-1.5 -right-1.5 w-7 h-7 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg shadow-md flex items-center justify-center ring-2 ring-white dark:ring-[#13111C]">
+                                        <ShieldCheck className="w-3.5 h-3.5 text-white" />
+                                    </div>
                                 </div>
                                 <div>
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <span className="text-indigo-600 dark:text-primary font-['Lexend_Deca'] text-[11px] font-black tracking-[0.2em] uppercase">Verified Expert</span>
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-500/10 dark:to-purple-500/10 text-indigo-600 dark:text-indigo-400 font-['Lexend_Deca'] text-[10px] font-bold tracking-wider rounded-full border border-indigo-100/80 dark:border-indigo-500/20">
+                                            <Sparkles className="w-3 h-3" />
+                                            Verified Expert
+                                        </span>
                                     </div>
-                                    <h2 className="text-slate-900 dark:text-slate-100 font-['Lexend_Deca'] font-extrabold text-2xl tracking-tight leading-none">
+                                    <h2 className="text-slate-900 dark:text-slate-100 font-['Lexend_Deca'] font-extrabold text-[22px] tracking-tight leading-none mb-1">
                                         {user?.name || "Pakar Ba-Yu"}
                                     </h2>
+                                    <p className="text-[13px] font-['Manrope'] text-slate-500 dark:text-slate-400 font-medium">Panel kurasi dan validasi materi</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <button className="bg-slate-800 dark:bg-indigo-600 text-white rounded-xl px-5 py-2.5 text-[12px] font-bold font-['Lexend_Deca'] uppercase tracking-wider flex items-center gap-2 hover:bg-slate-900 dark:hover:bg-indigo-700 shadow-sm transition-all"><BookOpen size={16} />Baca Massal</button>
-                            </div>
+                            <Link to="/explore" className="px-5 py-2.5 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 rounded-xl font-['Lexend_Deca'] font-bold text-[12px] tracking-wide flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-white/5 hover:border-indigo-200 dark:hover:border-indigo-500/20 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-sm dark:shadow-none transition-all group/btn">
+                                <BookOpen size={16} />
+                                Jelajahi
+                                <ArrowUpRight size={14} className="opacity-0 -ml-2 group-hover/btn:opacity-100 group-hover/btn:ml-0 transition-all" />
+                            </Link>
                         </div>
 
                         <div className="space-y-6">
@@ -308,9 +323,10 @@ export default function PakarDashboard() {
 
                             <div className="grid grid-cols-1 gap-4">
                                 {isLoading ? (
-                                    <div className="flex flex-col items-center justify-center py-20">
-                                        <div className="w-10 h-10 border-4 border-indigo-100 dark:border-white/10 border-t-indigo-600 rounded-full animate-spin mb-4" />
-                                        <span className="text-slate-400 dark:text-slate-500 font-semibold text-[13px] animate-pulse">Menghubungkan Server Pakar...</span>
+                                    <div className="flex flex-col gap-6">
+                                        {[...Array(3)].map((_, i) => (
+                                            <NoteCardSkeleton key={i} />
+                                        ))}
                                     </div>
                                 ) : filteredNotes.length === 0 ? (
                                     <div className="bg-white dark:bg-[#1C1A29] rounded-[24px] py-20 border border-slate-200 dark:border-white/10 border-dashed text-center flex flex-col items-center shadow-sm dark:shadow-none">
@@ -319,72 +335,30 @@ export default function PakarDashboard() {
                                         <p className="text-slate-500 dark:text-slate-400 font-medium text-[14px]">Antrean materi verifikasi kamu kosong hari ini.</p>
                                     </div>
                                 ) : (
-                                    <div className="space-y-4">
-                                        {filteredNotes.slice(0, visibleItemsCount).map((note) => {
-                                            const subject = mataPelajaran.find(m => m.name === note.mataPelajaran);
-                                            return (
-                                                <article key={note.id} className="group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-8 border-b border-slate-100 dark:border-white/5 last:border-0 hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors bg-transparent outline-none px-4 sm:px-6 rounded-[24px]">
-                                                    {/* Feed Text */}
-                                                    <div className="flex-1 min-w-0 flex flex-col w-full h-full">
-                                                        {/* Author Header */}
-                                                        <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-slate-800">
-                                                            <div className="flex items-center gap-1.5 group/author">
-                                                                <AvatarImage src={note.author?.avatar} size={20} className="ring-2 ring-transparent group-hover/author:ring-indigo-500/20 transition-all" />
-                                                                <span className="font-bold text-slate-950 dark:text-slate-200 group-hover/author:underline tracking-tight">{note.author?.name}</span>
-                                                            </div>
-                                                            <span className="text-slate-700 px-0.5 font-bold">di</span>
-                                                            <span className="font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">{note.mataPelajaran}</span>
-                                                            {note.kelas && note.kelas !== "-" && note.kelas !== "Semua" && (
+                                    <>
+                                        <div className="flex flex-col">
+                                            {filteredNotes.slice(0, visibleItemsCount).map((note) => (
+                                                <NoteCard
+                                                    key={note.id}
+                                                    note={note}
+                                                    renderActions={(n) => (
+                                                        <>
+                                                            {n.isValidated ? (
                                                                 <>
-                                                                    <span className="text-[10px] text-slate-400 mx-0.5 font-bold">•</span>
-                                                                    <span className="text-slate-800 dark:text-slate-300 font-bold tracking-tight">Kelas {note.kelas}</span>
-                                                                </>
-                                                            )}
-                                                            <span className="text-[10px] text-slate-400 mx-0.5 font-bold">•</span>
-                                                            <span className="text-[12px] text-slate-500 dark:text-slate-400 font-bold">{new Date(note.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
-                                                        </div>
-
-                                                        {/* Title */}
-                                                        <h2 className="text-[20px] md:text-[22px] font-extrabold text-slate-900 dark:text-slate-100 leading-[1.25] tracking-tight group-hover:text-indigo-600 transition-colors line-clamp-2 mb-2 font-['Lexend_Deca']">
-                                                            {note.title}
-                                                        </h2>
-
-                                                        {/* Excerpt */}
-                                                        <p className="text-[15px] font-['Manrope'] text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed mb-5 pr-2 font-medium">
-                                                            {note.description}
-                                                        </p>
-
-                                                        {/* Action Buttons for Pakar */}
-                                                        <div className="flex items-center gap-3 mt-auto flex-wrap">
-                                                            {note.isValidated ? (
-                                                                <>
-                                                                    <div className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full px-4 py-2 border border-emerald-100 dark:border-emerald-500/20 font-['Lexend_Deca'] font-bold text-[11px] flex items-center gap-2 uppercase tracking-widest"><ShieldCheck size={16} /> Verified</div>
-                                                                    <Link to={`/note/${note.id}`} className="px-5 py-2 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 rounded-full font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest flex items-center gap-1.5 hover:bg-slate-50 dark:hover:bg-white/5 hover:border-indigo-200 hover:text-indigo-600 transition-all shadow-sm dark:shadow-none group/btn">Detail<ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" /></Link>
+                                                                    <div className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full px-3 py-1.5 border border-emerald-100 dark:border-emerald-500/20 font-['Lexend_Deca'] font-bold text-[10px] flex items-center gap-1.5 uppercase tracking-widest"><ShieldCheck size={14} /> Verified</div>
+                                                                    <button onClick={() => handleActionClick(n, "cancel")} className="px-3 py-1.5 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full font-['Lexend_Deca'] font-bold text-[10px] flex items-center gap-1.5 uppercase tracking-widest hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-all border border-transparent hover:border-rose-200 dark:hover:border-rose-500/30">Batal Verif</button>
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <button onClick={() => handleActionClick(note, "approve")} className="px-5 py-2 bg-indigo-600 text-white rounded-full font-['Lexend_Deca'] font-bold text-[11px] shadow-sm hover:bg-indigo-700 transition-all flex items-center gap-1.5 uppercase tracking-widest"><CheckCircle size={14} /> Setuju</button>
-                                                                    <button onClick={() => handleActionClick(note, "reject")} className="px-4 py-2 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 text-rose-500 rounded-full hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:border-rose-200 transition-all flex items-center shadow-sm dark:shadow-none"><XCircle size={16} /></button>
-                                                                    <Link to={`/note/${note.id}`} className="px-5 py-2 bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 rounded-full font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest flex items-center hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-all shadow-sm dark:shadow-none">Detail</Link>
+                                                                    <button onClick={() => handleActionClick(n, "approve")} className="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-full font-['Lexend_Deca'] font-bold text-[10px] hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all flex items-center gap-1.5 uppercase tracking-widest border border-indigo-100 dark:border-indigo-500/20"><CheckCircle size={14} /> Setuju</button>
+                                                                    <button onClick={() => handleActionClick(n, "reject")} className="px-3 py-1.5 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full font-['Lexend_Deca'] font-bold text-[10px] hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-all flex items-center gap-1.5 uppercase tracking-widest border border-rose-100 dark:border-rose-500/20"><XCircle size={14} /> Tolak</button>
                                                                 </>
                                                             )}
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Thumbnail */}
-                                                    <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-slate-50 dark:bg-white/5 relative shadow-sm border border-slate-100 dark:border-white/5 flex items-center justify-center">
-                                                        {note.thumbnail ? (
-                                                            <img src={note.thumbnail} alt={note.title} className="w-full h-full object-cover transition-transform duration-500" />
-                                                        ) : (
-                                                            <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${subject?.color || "#5D5CE6"}10` }}>
-                                                                <span className="text-5xl transition-transform duration-500">{subject?.icon || "📘"}</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </article>
-                                            );
-                                        })}
-                                        
+                                                        </>
+                                                    )}
+                                                />
+                                            ))}
+                                        </div>
                                         {filteredNotes.length > visibleItemsCount && (
                                             <div className="mt-8 flex justify-center">
                                                 <button onClick={handleLoadMore} className="px-6 py-3 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 text-[13px] shadow-sm transition-all">
@@ -392,7 +366,7 @@ export default function PakarDashboard() {
                                                 </button>
                                             </div>
                                         )}
-                                    </div>
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -406,21 +380,27 @@ export default function PakarDashboard() {
                                 <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-6">
                                     Statistik Kurasi
                                 </h3>
-                                <div className="flex flex-col gap-4">
+                                <div className="grid grid-cols-1 gap-3">
                                     {stats.map((stat, index) => {
                                         const Icon = stat.icon;
                                         return (
-                                            <div key={index} className="bg-white dark:bg-[#1C1A29] rounded-[20px] p-5 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none flex items-center gap-4 group hover:border-indigo-200 dark:hover:border-primary/20 transition-all">
-                                                <div className={`w-12 h-12 rounded-[16px] flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform bg-slate-50 dark:bg-white/5`}>
-                                                    <Icon className={`w-5 h-5 ${stat.color} dark:text-primary`} />
-                                                </div>
-                                                <div>
-                                                    <p className="text-2xl font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 leading-none mb-1">
-                                                        {stat.value}
-                                                    </p>
-                                                    <p className="text-[12px] font-['Manrope'] text-gray-500 font-bold uppercase tracking-wider line-clamp-1">
-                                                        {stat.label}
-                                                    </p>
+                                            <div key={index} className="relative overflow-hidden bg-white dark:bg-[#1C1A29] rounded-[20px] p-5 border border-slate-100 dark:border-white/5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none group hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 cursor-default">
+                                                {/* Decorative background element */}
+                                                <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full blur-2xl opacity-0 group-hover:opacity-10 dark:group-hover:opacity-20 transition-opacity duration-500 pointer-events-none" style={{ backgroundColor: stat.sparkColor }} />
+                                                
+                                                <div className="flex items-center gap-4 relative z-10">
+                                                    <div className="w-12 h-12 rounded-[14px] flex items-center justify-center bg-slate-50 dark:bg-white/5 group-hover:scale-110 transition-transform duration-500 relative overflow-hidden">
+                                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500" style={{ backgroundColor: stat.sparkColor }} />
+                                                        <Icon className={`w-[22px] h-[22px] ${stat.color} dark:text-slate-300 relative z-10`} />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[26px] font-['Lexend_Deca'] font-black text-slate-800 dark:text-slate-100 leading-none tracking-tight mb-1">
+                                                            {stat.value}
+                                                        </p>
+                                                        <p className="text-[13px] font-['Manrope'] text-slate-500 dark:text-slate-400 font-semibold tracking-wide">
+                                                            {stat.label}
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         );
@@ -432,7 +412,7 @@ export default function PakarDashboard() {
                                 <div className="absolute top-0 right-0 w-16 h-16 bg-indigo-50/50 dark:bg-indigo-500/10 rounded-bl-[24px]" />
                                 <div className="flex items-center gap-3 mb-6">
                                     <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-500/10 rounded-[12px] flex items-center justify-center"><Map className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /></div>
-                                    <div><h3 className="font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100 text-[15px] uppercase tracking-tight">Pedoman</h3><p className="text-[10px] text-indigo-500 dark:text-indigo-400 font-semibold uppercase tracking-widest">Pakar 2026</p></div>
+                                    <div><h3 className="font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100 text-[15px] tracking-tight">Pedoman Pakar</h3><p className="text-[11px] text-indigo-500 dark:text-indigo-400 font-semibold tracking-wide">Edisi 2026</p></div>
                                 </div>
                                 <div className="space-y-5">
                                     {[
