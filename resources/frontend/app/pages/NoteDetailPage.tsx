@@ -819,7 +819,7 @@ export default function NoteDetailPage() {
                               followers_count: n.user.followers_count || 0,
                               is_followed_by_me:
                                   n.user.is_followed_by_me || false,
-                              totalCatatan: n.user.posts_count || 0,
+                              totalCatatan: n.user.totalCatatan || n.user.posts_count || 0,
                               followers: n.user.followers_count || 0,
                           }
                         : {

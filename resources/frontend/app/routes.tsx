@@ -25,6 +25,7 @@ import PrivacySettingsPage from './pages/PrivacySettingsPage';
 import FollowRequestsPage from './pages/FollowRequestsPage';
 import HelpPage from './pages/HelpPage';
 import CompleteProfilePage from './pages/CompleteProfilePage';
+import ThemePage from './pages/ThemePage';
 
 export const router = createBrowserRouter([
   {
@@ -106,6 +107,10 @@ export const router = createBrowserRouter([
           {
             path: 'settings/privacy',
             element: <PrivacySettingsPage />,
+          },
+          {
+            path: 'settings/theme',
+            element: <ThemePage />,
           },
           {
             path: 'settings/follow-requests',

@@ -170,7 +170,7 @@ export default function SettingsPage() {
             <SettingRow 
               icon={theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor} 
               title="Tampilan" 
-              onClick={toggleTheme}
+              to="/settings/theme"
               rightElement={
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-slate-400 dark:text-slate-500 font-medium bg-slate-100 dark:bg-white/10 px-3 py-1 rounded-full">
@@ -207,7 +207,7 @@ export default function SettingsPage() {
 
           <SectionHeader title="Dukungan & Info" />
           <div className="divide-y divide-slate-50 dark:divide-white/5">
-             <SettingRow icon={HelpCircle} title="Bantuan" to="/help" />
+             <SettingRow icon={HelpCircle} title="Bantuan" to="/settings/help" />
              <SettingRow icon={Shield} title="Kebijakan Privasi" to="/privacy" />
              <SettingRow icon={ExternalLink} title="Status Aplikasi" rightElement={<span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold rounded-md">Aktif</span>} />
           </div>
