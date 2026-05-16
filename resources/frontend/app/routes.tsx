@@ -26,6 +26,10 @@ import FollowRequestsPage from './pages/FollowRequestsPage';
 import HelpPage from './pages/HelpPage';
 import CompleteProfilePage from './pages/CompleteProfilePage';
 import ThemePage from './pages/ThemePage';
+import AboutPage from './pages/AboutPage';
+import StatusPage from './pages/StatusPage';
+import CareersPage from './pages/CareersPage';
+import BlogPage from './pages/BlogPage';
 
 export const router = createBrowserRouter([
   {
@@ -67,6 +71,22 @@ export const router = createBrowserRouter([
       {
         path: 'privacy',
         element: <PrivacyPage />,
+      },
+      {
+        path: 'about',
+        element: <AboutPage />,
+      },
+      {
+        path: 'status',
+        element: <StatusPage />,
+      },
+      {
+        path: 'careers',
+        element: <CareersPage />,
+      },
+      {
+        path: 'blog',
+        element: <BlogPage />,
       },
       {
         // Protected Wrapper
@@ -142,4 +162,4 @@ export const router = createBrowserRouter([
   },
 ], {
   basename: '/app',
-});
+}); // Trigger HMR

@@ -542,7 +542,7 @@ export default function PublicProfilePage() {
                 {/* 3. Sticky Tab Navigation - Ba-Yu Signature Style */}
                 <div
                     id="profil-tabs"
-                    className="sticky top-0 bg-white/95 dark:bg-[#13111C]/95 backdrop-blur-md z-40 border-b border-gray-100 dark:border-white/5 mb-4 pt-2"
+                    className="sticky top-0 bg-white dark:bg-[#13111C] z-40 border-b border-gray-100 dark:border-white/10 mb-4 pt-2"
                 >
                     <div className="max-w-4xl mx-auto px-4 sm:px-6">
                         <div className="flex gap-8 overflow-x-auto scrollbar-hide px-1">

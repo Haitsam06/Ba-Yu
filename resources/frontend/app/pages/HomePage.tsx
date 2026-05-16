@@ -501,37 +501,37 @@ export default function HomePage() {
                             {/* Quick Links */}
                             <div className="mt-8 flex flex-wrap gap-x-4 gap-y-3 text-[13px] font-['Manrope'] font-medium text-gray-500 dark:text-gray-600">
                                 <Link
-                                    to="#"
+                                    to="/settings/help"
                                     className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Bantuan
                                 </Link>
                                 <Link
-                                    to="#"
+                                    to="/status"
                                     className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Status
                                 </Link>
                                 <Link
-                                    to="#"
+                                    to="/about"
                                     className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Tentang Kami
                                 </Link>
                                 <Link
-                                    to="#"
+                                    to="/careers"
                                     className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Karir
                                 </Link>
                                 <Link
-                                    to="#"
+                                    to="/terms"
                                     className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Ketentuan
                                 </Link>
                                 <Link
-                                    to="#"
+                                    to="/privacy"
                                     className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
                                     Privasi

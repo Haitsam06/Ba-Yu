@@ -498,28 +498,30 @@ export default function ProfilePage() {
 
                     {/* Profile Info - Twitter Layout (Left Aligned, Clean) */}
                     <div className="mb-5">
-                        <div className="flex items-center gap-3 flex-wrap">
-                            <h1 className="text-[22px] sm:text-[24px] font-extrabold font-['Lexend_Deca'] text-gray-900 dark:text-gray-100 leading-tight">
-                                {currentUser.name || currentUser.username}
-                            </h1>
+                        <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <h1 className="text-[22px] sm:text-[24px] font-extrabold font-['Lexend_Deca'] text-gray-900 dark:text-gray-100 leading-tight">
+                                    {currentUser.name || currentUser.username}
+                                </h1>
+                                {currentUser.role === "pakar" && (
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[12px] border border-emerald-100 dark:border-emerald-500/20">
+                                        <ShieldCheck className="w-3.5 h-3.5" /> Pakar
+                                    </span>
+                                )}
+                                {currentUser.role === "admin" && (
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 font-bold text-[12px] border border-purple-100 dark:border-purple-500/20">
+                                        <Shield className="w-3.5 h-3.5" /> Admin
+                                    </span>
+                                )}
+                            </div>
                             {currentUser.username && (
-                                <p className="w-full text-[14px] text-gray-500 dark:text-gray-400 font-medium font-['Manrope'] -mt-1">
+                                <p className="text-[14px] text-gray-500 dark:text-gray-400 font-medium font-['Manrope']">
                                     @{currentUser.username}
                                 </p>
                             )}
-                            {currentUser.role === "pakar" && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[12px] border border-emerald-100 dark:border-emerald-500/20">
-                                    <ShieldCheck className="w-3.5 h-3.5" /> Pakar
-                                </span>
-                            )}
-                            {currentUser.role === "admin" && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 font-bold text-[12px] border border-purple-100 dark:border-purple-500/20">
-                                    <Shield className="w-3.5 h-3.5" /> Admin
-                                </span>
-                            )}
                         </div>
 
-                        <div className="flex flex-col gap-2 mt-2 font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400">
+                        <div className="flex flex-col gap-2 mt-3 font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400">
                             {currentUser.role !== "pakar" && currentUser.role !== "admin" && (
                                 <span className="flex items-center gap-1.5">
                                     <MapPin className="w-4 h-4" /> 
@@ -586,7 +588,7 @@ export default function ProfilePage() {
                 {/* 3. Sticky Tab Navigation - Ba-Yu Signature Style */}
                 <div
                     id="profil-tabs"
-                    className="sticky top-0 bg-white/95 dark:bg-[#13111C]/95 backdrop-blur-md z-40 border-b border-gray-100 dark:border-white/5 mb-4 pt-2"
+                    className="sticky top-0 bg-white dark:bg-[#13111C] z-40 border-b border-gray-100 dark:border-white/10 mb-4 pt-2"
                 >
                     <div className="max-w-4xl mx-auto px-4 sm:px-6">
                         <div className="flex gap-8 overflow-x-auto scrollbar-hide px-1">

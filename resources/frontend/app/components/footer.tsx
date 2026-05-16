@@ -68,19 +68,19 @@ export function Footer() {
             <h4 className="font-semibold mb-4 dark:text-gray-100">Sumber Daya</h4>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/settings/help" className="text-muted-foreground hover:text-primary transition-colors">
                   Panduan
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/blog" className="text-muted-foreground hover:text-primary transition-colors">
                   Blog
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/settings/help" className="text-muted-foreground hover:text-primary transition-colors">
                   Bantuan
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -90,19 +90,19 @@ export function Footer() {
             <h4 className="font-semibold mb-4 dark:text-gray-100">Perusahaan</h4>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
                   Tentang Kami
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/careers" className="text-muted-foreground hover:text-primary transition-colors">
                   Karir
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
                   Kontak
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -113,12 +113,12 @@ export function Footer() {
             © 2026 Ba-Yu (BelajarYuk). All rights reserved.
           </p>
           <div className="flex gap-6 text-sm">
-            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+            <Link to="/privacy" className="text-muted-foreground hover:text-primary transition-colors">
               Kebijakan Privasi
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+            </Link>
+            <Link to="/terms" className="text-muted-foreground hover:text-primary transition-colors">
               Syarat & Ketentuan
-            </a>
+            </Link>
           </div>
         </div>
       </div>
