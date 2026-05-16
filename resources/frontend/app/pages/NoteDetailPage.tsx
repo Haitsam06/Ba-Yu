@@ -737,49 +737,31 @@ export default function NoteDetailPage() {
 
     useEffect(() => {
         const hash = window.location.hash;
-
-        if (hash && comments && comments.length > 0) {
+        if (hash && hash.startsWith("#comment-") && comments.length > 0) {
+            // Auto open comment drawer because the comment might not be in the top 2
+            setIsCommentDrawerOpen(true);
+            
             setTimeout(() => {
-                const element = document.querySelector(hash);
-                if (element) {
-                    element.scrollIntoView({
-                        behavior: "smooth",
-                        block: "center",
-                    });
-
-                    element.classList.add(
-                        "bg-yellow-50",
-                        "transition-colors",
-                        "duration-1000",
-                    );
-                    setTimeout(
-                        () => element.classList.remove("bg-yellow-50"),
-                        2000,
-                    );
-                }
-            }, 500);
-        }
-    }, [comments]);
-
-    useEffect(() => {
-        if (window.location.hash && comments.length > 0) {
-            setTimeout(() => {
-                const el = document.getElementById(
-                    window.location.hash.slice(1),
-                );
+                const elId = hash.slice(1);
+                // Because there are two identical IDs (one in main page, one in drawer),
+                // we should select the one inside the drawer to be safe
+                const drawer = document.querySelector('.fixed.top-\\[130px\\]');
+                const el = drawer ? drawer.querySelector(`#${elId}`) : document.getElementById(elId);
+                
                 if (el) {
                     el.scrollIntoView({ behavior: "smooth", block: "center" });
                     el.classList.add(
-                        "bg-indigo-50/50",
+                        "bg-indigo-50",
+                        "dark:bg-indigo-500/20",
                         "transition-colors",
                         "duration-1000",
                     );
                     setTimeout(
-                        () => el.classList.remove("bg-indigo-50/50"),
-                        2000,
+                        () => el.classList.remove("bg-indigo-50", "dark:bg-indigo-500/20"),
+                        3000,
                     );
                 }
-            }, 500); // give dom time to render
+            }, 600); // wait for drawer animation (500ms) to complete
         }
     }, [comments, window.location.hash]);
 
@@ -1464,7 +1446,7 @@ export default function NoteDetailPage() {
                                 to={`/profile/${author._id || author.id}`}
                                 className="font-['Manrope'] font-bold text-gray-900 dark:text-gray-100 text-[15px] hover:text-primary transition-colors"
                             >
-                                {author.name}
+                                {author.name || `@${author.username}`}
                             </Link>
                             {isAuthenticated &&
                                 user?.id !== author.id &&
@@ -1810,13 +1792,8 @@ export default function NoteDetailPage() {
                                     className="hover:text-primary transition-colors"
                                 >
                                     <h3 className="font-['Lexend_Deca'] font-extrabold text-[28px] text-gray-900 dark:text-gray-100 hover:text-primary transition-colors leading-none">
-                                        {author.name || author.username}
+                                        {author.name || `@${author.username}`}
                                     </h3>
-                                    {author.username && (
-                                        <p className="font-['Manrope'] text-[15px] text-gray-500 dark:text-gray-400 font-bold -mt-1">
-                                            @{author.username}
-                                        </p>
-                                    )}
                                 </Link>
                                 {author.role === "pakar" && (
                                     <div

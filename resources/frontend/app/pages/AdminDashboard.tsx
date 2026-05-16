@@ -43,6 +43,7 @@ export default function AdminDashboard() {
     const [reportsList, setReportsList] = useState<any[]>([]);
     const [usersList, setUsersList] = useState<any[]>([]);
     const [notesList, setNotesList] = useState<any[]>([]);
+    const [totalNotes, setTotalNotes] = useState<number>(0);
 
     const [isExportModalOpen, setIsExportModalOpen] = useState(false);
     const [statusFilter, setStatusFilter] = useState<"semua" | "terverifikasi" | "belum">("semua");
@@ -114,6 +115,7 @@ export default function AdminDashboard() {
             // Kita nembak API posts yang kemaren lu bikin di Backend!
             const res = await axios.get("/api/v1/posts");
             setNotesList(res.data.data || []);
+            setTotalNotes(res.data.meta?.total || (res.data.data ? res.data.data.length : 0));
         } catch (e) {
             console.error("Failed to fetch notes", e);
         }
@@ -156,28 +158,28 @@ export default function AdminDashboard() {
         {
             label: "Total User",
             value: usersList.length,
-            color: "bg-blue-500",
+            color: "text-blue-500",
             icon: Users,
             increment: "+12%",
         },
         {
             label: "Total Catatan",
-            value: notesList.length,
-            color: "bg-indigo-500",
+            value: totalNotes,
+            color: "text-indigo-500",
             icon: FileText,
             increment: "+8%",
         },
         {
             label: "Pending Laporan",
             value: reportsList.length,
-            color: "bg-orange-500",
+            color: "text-orange-500",
             icon: AlertCircle,
             increment: "+2%",
         },
         {
             label: "Sertifikasi Pakar",
             value: pendingCerts.length,
-            color: "bg-fuchsia-600",
+            color: "text-fuchsia-600",
             icon: ShieldCheck,
             increment: "Baru",
         },
@@ -364,124 +366,108 @@ export default function AdminDashboard() {
                     {/* LEFT COLUMN (MAIN CONTENT) */}
                     <div className="flex-1 w-full lg:max-w-[640px] xl:max-w-[700px] min-w-0">
                         
-                        {/* Compact Header */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 pb-6 border-b border-gray-100 dark:border-white/5">
+                        {/* Minimalist Admin Header */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 pb-6 border-b border-gray-200 dark:border-white/10">
                             <div className="flex items-center gap-4">
                                 <AvatarImage
                                     src={user?.avatar}
                                     alt={user?.name}
                                     size={64}
-                                    className="rounded-2xl shadow-sm border border-slate-100 dark:border-white/10"
+                                    className="rounded-full border border-gray-200 dark:border-white/10"
                                 />
                                 <div>
-                                    <p className="text-indigo-600 dark:text-primary font-['Lexend_Deca'] text-[11px] font-black tracking-[0.2em] uppercase mb-1">
-                                        Workspace Admin
-                                    </p>
-                                    <h2 className="text-slate-900 dark:text-slate-100 font-['Lexend_Deca'] font-extrabold text-2xl tracking-tight leading-none">
+                                    <h2 className="text-gray-900 dark:text-gray-100 font-bold text-xl tracking-tight leading-none mb-1.5 flex items-center gap-2">
                                         {user?.name || "Administrator"}
                                     </h2>
+                                    <p className="text-[14px] text-gray-500 dark:text-gray-400">Workspace Admin</p>
                                 </div>
                             </div>
                             <button 
                                 onClick={() => setIsExportModalOpen(true)}
-                                className="px-5 py-2.5 bg-white dark:bg-[#1C1A29] hover:bg-slate-50 dark:hover:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-slate-700 dark:text-slate-300 font-['Lexend_Deca'] font-bold text-[12px] uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-sm"
+                                className="px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-full font-bold text-[13px] hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
                             >
-                                <DownloadCloud className="w-4 h-4 text-indigo-600 dark:text-primary" /> Ekspor Data
+                                <DownloadCloud className="w-4 h-4 text-gray-500" /> Ekspor Data
                             </button>
                         </div>
 
                         <div className="space-y-6">
-                            {/* Search & Tabs Controls */}
-                            <div className="bg-white dark:bg-[#1C1A29] rounded-3xl shadow-sm dark:shadow-none border border-gray-100 dark:border-white/5 p-2 md:p-3">
-                                <div className="flex flex-col md:flex-row gap-3">
-                                    <div className="flex-1 flex flex-col sm:flex-row gap-3">
-                                        <div className="flex-1 relative">
-                                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" strokeWidth={2.5} />
-                                            <input
-                                                type="text"
-                                                value={searchQuery}
-                                                onChange={(e) =>
-                                                    setSearchQuery(e.target.value)
-                                                }
-                                                placeholder="Cari user, catatan, atau ID laporan..."
-                                                className="w-full pl-11 pr-4 py-3 bg-gray-50 dark:bg-white/5 border border-transparent hover:border-gray-200 dark:hover:border-white/10 rounded-2xl font-['Manrope'] text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                                            />
-                                        </div>
-                                        <div className="relative shrink-0">
-                                            <button 
-                                                onClick={() => setShowFilterPopup(!showFilterPopup)}
-                                                className={`bg-gray-50 dark:bg-white/5 border hover:border-gray-200 dark:hover:border-white/10 rounded-2xl px-5 py-3 font-['Manrope'] font-bold text-sm flex items-center gap-2 transition-all h-full ${
-                                                    showFilterPopup || statusFilter !== "semua" || sortBy !== "terbaru"
-                                                    ? "border-indigo-500/50 text-indigo-600 dark:text-primary bg-indigo-50/50 dark:bg-indigo-500/10" 
-                                                    : "border-transparent text-gray-700 dark:text-gray-300"
-                                                }`}
-                                            >
-                                                <Filter className="w-4 h-4" />
-                                            </button>
-                                            
-                                            {showFilterPopup && (
-                                                <>
-                                                    <div className="fixed inset-0 z-[40]" onClick={() => setShowFilterPopup(false)} />
-                                                    <div className="absolute top-full mt-2 left-0 w-[280px] bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 rounded-[20px] shadow-2xl p-5 z-[100] animate-in fade-in slide-in-from-top-2">
-                                                        <div className="mb-5">
-                                                            <label className="block text-[11px] font-['Lexend_Deca'] font-bold text-slate-500 uppercase tracking-widest mb-3">Status Verifikasi</label>
-                                                            <CustomSelect
-                                                                value={statusFilter}
-                                                                onChange={(val) => setStatusFilter(val as any)}
-                                                                options={[
-                                                                    { value: "semua", label: "Semua Status" },
-                                                                    { value: "terverifikasi", label: "Hanya Terverifikasi" },
-                                                                    { value: "belum", label: "Belum Terverifikasi" },
-                                                                ]}
-                                                            />
-                                                        </div>
-                                                        <div>
-                                                            <label className="block text-[11px] font-['Lexend_Deca'] font-bold text-slate-500 uppercase tracking-widest mb-3">Urutkan Berdasarkan</label>
-                                                            <CustomSelect
-                                                                value={sortBy}
-                                                                onChange={(val) => setSortBy(val as any)}
-                                                                options={[
-                                                                    { value: "terbaru", label: "Terbaru (Newest)" },
-                                                                    { value: "terlama", label: "Terlama (Oldest)" },
-                                                                ]}
-                                                            />
-                                                        </div>
+                            {/* Minimalist Search & Tabs Controls */}
+                            <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
+                                <div className="flex flex-1 w-full gap-2 relative">
+                                    <div className="relative w-full group">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search className="h-4 w-4 text-gray-400" /></div>
+                                        <input
+                                            type="text"
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            placeholder="Cari user, catatan, atau ID laporan..."
+                                            className="w-full pl-9 pr-4 py-2 bg-gray-100/50 dark:bg-white/5 border-none rounded-full text-[14px] text-gray-900 dark:text-gray-100 placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                                        />
+                                    </div>
+                                    <div className="relative shrink-0">
+                                        <button 
+                                            onClick={() => setShowFilterPopup(!showFilterPopup)}
+                                            className={`px-3 py-2 bg-gray-100/50 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-colors flex items-center justify-center h-full ${showFilterPopup || statusFilter !== "semua" || sortBy !== "terbaru" ? "text-indigo-600" : "text-gray-500"}`}
+                                        >
+                                            <Filter className="w-4 h-4" />
+                                        </button>
+                                        
+                                        {showFilterPopup && (
+                                            <>
+                                                <div className="fixed inset-0 z-[40]" onClick={() => setShowFilterPopup(false)} />
+                                                <div className="absolute top-full mt-2 left-0 sm:left-auto sm:right-0 w-[280px] bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl p-5 z-[100] animate-in fade-in slide-in-from-top-2">
+                                                    <div className="mb-5">
+                                                        <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">Status Verifikasi</label>
+                                                        <CustomSelect
+                                                            value={statusFilter}
+                                                            onChange={(val) => setStatusFilter(val as any)}
+                                                            options={[
+                                                                { value: "semua", label: "Semua Status" },
+                                                                { value: "terverifikasi", label: "Hanya Terverifikasi" },
+                                                                { value: "belum", label: "Belum Terverifikasi" },
+                                                            ]}
+                                                        />
                                                     </div>
-                                                </>
-                                            )}
-                                        </div>
+                                                    <div>
+                                                        <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">Urutkan Berdasarkan</label>
+                                                        <CustomSelect
+                                                            value={sortBy}
+                                                            onChange={(val) => setSortBy(val as any)}
+                                                            options={[
+                                                                { value: "terbaru", label: "Terbaru (Newest)" },
+                                                                { value: "terlama", label: "Terlama (Oldest)" },
+                                                            ]}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
-                                    {/* Tabs */}
-                                    <div className="flex gap-1.5 p-1 bg-slate-100 dark:bg-white/5 rounded-xl overflow-x-auto scrollbar-hide mt-6 md:mt-0">
-                                        {[
-                                            { id: "sertifikasi", label: "Verifikasi", icon: ShieldCheck },
-                                            { id: "catatan", label: "Catatan", icon: FileText },
-                                            { id: "laporan", label: "Laporan", icon: Flag },
-                                            { id: "users", label: "Users", icon: Users },
-                                        ].map((tab) => {
-                                            const Icon = tab.icon;
-                                            const isActive = activeTab === tab.id;
-                                            return (
-                                                <button
-                                                    key={tab.id}
-                                                    onClick={() => setActiveTab(tab.id as TabType)}
-                                                    className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-wider whitespace-nowrap transition-all ${
-                                                        isActive
-                                                            ? "bg-white dark:bg-[#252336] text-slate-800 dark:text-slate-100 shadow-sm dark:shadow-[0_4px_12px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-white/5"
-                                                            : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 bg-transparent border border-transparent"
-                                                    }`}
-                                                >
-                                                    <Icon className="w-3.5 h-3.5" strokeWidth={2.5} />
-                                                    {tab.label}
-                                                    {tab.id === "sertifikasi" && pendingCerts.length > 0 && (
-                                                        <span className="ml-1 bg-rose-500 text-white text-[9px] px-1.5 py-0.5 rounded-md font-bold leading-none">
-                                                            {pendingCerts.length}
-                                                        </span>
-                                                    )}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
+                                </div>
+                                
+                                {/* Tabs */}
+                                <div className="flex w-full md:w-auto border-b border-gray-200 dark:border-white/10 overflow-x-auto scrollbar-hide">
+                                    {[
+                                        { id: "sertifikasi", label: "Verifikasi" },
+                                        { id: "catatan", label: "Catatan" },
+                                        { id: "laporan", label: "Laporan" },
+                                        { id: "users", label: "Users" },
+                                    ].map((tab) => {
+                                        const isActive = activeTab === tab.id;
+                                        return (
+                                            <button
+                                                key={tab.id}
+                                                onClick={() => setActiveTab(tab.id as TabType)}
+                                                className={`relative flex-none px-4 py-3 text-[14px] font-bold transition-colors whitespace-nowrap ${isActive ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5"}`}
+                                            >
+                                                {tab.label}
+                                                {tab.id === "sertifikasi" && pendingCerts.length > 0 && (
+                                                    <span className="ml-1.5 text-rose-500">({pendingCerts.length})</span>
+                                                )}
+                                                {isActive && <div className="absolute bottom-0 left-0 right-0 h-1 bg-indigo-500 rounded-t-full" />}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
 
@@ -535,24 +521,24 @@ export default function AdminDashboard() {
                                                                     href={`http://localhost:8000/storage/${cert.file_sertifikat}`}
                                                                     target="_blank"
                                                                     rel="noreferrer"
-                                                                    className="flex items-center gap-2 text-[11px] text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 font-bold font-['Lexend_Deca'] uppercase tracking-widest transition-colors bg-white dark:bg-[#1C1A29] px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 shrink-0"
+                                                                    className="flex items-center gap-1.5 text-[12px] text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 font-bold transition-colors bg-white dark:bg-[#1C1A29] px-4 py-2 rounded-full border border-gray-200 dark:border-white/10 shrink-0"
                                                                 >
-                                                                    <Eye className="w-3.5 h-3.5" /> Lihat Dokumen
+                                                                    <Eye size={14} /> Lihat Dokumen
                                                                 </a>
                                                             </div>
                                                         </div>
-                                                        <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto shrink-0 border-t sm:border-t-0 pt-4 sm:pt-0 border-slate-100 dark:border-white/5">
+                                                        <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto shrink-0 border-t sm:border-t-0 pt-4 sm:pt-0 border-gray-200 dark:border-white/10">
                                                             <button
                                                                 onClick={() => handleVerifyCert(cert.id, "approve")}
-                                                                className="flex-1 sm:flex-none px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest shadow-sm hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
+                                                                className="flex-1 sm:flex-none px-4 py-2 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-full font-bold text-[12px] hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all flex items-center justify-center gap-1.5"
                                                             >
-                                                                <CheckCircle className="w-4 h-4" /> Setujui
+                                                                <CheckCircle size={14} /> Setujui
                                                             </button>
                                                             <button
                                                                 onClick={() => handleVerifyCert(cert.id, "reject")}
-                                                                className="flex-1 sm:flex-none px-6 py-2.5 bg-white dark:bg-[#1C1A29] text-rose-500 border border-slate-200 dark:border-white/10 rounded-xl font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:border-rose-200 transition-all flex items-center justify-center gap-2"
+                                                                className="flex-1 sm:flex-none px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full font-bold text-[12px] hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-all flex items-center justify-center gap-1.5"
                                                             >
-                                                                <XCircle className="w-4 h-4" /> Tolak
+                                                                <XCircle size={14} /> Tolak
                                                             </button>
                                                         </div>
                                                     </article>
@@ -635,12 +621,12 @@ export default function AdminDashboard() {
                                                                     </p>
 
                                                                     {/* Action Buttons */}
-                                                                    <div className="flex items-center gap-3 mt-auto flex-wrap">
+                                                                    <div className="flex items-center gap-2 mt-auto flex-wrap">
                                                                         {(note.isValidated || note.is_verified) && (
-                                                                            <div className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full px-4 py-2 border border-emerald-100 dark:border-emerald-500/20 font-['Lexend_Deca'] font-bold text-[11px] flex items-center gap-2 uppercase tracking-widest"><ShieldCheck size={16} /> Verified</div>
+                                                                            <div className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full px-3 py-1.5 border border-emerald-100 dark:border-emerald-500/20 font-bold text-[11px] flex items-center gap-1"><ShieldCheck size={14} /> Verified</div>
                                                                         )}
-                                                                        <Link to={`/note/${note.id || note._id}`} className="px-5 py-2 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 rounded-full font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest flex items-center gap-1.5 hover:bg-slate-50 dark:hover:bg-white/5 hover:border-indigo-200 hover:text-indigo-600 transition-all shadow-sm dark:shadow-none group/btn">Detail<ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" /></Link>
-                                                                        <button onClick={() => handleDeleteNote(note.id || note._id)} className="px-4 py-2 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 text-rose-500 rounded-full hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:border-rose-200 transition-all flex items-center shadow-sm dark:shadow-none tooltip" title="Hapus Permanen"><Trash2 size={16} /></button>
+                                                                        <Link to={`/note/${note.id || note._id}`} className="px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-full font-bold text-[12px] flex items-center gap-1.5 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors group/btn">Detail<ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" /></Link>
+                                                                        <button onClick={() => handleDeleteNote(note.id || note._id)} className="px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors flex items-center font-bold text-[12px] tooltip" title="Hapus Permanen"><Trash2 size={14} /></button>
                                                                     </div>
                                                                 </div>
 
@@ -720,22 +706,22 @@ export default function AdminDashboard() {
                                                             </div>
                                                         </div>
 
-                                                        <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-[140px] shrink-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-white/5">
+                                                        <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-[140px] shrink-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-gray-200 dark:border-white/10">
                                                             <button
                                                                 onClick={() => handleResolveReport(report.id || report._id, "abaikan")}
-                                                                className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest transition-all text-center"
+                                                                className="flex-1 px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 rounded-full font-bold text-[12px] transition-colors text-center"
                                                             >
                                                                 Abaikan
                                                             </button>
                                                             <button
                                                                 onClick={() => handleResolveReport(report.id || report._id, "takedown")}
-                                                                className="flex-1 px-4 py-2.5 bg-rose-500 text-white rounded-xl font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest hover:bg-rose-600 transition-all text-center"
+                                                                className="flex-1 px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-full font-bold text-[12px] transition-colors text-center"
                                                             >
                                                                 Takedown
                                                             </button>
                                                             <button
                                                                 onClick={() => handleResolveReport(report.id || report._id, "banned")}
-                                                                className="flex-1 px-4 py-2.5 bg-slate-900 dark:bg-black text-white rounded-xl font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest hover:bg-slate-800 transition-all text-center"
+                                                                className="flex-1 px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-full font-bold text-[12px] transition-colors text-center"
                                                             >
                                                                 Banned
                                                             </button>
@@ -804,14 +790,14 @@ export default function AdminDashboard() {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div className="shrink-0 flex items-center gap-2 mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-white/5 w-full sm:w-auto">
-                                                                <Link to={`/profile/${u.id || u._id}`} className="flex-1 sm:flex-none px-6 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 flex items-center justify-center transition-colors font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest text-slate-600 dark:text-slate-400">
-                                                                    Lihat Profil <ArrowUpRight className="w-4 h-4 ml-1" />
+                                                            <div className="shrink-0 flex items-center gap-2 mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-gray-200 dark:border-white/10 w-full sm:w-auto">
+                                                                <Link to={`/profile/${u.id || u._id}`} className="flex-1 sm:flex-none px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/10 rounded-full flex items-center justify-center transition-colors font-bold text-[12px] text-gray-700 dark:text-gray-300">
+                                                                    Lihat Profil <ArrowUpRight size={14} className="ml-1" />
                                                                 </Link>
                                                                 {u.role !== 'user' && u.id !== user?.id && u._id !== user?.id && (
                                                                     <button 
                                                                         onClick={() => handleDemoteUser(u)}
-                                                                        className="flex-1 sm:flex-none px-4 py-2.5 bg-rose-50 dark:bg-rose-500/10 text-rose-500 border border-rose-100 dark:border-rose-500/20 rounded-xl hover:bg-rose-500 hover:text-white transition-all font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-widest"
+                                                                        className="flex-1 sm:flex-none px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors font-bold text-[12px]"
                                                                     >
                                                                         Turunkan Pangkat
                                                                     </button>
@@ -839,25 +825,25 @@ export default function AdminDashboard() {
                     <div className="hidden lg:block w-[280px] xl:w-[320px] shrink-0 border-l border-gray-100 dark:border-white/5 pl-6 xl:pl-10">
                         <div className="sticky pt-2 pb-12" style={{ top: "min(72px, calc(100vh - 100% - 24px))" }}>
                             
-                            <div className="pb-8 border-b border-gray-100 dark:border-white/5 mb-8">
-                                <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-6">
+                            <div className="pb-8 border-b border-gray-200 dark:border-white/10 mb-8">
+                                <h3 className="font-bold text-[14px] text-gray-900 dark:text-gray-100 tracking-tight mb-6">
                                     Ringkasan Platform
                                 </h3>
-                                <div className="flex flex-col gap-4">
+                                <div className="grid grid-cols-1 gap-4">
                                     {stats.map((stat, index) => {
                                         const Icon = stat.icon;
                                         return (
-                                            <div key={index} className="bg-white dark:bg-[#1C1A29] rounded-[20px] p-5 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none flex items-center gap-4 group hover:border-indigo-200 dark:hover:border-primary/20 transition-all">
-                                                <div className={`w-12 h-12 ${stat.color} rounded-[16px] flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform`}>
-                                                    <Icon className="w-5 h-5 text-white" />
-                                                </div>
+                                            <div key={index} className="bg-white dark:bg-[#1C1A29] rounded-xl p-4 border border-gray-200 dark:border-white/10 flex items-center justify-between">
                                                 <div>
-                                                    <p className="text-2xl font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 leading-none mb-1">
-                                                        {stat.value}
-                                                    </p>
-                                                    <p className="text-[12px] font-['Manrope'] text-gray-500 font-bold uppercase tracking-wider">
+                                                    <p className="text-[13px] text-gray-500 dark:text-gray-400 font-medium mb-1">
                                                         {stat.label}
                                                     </p>
+                                                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 leading-none">
+                                                        {stat.value}
+                                                    </p>
+                                                </div>
+                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center bg-gray-50 dark:bg-white/5`}>
+                                                    <Icon size={20} className={stat.color} />
                                                 </div>
                                             </div>
                                         );
@@ -865,75 +851,68 @@ export default function AdminDashboard() {
                                 </div>
                             </div>
 
-                            {/* Quick Action */}
-                            <div className="bg-indigo-600 rounded-[24px] p-6 text-white relative overflow-hidden shadow-lg shadow-indigo-600/20 group cursor-pointer mb-8">
-                                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
-                                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-1000" />
-                                <ShieldCheck className="w-8 h-8 mb-4 opacity-80 group-hover:rotate-12 transition-transform duration-500" />
-                                <h4 className="font-['Lexend_Deca'] font-bold text-[16px] mb-2 leading-tight tracking-tight">Butuh Bantuan Teknis?</h4>
-                                <p className="text-indigo-100 text-[12px] font-medium leading-relaxed">Hubungi tim DevOps Ba-Yu untuk pemeliharaan server.</p>
-                            </div>
-
                             {/* System Status Redesigned */}
-                            <div className="mb-8">
-                                <h3 className="font-['Lexend_Deca'] font-extrabold text-[14px] text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4">
-                                    System Health
+                            <div className="mb-8 border-b border-gray-200 dark:border-white/10 pb-8">
+                                <h3 className="font-bold text-[14px] text-gray-900 dark:text-gray-100 tracking-tight mb-4">
+                                    Sistem & Server
                                 </h3>
                                 <div className="space-y-3">
-                                    <div className="bg-white dark:bg-[#1C1A29] p-4 rounded-[16px] border border-gray-100 dark:border-white/5 flex items-center justify-between group hover:border-emerald-200 dark:hover:border-emerald-500/20 transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-[10px] bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-                                                <Server className="w-4 h-4" />
-                                            </div>
-                                            <div>
-                                                <p className="font-['Lexend_Deca'] text-[13px] font-bold text-gray-900 dark:text-gray-100">API Gateway</p>
-                                                <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Operational</p>
-                                            </div>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-[13px] text-gray-700 dark:text-gray-300 font-medium">
+                                            <Server className="w-4 h-4 text-gray-400" />
+                                            API Gateway
                                         </div>
-                                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                                        <div className="flex items-center gap-1.5">
+                                            <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                                            <span className="text-[12px] text-gray-500">Normal</span>
+                                        </div>
                                     </div>
-                                    <div className="bg-white dark:bg-[#1C1A29] p-4 rounded-[16px] border border-gray-100 dark:border-white/5 flex items-center justify-between group hover:border-indigo-200 dark:hover:border-indigo-500/20 transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-[10px] bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-500">
-                                                <Server className="w-4 h-4" />
-                                            </div>
-                                            <div>
-                                                <p className="font-['Lexend_Deca'] text-[13px] font-bold text-gray-900 dark:text-gray-100">Database</p>
-                                                <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">Normal</p>
-                                            </div>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 text-[13px] text-gray-700 dark:text-gray-300 font-medium">
+                                            <Server className="w-4 h-4 text-gray-400" />
+                                            Database Server
                                         </div>
-                                        <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                        <div className="flex items-center gap-1.5">
+                                            <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                                            <span className="text-[12px] text-gray-500">Normal</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Activity Feed Redesigned */}
-                            <div>
-                                <h3 className="font-['Lexend_Deca'] font-extrabold text-[14px] text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4">
-                                    Recent Activity
+                            <div className="mb-8 border-b border-gray-200 dark:border-white/10 pb-8">
+                                <h3 className="font-bold text-[14px] text-gray-900 dark:text-gray-100 tracking-tight mb-4">
+                                    Aktivitas Terbaru
                                 </h3>
                                 <div className="space-y-4">
                                     {[
-                                        { action: "Sistem Reboot", time: "12m ago", type: "system", c: "bg-blue-500", bg: "bg-blue-50 dark:bg-blue-500/10" },
-                                        { action: "Catatan Dihapus", time: "1h ago", type: "warn", c: "bg-rose-500", bg: "bg-rose-50 dark:bg-rose-500/10" },
-                                        { action: "User Registrasi", time: "3h ago", type: "info", c: "bg-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-500/10" },
+                                        { action: "Sistem Reboot", time: "12m ago" },
+                                        { action: "Catatan Dihapus", time: "1h ago" },
+                                        { action: "User Registrasi", time: "3h ago" },
                                     ].map((log, i) => (
-                                        <div key={i} className="flex gap-3 relative">
-                                            {i !== 2 && <div className="absolute left-[15px] top-[32px] bottom-[-16px] w-px bg-gray-100 dark:bg-white/5"></div>}
-                                            <div className={`w-8 h-8 shrink-0 rounded-[10px] ${log.bg} flex items-center justify-center relative z-10`}>
-                                                <div className={`w-2 h-2 rounded-full ${log.c}`}></div>
-                                            </div>
-                                            <div className="pt-1.5">
-                                                <p className="font-['Manrope'] text-[13px] font-bold text-gray-800 dark:text-gray-200 leading-none mb-1">
+                                        <div key={i} className="flex gap-3">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600 mt-1.5 shrink-0" />
+                                            <div>
+                                                <p className="text-[13px] font-bold text-gray-800 dark:text-gray-200 leading-none mb-0.5">
                                                     {log.action}
                                                 </p>
-                                                <span className="text-[11px] font-semibold text-gray-400">
+                                                <span className="text-[12px] text-gray-500">
                                                     {log.time}
                                                 </span>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
+                            </div>
+
+                            {/* Quick Action */}
+                            <div className="bg-gray-50 dark:bg-white/5 rounded-xl p-5 border border-gray-200 dark:border-white/10">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <ShieldCheck className="w-4 h-4 text-indigo-500" />
+                                    <h4 className="font-bold text-gray-900 dark:text-gray-100 text-[14px]">Bantuan Teknis</h4>
+                                </div>
+                                <p className="text-gray-500 dark:text-gray-400 text-[13px] leading-relaxed">Hubungi tim DevOps Ba-Yu untuk pemeliharaan server.</p>
                             </div>
 
                         </div>

@@ -175,19 +175,19 @@ export default function AvatarNotifications() {
                 </button>
             </PopoverTrigger>
             <PopoverContent
-                className="w-80 p-0 rounded-2xl shadow-xl dark:shadow-none overflow-hidden border border-gray-100 dark:border-white/5 bg-white dark:bg-[#1C1A29]"
+                className="w-[320px] p-0 rounded-2xl shadow-xl dark:shadow-none overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1C1A29]"
                 side="bottom"
                 align="end"
                 sideOffset={8}
             >
                 <div className="max-h-[350px] overflow-y-auto scrollbar-hide bg-white dark:bg-[#1C1A29]">
-                    <div className="flex justify-between items-center px-5 py-4 bg-white dark:bg-[#1C1A29] sticky top-0 z-10 border-b border-gray-50 dark:border-white/5">
+                    <div className="flex justify-between items-center px-5 py-4 bg-white dark:bg-[#1C1A29] sticky top-0 z-10 border-b border-gray-200 dark:border-white/10">
                         <div className="flex items-center gap-2">
-                            <h2 className="text-[16px] font-bold font-['Lexend_Deca'] text-gray-900 dark:text-gray-100 tracking-tight">
+                            <h2 className="text-[15px] font-bold text-gray-900 dark:text-gray-100 tracking-tight">
                                 Notifikasi
                             </h2>
                             {hasNotifications && (
-                                <span className="bg-primary text-white text-[10px] font-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                                <span className="bg-indigo-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
                                     {unreadCount}
                                 </span>
                             )}
@@ -195,7 +195,7 @@ export default function AvatarNotifications() {
                         {hasNotifications && (
                             <button
                                 onClick={clearAll}
-                                className="text-[12px] font-bold text-primary hover:text-indigo-800 dark:hover:text-primary/80 transition-colors font-['Manrope']"
+                                className="text-[12px] font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
                             >
                                 Tandai dibaca
                             </button>
@@ -203,7 +203,7 @@ export default function AvatarNotifications() {
                     </div>
                     
                     {notifications.length === 0 ? (
-                        <div className="py-12 px-6 text-sm text-gray-400 dark:text-gray-500 text-center font-['Manrope'] flex flex-col items-center gap-3">
+                        <div className="py-12 px-6 text-[13px] text-gray-400 dark:text-gray-500 text-center flex flex-col items-center gap-3">
                             <div className="w-12 h-12 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center">
                                 <Bell className="w-6 h-6 text-gray-300 dark:text-gray-600" />
                             </div>
@@ -223,23 +223,23 @@ export default function AvatarNotifications() {
                                         )
                                     }
                                     className={cn(
-                                        "group relative flex items-start gap-4 p-4 hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer transition-all duration-200 border-b border-gray-50 dark:border-white/5 last:border-0",
-                                        !item.is_read && "bg-primary/[0.03] dark:bg-primary/[0.08]"
+                                        "group relative flex items-start gap-3 p-4 hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer transition-colors border-b border-gray-100 dark:border-white/5 last:border-0",
+                                        !item.is_read && "bg-indigo-50/50 dark:bg-indigo-500/10"
                                     )}
                                 >
                                     
-                                    <div className="relative shrink-0">
+                                    <div className="relative shrink-0 mt-0.5">
                                         <div
                                             className={cn(
-                                                "h-11 w-11 rounded-full flex items-center justify-center transition-transform group-hover:scale-105 shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden bg-gray-50 dark:bg-white/5",
-                                                !item.is_read && "ring-2 ring-primary ring-offset-1 dark:ring-offset-[#1C1A29]"
+                                                "h-10 w-10 rounded-full flex items-center justify-center shadow-sm border border-gray-200 dark:border-white/10 overflow-hidden bg-white dark:bg-[#1C1A29]",
+                                                !item.is_read && "ring-2 ring-indigo-500 ring-offset-1 dark:ring-offset-[#1C1A29]"
                                             )}
                                         >
                                             {item.actor ? (
                                                 <AvatarImage 
                                                     src={item.actor.avatar} 
                                                     alt={item.actor.name}
-                                                    size={44}
+                                                    size={40}
                                                     className="h-full w-full object-cover"
                                                 />
                                             ) : (
@@ -259,7 +259,7 @@ export default function AvatarNotifications() {
                                         {/* Mini Type Icon Badge */}
                                         {item.actor && (
                                             <div className={cn(
-                                                "absolute -right-0.5 -bottom-0.5 w-5 h-5 rounded-full flex items-center justify-center border-2 border-white dark:border-[#1C1A29] shadow-sm scale-90",
+                                                "absolute -right-1 -bottom-1 w-[18px] h-[18px] rounded-full flex items-center justify-center border-2 border-white dark:border-[#1C1A29] shadow-sm",
                                                 item.type === "sertifikasi" ? "bg-indigo-500 text-white" :
                                                 item.type === "report" ? "bg-rose-500 text-white" :
                                                 item.type === "verifikasi" ? "bg-emerald-500 text-white" :
@@ -271,22 +271,21 @@ export default function AvatarNotifications() {
                                             </div>
                                         )}
                                     </div>
-
-                                    <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-                                        <div className="flex items-center justify-between gap-2">
-                                            <div className="flex items-center gap-1.5 min-w-0">
+                                    <div className="flex-1 min-w-0 flex flex-col gap-1">
+                                        <div className="flex items-start justify-between gap-2">
+                                            <div className="flex items-start gap-2 min-w-0">
                                                 {!item.is_read && (
-                                                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0"></div>
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0"></div>
                                                 )}
                                                 <p className={cn(
-                                                    "text-[13px] leading-snug line-clamp-2",
-                                                    !item.is_read ? "text-gray-900 dark:text-gray-100 font-bold" : "text-gray-600 dark:text-gray-400 font-medium"
+                                                    "text-[13px] leading-relaxed line-clamp-2",
+                                                    !item.is_read ? "text-gray-900 dark:text-gray-100 font-bold" : "text-gray-600 dark:text-gray-400"
                                                 )}>
                                                     {item.message}
                                                 </p>
                                             </div>
                                         </div>
-                                        <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium">
+                                        <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium pl-3.5">
                                             {timeAgo(item.created_at)}
                                         </span>
                                     </div>
@@ -295,15 +294,15 @@ export default function AvatarNotifications() {
                         </div>
                     )}
                 </div>
-                <div className="p-3 bg-gray-50/50 dark:bg-white/5 border-t border-gray-50 dark:border-white/5">
+                <div className="p-2 border-t border-gray-200 dark:border-white/10 bg-white dark:bg-[#1C1A29]">
                     <button
                         onClick={() => {
                             setOpen(false);
                             navigate("/notifications");
                         }}
-                        className="w-full py-2.5 text-[12px] font-bold text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary hover:bg-white dark:hover:bg-white/10 hover:shadow-sm rounded-xl transition-all duration-200 font-['Lexend_Deca'] border border-transparent hover:border-gray-100 dark:hover:border-white/5"
+                        className="w-full py-2.5 text-[13px] font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-full transition-colors"
                     >
-                        Lihat Semua Aktivitas
+                        Lihat Semua Notifikasi
                     </button>
                 </div>
             </PopoverContent>

@@ -267,54 +267,47 @@ export default function PakarDashboard() {
                     {/* LEFT COLUMN (MAIN CONTENT) */}
                     <div className="flex-1 w-full lg:max-w-[640px] xl:max-w-[700px] min-w-0">
                         
-                        {/* Premium Pakar Header */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 pb-6 border-b border-slate-100 dark:border-white/5">
-                            <div className="flex items-center gap-5">
-                                <div className="relative group shrink-0">
-                                    <div className="absolute -inset-1 bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-indigo-500/20 rounded-[18px] blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                    <AvatarImage src={user?.avatar} alt={user?.name} size={64} className="relative rounded-[16px] shadow-md border-2 border-white dark:border-white/10 ring-1 ring-slate-100 dark:ring-white/5" />
-                                    <div className="absolute -bottom-1.5 -right-1.5 w-7 h-7 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg shadow-md flex items-center justify-center ring-2 ring-white dark:ring-[#13111C]">
+                        {/* Minimalist Pakar Header */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 pb-6 border-b border-gray-200 dark:border-white/10">
+                            <div className="flex items-center gap-4">
+                                <div className="relative shrink-0">
+                                    <AvatarImage src={user?.avatar} alt={user?.name} size={64} className="rounded-full border border-gray-200 dark:border-white/10" />
+                                    <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-indigo-500 rounded-full flex items-center justify-center border-2 border-slate-50 dark:border-[#13111C]">
                                         <ShieldCheck className="w-3.5 h-3.5 text-white" />
                                     </div>
                                 </div>
                                 <div>
-                                    <div className="flex items-center gap-2 mb-1.5">
-                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-500/10 dark:to-purple-500/10 text-indigo-600 dark:text-indigo-400 font-['Lexend_Deca'] text-[10px] font-bold tracking-wider rounded-full border border-indigo-100/80 dark:border-indigo-500/20">
-                                            <Sparkles className="w-3 h-3" />
-                                            Verified Expert
-                                        </span>
-                                    </div>
-                                    <h2 className="text-slate-900 dark:text-slate-100 font-['Lexend_Deca'] font-extrabold text-[22px] tracking-tight leading-none mb-1">
+                                    <h2 className="text-gray-900 dark:text-gray-100 font-bold text-xl tracking-tight leading-none mb-1.5 flex items-center gap-2">
                                         {user?.name || "Pakar Ba-Yu"}
                                     </h2>
-                                    <p className="text-[13px] font-['Manrope'] text-slate-500 dark:text-slate-400 font-medium">Panel kurasi dan validasi materi</p>
+                                    <p className="text-[14px] text-gray-500 dark:text-gray-400">Panel kurasi materi</p>
                                 </div>
                             </div>
-                            <Link to="/explore" className="px-5 py-2.5 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 rounded-xl font-['Lexend_Deca'] font-bold text-[12px] tracking-wide flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-white/5 hover:border-indigo-200 dark:hover:border-indigo-500/20 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-sm dark:shadow-none transition-all group/btn">
+                            <Link to="/explore" className="px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-full font-bold text-[13px] hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center gap-2">
                                 <BookOpen size={16} />
                                 Jelajahi
-                                <ArrowUpRight size={14} className="opacity-0 -ml-2 group-hover/btn:opacity-100 group-hover/btn:ml-0 transition-all" />
                             </Link>
                         </div>
 
                         <div className="space-y-6">
 
-                            <div className="flex flex-col lg:flex-row items-center gap-4">
-                                <div className="flex-1 relative w-full group">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><Search className="h-5 w-5 text-slate-400 group-focus-within:text-indigo-600 transition-colors" /></div>
-                                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Cari materi berdasarkan judul..." className="block w-full pl-12 pr-6 py-3.5 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 rounded-xl text-[14px] font-medium text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all shadow-sm dark:shadow-none" />
+                            <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
+                                <div className="relative w-full sm:max-w-xs group">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search className="h-4 w-4 text-gray-400" /></div>
+                                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Cari materi..." className="w-full pl-9 pr-4 py-2 bg-gray-100/50 dark:bg-white/5 border-none rounded-full text-[14px] text-gray-900 dark:text-gray-100 placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all" />
                                 </div>
-                                <div className="flex gap-1.5 p-1 bg-slate-100 dark:bg-white/5 rounded-xl">
+                                <div className="flex w-full sm:w-auto border-b border-gray-200 dark:border-white/10">
                                     {[
-                                        { id: "pending", label: "Antrean", icon: ListFilter },
-                                        { id: "approved", label: "Verif", icon: CheckCircle },
-                                        { id: "all", label: "Semua", icon: LayoutGrid },
+                                        { id: "pending", label: "Antrean" },
+                                        { id: "approved", label: "Terverifikasi" },
+                                        { id: "all", label: "Semua" },
                                     ].map((tab) => {
                                         const active = filter === tab.id;
                                         return (
-                                            <button key={tab.id} onClick={() => setFilter(tab.id as any)} className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-wider transition-all ${active ? "bg-white dark:bg-[#252336] text-slate-800 dark:text-slate-100 shadow-sm dark:shadow-[0_4px_12px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-white/5" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"}`}>
-                                                <tab.icon size={14} />{tab.label}
-                                                {tab.id === 'pending' && pendingNotes.length > 0 && <span className={`ml-1 px-1.5 py-0.5 rounded-md flex items-center justify-center text-[9px] font-bold ${active ? "bg-indigo-50 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400" : "bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-slate-400"}`}>{pendingNotes.length}</span>}
+                                            <button key={tab.id} onClick={() => setFilter(tab.id as any)} className={`relative flex-1 sm:flex-none px-4 py-3 text-[14px] font-bold transition-colors ${active ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5"}`}>
+                                                {tab.label}
+                                                {tab.id === 'pending' && pendingNotes.length > 0 && <span className="ml-1.5 text-indigo-500">({pendingNotes.length})</span>}
+                                                {active && <div className="absolute bottom-0 left-0 right-0 h-1 bg-indigo-500 rounded-t-full" />}
                                             </button>
                                         );
                                     })}
@@ -380,27 +373,20 @@ export default function PakarDashboard() {
                                 <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-6">
                                     Statistik Kurasi
                                 </h3>
-                                <div className="grid grid-cols-1 gap-3">
+                                <div className="grid grid-cols-1 gap-4">
                                     {stats.map((stat, index) => {
-                                        const Icon = stat.icon;
                                         return (
-                                            <div key={index} className="relative overflow-hidden bg-white dark:bg-[#1C1A29] rounded-[20px] p-5 border border-slate-100 dark:border-white/5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] dark:shadow-none group hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 cursor-default">
-                                                {/* Decorative background element */}
-                                                <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full blur-2xl opacity-0 group-hover:opacity-10 dark:group-hover:opacity-20 transition-opacity duration-500 pointer-events-none" style={{ backgroundColor: stat.sparkColor }} />
-                                                
-                                                <div className="flex items-center gap-4 relative z-10">
-                                                    <div className="w-12 h-12 rounded-[14px] flex items-center justify-center bg-slate-50 dark:bg-white/5 group-hover:scale-110 transition-transform duration-500 relative overflow-hidden">
-                                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500" style={{ backgroundColor: stat.sparkColor }} />
-                                                        <Icon className={`w-[22px] h-[22px] ${stat.color} dark:text-slate-300 relative z-10`} />
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-[26px] font-['Lexend_Deca'] font-black text-slate-800 dark:text-slate-100 leading-none tracking-tight mb-1">
-                                                            {stat.value}
-                                                        </p>
-                                                        <p className="text-[13px] font-['Manrope'] text-slate-500 dark:text-slate-400 font-semibold tracking-wide">
-                                                            {stat.label}
-                                                        </p>
-                                                    </div>
+                                            <div key={index} className="bg-white dark:bg-[#1C1A29] rounded-xl p-4 border border-gray-200 dark:border-white/10 flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-[13px] text-gray-500 dark:text-gray-400 font-medium mb-1">
+                                                        {stat.label}
+                                                    </p>
+                                                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 leading-none">
+                                                        {stat.value}
+                                                    </p>
+                                                </div>
+                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center bg-gray-50 dark:bg-white/5`}>
+                                                    <stat.icon size={20} className={stat.color} />
                                                 </div>
                                             </div>
                                         );
@@ -408,33 +394,34 @@ export default function PakarDashboard() {
                                 </div>
                             </div>
 
-                            <div className="bg-white dark:bg-[#1C1A29] rounded-[24px] p-6 border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none relative overflow-hidden mb-6">
-                                <div className="absolute top-0 right-0 w-16 h-16 bg-indigo-50/50 dark:bg-indigo-500/10 rounded-bl-[24px]" />
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-500/10 rounded-[12px] flex items-center justify-center"><Map className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /></div>
-                                    <div><h3 className="font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100 text-[15px] tracking-tight">Pedoman Pakar</h3><p className="text-[11px] text-indigo-500 dark:text-indigo-400 font-semibold tracking-wide">Edisi 2026</p></div>
+                            <div className="bg-white dark:bg-[#1C1A29] rounded-xl p-5 border border-gray-200 dark:border-white/10 mb-4">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <BookOpen className="w-4 h-4 text-gray-500" />
+                                    <h3 className="font-bold text-gray-900 dark:text-gray-100 text-[14px]">Pedoman Kurasi</h3>
                                 </div>
-                                <div className="space-y-5">
+                                <div className="space-y-4">
                                     {[
-                                        { title: "Verifikasi Teori", desc: "Pastikan rumus standar.", num: 1, c: "bg-blue-500" },
-                                        { title: "Originalitas", desc: "Bukan copy-paste murni.", num: 2, c: "bg-indigo-500" },
-                                        { title: "Kualitas Visual", desc: "Tulisan/gambar jelas.", num: 3, c: "bg-amber-500" },
-                                    ].map((rule) => (
-                                        <div key={rule.num} className="flex gap-4 group">
-                                            <div className={`w-1.5 h-1.5 rounded-full ${rule.c} mt-1.5 shrink-0`} />
-                                            <div><h4 className="text-[12px] font-bold text-slate-800 dark:text-slate-100 mb-0.5">{rule.title}</h4><p className="text-[12px] text-slate-500 font-medium leading-snug">{rule.desc}</p></div>
+                                        { title: "Verifikasi Teori", desc: "Pastikan rumus & konsep sesuai standar." },
+                                        { title: "Originalitas", desc: "Hindari plagiarisme penuh." },
+                                        { title: "Kualitas Visual", desc: "Tulisan dan gambar harus jelas terbaca." },
+                                    ].map((rule, idx) => (
+                                        <div key={idx} className="flex gap-3">
+                                            <div className="text-gray-400 font-bold text-[12px] pt-0.5">{idx + 1}.</div>
+                                            <div>
+                                                <h4 className="text-[13px] font-bold text-gray-900 dark:text-gray-100">{rule.title}</h4>
+                                                <p className="text-[13px] text-gray-500 leading-snug mt-0.5">{rule.desc}</p>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
-                                <button className="w-full mt-6 py-3.5 bg-slate-800 dark:bg-indigo-600 text-white rounded-xl font-['Lexend_Deca'] font-bold text-[11px] uppercase tracking-wider shadow-md hover:bg-slate-900 transition-all flex items-center justify-center gap-2">E-Pedoman<ChevronRight size={14} /></button>
                             </div>
                             
-                            <div className="bg-indigo-600 rounded-[24px] p-6 text-white relative overflow-hidden shadow-lg shadow-indigo-600/20 group">
-                                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
-                                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-1000" />
-                                <ShieldCheck className="w-8 h-8 mb-4 opacity-80 group-hover:rotate-12 transition-transform duration-500" />
-                                <h4 className="font-['Lexend_Deca'] font-bold text-[15px] mb-2 leading-tight tracking-tight">Kualitas Segalanya.</h4>
-                                <p className="text-indigo-100 text-[12px] font-medium leading-relaxed">Terima kasih telah kurasi materi berkualitas untuk Ba-Yu.</p>
+                            <div className="bg-gray-50 dark:bg-white/5 rounded-xl p-5 border border-gray-200 dark:border-white/10">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <ShieldCheck className="w-4 h-4 text-indigo-500" />
+                                    <h4 className="font-bold text-gray-900 dark:text-gray-100 text-[14px]">Kualitas Prioritas</h4>
+                                </div>
+                                <p className="text-gray-500 dark:text-gray-400 text-[13px] leading-relaxed">Terima kasih telah berkontribusi menjaga kualitas materi di Ba-Yu.</p>
                             </div>
                         </div>
                     </div>

@@ -292,28 +292,27 @@ export function ExportDataModal({
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
             
-            <div className="bg-white dark:bg-[#1C1A29] rounded-[32px] w-full max-w-[540px] relative z-10 overflow-hidden shadow-2xl border border-slate-100 dark:border-white/5 animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-white dark:bg-[#1C1A29] rounded-2xl w-full max-w-[540px] relative z-10 overflow-hidden shadow-xl border border-gray-200 dark:border-white/10 animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
-                <div className="bg-indigo-600 px-6 py-5 flex items-center justify-between relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl translate-x-10 -translate-y-10" />
-                    <div className="flex items-center gap-3 relative z-10">
-                        <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-white backdrop-blur-sm border border-white/10">
+                <div className="bg-white dark:bg-[#1C1A29] px-6 py-5 border-b border-gray-200 dark:border-white/10 flex items-center justify-between relative">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center text-gray-700 dark:text-gray-300">
                             <DownloadCloud className="w-5 h-5" />
                         </div>
                         <div>
-                            <h3 className="font-['Lexend_Deca'] font-bold text-lg text-white">Ekspor Data Dashboard</h3>
-                            <p className="font-['Manrope'] text-xs font-medium text-indigo-100 mt-0.5">Filter dan unduh data secara komprehensif</p>
+                            <h3 className="font-bold text-[16px] text-gray-900 dark:text-gray-100">Ekspor Data Dashboard</h3>
+                            <p className="text-[13px] text-gray-500">Filter dan unduh data secara komprehensif</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors relative z-10">
-                        <X className="w-4 h-4" />
+                    <button onClick={onClose} className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 rounded-full transition-colors">
+                        <X className="w-5 h-5" />
                     </button>
                 </div>
 
                 <div className="p-6 space-y-6">
                     {/* Category Selection */}
                     <div>
-                        <label className="block text-[11px] font-['Lexend_Deca'] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+                        <label className="block text-[12px] font-bold text-gray-500 dark:text-gray-400 mb-2">
                             Kategori Data
                         </label>
                         <div className="grid grid-cols-2 gap-3">
@@ -326,10 +325,10 @@ export function ExportDataModal({
                                 <button
                                     key={opt.id}
                                     onClick={() => setCategory(opt.id as any)}
-                                    className={`flex items-center gap-3 p-3 rounded-xl border font-['Lexend_Deca'] font-bold text-[13px] transition-all ${
+                                    className={`flex items-center gap-2 p-3 rounded-xl border font-bold text-[13px] transition-all ${
                                         category === opt.id 
-                                        ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shadow-sm" 
-                                        : "border-slate-200 dark:border-white/10 bg-white dark:bg-[#13111C] text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5"
+                                        ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400" 
+                                        : "border-gray-200 dark:border-white/10 bg-white dark:bg-[#1C1A29] text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5"
                                     }`}
                                 >
                                     <opt.icon className="w-4 h-4" />
@@ -342,7 +341,7 @@ export function ExportDataModal({
                     <div className="grid grid-cols-2 gap-6">
                         {/* Status Selection */}
                         <div>
-                            <label className="block text-[11px] font-['Lexend_Deca'] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+                            <label className="block text-[12px] font-bold text-gray-500 dark:text-gray-400 mb-2">
                                 Status Verifikasi
                             </label>
                             <CustomSelect
@@ -358,7 +357,7 @@ export function ExportDataModal({
 
                         {/* Limit Selection */}
                         <div>
-                            <label className="block text-[11px] font-['Lexend_Deca'] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+                            <label className="block text-[12px] font-bold text-gray-500 dark:text-gray-400 mb-2">
                                 Batas Data
                             </label>
                             <CustomSelect
@@ -376,18 +375,18 @@ export function ExportDataModal({
 
                     {/* Format Selection */}
                     <div>
-                        <label className="block text-[11px] font-['Lexend_Deca'] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
+                        <label className="block text-[12px] font-bold text-gray-500 dark:text-gray-400 mb-2">
                             Format Berkas Output
                         </label>
-                        <div className="flex gap-3">
+                        <div className="flex gap-2">
                             {["xlsx", "pdf", "csv", "json"].map((fmt) => (
                                 <button
                                     key={fmt}
                                     onClick={() => setFormat(fmt as any)}
-                                    className={`flex-1 py-3 rounded-xl border font-['Lexend_Deca'] font-bold text-xs uppercase tracking-widest transition-all ${
+                                    className={`flex-1 py-2.5 rounded-xl border font-bold text-[12px] uppercase transition-all ${
                                         format === fmt 
-                                        ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shadow-sm" 
-                                        : "border-slate-200 dark:border-white/10 bg-white dark:bg-[#13111C] text-slate-500 hover:bg-slate-50 dark:hover:bg-white/5"
+                                        ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" 
+                                        : "border-gray-200 dark:border-white/10 bg-white dark:bg-[#1C1A29] text-gray-500 hover:bg-gray-50 dark:hover:bg-white/5"
                                     }`}
                                 >
                                     {fmt}
@@ -398,17 +397,17 @@ export function ExportDataModal({
                 </div>
 
                 {/* Footer */}
-                <div className="bg-slate-50 dark:bg-[#13111C] px-6 py-5 border-t border-slate-100 dark:border-white/5 flex gap-3 justify-end">
+                <div className="bg-gray-50 dark:bg-[#1C1A29] px-6 py-4 border-t border-gray-200 dark:border-white/10 flex gap-3 justify-end">
                     <button 
                         onClick={onClose}
-                        className="px-6 py-3 font-['Lexend_Deca'] font-bold text-[13px] text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/5 rounded-xl transition-colors"
+                        className="px-5 py-2 font-bold text-[13px] text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/5 rounded-full transition-colors"
                     >
                         Batal
                     </button>
                     <button 
                         onClick={handleExport}
                         disabled={isExporting}
-                        className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-['Lexend_Deca'] font-bold text-[13px] shadow-md shadow-indigo-600/20 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full font-bold text-[13px] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isExporting ? (
                             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

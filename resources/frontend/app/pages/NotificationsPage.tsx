@@ -10,6 +10,7 @@ import {
     Heart,
     MessageCircle,
     UserPlus,
+    ChevronRight,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import * as React from "react";
@@ -193,47 +194,50 @@ export default function NotificationsPage() {
         <MobileLayout>
             <div className="min-h-screen pb-10 bg-slate-50/50 dark:bg-[#13111C]">
                 {/* Header Ribbon */}
-                <div className="px-6 pt-12 pb-6 bg-slate-50/80 dark:bg-[#13111C]/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-white/5 flex flex-col sm:flex-row items-end sm:items-center justify-between gap-6 sticky top-0 z-30">
-                    <div className="flex flex-col gap-1.5">
-                        <h1 className="text-slate-900 dark:text-gray-100 font-['Lexend_Deca'] font-extrabold text-[32px] tracking-tight leading-none">
-                            Notifikasi
-                        </h1>
-                        <p className="text-slate-500 dark:text-slate-400 font-['Manrope'] text-[15px] font-medium">
-                            {isLoading
-                                ? "Memuat pembaruan..."
-                                : unreadCount > 0
-                                  ? `Anda memiliki ${unreadCount} kabar baru.`
-                                  : "Semua sudah dibaca. Anda update!"}
-                        </p>
+                <div className="bg-slate-50/80 dark:bg-[#13111C]/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/10 sticky top-0 z-30">
+                    <div className="max-w-3xl mx-auto px-6 pt-10 pb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                        <div className="flex flex-col gap-1">
+                            <h1 className="text-gray-900 dark:text-gray-100 font-bold text-[28px] tracking-tight">
+                                Notifikasi
+                            </h1>
+                            <p className="text-gray-500 dark:text-gray-400 text-[14px]">
+                                {isLoading
+                                    ? "Memuat pembaruan..."
+                                    : unreadCount > 0
+                                      ? `Anda memiliki ${unreadCount} kabar baru.`
+                                      : "Semua sudah dibaca. Anda update!"}
+                            </p>
+                        </div>
+                        {unreadCount > 0 && (
+                            <button
+                                onClick={handleMarkAllAsRead}
+                                className="flex items-center gap-2 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[13px] font-bold px-5 py-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors"
+                            >
+                                <CheckCheck className="w-4 h-4" />
+                                Tandai Semua Dibaca
+                            </button>
+                        )}
                     </div>
-                    {unreadCount > 0 && (
-                        <button
-                            onClick={handleMarkAllAsRead}
-                            className="flex items-center gap-2 bg-white dark:bg-[#1C1A29] text-slate-700 dark:text-slate-300 text-[13px] font-bold px-5 py-2.5 rounded-full border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:text-slate-900 dark:hover:text-white transition-all shadow-sm dark:shadow-none active:scale-95"
-                        >
-                            <CheckCheck className="w-4 h-4" />
-                            Tandai Semua Dibaca
-                        </button>
-                    )}
                 </div>
 
-                {/* Filters */}
-                <div className="px-6 pt-6 pb-2">
-                    <div className="flex gap-3">
+                <div className="max-w-3xl mx-auto w-full">
+                    {/* Filters */}
+                    <div className="px-6 pt-6 pb-2">
+                    <div className="flex gap-2">
                         <button
                             onClick={() => setFilter("all")}
-                            className={`px-6 py-2.5 rounded-full font-['Lexend_Deca'] font-bold text-[13px] transition-all duration-300 border ${filter === "all" ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-md shadow-slate-900/10 dark:shadow-none" : "bg-white dark:bg-[#1C1A29] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:text-slate-900 dark:hover:text-white shadow-sm dark:shadow-none"}`}
+                            className={`px-5 py-2 rounded-full font-bold text-[13px] transition-colors border ${filter === "all" ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent" : "bg-white dark:bg-white/5 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/10"}`}
                         >
                             Semua
                         </button>
                         <button
                             onClick={() => setFilter("unread")}
-                            className={`px-6 py-2.5 rounded-full font-['Lexend_Deca'] font-bold text-[13px] transition-all duration-300 flex items-center gap-2 border ${filter === "unread" ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-md shadow-slate-900/10 dark:shadow-none" : "bg-white dark:bg-[#1C1A29] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:text-slate-900 dark:hover:text-white shadow-sm dark:shadow-none"}`}
+                            className={`px-5 py-2 rounded-full font-bold text-[13px] transition-colors flex items-center gap-2 border ${filter === "unread" ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent" : "bg-white dark:bg-white/5 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/10"}`}
                         >
                             Belum Dibaca
                             {unreadCount > 0 && (
                                 <span
-                                    className={`flex items-center justify-center rounded-full text-[10px] px-2 py-0.5 font-bold ${filter === "unread" ? "bg-white/20 text-white dark:bg-slate-900/10 dark:text-slate-900" : "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400"}`}
+                                    className={`flex items-center justify-center rounded-full text-[10px] px-1.5 py-0.5 font-bold min-w-[20px] ${filter === "unread" ? "bg-white/20 text-white dark:bg-gray-900/10 dark:text-gray-900" : "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"}`}
                                 >
                                     {unreadCount}
                                 </span>
@@ -242,7 +246,7 @@ export default function NotificationsPage() {
                     </div>
                 </div>
 
-                <div className="px-6 pt-4 pb-12 max-w-3xl">
+                <div className="px-6 pt-4 pb-12">
                     {/* Loading State */}
                     {isLoading && (
                         <div className="space-y-4">
@@ -298,10 +302,10 @@ export default function NotificationsPage() {
                                             )
                                         }
                                         className={cn(
-                                            "group relative overflow-hidden rounded-[24px] p-5 transition-all duration-300 cursor-pointer border",
+                                            "group relative overflow-hidden rounded-2xl p-5 transition-colors cursor-pointer border",
                                             !notif.is_read
-                                                ? "bg-white dark:bg-[#1C1A29] shadow-[0_8px_30px_-10px_rgba(0,0,0,0.06)] dark:shadow-none border-slate-200/80 dark:border-white/10 hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-10px_rgba(0,0,0,0.1)]"
-                                                : "bg-transparent dark:bg-transparent border-transparent hover:bg-white/60 dark:hover:bg-[#1C1A29]/60 hover:border-slate-100 dark:hover:border-white/5"
+                                                ? "bg-indigo-50/50 dark:bg-indigo-500/10 border-indigo-100 dark:border-indigo-500/20 hover:bg-indigo-50 dark:hover:bg-indigo-500/20"
+                                                : "bg-white dark:bg-[#1C1A29] border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/10"
                                         )}
                                         style={{
                                             animation: `fadeSlideIn 0.5s ease-out ${index * 0.05}s both`,
@@ -309,11 +313,11 @@ export default function NotificationsPage() {
                                     >
                                         <div className="flex gap-4 sm:gap-5 relative z-10 items-start">
                                             {/* Actor Avatar with Type Badge */}
-                                            <div className="relative shrink-0">
+                                            <div className="relative shrink-0 mt-1">
                                                 <div
                                                     className={cn(
-                                                        "w-14 h-14 rounded-[20px] flex items-center justify-center transition-all group-hover:scale-105 duration-500 overflow-hidden",
-                                                        notif.actor ? "bg-slate-100 dark:bg-white/5 border border-slate-200/50 dark:border-white/10" : getNotificationBg(notif.type)
+                                                        "w-12 h-12 rounded-full flex items-center justify-center border border-gray-200 dark:border-white/10 overflow-hidden",
+                                                        notif.actor ? "bg-gray-50 dark:bg-white/5" : "bg-white dark:bg-[#1C1A29]"
                                                     )}
                                                 >
                                                     {notif.actor ? (
@@ -323,24 +327,34 @@ export default function NotificationsPage() {
                                                             className="h-full w-full object-cover"
                                                         />
                                                     ) : (
-                                                        getNotificationIcon(notif.type)
+                                                        <div className={cn(
+                                                            "w-full h-full flex items-center justify-center",
+                                                            notif.type === "sertifikasi" ? "bg-indigo-50 dark:bg-indigo-500/10" :
+                                                            notif.type === "report" ? "bg-rose-50 dark:bg-rose-500/10" :
+                                                            notif.type === "verifikasi" ? "bg-emerald-50 dark:bg-emerald-500/10" :
+                                                            notif.type === "like" ? "bg-pink-50 dark:bg-pink-500/10" :
+                                                            notif.type === "comment" ? "bg-blue-50 dark:bg-blue-500/10" :
+                                                            notif.type === "follow" ? "bg-purple-50 dark:bg-purple-500/10" : "bg-gray-50 dark:bg-white/5"
+                                                        )}>
+                                                            {getNotificationIcon(notif.type)}
+                                                        </div>
                                                     )}
                                                 </div>
                                                 
                                                 {/* Mini Type Icon Badge */}
                                                 {notif.actor && (
                                                     <div className={cn(
-                                                        "absolute -right-2 -bottom-2 w-7 h-7 rounded-xl flex items-center justify-center border-[3px] border-white dark:border-[#1C1A29] shadow-sm",
+                                                        "absolute -right-1 -bottom-1 w-6 h-6 rounded-full flex items-center justify-center border-2 border-white dark:border-[#1C1A29] shadow-sm",
                                                         notif.type === "sertifikasi" ? "bg-indigo-500 text-white" :
                                                         notif.type === "report" ? "bg-rose-500 text-white" :
                                                         notif.type === "verifikasi" ? "bg-emerald-500 text-white" :
                                                         notif.type === "like" ? "bg-pink-500 text-white" :
                                                         notif.type === "comment" ? "bg-blue-500 text-white" :
-                                                        notif.type === "follow" ? "bg-purple-500 text-white" : "bg-slate-500 text-white"
+                                                        notif.type === "follow" ? "bg-purple-500 text-white" : "bg-gray-500 text-white"
                                                     )}>
                                                         {(() => {
                                                             const icon = getNotificationIcon(notif.type);
-                                                            return icon ? React.cloneElement(icon as React.ReactElement, { className: "w-3 h-3 text-white" }) : null;
+                                                            return icon ? React.cloneElement(icon as React.ReactElement, { className: "w-2.5 h-2.5 text-white" }) : null;
                                                         })()}
                                                     </div>
                                                 )}
@@ -351,12 +365,9 @@ export default function NotificationsPage() {
                                                 <div className="flex items-center justify-between gap-3 mb-0.5">
                                                     <div className="flex items-center gap-2">
                                                         {!notif.is_read && (
-                                                            <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(99,102,241,0.6)]"></div>
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
                                                         )}
-                                                        <span className={cn(
-                                                            "text-[12px] font-['Lexend_Deca'] font-bold tracking-tight",
-                                                            !notif.is_read ? "text-primary" : "text-slate-400 dark:text-slate-500"
-                                                        )}>
+                                                        <span className="text-[12px] font-medium text-gray-500 dark:text-gray-400">
                                                             {timeAgo(notif.created_at)}
                                                         </span>
                                                     </div>
@@ -365,28 +376,37 @@ export default function NotificationsPage() {
                                                 <div className="flex flex-col gap-1 pr-4">
                                                     {notif.title && (
                                                         <h4 className={cn(
-                                                            "font-['Lexend_Deca'] text-[15px] leading-tight",
-                                                            !notif.is_read ? "font-bold text-slate-900 dark:text-gray-100" : "font-semibold text-slate-700 dark:text-slate-300"
+                                                            "text-[15px]",
+                                                            !notif.is_read ? "font-bold text-gray-900 dark:text-gray-100" : "font-semibold text-gray-700 dark:text-gray-300"
                                                         )}>
                                                             {notif.title}
                                                         </h4>
                                                     )}
                                                     <p className={cn(
-                                                        "font-['Manrope'] leading-relaxed line-clamp-2",
-                                                        !notif.is_read ? "text-slate-600 dark:text-slate-300 font-medium text-[14px]" : "text-slate-500 dark:text-slate-400 text-[14px]"
+                                                        "leading-relaxed line-clamp-2 text-[14px]",
+                                                        !notif.is_read ? "text-gray-700 dark:text-gray-300 font-medium" : "text-gray-500 dark:text-gray-400"
                                                     )}>
                                                         {notif.message}
                                                     </p>
                                                 </div>
 
                                                 {notif.link && (
-                                                    <div className="flex items-center gap-1 mt-2">
-                                                        <span className="text-[11px] font-['Lexend_Deca'] font-bold text-indigo-600 dark:text-primary uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-[-10px] group-hover:translate-x-0">
-                                                            Buka Detail
+                                                    <div className="hidden sm:flex items-center gap-1 mt-2">
+                                                        <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-[-10px] group-hover:translate-x-0">
+                                                            Lihat Detail
                                                         </span>
                                                     </div>
                                                 )}
                                             </div>
+                                            
+                                            {/* Right Chevron */}
+                                            {notif.link && (
+                                                <div className="shrink-0 flex items-center justify-center self-center pl-2 sm:pl-4 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-[-10px] group-hover:translate-x-0">
+                                                    <div className="w-8 h-8 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-400 dark:text-gray-500 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-500/10 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                                                        <ChevronRight className="w-4 h-4" />
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -422,6 +442,7 @@ export default function NotificationsPage() {
                                 </p>
                             </div>
                         )}
+                </div>
                 </div>
             </div>
             <style

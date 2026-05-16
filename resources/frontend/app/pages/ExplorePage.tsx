@@ -22,6 +22,7 @@ import {
     Compass,
     Users,
     Lock as LockIcon,
+    ArrowRight,
 } from "lucide-react";
 import { mataPelajaran } from "../data/mockData";
 import axios from "axios";
@@ -783,68 +784,83 @@ export default function ExplorePage() {
                                             return (
                                                 <div
                                                     key={userId + '_' + Math.random().toString(36).substr(2, 5)}
-                                                    className="flex items-center gap-4 p-5 rounded-3xl bg-white dark:bg-[#1C1A29] border border-gray-100/50 dark:border-white/5 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] dark:shadow-none hover:shadow-[0_8px_30px_-10px_rgba(0,0,0,0.08)] dark:hover:shadow-none hover:border-gray-200 dark:hover:border-white/10 transition-all duration-300 group"
+                                                    className="flex items-center gap-4 p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#1C1A29] border border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-[#221f30] transition-colors duration-200 group"
                                                 >
+                                                    {/* Avatar Column */}
                                                     <Link to={`/profile/${userId}`} className="shrink-0 relative">
                                                         <AvatarImage
                                                             src={u.avatar}
                                                             alt={u.name}
-                                                            size={64}
-                                                            className="rounded-full object-cover bg-gray-50 dark:bg-white/10 ring-[3px] ring-transparent group-hover:ring-primary/20 transition-all duration-300"
+                                                            size={56}
+                                                            className="rounded-full object-cover bg-gray-100 dark:bg-white/10"
                                                         />
                                                     </Link>
-                                                    <Link to={`/profile/${userId}`} className="flex-1 min-w-0 flex flex-col justify-center">
-                                                        <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                                                            <h4 className="font-['Lexend_Deca'] font-extrabold text-[17px] text-gray-900 dark:text-gray-100 truncate group-hover:text-primary transition-colors">
-                                                                {u.name || u.username || "Anonim"}
-                                                            </h4>
-                                                            {u.is_private && (
-                                                                <LockIcon className="w-4 h-4 text-gray-400 shrink-0" />
-                                                            )}
-                                                            {u.role === 'admin' && (
-                                                                <span className="px-2.5 py-1 rounded-[8px] bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[11px] font-extrabold font-['Lexend_Deca'] flex items-center gap-1.5 shrink-0 border border-indigo-100 dark:border-indigo-500/20">
-                                                                    <ShieldCheck className="w-3.5 h-3.5" /> Admin
-                                                                </span>
-                                                            )}
-                                                            {u.role === 'pakar' && (
-                                                                <span className="px-2.5 py-1 rounded-[8px] bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[11px] font-extrabold font-['Lexend_Deca'] flex items-center gap-1.5 shrink-0 border border-amber-100 dark:border-amber-500/20">
-                                                                    <Star className="w-3.5 h-3.5" fill="currentColor" /> Pakar
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        <p className="font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400 font-bold truncate mb-2">
-                                                            @{u.username || '—'}
-                                                        </p>
-                                                        <div className="font-['Manrope'] text-[13px] text-gray-500 dark:text-gray-400 font-semibold flex items-center gap-2 flex-wrap">
-                                                            <div className="flex items-center gap-1.5">
-                                                                <Users className="w-4 h-4 opacity-70" />
-                                                                <span><strong className="text-gray-800 dark:text-gray-200">{u.followers_count || 0}</strong> Pengikut</span>
+
+                                                    {/* Content Column */}
+                                                    <div className="flex-1 min-w-0 flex flex-col justify-center py-1">
+                                                        <Link to={`/profile/${userId}`} className="block">
+                                                            <div className="flex items-center gap-1.5 mb-0.5">
+                                                                <h4 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 truncate group-hover:underline">
+                                                                    {u.name || u.username || "Anonim"}
+                                                                </h4>
+                                                                {u.is_private && (
+                                                                    <LockIcon className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                                                )}
+                                                                {u.role === 'admin' && (
+                                                                    <span title="Admin">
+                                                                        <ShieldCheck className="w-[18px] h-[18px] text-slate-800 dark:text-slate-300" fill="currentColor" stroke="white" strokeWidth={1} />
+                                                                    </span>
+                                                                )}
+                                                                {u.role === 'pakar' && (
+                                                                    <span title="Pakar Terverifikasi">
+                                                                        <ShieldCheck className="w-[18px] h-[18px] text-indigo-500 dark:text-indigo-400" fill="currentColor" stroke="white" strokeWidth={1} />
+                                                                    </span>
+                                                                )}
                                                             </div>
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600"></span>
-                                                            <div className="flex items-center gap-1.5">
-                                                                <BookOpen className="w-4 h-4 opacity-70" />
-                                                                <span><strong className="text-gray-800 dark:text-gray-200">{u.posts_count || 0}</strong> Tulisan</span>
-                                                            </div>
+                                                            <p className="font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400 font-medium truncate mb-1">
+                                                                @{u.username || '—'}
+                                                            </p>
+                                                        
                                                             {u.bio && (
-                                                                <>
-                                                                    <span className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600 hidden sm:block"></span>
-                                                                    <span className="truncate max-w-[200px] sm:max-w-[300px] hidden sm:block italic opacity-80">"{u.bio}"</span>
-                                                                </>
+                                                                <p className="font-['Manrope'] text-[14px] text-gray-800 dark:text-gray-200 leading-snug break-words mb-2 line-clamp-2">
+                                                                    {u.bio}
+                                                                </p>
                                                             )}
-                                                        </div>
-                                                    </Link>
-                                                    <button
-                                                        onClick={() => handleFollowExpert(userId)}
-                                                        className={`px-5 py-2 rounded-xl border font-['Manrope'] text-[13px] font-bold transition-all focus:outline-none shrink-0 ${
-                                                            u.is_followed_by_me
-                                                                ? "border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10"
-                                                                : u.is_follow_pending
-                                                                    ? "border-gray-200 dark:border-white/10 text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-white/5 cursor-default"
-                                                                    : "border-primary/20 dark:border-primary/30 text-primary bg-primary/5 hover:bg-primary hover:text-white"
-                                                        }`}
-                                                    >
-                                                        {u.is_followed_by_me ? "Mengikuti" : u.is_follow_pending ? "Diminta" : "Ikuti"}
-                                                    </button>
+                                                            <div className="flex items-center gap-4 font-['Manrope'] text-[13px] text-gray-500 dark:text-gray-400 font-medium">
+                                                                <div className="flex items-center gap-1.5 hover:underline">
+                                                                    <span><strong className="font-bold text-gray-900 dark:text-gray-100">{u.followers_count || 0}</strong> Pengikut</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-1.5 hover:underline">
+                                                                    <span><strong className="font-bold text-gray-900 dark:text-gray-100">{u.posts_count || 0}</strong> Tulisan</span>
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </div>
+
+                                                    {/* Follow Button Column */}
+                                                    <div className="shrink-0 ml-2">
+                                                        <button
+                                                            onClick={() => handleFollowExpert(userId)}
+                                                            className={`px-4 sm:px-5 py-1.5 rounded-full font-['Manrope'] text-[14px] font-bold transition-all focus:outline-none shrink-0 border ${
+                                                                u.is_followed_by_me
+                                                                    ? "border-gray-200 dark:border-white/20 text-gray-900 dark:text-gray-100 bg-transparent hover:border-red-200 hover:text-red-500 hover:bg-red-50 dark:hover:border-red-500/30 dark:hover:text-red-400 dark:hover:bg-red-500/10 group/btn"
+                                                                    : u.is_follow_pending
+                                                                        ? "border-gray-200 dark:border-white/10 text-gray-400 dark:text-gray-500 bg-transparent cursor-default"
+                                                                        : "border-transparent text-white bg-slate-900 dark:bg-white dark:text-slate-900 hover:bg-black dark:hover:bg-gray-200 shadow-sm"
+                                                            }`}
+                                                        >
+                                                            {u.is_followed_by_me ? (
+                                                                <span className="group-hover/btn:hidden">Mengikuti</span>
+                                                            ) : u.is_follow_pending ? (
+                                                                <span>Diminta</span>
+                                                            ) : (
+                                                                <span>Ikuti</span>
+                                                            )}
+                                                            {u.is_followed_by_me && (
+                                                                <span className="hidden group-hover/btn:inline">Berhenti</span>
+                                                            )}
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             );
                                         })}
