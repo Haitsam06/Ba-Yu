@@ -196,6 +196,23 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                             {renderActions ? renderActions(note) : (
                             <>
                                 <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        if (onLike) onLike(note.id);
+                                    }}
+                                    className={`flex items-center gap-1.5 transition-colors focus:outline-none font-bold ${note.is_liked ? "text-rose-500" : "text-gray-600 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-400"}`}
+                                    title={`${note.likes || 0} suka`}
+                                >
+                                    <Heart
+                                        className={`w-[15px] h-[15px] transition-all duration-300 ${note.is_liked ? "fill-rose-500 text-rose-500 scale-110" : ""}`}
+                                        strokeWidth={2.5}
+                                    />
+                                    <span className="text-[13px] font-['Manrope']">
+                                        {note.likes || 0}
+                                    </span>
+                                </button>
+                                <button
                                     className="flex items-center gap-1.5 text-gray-600 dark:text-gray-500 hover:text-gray-950 dark:hover:text-gray-300 transition-colors focus:outline-none font-bold"
                                     title={`${note.comments || 0} komentar`}
                                 >
@@ -215,7 +232,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                             e.stopPropagation();
                                             toggleBookmark(note.id);
                                         }}
-                                        className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? "text-primary scale-110" : "opacity-0 md:opacity-100 text-gray-500 hover:text-primary md:group-hover:opacity-100"}`}
+                                        className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? "text-primary scale-110" : "text-gray-500 hover:text-primary"}`}
                                     >
                                         <Bookmark
                                             className={`w-[18px] h-[18px] transition-all duration-300 ${isBookmarked(note.id) ? "fill-primary" : ""}`}

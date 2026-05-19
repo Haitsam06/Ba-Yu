@@ -22,6 +22,7 @@ import {
     X,
     Calendar,
     Loader2,
+    HelpCircle,
 } from "lucide-react";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { Link, useSearchParams, useNavigate } from "react-router";
@@ -480,6 +481,13 @@ export default function ProfilePage() {
                         </div>
 
                         <div className="pt-3 flex items-center gap-2">
+                            <Link
+                                to="/settings/help"
+                                className="p-1.5 sm:p-2 rounded-full border border-gray-300 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                                title="Bantuan"
+                            >
+                                <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                            </Link>
                             <Link
                                 to="/settings"
                                 className="p-1.5 sm:p-2 rounded-full border border-gray-300 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"

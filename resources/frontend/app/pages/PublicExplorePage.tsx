@@ -63,6 +63,113 @@ export default function PublicExplorePage() {
     const [isLoadingNotes, setIsLoadingNotes] = useState(true);
     const [experts, setExperts] = useState<any[]>([]);
 
+    // Mobile drawer state
+    const [isMobileExploreDrawerOpen, setIsMobileExploreDrawerOpen] = useState(false);
+
+    // Function to render the Right Sidebar content (reused for desktop & mobile drawer)
+    const renderRightColumn = () => (
+        <div className="flex flex-col gap-10">
+            {/* Penulis Direkomendasikan */}
+            <div>
+                <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-5 flex items-center gap-2">
+                    <Sparkles
+                        className="w-4 h-4 text-primary"
+                        strokeWidth={2.5}
+                    />{" "}
+                    Pakar Edukasi
+                </h3>
+                <div className="flex flex-col gap-5">
+                    {experts.length > 0 ? (
+                        experts.map((expert: any) => (
+                            <div
+                                key={expert._id || expert.id}
+                                className="flex items-center justify-between group"
+                            >
+                                <Link
+                                    to={`/profile/${expert._id || expert.id}`}
+                                    className="flex items-center gap-3 min-w-0 pr-4 outline-none"
+                                >
+                                    <AvatarImage
+                                        src={expert.avatar}
+                                        alt={expert.name}
+                                        size={40}
+                                        className="rounded-full object-cover bg-gray-100 dark:bg-white/10 ring-2 ring-transparent group-hover:ring-primary/20 transition-all"
+                                    />
+                                    <div className="flex flex-col min-w-0">
+                                        <span className="font-['Lexend_Deca'] font-bold text-[14px] text-gray-900 dark:text-gray-100 truncate group-hover:text-primary transition-colors">
+                                            {expert.name}
+                                        </span>
+                                        <span className="font-['Manrope'] font-medium text-[12px] text-gray-500 dark:text-gray-400 truncate">
+                                            {expert.followers_count ||
+                                                0}{" "}
+                                            pengikut
+                                        </span>
+                                    </div>
+                                </Link>
+                                <button
+                                    onClick={() => handleFollowExpert(expert._id || expert.id)}
+                                    className={`px-3.5 py-1.5 rounded-[10px] border font-['Manrope'] text-[12px] font-bold transition-all focus:outline-none ${
+                                        expert.is_followed_by_me
+                                            ? "border-gray-300 dark:border-white/20 text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20"
+                                            : "border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-primary hover:text-primary hover:bg-primary/5"
+                                    }`}
+                                >
+                                    {expert.is_followed_by_me ? "Mengikuti" : "Ikuti"}
+                                </button>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-gray-700 dark:text-gray-400 font-['Manrope'] text-sm font-bold">
+                            Belum ada pakar terdaftar.
+                        </p>
+                    )}
+                </div>
+            </div>
+
+            {/* Pencarian Populer (Trending Searches) */}
+            <div>
+                <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-4 flex items-center gap-2">
+                    <TrendingUp
+                        className="w-4 h-4 text-rose-500"
+                        strokeWidth={2.5}
+                    />{" "}
+                    Sering Dicari
+                </h3>
+                <div className="flex flex-wrap gap-2.5">
+                    {[
+                        "Fisika Kuantum",
+                        "Limit Trigonometri",
+                        "Grammar IELTS",
+                        "SBMPTN 2026",
+                        "Sistem Pencernaan",
+                    ].map((term) => (
+                        <button
+                            key={term}
+                            onClick={() => setSearchQuery(term)}
+                            className="px-3.5 py-2.5 bg-white dark:bg-[#1C1A29] hover:bg-primary/5 hover:text-primary hover:border-primary/20 text-gray-600 dark:text-gray-400 rounded-2xl font-['Manrope'] text-[13px] font-bold shadow-sm dark:shadow-none hover:shadow-md hover:-translate-y-0.5 border border-gray-100 dark:border-white/10 transition-all duration-300 truncate max-w-full text-left focus:outline-none"
+                        >
+                            <Search
+                                className="w-3.5 h-3.5 inline-block mr-1.5 opacity-70"
+                                strokeWidth={2.5}
+                            />{" "}
+                            {term}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Quick Links */}
+            <div className="pt-2 flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-['Manrope'] font-bold text-gray-700 dark:text-gray-500">
+                <Link to="/settings/help" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Bantuan</Link>
+                <Link to="/status" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Status</Link>
+                <Link to="/about" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Tentang Kami</Link>
+                <Link to="/careers" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Karir</Link>
+                <Link to="/privacy" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Privasi</Link>
+                <Link to="/terms" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Ketentuan</Link>
+            </div>
+        </div>
+    );
+
     // Fetch experts for sidebar
     useEffect(() => {
         const fetchExperts = async () => {
@@ -390,38 +497,50 @@ export default function PublicExplorePage() {
                                 }}
                             >
                                 <div
-                                    className={`flex gap-8 overflow-x-auto no-scrollbar relative ${isAuthenticated ? "border-b border-gray-100" : ""}`}
+                                    className={`flex justify-between items-end ${isAuthenticated ? "border-b border-gray-100" : ""}`}
                                 >
-                                    {tabItems.map((tab) => (
-                                        <button
-                                            key={tab.key}
-                                            onClick={() =>
-                                                setActiveSegment(tab.key)
-                                            }
-                                            className={`pb-4 relative shrink-0 font-['Lexend_Deca'] text-[15px] transition-colors focus:outline-none flex items-center gap-2 group ${
-                                                activeSegment === tab.key
-                                                    ? "text-gray-900 dark:text-gray-100 font-extrabold"
-                                                    : "text-gray-500 font-medium hover:text-gray-900 dark:hover:text-gray-200"
-                                            }`}
-                                        >
-                                            <tab.icon
-                                                className={`w-[16px] h-[16px] transition-colors ${activeSegment === tab.key ? "text-gray-900 dark:text-gray-100" : "text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200"}`}
-                                                strokeWidth={
-                                                    activeSegment === tab.key
-                                                        ? 2.5
-                                                        : 2.2
+                                    <div
+                                        className={`flex gap-8 overflow-x-auto no-scrollbar relative flex-1`}
+                                    >
+                                        {tabItems.map((tab) => (
+                                            <button
+                                                key={tab.key}
+                                                onClick={() =>
+                                                    setActiveSegment(tab.key)
                                                 }
-                                            />
-                                            <span
-                                                className={`font-['Lexend_Deca'] font-semibold text-[14px] transition-colors ${activeSegment === tab.key ? "text-gray-900 dark:text-gray-100" : "text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200"}`}
+                                                className={`pb-4 relative shrink-0 font-['Lexend_Deca'] text-[15px] transition-colors focus:outline-none flex items-center gap-2 group ${
+                                                    activeSegment === tab.key
+                                                        ? "text-gray-900 dark:text-gray-100 font-extrabold"
+                                                        : "text-gray-500 font-medium hover:text-gray-900 dark:hover:text-gray-200"
+                                                }`}
                                             >
-                                                {tab.label}
-                                            </span>
-                                            {activeSegment === tab.key && (
-                                                <div className="absolute -bottom-[1px] left-0 w-full h-[2px] bg-gray-900 rounded-t-full shadow-[0_-1px_6px_rgba(0,0,0,0.2)]"></div>
-                                            )}
+                                                <tab.icon
+                                                    className={`w-[16px] h-[16px] transition-colors ${activeSegment === tab.key ? "text-gray-900 dark:text-gray-100" : "text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200"}`}
+                                                    strokeWidth={
+                                                        activeSegment === tab.key
+                                                            ? 2.5
+                                                            : 2.2
+                                                    }
+                                                />
+                                                <span
+                                                    className={`font-['Lexend_Deca'] font-semibold text-[14px] transition-colors ${activeSegment === tab.key ? "text-gray-900 dark:text-gray-100" : "text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200"}`}
+                                                >
+                                                    {tab.label}
+                                                </span>
+                                                {activeSegment === tab.key && (
+                                                    <div className="absolute -bottom-[1px] left-0 w-full h-[2px] bg-gray-900 rounded-t-full shadow-[0_-1px_6px_rgba(0,0,0,0.2)]"></div>
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <div className="pb-3 pl-4 flex items-center gap-2 shrink-0">
+                                        <button 
+                                            onClick={() => setIsMobileExploreDrawerOpen(true)}
+                                            className="lg:hidden h-[36px] px-3.5 bg-gray-50/80 dark:bg-[#1C1A29] rounded-full shadow-sm text-[13px] font-['Manrope'] font-bold text-primary flex items-center gap-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-white/5 border border-primary/20"
+                                        >
+                                            <Sparkles className="w-3.5 h-3.5" /> Tren
                                         </button>
-                                    ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -470,145 +589,12 @@ export default function PublicExplorePage() {
                         }}
                     >
                         <div
-                            className="sticky flex flex-col gap-10 pt-8 pb-12"
+                            className="sticky pt-8 pb-12"
                             style={{
                                 top: "min(72px, calc(100vh - 100% - 24px))",
                             }}
                         >
-                            {/* Penulis Direkomendasikan */}
-                            <div>
-                                <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-5 flex items-center gap-2">
-                                    <Sparkles
-                                        className="w-4 h-4 text-primary"
-                                        strokeWidth={2.5}
-                                    />{" "}
-                                    Pakar Edukasi
-                                </h3>
-                                <div className="flex flex-col gap-5">
-                                    {experts.length > 0 ? (
-                                        experts.map((expert: any) => (
-                                            <div
-                                                key={expert._id || expert.id}
-                                                className="flex items-center justify-between group"
-                                            >
-                                                <Link
-                                                    to={`/profile/${expert._id || expert.id}`}
-                                                    className="flex items-center gap-3 min-w-0 pr-4 outline-none"
-                                                >
-                                                    <AvatarImage
-                                                        src={expert.avatar}
-                                                        alt={expert.name}
-                                                        size={40}
-                                                        className="rounded-full object-cover bg-gray-100 ring-2 ring-transparent group-hover:ring-primary/20 transition-all"
-                                                    />
-                                                    <div className="flex flex-col min-w-0">
-                                                        <span className="font-['Lexend_Deca'] font-extrabold text-[14px] text-gray-900 dark:text-gray-200 truncate group-hover:text-primary transition-colors">
-                                                            {expert.name}
-                                                        </span>
-                                                        <span className="font-['Manrope'] font-bold text-[12px] text-gray-600 truncate">
-                                                            {expert.followers_count ||
-                                                                0}{" "}
-                                                            pengikut
-                                                        </span>
-                                                    </div>
-                                                </Link>
-                                                <button
-                                                    onClick={() =>
-                                                        handleFollowExpert(
-                                                            expert._id ||
-                                                                expert.id,
-                                                        )
-                                                    }
-                                                    className={`px-3.5 py-1.5 rounded-[10px] border font-['Manrope'] text-[12px] font-bold transition-all focus:outline-none ${
-                                                        expert.is_followed_by_me
-                                                            ? "border-gray-300 dark:border-white/20 text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20"
-                                                            : "border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-primary hover:text-primary hover:bg-primary/5"
-                                                    }`}
-                                                >
-                                                    {expert.is_followed_by_me
-                                                        ? "Mengikuti"
-                                                        : "Ikuti"}
-                                                </button>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p className="text-gray-600 font-['Manrope'] text-sm font-bold">
-                                            Belum ada pakar terdaftar.
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Pencarian Populer (Trending Searches) */}
-                            <div>
-                                <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-4 flex items-center gap-2">
-                                    <TrendingUp
-                                        className="w-4 h-4 text-rose-500"
-                                        strokeWidth={2.5}
-                                    />{" "}
-                                    Sering Dicari
-                                </h3>
-                                <div className="flex flex-wrap gap-2.5">
-                                    {[
-                                        "Fisika Kuantum",
-                                        "Limit Trigonometri",
-                                        "Grammar IELTS",
-                                        "SBMPTN 2026",
-                                        "Sistem Pencernaan",
-                                    ].map((term) => (
-                                        <button
-                                            key={term}
-                                            className="px-3.5 py-2.5 bg-white dark:bg-[#1C1A29] hover:bg-primary/5 dark:hover:bg-primary/10 hover:text-primary hover:border-primary/20 text-gray-600 dark:text-gray-400 rounded-2xl font-['Manrope'] text-[13px] font-bold shadow-sm dark:shadow-none hover:shadow-md hover:-translate-y-0.5 border border-gray-100 dark:border-white/5 transition-all duration-300 truncate max-w-full text-left focus:outline-none"
-                                        >
-                                            <Search
-                                                className="w-3.5 h-3.5 inline-block mr-1.5 opacity-70"
-                                                strokeWidth={2.8}
-                                            />{" "}
-                                            {term}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Quick Links */}
-                             <div className="pt-2 flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-['Manrope'] font-bold text-gray-600">
-                                <Link
-                                    to="/settings/help"
-                                    className="hover:text-gray-950 dark:hover:text-gray-300 transition-colors"
-                                >
-                                    Bantuan
-                                </Link>
-                                <Link
-                                    to="/status"
-                                    className="hover:text-gray-950 dark:hover:text-gray-300 transition-colors"
-                                >
-                                    Status
-                                </Link>
-                                <Link
-                                    to="/about"
-                                    className="hover:text-gray-950 dark:hover:text-gray-300 transition-colors"
-                                >
-                                    Tentang Kami
-                                </Link>
-                                <Link
-                                    to="/careers"
-                                    className="hover:text-gray-950 dark:hover:text-gray-300 transition-colors"
-                                >
-                                    Karir
-                                </Link>
-                                <Link
-                                    to="/privacy"
-                                    className="hover:text-gray-950 dark:hover:text-gray-300 transition-colors"
-                                >
-                                    Privasi
-                                </Link>
-                                <Link
-                                    to="/terms"
-                                    className="hover:text-gray-950 dark:hover:text-gray-300 transition-colors"
-                                >
-                                    Ketentuan
-                                </Link>
-                            </div>
+                            {renderRightColumn()}
                         </div>
                     </div>
                 </div>
@@ -801,6 +787,24 @@ export default function PublicExplorePage() {
                 onClose={() => setShowAuthModal(false)}
                 defaultTab={authTab}
             />
+
+            {/* MOBILE SLIDE-UP DRAWER (Pakar & Tren) */}
+            {isMobileExploreDrawerOpen && (
+                <div className="lg:hidden fixed inset-0 z-[100] flex items-end">
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setIsMobileExploreDrawerOpen(false)}></div>
+                    <div className="relative bg-white dark:bg-[#13111C] w-full h-[85vh] rounded-t-3xl shadow-2xl flex flex-col animate-in slide-in-from-bottom duration-300 pb-safe">
+                        <div className="p-5 border-b border-gray-100 dark:border-white/5 flex items-center justify-between sticky top-0 bg-white/95 dark:bg-[#13111C]/95 backdrop-blur z-10 rounded-t-3xl">
+                            <span className="font-['Lexend_Deca'] font-extrabold text-[18px] text-gray-900 dark:text-gray-100">Eksplorasi Lanjutan</span>
+                            <button onClick={() => setIsMobileExploreDrawerOpen(false)} className="p-2 bg-gray-50 dark:bg-white/5 rounded-full text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors outline-none">
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-6 scroll-smooth pb-20">
+                            {renderRightColumn()}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -244,6 +244,23 @@ export default function EditProfilePage() {
     };
     const onPointerUp = () => setIsDragging(false);
 
+    // Explicit touch handlers for better mobile support
+    const onTouchStart = (e: React.TouchEvent) => {
+        setIsDragging(true);
+        setDragStart({
+            x: e.touches[0].clientX - cropOffset.x,
+            y: e.touches[0].clientY - cropOffset.y,
+        });
+    };
+    const onTouchMove = (e: React.TouchEvent) => {
+        if (!isDragging) return;
+        setCropOffset({
+            x: e.touches[0].clientX - dragStart.x,
+            y: e.touches[0].clientY - dragStart.y,
+        });
+    };
+    const onTouchEnd = () => setIsDragging(false);
+
     // Wheel zoom
     const onWheel = (e: React.WheelEvent) => {
         e.preventDefault();
@@ -753,6 +770,10 @@ export default function EditProfilePage() {
                             onPointerMove={onPointerMove}
                             onPointerUp={onPointerUp}
                             onPointerCancel={onPointerUp}
+                            onTouchStart={onTouchStart}
+                            onTouchMove={onTouchMove}
+                            onTouchEnd={onTouchEnd}
+                            onTouchCancel={onTouchEnd}
                             onWheel={onWheel}
                         >
                             <img

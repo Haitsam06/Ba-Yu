@@ -4,8 +4,8 @@ import { SideNav } from './SideNav';
 import { TopNav } from './TopNav';
 import ApplicationLogo from './ApplicationLogo';
 import AvatarNotifications from './ui/avatar-notifications';
-import { Edit3, Search } from 'lucide-react';
-import { Link, useNavigate } from 'react-router';
+import { Edit3, Search, Menu, X } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 
 interface MobileLayoutProps {
@@ -17,8 +17,15 @@ interface MobileLayoutProps {
 export function MobileLayout({ children, showBottomNav = true, hideTopNav = false }: MobileLayoutProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -53,12 +60,17 @@ export function MobileLayout({ children, showBottomNav = true, hideTopNav = fals
       {/* 2. MOBILE TOP BAR */}
       {!hideTopNav && (
         <div className="md:hidden w-full bg-white/90 dark:bg-[#13111C]/90 backdrop-blur-md h-[60px] border-b border-slate-100 dark:border-white/5 flex items-center justify-between px-5 z-40 shadow-sm dark:shadow-none shrink-0">
-           <Link to="/home" className="flex items-center gap-2 shrink-0 group outline-none">
-              <ApplicationLogo className="w-7 h-7" />
-              <span className="font-['Lexend_Deca'] font-extrabold text-[20px] tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-indigo-800 dark:from-[#7B7BFF] dark:to-[#A78BFA]">
-                 Ba-Yu
-              </span>
-           </Link>
+           <div className="flex items-center gap-3">
+               <button onClick={() => setIsMobileMenuOpen(true)} className="p-1.5 -ml-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-primary outline-none transition-colors">
+                   <Menu className="w-6 h-6" />
+               </button>
+               <Link to="/home" className="flex items-center gap-2 shrink-0 group outline-none">
+                  <ApplicationLogo className="w-7 h-7" />
+                  <span className="font-['Lexend_Deca'] font-extrabold text-[20px] tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-indigo-800 dark:from-[#7B7BFF] dark:to-[#A78BFA]">
+                     Ba-Yu
+                  </span>
+               </Link>
+           </div>
            
            <div className="flex items-center gap-4">
               <button onClick={() => navigate('/explore')} className="text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-primary transition-colors rounded-full hover:bg-indigo-50 dark:hover:bg-white/5 outline-none">
@@ -108,6 +120,24 @@ export function MobileLayout({ children, showBottomNav = true, hideTopNav = fals
       {showBottomNav && (
         <div className="md:hidden fixed bottom-0 left-0 w-full z-40 bg-white dark:bg-[#1C1A29] border-t border-slate-200 dark:border-white/5 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] dark:shadow-none pb-safe">
            <BottomNav />
+        </div>
+      )}
+
+      {/* MOBILE SLIDE-OUT SIDEBAR */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 z-[100] flex">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setIsMobileMenuOpen(false)}></div>
+          <div className="relative bg-white dark:bg-[#13111C] w-[260px] h-full shadow-2xl flex flex-col animate-in slide-in-from-left duration-300">
+             <div className="p-4 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
+               <span className="font-['Lexend_Deca'] font-extrabold text-[18px] text-indigo-600 dark:text-primary">Menu Utama</span>
+               <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-slate-50 dark:bg-white/5 rounded-full text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">
+                 <X className="w-4 h-4" />
+               </button>
+             </div>
+             <div className="flex-1 overflow-y-auto">
+               <SideNav isExpanded={true} toggleSidebar={() => setIsMobileMenuOpen(false)} />
+             </div>
+          </div>
         </div>
       )}
 

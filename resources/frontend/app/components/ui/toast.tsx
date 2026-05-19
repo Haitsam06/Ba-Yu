@@ -180,7 +180,7 @@ const ToastContainer = () => {
 
   return (
     <div
-      className="fixed bottom-4 right-4 z-[9999] pointer-events-none w-[420px]"
+      className="fixed bottom-4 right-4 sm:right-4 left-4 sm:left-auto z-[9999] pointer-events-none w-[calc(100vw-2rem)] sm:w-[420px]"
       style={{ height: containerHeight }}
     >
       <div
@@ -208,7 +208,7 @@ const ToastContainer = () => {
                 index < lastVisibleStart && "pointer-events-none"
               )}
               style={{
-                width: 420,
+                width: '100%',
                 transition: "all .35s cubic-bezier(.25,.75,.6,.98)",
                 transform: shownIds.includes(toast.id)
                   ? getFinalTransform(index, toasts.length)
@@ -284,7 +284,7 @@ const ToastContainer = () => {
 const mountContainer = () => {
   if (root) return;
   const el = document.createElement("div");
-  el.className = "fixed bottom-4 right-4 z-[9999]";
+  el.className = "fixed bottom-4 right-4 sm:right-4 left-4 sm:left-auto z-[9999]";
   document.body.appendChild(el);
   root = createRoot(el);
   root.render(<ToastContainer />);

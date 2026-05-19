@@ -112,3 +112,19 @@
   border-radius: 12px !important;
   margin: 12px 0 !important;
 }
+
+/* Mobile Responsiveness for Quill */
+@media (max-width: 768px) {
+  .ql-toolbar {
+    position: sticky !important;
+    top: 60px !important; /* Below the 60px mobile header */
+    z-index: 40 !important;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+    border-radius: 0 !important; /* Remove top border radius on sticky */
+    border-top: none !important;
+  }
+  
+  .ql-editor {
+    padding-bottom: 250px !important; /* Ample space for virtual keyboard to not hide cursor */
+  }
+}

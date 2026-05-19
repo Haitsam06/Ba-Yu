@@ -98,6 +98,123 @@ export default function ExplorePage() {
     const [isLoadingUsers, setIsLoadingUsers] = useState(false);
     const [usersPage, setUsersPage] = useState(1);
     const [hasMoreUsers, setHasMoreUsers] = useState(true);
+
+    // Mobile drawer state
+    const [isMobileExploreDrawerOpen, setIsMobileExploreDrawerOpen] = useState(false);
+
+    // Function to render the Right Sidebar content (reused for desktop & mobile drawer)
+    const renderRightColumn = () => (
+        <div className="flex flex-col gap-10">
+            {/* Penulis Direkomendasikan */}
+            <div>
+                <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-5 flex items-center gap-2">
+                    <Sparkles
+                        className="w-4 h-4 text-primary"
+                        strokeWidth={2.5}
+                    />{" "}
+                    Pakar Edukasi
+                </h3>
+                <div className="flex flex-col gap-5">
+                    {experts.length > 0 ? (
+                        experts.map((expert: any) => (
+                            <div
+                                key={expert._id || expert.id}
+                                className="flex items-center justify-between group"
+                            >
+                                <Link
+                                    to={`/profile/${expert._id || expert.id}`}
+                                    className="flex items-center gap-3 min-w-0 pr-4 outline-none"
+                                >
+                                    <AvatarImage
+                                        src={expert.avatar}
+                                        alt={expert.name}
+                                        size={40}
+                                        className="rounded-full object-cover bg-gray-100 dark:bg-white/10 ring-2 ring-transparent group-hover:ring-primary/20 transition-all"
+                                    />
+                                    <div className="flex flex-col min-w-0">
+                                        <span className="font-['Lexend_Deca'] font-bold text-[14px] text-gray-900 dark:text-gray-100 truncate group-hover:text-primary transition-colors">
+                                            {expert.name}
+                                        </span>
+                                        <span className="font-['Manrope'] font-medium text-[12px] text-gray-500 dark:text-gray-400 truncate">
+                                            {expert.followers_count ||
+                                                0}{" "}
+                                            pengikut
+                                        </span>
+                                    </div>
+                                </Link>
+                                <button
+                                    onClick={() =>
+                                        handleFollowExpert(
+                                            expert._id ||
+                                            expert.id,
+                                        )
+                                    }
+                                    className={`px-3.5 py-1.5 rounded-[10px] border font-['Manrope'] text-[12px] font-bold transition-all focus:outline-none ${expert.is_followed_by_me
+                                            ? "border-gray-300 dark:border-white/10 text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10"
+                                            : expert.is_follow_pending
+                                                ? "border-gray-200 dark:border-white/10 text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-white/5 cursor-default"
+                                                : "border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-primary hover:text-primary hover:bg-primary/5"
+                                        }`}
+                                >
+                                    {expert.is_followed_by_me
+                                        ? "Mengikuti"
+                                        : expert.is_follow_pending
+                                            ? "Diminta"
+                                            : "Ikuti"}
+                                </button>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-gray-700 dark:text-gray-400 font-['Manrope'] text-sm font-bold">
+                            Belum ada pakar terdaftar.
+                        </p>
+                    )}
+                </div>
+            </div>
+
+            {/* Pencarian Populer (Trending Searches) */}
+            <div>
+                <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-4 flex items-center gap-2">
+                    <TrendingUp
+                        className="w-4 h-4 text-rose-500"
+                        strokeWidth={2.5}
+                    />{" "}
+                    Sering Dicari
+                </h3>
+                <div className="flex flex-wrap gap-2.5">
+                    {[
+                        "Fisika Kuantum",
+                        "Limit Trigonometri",
+                        "Grammar IELTS",
+                        "SBMPTN 2026",
+                        "Sistem Pencernaan",
+                    ].map((term) => (
+                        <button
+                            key={term}
+                            onClick={() => setSearchQuery(term)}
+                            className="px-3.5 py-2.5 bg-white dark:bg-[#1C1A29] hover:bg-primary/5 hover:text-primary hover:border-primary/20 text-gray-600 dark:text-gray-400 rounded-2xl font-['Manrope'] text-[13px] font-bold shadow-sm dark:shadow-none hover:shadow-md hover:-translate-y-0.5 border border-gray-100 dark:border-white/10 transition-all duration-300 truncate max-w-full text-left focus:outline-none"
+                        >
+                            <Search
+                                className="w-3.5 h-3.5 inline-block mr-1.5 opacity-70"
+                                strokeWidth={2.5}
+                            />{" "}
+                            {term}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Quick Links */}
+            <div className="pt-2 flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-['Manrope'] font-bold text-gray-700 dark:text-gray-500">
+                <Link to="/settings/help" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Bantuan</Link>
+                <Link to="/status" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Status</Link>
+                <Link to="/about" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Tentang Kami</Link>
+                <Link to="/careers" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Karir</Link>
+                <Link to="/privacy" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Privasi</Link>
+                <Link to="/terms" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Ketentuan</Link>
+            </div>
+        </div>
+    );
     const [isLoadingMoreUsers, setIsLoadingMoreUsers] = useState(false);
 
 // 1. Tutup dropdown saat klik di luar kotak pencarian
@@ -719,7 +836,7 @@ export default function ExplorePage() {
                                 <div className={`flex justify-between items-end ${isAuthenticated ? "border-b border-gray-100 dark:border-white/5" : ""}`}>
 
                                     {/* Bagian Kiri: Tab Navigasi (Untuk Anda, Terpopuler, dsb) */}
-                                    <div className={`flex gap-8 overflow-x-auto no-scrollbar relative`}>
+                                    <div className={`flex gap-8 overflow-x-auto no-scrollbar relative flex-1`}>
                                         {tabItems.map((tab) => (
                                             <button
                                                 key={tab.key}
@@ -736,8 +853,15 @@ export default function ExplorePage() {
                                         ))}
                                     </div>
 
-                                    {/* Bagian Kanan: Dropdown Filter Order */}
-                                    <div className="pb-3 pl-4 hidden sm:block w-[140px]">
+                                    {/* Bagian Kanan: Dropdown Filter Order & Mobile Trigger */}
+                                    <div className="pb-3 pl-4 flex items-center gap-2 shrink-0">
+                                        <button 
+                                            onClick={() => setIsMobileExploreDrawerOpen(true)}
+                                            className="lg:hidden h-[36px] px-3.5 bg-gray-50/80 dark:bg-[#1C1A29] rounded-full shadow-sm text-[13px] font-['Manrope'] font-bold text-primary flex items-center gap-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-white/5 border border-primary/20"
+                                        >
+                                            <Sparkles className="w-3.5 h-3.5" /> Tren
+                                        </button>
+                                        <div className="hidden sm:block w-[140px]">
                                         <CustomSelect
                                             value={sortOrder}
                                             onChange={(val) => setSortOrder(val as "desc" | "asc")}
@@ -752,6 +876,7 @@ export default function ExplorePage() {
                                 </div>
 
                             </div>
+                        </div>
                         </div>
 
                         {/* Notes Vertical Feed OR User Cards */}
@@ -954,148 +1079,12 @@ export default function ExplorePage() {
                         }}
                     >
                         <div
-                            className="sticky flex flex-col gap-10 pt-8 pb-12"
+                            className="sticky pt-8 pb-12"
                             style={{
                                 top: "min(72px, calc(100vh - 100% - 24px))",
                             }}
                         >
-                            {/* Penulis Direkomendasikan */}
-                            <div>
-                                <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-5 flex items-center gap-2">
-                                    <Sparkles
-                                        className="w-4 h-4 text-primary"
-                                        strokeWidth={2.5}
-                                    />{" "}
-                                    Pakar Edukasi
-                                </h3>
-                                <div className="flex flex-col gap-5">
-                                    {experts.length > 0 ? (
-                                        experts.map((expert: any) => (
-                                            <div
-                                                key={expert._id || expert.id}
-                                                className="flex items-center justify-between group"
-                                            >
-                                                <Link
-                                                    to={`/profile/${expert._id || expert.id}`}
-                                                    className="flex items-center gap-3 min-w-0 pr-4 outline-none"
-                                                >
-                                                    <AvatarImage
-                                                        src={expert.avatar}
-                                                        alt={expert.name}
-                                                        size={40}
-                                                        className="rounded-full object-cover bg-gray-100 dark:bg-white/10 ring-2 ring-transparent group-hover:ring-primary/20 transition-all"
-                                                    />
-                                                    <div className="flex flex-col min-w-0">
-                                                        <span className="font-['Lexend_Deca'] font-bold text-[14px] text-gray-900 dark:text-gray-100 truncate group-hover:text-primary transition-colors">
-                                                            {expert.name}
-                                                        </span>
-                                                        <span className="font-['Manrope'] font-medium text-[12px] text-gray-500 dark:text-gray-400 truncate">
-                                                            {expert.followers_count ||
-                                                                0}{" "}
-                                                            pengikut
-                                                        </span>
-                                                    </div>
-                                                </Link>
-                                                <button
-                                                    onClick={() =>
-                                                        handleFollowExpert(
-                                                            expert._id ||
-                                                            expert.id,
-                                                        )
-                                                    }
-                                                    className={`px-3.5 py-1.5 rounded-[10px] border font-['Manrope'] text-[12px] font-bold transition-all focus:outline-none ${expert.is_followed_by_me
-                                                            ? "border-gray-300 dark:border-white/10 text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10"
-                                                            : expert.is_follow_pending
-                                                                ? "border-gray-200 dark:border-white/10 text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-white/5 cursor-default"
-                                                                : "border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:border-primary hover:text-primary hover:bg-primary/5"
-                                                        }`}
-                                                >
-                                                    {expert.is_followed_by_me
-                                                        ? "Mengikuti"
-                                                        : expert.is_follow_pending
-                                                            ? "Diminta"
-                                                            : "Ikuti"}
-                                                </button>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p className="text-gray-700 dark:text-gray-400 font-['Manrope'] text-sm font-bold">
-                                            Belum ada pakar terdaftar.
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Pencarian Populer (Trending Searches) */}
-                            <div>
-                                <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-4 flex items-center gap-2">
-                                    <TrendingUp
-                                        className="w-4 h-4 text-rose-500"
-                                        strokeWidth={2.5}
-                                    />{" "}
-                                    Sering Dicari
-                                </h3>
-                                <div className="flex flex-wrap gap-2.5">
-                                    {[
-                                        "Fisika Kuantum",
-                                        "Limit Trigonometri",
-                                        "Grammar IELTS",
-                                        "SBMPTN 2026",
-                                        "Sistem Pencernaan",
-                                    ].map((term) => (
-                                        <button
-                                            key={term}
-                                            className="px-3.5 py-2.5 bg-white dark:bg-[#1C1A29] hover:bg-primary/5 hover:text-primary hover:border-primary/20 text-gray-600 dark:text-gray-400 rounded-2xl font-['Manrope'] text-[13px] font-bold shadow-sm dark:shadow-none hover:shadow-md hover:-translate-y-0.5 border border-gray-100 dark:border-white/10 transition-all duration-300 truncate max-w-full text-left focus:outline-none"
-                                        >
-                                            <Search
-                                                className="w-3.5 h-3.5 inline-block mr-1.5 opacity-70"
-                                                strokeWidth={2.5}
-                                            />{" "}
-                                            {term}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Quick Links */}
-                            <div className="pt-2 flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-['Manrope'] font-bold text-gray-700 dark:text-gray-500">
-                                <Link
-                                    to="/settings/help"
-                                    className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
-                                >
-                                    Bantuan
-                                </Link>
-                                <Link
-                                    to="/status"
-                                    className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
-                                >
-                                    Status
-                                </Link>
-                                <Link
-                                    to="/about"
-                                    className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
-                                >
-                                    Tentang Kami
-                                </Link>
-                                <Link
-                                    to="/careers"
-                                    className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
-                                >
-                                    Karir
-                                </Link>
-                                <Link
-                                    to="/privacy"
-                                    className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
-                                >
-                                    Privasi
-                                </Link>
-                                <Link
-                                    to="/terms"
-                                    className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
-                                >
-                                    Ketentuan
-                                </Link>
-                            </div>
+                            {renderRightColumn()}
                         </div>
                     </div>
                 </div>

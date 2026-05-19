@@ -1,4 +1,4 @@
-import { Home, Search, Plus, Bell, User, LayoutGrid } from 'lucide-react';
+import { Home, Search, Plus, BarChart2, User, LayoutGrid } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -21,7 +21,7 @@ export function BottomNav() {
       { path: '/explore', icon: Search, label: 'Eksplor' },
       isPakar 
           ? { path: '/pakar', icon: LayoutGrid, label: 'Dashboard' }
-          : { path: '/notifications', icon: Bell, label: 'Notifikasi' },
+          : { path: '/stats', icon: BarChart2, label: 'Statistik' },
       { path: '/profile', icon: User, label: 'Profil' },
     ].filter(Boolean) as any[];
 
@@ -39,9 +39,6 @@ export function BottomNav() {
         >
           <div className={`relative flex items-center justify-center w-14 h-9 rounded-2xl transition-all duration-300 ${active ? 'bg-indigo-50/80 dark:bg-primary/10' : 'bg-transparent'}`}>
              <item.icon className={`w-[22px] h-[22px] transition-all duration-300 ${active ? 'scale-110' : 'scale-100'}`} strokeWidth={active ? 2.5 : 2} />
-             {item.path === '/notifications' && !active && (
-               <div className="absolute top-2 right-3.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white dark:border-[#1C1A29]"></div>
-             )}
           </div>
           <span className={`text-[10px] mt-1 font-['Manrope'] font-bold tracking-wide transition-all duration-300 ${active ? 'opacity-100 scale-100' : 'opacity-70 scale-95'}`}>
             {item.label}
