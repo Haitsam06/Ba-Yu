@@ -54,6 +54,7 @@ const LearningStatisticsPage = () => {
   const [currentProgressHours, setCurrentProgressHours] = useState(2.8);
   const [monthOffset, setMonthOffset] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [isMobileCalendarOpen, setIsMobileCalendarOpen] = useState(false);
   
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -194,8 +195,8 @@ const LearningStatisticsPage = () => {
     <MobileLayout>
       <div className="min-h-screen bg-white dark:bg-[#13111C] font-['Manrope'] pb-20">
         
-        {/* STICKY HEADER (X STYLE) */}
-        <div className="sticky top-0 z-20 bg-white/80 dark:bg-[#13111C]/80 backdrop-blur-md border-b border-slate-100 dark:border-white/5 px-6 py-4 flex items-center justify-between">
+        {/* HEADER (X STYLE) */}
+        <div className="relative z-20 bg-white dark:bg-[#13111C] border-b border-slate-100 dark:border-white/5 px-6 py-4 flex items-center justify-between">
            <div className="flex items-center gap-4">
               <button onClick={() => navigate(-1)} className="text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10 p-1.5 rounded-full transition-colors">
                  <X size={22} />
@@ -228,23 +229,23 @@ const LearningStatisticsPage = () => {
                     </button>
                  </div>
 
-                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                 <div className="grid grid-cols-2 gap-4">
                     {/* PROGRESS CARD */}
-                    <div className="bg-white dark:bg-[#1C1A29] rounded-[24px] p-6 border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none hover:shadow-md transition-shadow group relative overflow-hidden">
+                    <div className="col-span-1 lg:col-span-1 bg-white dark:bg-[#1C1A29] rounded-[24px] p-4 sm:p-6 border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none hover:shadow-md transition-shadow group relative overflow-hidden flex flex-col justify-between">
                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 dark:bg-indigo-500/10 rounded-bl-full -z-10 opacity-50 group-hover:scale-110 transition-transform duration-500" />
                        <div className="flex items-center justify-between mb-6">
-                          <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                          <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
                              <Target size={20} />
                           </div>
-                          <span className="text-[13px] font-bold text-slate-500 dark:text-slate-400">{Math.round(((stats?.summary?.today_duration || 0) / (stats?.daily_target || 1)) * 100) || 0}% Selesai</span>
+                          <span className="text-[12px] sm:text-[13px] font-bold text-slate-500 dark:text-slate-400 text-right">{Math.round(((stats?.summary?.today_duration || 0) / (stats?.daily_target || 1)) * 100) || 0}%</span>
                        </div>
                        
                        <div className="mb-4">
-                          {stats?.summary?.today_duration || 0} mnt <span className="text-sm font-medium text-slate-500">/ {Math.floor((stats?.daily_target || 0) / 60)}j {(stats?.daily_target || 0) % 60}m</span>
-                          <p className="text-[13px] font-medium text-slate-500 mt-1">Target belajar harian</p>
+                          <span className="text-sm font-bold">{stats?.summary?.today_duration || 0}m</span> <span className="text-[11px] sm:text-sm font-medium text-slate-500">/ {Math.floor((stats?.daily_target || 0) / 60)}j {(stats?.daily_target || 0) % 60}m</span>
+                          <p className="text-[11px] sm:text-[13px] font-medium text-slate-500 mt-1">Target harian</p>
                        </div>
 
-                       <div className="w-full h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden mb-2">
+                       <div className="w-full h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden mb-2 mt-auto">
                           <div 
                             className="h-full bg-indigo-600 rounded-full transition-all duration-1000" 
                             style={{ width: `${Math.min(((stats?.summary?.today_duration || 0) / (stats?.daily_target || 1)) * 100, 100) || 0}%` }}                          
@@ -252,27 +253,95 @@ const LearningStatisticsPage = () => {
                        </div>
                     </div>
 
+                    {/* MOBILE ONLY PENCAPAIAN */}
+                    <div className="col-span-1 lg:hidden bg-white dark:bg-[#1C1A29] rounded-[24px] p-3 sm:p-4 border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none flex flex-col gap-2 justify-center">
+                        <div className="flex items-center gap-2.5 bg-slate-50 dark:bg-white/5 p-2.5 rounded-2xl border border-slate-100 dark:border-white/5 flex-1">
+                           <div className="w-9 h-9 bg-white dark:bg-[#252336] rounded-xl flex items-center justify-center text-amber-500 shadow-sm shrink-0">
+                              <Award size={18} />
+                           </div>
+                           <div className="flex-1 min-w-0">
+                              <h4 className="text-[14px] sm:text-[15px] font-bold text-slate-800 dark:text-slate-100 leading-none truncate">{stats?.achievements?.notes_created || 0}</h4>
+                              <p className="text-[10px] font-medium text-slate-500 mt-1 truncate">Catatan</p>
+                           </div>
+                        </div>
+                        <div className="flex items-center gap-2.5 bg-slate-50 dark:bg-white/5 p-2.5 rounded-2xl border border-slate-100 dark:border-white/5 flex-1">
+                           <div className="w-9 h-9 bg-white dark:bg-[#252336] rounded-xl flex items-center justify-center text-emerald-500 shadow-sm shrink-0">
+                              <BookOpen size={18} />
+                           </div>
+                           <div className="flex-1 min-w-0">
+                              <h4 className="text-[14px] sm:text-[15px] font-bold text-slate-800 dark:text-slate-100 leading-none truncate">{stats?.achievements?.materials_completed || 0}</h4>
+                              <p className="text-[10px] font-medium text-slate-500 mt-1 truncate">Materi</p>
+                           </div>
+                        </div>
+                    </div>
+
                     {/* STREAK CARD */}
-                    <div className="bg-gradient-to-br from-orange-400 to-orange-500 rounded-[24px] p-6 text-white shadow-lg shadow-orange-200/50 dark:shadow-none relative overflow-hidden flex flex-col justify-between">
+                    <div className="col-span-2 sm:col-span-2 lg:col-span-1 bg-gradient-to-br from-orange-400 to-orange-500 rounded-[24px] p-6 text-white shadow-lg shadow-orange-200/50 dark:shadow-none relative overflow-hidden flex flex-col justify-between">
                        <div className="absolute -top-6 -right-6 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
                        <div className="absolute bottom-4 right-4 opacity-20 transform -rotate-12">
                           <Flame size={100} />
                        </div>
                        
-                       <div className="relative z-10 flex items-center gap-3 mb-2">
-                          <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                             <Flame size={18} className="text-white" />
-                          </div>
-                          <span className="text-[13px] font-bold text-orange-50">Current Streak</span>
+                       <div className="relative z-10 flex items-center justify-between mb-2">
+                           <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                                 <Flame size={18} className="text-white" />
+                              </div>
+                              <span className="text-[13px] font-bold text-orange-50">Current Streak</span>
+                           </div>
+                           <button onClick={() => setIsMobileCalendarOpen(!isMobileCalendarOpen)} className="lg:hidden flex items-center gap-1.5 text-[11px] font-bold bg-white/20 hover:bg-white/30 backdrop-blur-sm px-3 py-1.5 rounded-full transition-colors">
+                              <Calendar size={12} />
+                              {isMobileCalendarOpen ? 'Tutup' : 'Lihat Kalender'}
+                           </button>
                        </div>
                        
-                       <div className="relative z-10 mt-auto">
+                       <div className="relative z-10 mt-auto pt-6">
                           <h3 className="text-4xl font-['Lexend_Deca'] font-bold tracking-tight">
                              {stats?.summary?.current_streak || 0} <span className="text-lg font-medium text-orange-100">Hari</span>
                           </h3>
                           <p className="text-[13px] text-orange-50 font-medium mt-1">
                              Pertahankan semangat belajarmu!
                           </p>
+                       </div>
+
+                       {/* MOBILE CALENDAR ACCORDION */}
+                       <div className={`lg:hidden relative z-10 overflow-hidden transition-all duration-300 ease-in-out ${isMobileCalendarOpen ? 'max-h-[500px] mt-6 opacity-100' : 'max-h-0 opacity-0'}`}>
+                           <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
+                              <div className="flex items-center justify-between mb-4">
+                                 <h3 className="text-[14px] font-['Lexend_Deca'] font-bold text-white">Kalender Belajar</h3>
+                                 <div className="flex items-center gap-2">
+                                    <button onClick={() => setMonthOffset(m => m - 1)} className="p-1 text-white/70 hover:text-white transition-colors rounded-full hover:bg-white/10"><ChevronRight size={14} className="rotate-180" /></button>
+                                    <span className="text-[11px] font-bold text-white min-w-[70px] text-center">{monthNames[displayMonth]}</span>
+                                    <button onClick={() => setMonthOffset(m => m + 1)} className="p-1 text-white/70 hover:text-white transition-colors rounded-full hover:bg-white/10"><ChevronRight size={14} /></button>
+                                 </div>
+                              </div>
+                              <div className="grid grid-cols-7 gap-1 text-center mb-1">
+                                 {["M", "S", "S", "R", "K", "J", "S"].map((d, i) => (
+                                    <span key={i} className="text-[9px] font-bold text-white/60">{d}</span>
+                                 ))}
+                              </div>
+                              <div className="grid grid-cols-7 gap-1">
+                                 {[...Array(paddingDays)].map((_, i) => (
+                                    <div key={`empty-${i}`} className="aspect-square" />
+                                 ))}
+                                 {[...Array(daysInMonth)].map((_, i) => {
+                                    const day = i + 1;
+                                    const isToday = displayMonth === today.getMonth() && displayYear === today.getFullYear() && day === today.getDate();
+                                    const isStreak = isActiveDate(day);
+                                    
+                                    return (
+                                       <div key={day} className={`aspect-square rounded-md flex items-center justify-center text-[11px] font-semibold relative
+                                          ${isToday && isStreak ? 'bg-white text-orange-500 shadow-sm' : 
+                                            isToday ? 'bg-white text-indigo-600 shadow-sm' : 
+                                            isStreak ? 'bg-white/20 text-white' : 
+                                            'bg-black/5 text-white/40'}
+                                       `}>
+                                          {day}
+                                       </div>
+                                    );
+                                 })}
+                              </div>
+                           </div>
                        </div>
                     </div>
                  </div>

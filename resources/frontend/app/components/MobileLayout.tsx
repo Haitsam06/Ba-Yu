@@ -60,13 +60,15 @@ export function MobileLayout({ children, showBottomNav = true, hideTopNav = fals
       {/* 2. MOBILE TOP BAR */}
       {!hideTopNav && (
         <div className="md:hidden w-full bg-white/90 dark:bg-[#13111C]/90 backdrop-blur-md h-[60px] border-b border-slate-100 dark:border-white/5 flex items-center justify-between px-5 z-40 shadow-sm dark:shadow-none shrink-0">
-           <div className="flex items-center gap-3">
-               <button onClick={() => setIsMobileMenuOpen(true)} className="p-1.5 -ml-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-primary outline-none transition-colors">
+           <div className="flex items-center">
+               <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-primary outline-none transition-colors rounded-md">
                    <Menu className="w-6 h-6" />
                </button>
-               <Link to="/home" className="flex items-center gap-2 shrink-0 group outline-none">
-                  <ApplicationLogo className="w-7 h-7" />
-                  <span className="font-['Lexend_Deca'] font-extrabold text-[20px] tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-indigo-800 dark:from-[#7B7BFF] dark:to-[#A78BFA]">
+               <Link to="/home" className="flex items-center shrink-0 group outline-none ml-2">
+                  <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center mr-2">
+                      <ApplicationLogo className="w-8 h-8" style={{ overflow: 'visible' }} />
+                  </div>
+                  <span className="font-['Lexend_Deca'] font-extrabold text-[22px] tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-800 dark:from-[#7B7BFF] dark:to-[#A78BFA]">
                      Ba-Yu
                   </span>
                </Link>

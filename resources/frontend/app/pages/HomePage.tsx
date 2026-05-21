@@ -32,6 +32,7 @@ export default function HomePage() {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
 
     const handleLikePost = async (postId: string) => {
         if (!user)
@@ -104,6 +105,17 @@ export default function HomePage() {
     }, []);
 
     useEffect(() => {
+        const heroNotesCount = Math.min(notes.length, 3);
+        if (heroNotesCount <= 1) return;
+
+        const interval = setInterval(() => {
+            setCurrentHeroIndex((prev) => (prev + 1) % heroNotesCount);
+        }, 5000); // 5 seconds autoplay
+
+        return () => clearInterval(interval);
+    }, [notes.length]);
+
+    useEffect(() => {
         if (page > 1) {
             setIsLoadingMore(true);
             fetchPosts(page);
@@ -164,8 +176,9 @@ export default function HomePage() {
     }));
 
     // Destructure content
-    const heroNote = formattedNotes[0];
-    const feedNotes = formattedNotes.slice(1);
+    const heroNotesCount = Math.min(formattedNotes.length, 3);
+    const heroNote = formattedNotes[currentHeroIndex] || formattedNotes[0];
+    const feedNotes = formattedNotes.slice(heroNotesCount);
     const trendingNotes = [...formattedNotes]
         .sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0))
         .slice(0, 5);
@@ -220,21 +233,21 @@ export default function HomePage() {
 
     return (
         <MobileLayout>
-            <div className="w-full h-full flex justify-center pb-20">
+            <div className="w-full h-full flex justify-center pb-20 pt-6">
                 <div className="w-full max-w-[1140px] px-2 sm:px-4 md:px-6 flex flex-col lg:flex-row gap-8 lg:gap-10 xl:gap-14 lg:justify-center mx-auto">
                     {/* LEFT COLUMN (MAIN DISCOVERY GRID) */}
                     <div className="flex-1 w-full lg:max-w-[640px] xl:max-w-[700px] min-w-0">
                         {/* CATEGORY PILLS */}
                         <div className="mb-6 overflow-hidden relative">
                             <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-3 snap-x">
-                                <button className="shrink-0 px-5 py-2.5 rounded-full bg-primary text-white text-[13px] font-['Lexend_Deca'] font-bold shadow-sm shadow-primary/30 transition-transform active:scale-95 snap-start shrink-0">
+                                <button className="shrink-0 px-5 py-2.5 rounded-full bg-primary text-white text-[13px] font-['Lexend_Deca'] font-bold shadow-sm shadow-primary/30 transition-colors snap-start shrink-0">
                                     ✨ Untuk Anda
                                 </button>
                                 {mataPelajaran.map((mapel) => (
                                     <Link
                                         key={mapel.id}
                                         to={`/explore?subject=${mapel.id}`}
-                                        className="shrink-0 px-5 py-2.5 bg-white dark:bg-[#1C1A29] hover:bg-primary/5 hover:text-primary hover:border-primary/20 rounded-full text-[13px] font-['Manrope'] font-bold text-gray-600 dark:text-gray-400 transition-all duration-300 border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none hover:shadow-md hover:-translate-y-0.5 snap-start"
+                                        className="shrink-0 px-5 py-2.5 bg-white dark:bg-[#1C1A29] hover:bg-primary/5 hover:text-primary hover:border-primary/20 rounded-full text-[13px] font-['Manrope'] font-bold text-gray-600 dark:text-gray-400 transition-colors duration-300 border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none snap-start"
                                     >
                                         {mapel.name}
                                     </Link>
@@ -247,6 +260,27 @@ export default function HomePage() {
                         {/* THE HERO ARTICLE (MAGAZINE STYLE) */}
                         {heroNote && (
                             <div className="mb-12 pb-12 border-b border-gray-100 dark:border-white/5 relative group transition-all duration-500 ease-out flex flex-col md:flex-row gap-8">
+                                
+                                {/* Carousel Navigation Arrows */}
+                                {heroNotesCount > 1 && (
+                                    <>
+                                        <button 
+                                            onClick={() => setCurrentHeroIndex((prev) => (prev - 1 + heroNotesCount) % heroNotesCount)}
+                                            className="absolute left-[-16px] lg:left-[-24px] top-[40%] md:top-[45%] -translate-y-1/2 w-10 h-10 bg-white/90 dark:bg-[#1C1A29]/90 backdrop-blur-sm border border-gray-200 dark:border-white/10 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary hover:bg-white dark:hover:bg-[#13111C] shadow-sm hover:shadow-md transition-all z-30 opacity-0 group-hover:opacity-100 focus:opacity-100 hidden md:flex"
+                                            aria-label="Previous slide"
+                                        >
+                                            <ChevronRight className="w-6 h-6 rotate-180" strokeWidth={2} />
+                                        </button>
+                                        <button 
+                                            onClick={() => setCurrentHeroIndex((prev) => (prev + 1) % heroNotesCount)}
+                                            className="absolute right-[-16px] lg:right-[-24px] top-[40%] md:top-[45%] -translate-y-1/2 w-10 h-10 bg-white/90 dark:bg-[#1C1A29]/90 backdrop-blur-sm border border-gray-200 dark:border-white/10 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary hover:bg-white dark:hover:bg-[#13111C] shadow-sm hover:shadow-md transition-all z-30 opacity-0 group-hover:opacity-100 focus:opacity-100 hidden md:flex"
+                                            aria-label="Next slide"
+                                        >
+                                            <ChevronRight className="w-6 h-6" strokeWidth={2} />
+                                        </button>
+                                    </>
+                                )}
+
                                 {/* Hero Text Content */}
                                 <div className="flex-1 flex flex-col justify-center z-10 w-full md:w-1/2">
                                     <div className="flex items-center gap-2 mb-4">
@@ -345,6 +379,24 @@ export default function HomePage() {
                             </div>
                         )}
 
+                        {/* Carousel Indicators */}
+                        {heroNotesCount > 1 && heroNote && (
+                            <div className="flex justify-center gap-2 mb-10 -mt-6 relative z-20">
+                                {[...Array(heroNotesCount)].map((_, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => setCurrentHeroIndex(idx)}
+                                        className={`h-2 rounded-full transition-all duration-300 ${
+                                            currentHeroIndex === idx
+                                                ? "w-6 bg-primary"
+                                                : "w-2 bg-gray-200 dark:bg-white/10 hover:bg-gray-300 dark:hover:bg-white/20"
+                                        }`}
+                                        aria-label={`Lihat slide ${idx + 1}`}
+                                    />
+                                ))}
+                            </div>
+                        )}
+
                         {/* VERTICAL FEED SECTION */}
                         <div className="mb-4 flex items-center justify-between px-2">
                             <h3 className="font-['Lexend_Deca'] font-extrabold text-[18px] text-gray-900 dark:text-gray-100 tracking-tight flex items-center gap-2">
@@ -427,7 +479,7 @@ export default function HomePage() {
                                             >
                                                 {/* Giant Watermark Number */}
                                                 <div className="w-[36px] shrink-0 mt-[-4px]">
-                                                    <span className="font-['Lexend_Deca'] font-black text-[32px] text-gray-200 dark:text-white/10 group-hover:text-primary/30 transition-colors select-none tracking-tighter">
+                                                    <span className="font-['Lexend_Deca'] font-black text-[32px] text-gray-300 dark:text-gray-600 group-hover:text-primary/60 transition-colors select-none tracking-tighter">
                                                         0{idx + 1}
                                                     </span>
                                                 </div>
