@@ -102,6 +102,9 @@ export default function ExplorePage() {
     // Mobile drawer state
     const [isMobileExploreDrawerOpen, setIsMobileExploreDrawerOpen] = useState(false);
 
+    // Content type filter (client-side only)
+    const [contentTypeFilter, setContentTypeFilter] = useState<'semua' | 'catatan_terverifikasi' | 'orang_terverifikasi'>('semua');
+
     // Function to render the Right Sidebar content (reused for desktop & mobile drawer)
     const renderRightColumn = () => (
         <div className="flex flex-col gap-10">
@@ -614,8 +617,12 @@ export default function ExplorePage() {
             });
         }
 
+        if (contentTypeFilter === 'catatan_terverifikasi') {
+            result = result.filter(note => note.author?.role === 'pakar' || note.author?.role === 'admin');
+        }
+
         return result;
-    }, [notes, selectedJenjang, selectedKelas, selectedTags]);
+    }, [notes, selectedJenjang, selectedKelas, selectedTags, contentTypeFilter]);
 
     // Auth modal for guest users
     const [showAuthModal, setShowAuthModal] = useState(false);
@@ -853,14 +860,8 @@ export default function ExplorePage() {
                                         ))}
                                     </div>
 
-                                    {/* Bagian Kanan: Dropdown Filter Order & Mobile Trigger */}
+                                    {/* Bagian Kanan: Dropdown Filter Order */}
                                     <div className="pb-3 pl-4 flex items-center gap-2 shrink-0">
-                                        <button 
-                                            onClick={() => setIsMobileExploreDrawerOpen(true)}
-                                            className="lg:hidden h-[36px] px-3.5 bg-gray-50/80 dark:bg-[#1C1A29] rounded-full shadow-sm text-[13px] font-['Manrope'] font-bold text-primary flex items-center gap-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-white/5 border border-primary/20"
-                                        >
-                                            <Sparkles className="w-3.5 h-3.5" /> Tren
-                                        </button>
                                         <div className="hidden sm:block w-[140px]">
                                         <CustomSelect
                                             value={sortOrder}
@@ -902,9 +903,9 @@ export default function ExplorePage() {
                                             </div>
                                         ))}
                                     </div>
-                                ) : searchedUsers.length > 0 ? (
+                                ) : (contentTypeFilter === 'orang_terverifikasi' ? searchedUsers.filter((u: any) => u.role === 'pakar' || u.role === 'admin') : searchedUsers).length > 0 ? (
                                     <div className="space-y-3 pt-4">
-                                        {searchedUsers.map((u: any) => {
+                                        {(contentTypeFilter === 'orang_terverifikasi' ? searchedUsers.filter((u: any) => u.role === 'pakar' || u.role === 'admin') : searchedUsers).map((u: any) => {
                                             const userId = u._id || u.id;
                                             return (
                                                 <div
@@ -1171,6 +1172,37 @@ export default function ExplorePage() {
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar bg-gray-50/50 dark:bg-[#13111C]/50">
+                    {/* Tipe Konten */}
+                    <div>
+                        <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 dark:text-gray-100 mb-4 flex items-center justify-between">
+                            Tipe Pencarian
+                            {contentTypeFilter !== 'semua' && (
+                                <span className="text-[11px] font-['Lexend_Deca'] text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-md">
+                                    1 Dipilih
+                                </span>
+                            )}
+                        </h4>
+                        <div className="flex flex-wrap gap-2.5">
+                            {[
+                                { key: 'semua' as const, label: 'Semua', icon: Compass },
+                                { key: 'catatan_terverifikasi' as const, label: 'Catatan Terverifikasi', icon: BookOpen },
+                                { key: 'orang_terverifikasi' as const, label: 'Orang Terverifikasi', icon: ShieldCheck },
+                            ].map((item) => (
+                                <button
+                                    key={item.key}
+                                    onClick={() => setContentTypeFilter(item.key)}
+                                    className={`px-4 py-2.5 rounded-2xl font-['Manrope'] text-[13.5px] font-bold transition-all border flex items-center gap-2 ${contentTypeFilter === item.key
+                                        ? 'bg-primary text-white border-primary shadow-[0_4px_12px_rgb(93,92,230,0.3)]'
+                                        : 'bg-white dark:bg-[#252336] text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:border-primary/40 hover:text-primary hover:bg-primary/5 hover:shadow-sm'
+                                    }`}
+                                >
+                                    <item.icon className="w-4 h-4" strokeWidth={2.2} />
+                                    {item.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
                     {/* Tingkat Pendidikan */}
                     <div>
                         <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 dark:text-gray-100 mb-4 flex items-center justify-between">
@@ -1331,6 +1363,7 @@ export default function ExplorePage() {
                                 setSelectedKelas("Semua");
                                 setSelectedTags([]);
                                 setTagInput("");
+                                setContentTypeFilter('semua');
                             }}
                             className="px-5 py-3.5 rounded-xl font-['Lexend_Deca'] text-[14px] font-extrabold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-gray-200 transition-colors w-1/3 border border-gray-200 dark:border-white/10"
                         >
