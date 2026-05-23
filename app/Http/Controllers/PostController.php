@@ -513,4 +513,87 @@ class PostController extends Controller
 
         return response()->json(['message' => 'Catatan berhasil diajukan ke Pakar!'], 200);
     }
+
+    /**
+     * Pakar Choice — Rekomendasi catatan terverifikasi pakar
+     * Algoritma scoring:
+     *  - expert_rating  : 40% (rating dari pakar, 1-5)
+     *  - likes_count    : 25% (interaksi positif)
+     *  - views          : 15% (jangkauan)
+     *  - comments_count : 10% (diskusi / engagement)
+     *  - recency        : 10% (catatan baru diprioritaskan)
+     */
+    public function pakarChoice(Request $request)
+    {
+        $limit = (int) $request->query('limit', 5);
+
+        // Ambil semua post yang sudah diverifikasi pakar
+        $dormantUserIds = User::where('is_dormant', true)->pluck('_id')->toArray();
+
+        $query = Post::with(['user'])
+            ->where('visibility', 'public')
+            ->where('is_verified', true);
+
+        if (!empty($dormantUserIds)) {
+            $query->whereNotIn('user_id', $dormantUserIds);
+        }
+
+        $verifiedPosts = $query->get();
+
+        if ($verifiedPosts->isEmpty()) {
+            return response()->json([
+                'message' => 'Belum ada catatan terverifikasi',
+                'data' => []
+            ]);
+        }
+
+        // Hitung nilai max untuk normalisasi
+        $maxLikes    = max($verifiedPosts->max('likes_count'), 1);
+        $maxViews    = max($verifiedPosts->max('views'), 1);
+        $maxComments = max($verifiedPosts->max('comments_count'), 1);
+
+        // Skor tiap post
+        $scored = $verifiedPosts->map(function ($post) use ($maxLikes, $maxViews, $maxComments) {
+            $rating   = $post->expert_rating ?? 3;         // default 3/5
+            $likes    = $post->likes_count ?? 0;
+            $views    = $post->views ?? 0;
+            $comments = $post->comments_count ?? 0;
+
+            // Recency: semakin baru semakin tinggi (0-1, decay 30 hari)
+            $daysAgo  = now()->diffInDays($post->created_at);
+            $recency  = max(0, 1 - ($daysAgo / 30));
+
+            // Normalized scores (0-1)
+            $normRating   = $rating / 5;
+            $normLikes    = $likes / $maxLikes;
+            $normViews    = $views / $maxViews;
+            $normComments = $comments / $maxComments;
+
+            // Weighted final score
+            $score = ($normRating   * 0.40)
+                   + ($normLikes    * 0.25)
+                   + ($normViews    * 0.15)
+                   + ($normComments * 0.10)
+                   + ($recency      * 0.10);
+
+            $post->recommendation_score = round($score, 4);
+            return $post;
+        });
+
+        // Sort descending by score, take top N
+        $top = $scored->sortByDesc('recommendation_score')->take($limit)->values();
+
+        // Attach is_liked for authenticated user
+        $userId = Auth::id();
+        $top->each(function ($post) use ($userId) {
+            $post->is_liked = $userId
+                ? Like::where('post_id', (string) $post->id)->where('user_id', (string) $userId)->exists()
+                : false;
+        });
+
+        return response()->json([
+            'message' => 'Pakar Choice berhasil diambil',
+            'data' => $top,
+        ]);
+    }
 }

@@ -180,7 +180,7 @@ const ToastContainer = () => {
 
   return (
     <div
-      className="fixed bottom-4 right-4 sm:right-4 left-4 sm:left-auto z-[9999] pointer-events-none w-[calc(100vw-2rem)] sm:w-[420px]"
+      className="fixed top-4 sm:top-auto bottom-auto sm:bottom-4 right-4 sm:right-4 left-4 sm:left-auto z-[9999] pointer-events-none w-[calc(100vw-2rem)] sm:w-[420px]"
       style={{ height: containerHeight }}
     >
       <div
@@ -284,7 +284,7 @@ const ToastContainer = () => {
 const mountContainer = () => {
   if (root) return;
   const el = document.createElement("div");
-  el.className = "fixed bottom-4 right-4 sm:right-4 left-4 sm:left-auto z-[9999]";
+  el.className = "fixed top-4 sm:top-auto bottom-auto sm:bottom-4 right-4 sm:right-4 left-4 sm:left-auto z-[9999]";
   document.body.appendChild(el);
   root = createRoot(el);
   root.render(<ToastContainer />);

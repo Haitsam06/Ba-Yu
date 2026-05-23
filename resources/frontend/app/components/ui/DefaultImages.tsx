@@ -1,4 +1,5 @@
 import { FileText, User, BookOpen, Calculator, Atom, Beaker, Globe, History, Languages, Code, HeartPulse, HardHat, Sprout, Briefcase } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { mataPelajaran } from '../../data/mockData';
 
 /**
@@ -94,7 +95,13 @@ export function AvatarImage({
     size?: number; 
     className?: string;
 }) {
-    if (!src) {
+    const [hasError, setHasError] = useState(false);
+
+    useEffect(() => {
+        setHasError(false);
+    }, [src]);
+
+    if (!src || hasError) {
         return <DefaultAvatar size={size} className={className} />;
     }
 
@@ -104,20 +111,7 @@ export function AvatarImage({
             alt={alt || "User"}
             className={`rounded-full object-cover ${className}`}
             style={{ width: size, height: size }}
-            onError={(e) => {
-                // If image fails to load, replace with default
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                const parent = target.parentElement;
-                if (parent) {
-                    const placeholder = document.createElement('div');
-                    placeholder.className = `flex items-center justify-center rounded-full bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 shrink-0 ${className} border border-slate-300/20 dark:border-white/5`;
-                    placeholder.style.width = `${size}px`;
-                    placeholder.style.height = `${size}px`;
-                    placeholder.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${size * 0.55}" height="${size * 0.55}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500 dark:text-slate-400"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
-                    parent.insertBefore(placeholder, target);
-                }
-            }}
+            onError={() => setHasError(true)}
         />
     );
 }

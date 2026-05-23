@@ -20,8 +20,12 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
   useEffect(() => {
     const fetchTopNotes = async () => {
       try {
-        const res = await axios.get('/api/v1/posts?sort=populer&is_verified=true');
-        setPakarChoiceNotes((res.data.data || []).slice(0, 3));
+        const token = localStorage.getItem('bayu-token') || sessionStorage.getItem('bayu-token');
+        const headers: Record<string, string> = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        
+        const res = await axios.get('/api/v1/posts/pakar-choice?limit=3', { headers });
+        setPakarChoiceNotes(res.data.data || []);
       } catch (error) {
         console.error('Failed to load pakar choice notes', error);
       }

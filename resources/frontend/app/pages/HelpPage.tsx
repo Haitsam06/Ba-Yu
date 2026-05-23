@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import { ArrowLeft, Search, Mail, MessageCircle, ChevronDown, BookOpen, ExternalLink } from "lucide-react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 const FAQS = [
     {
@@ -120,13 +120,13 @@ export default function HelpPage() {
                             
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <a 
-                                    href="https://wa.me/6281234567890" 
+                                    href="https://wa.me/6282182643377" 
                                     target="_blank" 
                                     rel="noopener noreferrer"
                                     className="flex items-start gap-3 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors group"
                                 >
                                     <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
-                                        <MessageCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
+                                        <MessageCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                                     </div>
                                     <div>
                                         <h4 className="font-['Manrope'] font-bold text-[14px] text-emerald-900 dark:text-emerald-100">WhatsApp</h4>
@@ -135,11 +135,11 @@ export default function HelpPage() {
                                 </a>
 
                                 <a 
-                                    href="mailto:support@ba-yu.com" 
+                                    href="mailto:zeexhca@gmail.com" 
                                     className="flex items-start gap-3 p-4 rounded-2xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors group"
                                 >
                                     <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center shrink-0">
-                                        <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
+                                        <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                                     </div>
                                     <div>
                                         <h4 className="font-['Manrope'] font-bold text-[14px] text-blue-900 dark:text-blue-100">Email</h4>
@@ -150,7 +150,7 @@ export default function HelpPage() {
                         </div>
 
                         {/* Community Guidelines Link */}
-                        <a href="/terms" className="block w-full bg-gray-900 dark:bg-white/5 border border-transparent dark:border-white/10 rounded-3xl p-6 shadow-sm dark:shadow-none hover:bg-black dark:hover:bg-white/10 transition-colors group cursor-pointer">
+                        <Link to="/guidelines" className="block w-full bg-gray-900 dark:bg-white/5 border border-transparent dark:border-white/10 rounded-3xl p-6 shadow-sm dark:shadow-none hover:bg-black dark:hover:bg-white/10 transition-colors group cursor-pointer">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h3 className="font-['Lexend_Deca'] font-bold text-white mb-1">
@@ -160,9 +160,9 @@ export default function HelpPage() {
                                         Baca aturan dan etika berbagi catatan di Ba-Yu.
                                     </p>
                                 </div>
-                                <ExternalLink className="w-5 h-5 text-gray-500 group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
+                                <ExternalLink className="w-5 h-5 text-gray-500 group-hover:text-white transition-colors" />
                             </div>
-                        </a>
+                        </Link>
 
                     </div>
                 </div>

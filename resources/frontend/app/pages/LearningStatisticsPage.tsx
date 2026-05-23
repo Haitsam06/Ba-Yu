@@ -99,9 +99,9 @@ const LearningStatisticsPage = () => {
       }
   };
 
-  // 1. Tambahin state baru buat nampung statistik dari API
   const [stats, setStats] = useState<any>(null);
   const [dynamicWeeklyData, setDynamicWeeklyData] = useState<any[]>([]);
+  const [dynamicMonthlyData, setDynamicMonthlyData] = useState<any[]>([]);
 
   // CALENDAR LOGIC
   const today = new Date();
@@ -141,11 +141,19 @@ const LearningStatisticsPage = () => {
         // 3. Ubah format grafik dari Backend biar cocok sama Recharts Frontend
         // Backend ngirim: { Sen: 4, Sel: 0, ... }
         // Frontend butuh: [{ label: 'Sen', value: 4 }, ...]
-        const formattedChart = Object.keys(apiData.weekly_chart).map(key => ({
+        const formattedWeeklyChart = Object.keys(apiData.weekly_chart).map(key => ({
             label: key,
             value: apiData.weekly_chart[key] // Ini dalam menit ya!
         }));
-        setDynamicWeeklyData(formattedChart);
+        setDynamicWeeklyData(formattedWeeklyChart);
+
+        if (apiData.monthly_chart) {
+            const formattedMonthlyChart = Object.keys(apiData.monthly_chart).map(key => ({
+                label: key,
+                value: apiData.monthly_chart[key] // Durasi dalam menit per minggu
+            }));
+            setDynamicMonthlyData(formattedMonthlyChart);
+        }
 
         // 4. Ekstrak data 'post' dari riwayat terakhir buat ditampilin di list bawah
         if (apiData.recent_history && apiData.recent_history.length > 0) {
@@ -166,16 +174,8 @@ const LearningStatisticsPage = () => {
     fetchStatistics();
   }, []);
 
-  // Biarin aja yang bulanan mock data dulu, nanti gampang kalo mau dibikin
-  const monthlyData = [
-    { label: 'W1', value: 18.5 },
-    { label: 'W2', value: 22.4 },
-    { label: 'W3', value: 15.8 },
-    { label: 'W4', value: 23.5 },
-  ];
-
-  // Kalo view-nya weekly, pake data dari API. Kalo monthly pake data bohong-bohongan dulu
-  const activeChartData = chartView === 'weekly' ? dynamicWeeklyData : monthlyData;
+  // Kalo view-nya weekly, pake data dari API, monthly juga pake API
+  const activeChartData = chartView === 'weekly' ? dynamicWeeklyData : dynamicMonthlyData;
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {

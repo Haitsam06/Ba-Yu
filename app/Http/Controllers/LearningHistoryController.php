@@ -90,6 +90,28 @@ class LearningHistoryController extends Controller
             'Min' => $grafikMentah['Sun'],
         ];
 
+        $awalBulan = Carbon::now()->startOfMonth();
+        $akhirBulan = Carbon::now()->endOfMonth();
+
+        $historiBulanIni = LearningHistory::where('user_id', $userId)
+            ->whereBetween('created_at', [$awalBulan, $akhirBulan])
+            ->get();
+
+        $grafikBulananMentah = ['W1' => 0, 'W2' => 0, 'W3' => 0, 'W4' => 0, 'W5' => 0];
+
+        foreach ($historiBulanIni as $log) {
+            $tanggal = Carbon::parse($log->created_at);
+            $weekOfMonth = ceil($tanggal->day / 7);
+            if ($weekOfMonth > 5) $weekOfMonth = 5;
+            $label = 'W' . $weekOfMonth;
+            $grafikBulananMentah[$label] += $log->duration;
+        }
+        
+        // Remove W5 if it is 0 to make it cleaner, usually months are 4 weeks
+        if ($grafikBulananMentah['W5'] == 0) {
+            unset($grafikBulananMentah['W5']);
+        }
+
         $semuaTanggalBelajar = LearningHistory::where('user_id', $userId)
             ->orderBy('created_at', 'desc')
             ->get()
@@ -128,6 +150,7 @@ class LearningHistoryController extends Controller
                     'materials_completed' => $totalMateriSelesai,
                 ],
                 'weekly_chart' => $grafikMingguan,
+                'monthly_chart' => $grafikBulananMentah,
                 'recent_history' => $riwayatTerakhir,
                 'active_dates' => $semuaTanggalBelajar
             ]

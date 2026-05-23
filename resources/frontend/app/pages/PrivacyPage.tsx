@@ -1,134 +1,113 @@
 import { ArrowLeft, Shield, Eye, Lock, Database, Info, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router';
-import ApplicationLogo from '../components/ApplicationLogo';
+import { MobileLayout } from '../components/MobileLayout';
 
 export default function PrivacyPage() {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  return (
-    <div className="min-h-screen bg-[#F8FAFF] dark:bg-[#13111C] font-['Manrope'] transition-colors duration-500">
-      {/* Header */}
-      <header className="bg-white/90 dark:bg-[#13111C]/90 backdrop-blur-xl border-b border-indigo-50 dark:border-white/5 sticky top-0 z-10 shadow-sm">
-        <div className="max-w-4xl mx-auto px-6 h-20 flex items-center justify-between">
-          <button 
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-3 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-['Lexend_Deca'] font-bold transition-all group"
-          >
-            <div className="w-10 h-10 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center group-hover:bg-indigo-50 dark:group-hover:bg-indigo-500/10 group-hover:shadow-md group-hover:shadow-indigo-500/10 transition-all">
-              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
-            </div>
-            <span className="hidden sm:block">Kembali ke Beranda</span>
-          </button>
-          <div className="flex items-center gap-3">
-            <ApplicationLogo className="w-10 h-10 drop-shadow-sm" />
-            <span className="font-['Lexend_Deca'] font-black text-2xl tracking-tighter bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Ba-Yu</span>
-          </div>
-        </div>
-      </header>
-
-      {/* Content */}
-      <main className="max-w-4xl mx-auto px-6 py-12 sm:py-20">
-        <div className="bg-white dark:bg-[#1C1A29] rounded-[2.5rem] border border-indigo-50 dark:border-white/5 shadow-[0_20px_50px_-12px_rgba(79,70,229,0.08)] overflow-hidden">
-          {/* Hero Section */}
-          <div className="relative bg-slate-950 px-10 py-20 text-center overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600/20 rounded-full blur-[100px] -mr-32 -mt-32"></div>
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/20 rounded-full blur-[100px] -ml-32 -mb-32"></div>
-            
-            <h1 className="relative font-['Lexend_Deca'] text-3xl sm:text-5xl font-extrabold text-white mb-6 leading-tight">
-              Kebijakan <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Privasi</span>
-            </h1>
-            <p className="relative text-slate-400 text-lg max-w-2xl mx-auto font-medium">
-              Data Anda aman bersama Ba-Yu. Kami menjaga transparansi dan perlindungan data sebagai <span className="text-white">Prioritas Utama</span>.
-            </p>
-          </div>
-
-          <div className="p-8 sm:p-14 space-y-16">
-            {/* Principles */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-              {[
-                { icon: Lock, label: 'Aman', desc: 'Data dienkripsi standar industri.', color: 'indigo' },
-                { icon: Eye, label: 'Transparan', desc: 'Terbuka tentang data yang diambil.', color: 'purple' },
-                { icon: Database, label: 'Terkontrol', desc: 'Anda punya kendali penuh.', color: 'amber' }
-              ].map((p, idx) => (
-                <div key={idx} className="p-8 bg-slate-50 dark:bg-white/5 rounded-[2rem] text-center border border-slate-100 dark:border-white/5 hover:shadow-md transition-shadow">
-                  <div className={`w-14 h-14 rounded-2xl bg-white dark:bg-slate-900 flex items-center justify-center mx-auto mb-5 shadow-sm border border-${p.color}-100 dark:border-white/10`}>
-                    <p.icon className={`w-7 h-7 text-${p.color}-600 dark:text-${p.color}-400`} />
-                  </div>
-                  <h3 className="font-bold text-slate-950 dark:text-slate-100 text-lg mb-2">{p.label}</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">{p.desc}</p>
+    return (
+        <MobileLayout showBottomNav={false}>
+            <div className="min-h-screen pb-10 bg-[#FAFAFA] dark:bg-[#13111C]">
+                {/* Header */}
+                <div className="sticky top-0 bg-[#FAFAFA]/95 dark:bg-[#13111C]/95 backdrop-blur-md z-20 px-5 pt-8 pb-4 flex items-center justify-between border-b border-gray-100 dark:border-white/5 mb-6">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="w-10 h-10 flex items-center justify-center bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 rounded-full transition-colors shadow-sm dark:shadow-none"
+                    >
+                        <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                    </button>
+                    <h1 className="text-gray-900 dark:text-gray-100 font-['Lexend_Deca'] font-bold text-lg">
+                        Kebijakan Privasi
+                    </h1>
+                    <div className="w-10"></div>
                 </div>
-              ))}
-            </div>
 
-            {/* Data Collection */}
-            <section className="space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center border border-indigo-100 dark:border-indigo-500/20">
-                  <Info className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
-                </div>
-                <h2 className="font-['Lexend_Deca'] text-2xl font-bold text-slate-950 dark:text-slate-100">1. Data yang Kami Kumpulkan</h2>
-              </div>
-              <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-lg font-medium">
-                Kami hanya mengumpulkan informasi minimal yang diperlukan untuk menunjang proses belajar Anda:
-              </p>
-              <div className="grid gap-4 mt-6">
-                {[
-                  { title: 'Informasi Profil', text: 'Nama, alamat email, dan jenjang pendidikan Anda.' },
-                  { title: 'Konten Belajar', text: 'Catatan, gambar, dan komentar yang Anda unggah.' },
-                  { title: 'Data Teknis', text: 'Log aktivitas untuk perbaikan performa platform.' }
-                ].map((item, i) => (
-                  <div key={i} className="flex gap-4 p-6 bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-white/5 rounded-2xl items-center shadow-sm">
-                    <div className="w-2 h-10 rounded-full bg-indigo-600"></div>
-                    <div>
-                      <h4 className="font-bold text-slate-950 dark:text-slate-100">{item.title}</h4>
-                      <p className="text-slate-600 dark:text-slate-400 text-sm font-medium">{item.text}</p>
+                <div className="max-w-xl mx-auto px-5">
+                    {/* Hero Section */}
+                    <div className="text-center mb-10 mt-6">
+                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-indigo-50 dark:bg-indigo-500/10 mb-6 border border-indigo-100 dark:border-indigo-500/20">
+                            <Shield className="w-10 h-10 text-indigo-600 dark:text-indigo-400" />
+                        </div>
+                        <h2 className="font-['Lexend_Deca'] font-extrabold text-2xl text-gray-900 dark:text-gray-100 mb-3">
+                            Privasi Anda
+                        </h2>
+                        <p className="font-['Manrope'] text-[15px] leading-relaxed text-gray-500 dark:text-gray-400">
+                            Data Anda aman bersama Ba-Yu. Kami menjaga transparansi dan perlindungan data sebagai prioritas utama.
+                        </p>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </section>
 
-            {/* Data Usage */}
-            <section className="space-y-6">
-              <h2 className="font-['Lexend_Deca'] text-2xl font-bold text-slate-950 dark:text-slate-100">2. Penggunaan Data</h2>
-              <div className="space-y-4 text-slate-700 dark:text-slate-300 leading-relaxed text-lg bg-slate-50 dark:bg-slate-800/20 p-10 rounded-[2.5rem] border border-slate-100 dark:border-white/5">
-                <p className="font-black text-indigo-600 dark:text-indigo-400 mb-4 underline underline-offset-4">Data Anda digunakan untuk:</p>
-                <ul className="space-y-4">
-                  <li className="flex gap-4 items-center">
-                    <CheckCircle className="w-5 h-5 text-indigo-600 shrink-0" />
-                    <span>Memungkinkan Anda berbagi dan mengunduh catatan.</span>
-                  </li>
-                  <li className="flex gap-4 items-center">
-                    <CheckCircle className="w-5 h-5 text-indigo-600 shrink-0" />
-                    <span>Memberikan notifikasi penting terkait aktivitas belajar.</span>
-                  </li>
-                  <li className="flex gap-4 items-center">
-                    <CheckCircle className="w-5 h-5 text-indigo-600 shrink-0" />
-                    <span>Meningkatkan fitur platform berbasis feedback Anda.</span>
-                  </li>
-                </ul>
-              </div>
-            </section>
+                    <div className="space-y-6 mb-10">
+                        {/* Principles */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            {[
+                                { icon: Lock, label: 'Aman', desc: 'Data dienkripsi.' },
+                                { icon: Eye, label: 'Transparan', desc: 'Terbuka tentang data.' },
+                                { icon: Database, label: 'Terkontrol', desc: 'Anda punya kendali.' }
+                            ].map((p, idx) => (
+                                <div key={idx} className="bg-white dark:bg-[#1C1A29] rounded-3xl p-5 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none text-center">
+                                    <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center mx-auto mb-3 border border-slate-100 dark:border-white/10">
+                                        <p.icon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                                    </div>
+                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[15px] mb-1">{p.label}</h3>
+                                    <p className="font-['Manrope'] text-[13px] text-gray-500 dark:text-gray-400">{p.desc}</p>
+                                </div>
+                            ))}
+                        </div>
 
-            {/* Contact */}
-            <div className="pt-10">
-              <div className="relative p-12 bg-indigo-600 rounded-[3rem] text-center overflow-hidden shadow-xl shadow-indigo-500/20">
-                <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20"></div>
-                <h3 className="relative font-['Lexend_Deca'] text-2xl font-bold text-white mb-4">Punya Pertanyaan Lain?</h3>
-                <p className="relative text-indigo-100 text-lg mb-8 max-w-lg mx-auto">Kami di sini untuk membantu Anda memahami privasi di Ba-Yu.</p>
-                <a href="mailto:privacy@ba-yu.id" className="relative inline-block bg-white text-indigo-600 px-10 py-4 rounded-full font-bold hover:bg-indigo-50 transition-all shadow-lg hover:-translate-y-1">
-                  Hubungi Tim Privasi
-                </a>
-              </div>
+                        {/* Data Collection */}
+                        <div className="bg-white dark:bg-[#1C1A29] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none">
+                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                                <Info className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                                1. Data yang Kami Kumpulkan
+                            </h3>
+                            <p className="font-['Manrope'] text-[14px] text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
+                                Kami hanya mengumpulkan informasi minimal yang diperlukan untuk menunjang proses belajar Anda:
+                            </p>
+                            <div className="space-y-3">
+                                {[
+                                    { title: 'Informasi Profil', text: 'Nama, email, dan jenjang pendidikan.' },
+                                    { title: 'Konten Belajar', text: 'Catatan, gambar, dan komentar.' },
+                                    { title: 'Data Teknis', text: 'Log aktivitas untuk perbaikan.' }
+                                ].map((item, i) => (
+                                    <div key={i} className="flex gap-3 items-start p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/5">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0"></div>
+                                        <div>
+                                            <h4 className="font-['Manrope'] font-bold text-[14px] text-gray-900 dark:text-gray-100">{item.title}</h4>
+                                            <p className="font-['Manrope'] text-[13px] text-gray-500 dark:text-gray-400 mt-1">{item.text}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Data Usage */}
+                        <div className="bg-white dark:bg-[#1C1A29] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none">
+                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                                <Shield className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                                2. Penggunaan Data
+                            </h3>
+                            <div className="space-y-3">
+                                {[
+                                    'Memungkinkan berbagi catatan.',
+                                    'Memberikan notifikasi penting.',
+                                    'Meningkatkan fitur platform.'
+                                ].map((text, i) => (
+                                    <div key={i} className="flex items-center gap-3">
+                                        <CheckCircle className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                                        <span className="font-['Manrope'] text-[14px] text-gray-600 dark:text-gray-300">{text}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="text-center pb-8 pt-4">
+                        <p className="font-['Manrope'] text-[13px] text-gray-400 dark:text-gray-500">
+                            &copy; 2026 Ba-Yu Platform.<br/>Privasi Anda adalah Amanah Kami.
+                        </p>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Simple Footer */}
-      <footer className="py-20 text-center text-slate-900 dark:text-slate-400 text-sm font-bold opacity-60">
-        &copy; 2026 Ba-Yu Platform. Privasi Anda adalah Amanah Kami.
-      </footer>
-    </div>
-  );
+        </MobileLayout>
+    );
 }

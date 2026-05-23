@@ -25,6 +25,7 @@ Route::get('/auth/{provider}/redirect', [AuthController::class, 'redirectToProvi
 Route::get('/auth/{provider}/callback', [AuthController::class, 'handleProviderCallback']);
 
 Route::get('/v1/posts', [PostController::class, 'index']);
+Route::get('/v1/posts/pakar-choice', [PostController::class, 'pakarChoice']);
 Route::get('/v1/posts/{id}', [PostController::class, 'show']);
 
 // Public User Endpoints

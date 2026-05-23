@@ -31,6 +31,7 @@ import AboutPage from './pages/AboutPage';
 import StatusPage from './pages/StatusPage';
 import CareersPage from './pages/CareersPage';
 import BlogPage from './pages/BlogPage';
+import CommunityGuidelinesPage from './pages/CommunityGuidelinesPage';
 
 export const router = createBrowserRouter([
   {
@@ -88,6 +89,10 @@ export const router = createBrowserRouter([
       {
         path: 'blog',
         element: <BlogPage />,
+      },
+      {
+        path: 'guidelines',
+        element: <CommunityGuidelinesPage />,
       },
       {
         // Protected Wrapper
