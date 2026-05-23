@@ -391,6 +391,33 @@ export default function AdminDashboard() {
                         </div>
 
                         <div className="space-y-6">
+                            {/* Mobile Stats (Visible only on mobile) */}
+                            <div className="lg:hidden pb-2">
+                                <h3 className="font-bold text-[14px] text-gray-900 dark:text-gray-100 tracking-tight mb-4">
+                                    Ringkasan Platform
+                                </h3>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                    {stats.map((stat, index) => {
+                                        const Icon = stat.icon;
+                                        return (
+                                            <div key={index} className="bg-white dark:bg-[#1C1A29] rounded-xl p-4 border border-gray-200 dark:border-white/10 flex items-center justify-between shadow-sm">
+                                                <div>
+                                                    <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium mb-1">
+                                                        {stat.label}
+                                                    </p>
+                                                    <p className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">
+                                                        {stat.value}
+                                                    </p>
+                                                </div>
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-gray-50 dark:bg-white/5`}>
+                                                    <Icon size={16} className={stat.color} />
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
                             {/* Minimalist Search & Tabs Controls */}
                             <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
                                 <div className="flex flex-1 w-full gap-2 relative">
@@ -415,7 +442,7 @@ export default function AdminDashboard() {
                                         {showFilterPopup && (
                                             <>
                                                 <div className="fixed inset-0 z-[40]" onClick={() => setShowFilterPopup(false)} />
-                                                <div className="absolute top-full mt-2 left-0 sm:left-auto sm:right-0 w-[280px] bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl p-5 z-[100] animate-in fade-in slide-in-from-top-2">
+                                                <div className="absolute top-full mt-2 right-0 w-[280px] bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl p-5 z-[100] animate-in fade-in slide-in-from-top-2">
                                                     <div className="mb-5">
                                                         <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">Status Verifikasi</label>
                                                         <CustomSelect

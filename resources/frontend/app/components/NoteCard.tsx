@@ -101,7 +101,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
 
     return (
         <article
-            className={`group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-8 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors bg-transparent outline-none ${className} ${isDraft ? 'cursor-pointer' : ''}`}
+            className={`group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-6 sm:py-8 px-2 sm:px-0 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors bg-transparent outline-none ${className} ${isDraft ? 'cursor-pointer' : ''}`}
         >
             {/* Feed Text */}
             <div className="flex-1 min-w-0 flex flex-col w-full h-full">
@@ -192,7 +192,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                     </div>
 
                     {!isDraft && (
-                        <div className="flex items-center gap-3 shrink-0 ml-4">
+                        <div className="flex items-center gap-4 sm:gap-6 shrink-0 ml-auto sm:ml-4">
                             {renderActions ? renderActions(note) : (
                             <>
                                 <button
@@ -232,7 +232,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                             e.stopPropagation();
                                             toggleBookmark(note.id);
                                         }}
-                                        className={`p-1.5 rounded-full transition-all duration-300 outline-none active:scale-75 ml-1 ${isBookmarked(note.id) ? "text-primary scale-110" : "text-gray-500 hover:text-primary"}`}
+                                        className={`rounded-full transition-all duration-300 outline-none active:scale-75 ${isBookmarked(note.id) ? "text-primary scale-110" : "text-gray-500 hover:text-primary"}`}
                                     >
                                         <Bookmark
                                             className={`w-[18px] h-[18px] transition-all duration-300 ${isBookmarked(note.id) ? "fill-primary" : ""}`}
@@ -251,7 +251,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                         e.stopPropagation();
                                         setShowMenu(!showMenu);
                                     }}
-                                    className="p-1.5 rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-gray-200 transition-colors focus:outline-none"
+                                    className="rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-gray-200 transition-colors focus:outline-none"
                                 >
                                     <MoreHorizontal className="w-[18px] h-[18px]" strokeWidth={2.5} />
                                 </button>

@@ -16,6 +16,7 @@ export default function CompleteProfilePage() {
         name: user?.name || '',
         username: user?.username || '',
         jenjang_pendidikan: user?.jenjang_pendidikan || 'SMA',
+        profesi: user?.profesi || 'Pelajar',
         school: user?.school || '',
     });
     
@@ -130,6 +131,29 @@ export default function CompleteProfilePage() {
                                         { value: "SMP", label: "Menengah Pertama (SMP)" },
                                         { value: "SMA", label: "Menengah Atas (SMA/SMK)" },
                                         { value: "Kuliah", label: "Perguruan Tinggi (Kuliah)" },
+                                        { value: "Umum", label: "Umum" },
+                                    ]}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 pl-1">
+                                Profesi / Peran
+                            </label>
+                            <div className="relative group z-10">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
+                                    <User className="w-[18px] h-[18px] text-gray-400 group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors pointer-events-none" strokeWidth={2.5} />
+                                </div>
+                                <CustomSelect
+                                    value={formData.profesi}
+                                    onChange={(val) => setFormData({ ...formData, profesi: val as string })}
+                                    className="pl-8"
+                                    options={[
+                                        { value: "Pelajar", label: "Pelajar" },
+                                        { value: "Mahasiswa", label: "Mahasiswa" },
+                                        { value: "Pengajar", label: "Pengajar (Guru/Dosen)" },
+                                        { value: "Umum", label: "Umum / Profesional" },
                                     ]}
                                 />
                             </div>

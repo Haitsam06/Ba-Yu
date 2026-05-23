@@ -27,6 +27,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
     email: '',
     password: '',
     jenjang: 'SMA',
+    profesi: 'Pelajar',
   });
   
   const navigate = useNavigate();
@@ -70,7 +71,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
          onClose();
       }
     } else if (activeTab === 'register') {
-      const error = await register(formData.name, formData.username, formData.email, formData.password, formData.jenjang);
+      const error = await register(formData.name, formData.username, formData.email, formData.password, formData.jenjang, formData.profesi);
       if (error) {
          showToast(error, "error");
          setIsSubmitting(false);
@@ -253,6 +254,29 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                     </button>
                   </div>
                 </div>
+
+                {/* Profesi — Register Only */}
+                {activeTab === 'register' && (
+                  <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
+                    <label className={labelClass}>Profesi / Peran</label>
+                    <div className="relative group">
+                      <User className={`${iconClass} pointer-events-none`} strokeWidth={2.5} />
+                      <select
+                        name="profesi"
+                        value={formData.profesi}
+                        onChange={handleChange}
+                        className={`${inputClass} appearance-none cursor-pointer font-bold`}
+                        required={activeTab === 'register'}
+                      >
+                        <option value="Pelajar">Pelajar</option>
+                        <option value="Mahasiswa">Mahasiswa</option>
+                        <option value="Pengajar">Pengajar (Guru/Dosen)</option>
+                        <option value="Umum">Umum / Profesional</option>
+                      </select>
+                      <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-500 pointer-events-none transform rotate-90" />
+                    </div>
+                  </div>
+                )}
 
                 {/* Jenjang — Register Only */}
                 {activeTab === 'register' && (

@@ -408,13 +408,17 @@ export default function PublicProfilePage() {
         );
     }
 
-    const jenjangSekolah = profileUser?.school && profileUser?.jenjang_pendidikan 
-        ? `${profileUser.jenjang_pendidikan} di ${profileUser.school}` 
-        : profileUser?.school 
-            ? profileUser.school 
-            : profileUser?.jenjang_pendidikan 
-                ? `Pelajar ${profileUser.jenjang_pendidikan}` 
-                : "Pelajar EduPlatform";
+    const jenjangSekolah = (() => {
+        const p = profileUser?.profesi;
+        const j = profileUser?.jenjang_pendidikan;
+        const s = profileUser?.school;
+        if (s) {
+            return p === "Umum" ? s : (p ? `${p} di ${s}` : s);
+        }
+        if (p === "Umum") return "Umum";
+        if (p === "Pelajar" && j && j !== "Umum" && j !== "Kuliah") return `Pelajar ${j}`;
+        return p || (j ? `Pelajar ${j}` : "Pelajar EduPlatform");
+    })();
 
     return (
         <MobileLayout>

@@ -21,9 +21,9 @@ export function BottomNav() {
       { path: '/explore', icon: Search, label: 'Eksplor' },
       { path: '/upload', icon: Plus, label: 'Tulis', isSpecial: true },
       isAdmin 
-          ? { path: '/admin', icon: LayoutGrid, label: 'Dashboard' }
+          ? { path: '/admin', icon: LayoutGrid, label: 'Workspace' }
           : isPakar
-            ? { path: '/pakar', icon: LayoutGrid, label: 'Dashboard' }
+            ? { path: '/pakar', icon: LayoutGrid, label: 'Workspace' }
             : { path: '/stats', icon: BarChart2, label: 'Statistik' },
       { path: '/profile', icon: User, label: 'Profil' },
     ].filter(Boolean) as any[];
@@ -36,12 +36,12 @@ export function BottomNav() {
           <Link
             key={item.path}
             to={item.path}
-            className="flex flex-col items-center justify-center flex-1 transition-all duration-300 outline-none -mt-5"
+            className="flex flex-col items-center justify-center flex-1 transition-all duration-300 outline-none -mt-7 relative group"
           >
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-600 dark:bg-primary text-white shadow-lg shadow-indigo-600/30 dark:shadow-primary/30 transform hover:scale-105 active:scale-95 transition-all duration-300 ring-4 ring-white dark:ring-[#13111C]">
-               <item.icon className="w-5 h-5" strokeWidth={2.5} />
+            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-500 dark:from-primary dark:to-[#A78BFA] text-white shadow-[0_8px_16px_-6px_rgba(79,70,229,0.5)] dark:shadow-[0_8px_16px_-6px_rgba(123,123,255,0.4)] transform group-hover:scale-110 active:scale-95 transition-all duration-300 ring-[6px] ring-white dark:ring-[#1C1A29]">
+               <item.icon className="w-[26px] h-[26px]" strokeWidth={2.5} />
             </div>
-            <span className="text-[10px] mt-1 font-['Manrope'] font-bold tracking-wide text-indigo-600 dark:text-primary opacity-100">
+            <span className="text-[10px] mt-1.5 font-['Manrope'] font-bold tracking-wide text-indigo-600 dark:text-primary opacity-100 transition-all duration-300 group-hover:-translate-y-0.5">
               {item.label}
             </span>
           </Link>

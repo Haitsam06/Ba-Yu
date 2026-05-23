@@ -16,6 +16,7 @@ export default function Login() {
         password: "",
         role: "pelajar",
         jenjang: "SMA",
+        profesi: "Pelajar",
     });
     const [rememberMe, setRememberMe] = useState(false);
     const navigate = useNavigate();
@@ -80,7 +81,8 @@ export default function Login() {
                     tempUsername,
                     formData.email,
                     formData.password,
-                    formData.jenjang
+                    formData.jenjang,
+                    formData.profesi
                 );
 
                 if (errorMessage) {
@@ -213,10 +215,32 @@ export default function Login() {
                         </div>
 
                         {!isLogin && (
-                            <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
-                                <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 pl-1">
-                                    Jenjang Pendidikan
-                                </label>
+                            <>
+                                <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
+                                    <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 pl-1">
+                                        Profesi / Peran
+                                    </label>
+                                    <div className="relative group">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
+                                            <User className="w-[18px] h-[18px] text-gray-400 group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors pointer-events-none" strokeWidth={2.5} />
+                                        </div>
+                                        <CustomSelect
+                                            value={formData.profesi}
+                                            onChange={(val) => setFormData({ ...formData, profesi: val as string })}
+                                            className="pl-8"
+                                            options={[
+                                                { value: "Pelajar", label: "Pelajar" },
+                                                { value: "Mahasiswa", label: "Mahasiswa" },
+                                                { value: "Pengajar", label: "Pengajar (Guru/Dosen)" },
+                                                { value: "Umum", label: "Umum / Profesional" },
+                                            ]}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
+                                    <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 pl-1">
+                                        Jenjang Pendidikan
+                                    </label>
                                 <div className="relative group">
                                     <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
                                         <GraduationCap className="w-[18px] h-[18px] text-gray-400 group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors pointer-events-none" strokeWidth={2.5} />
@@ -234,6 +258,7 @@ export default function Login() {
                                     />
                                 </div>
                             </div>
+                            </>
                         )}
                     </div>
 

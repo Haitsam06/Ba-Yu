@@ -20,6 +20,7 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:App\Models\User,email',
             'password' => 'required|string|min:6',
             'jenjang_pendidikan' => 'required|string',
+            'profesi' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -32,6 +33,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'jenjang_pendidikan' => $request->jenjang_pendidikan,
+            'profesi' => $request->profesi,
             'email_verified_at' => now(), // Auto-verify for development (no email provider configured)
         ]);
 

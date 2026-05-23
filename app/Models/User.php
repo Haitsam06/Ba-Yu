@@ -22,6 +22,7 @@ class User extends Authenticatable
         'password',
         'role',
         'jenjang_pendidikan',
+        'profesi',
         'username',
         'display_name',
         'phone',

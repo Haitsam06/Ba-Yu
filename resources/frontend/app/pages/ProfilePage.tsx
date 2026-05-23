@@ -293,6 +293,7 @@ export default function ProfilePage() {
         avatar: user?.avatar || null,
         role: user?.role || "siswa",
         jenjang: user?.jenjang_pendidikan || "",
+        profesi: user?.profesi || "Pelajar",
         school: user?.school || "",
         followers: user?.followers_count || 0,
         following: user?.following_count || 0,
@@ -533,13 +534,17 @@ export default function ProfilePage() {
                             {currentUser.role !== "pakar" && currentUser.role !== "admin" && (
                                 <span className="flex items-center gap-1.5">
                                     <MapPin className="w-4 h-4" /> 
-                                    {currentUser.school && currentUser.jenjang 
-                                        ? `${currentUser.jenjang} di ${currentUser.school}` 
-                                        : currentUser.school 
-                                            ? currentUser.school 
-                                            : currentUser.jenjang 
-                                                ? `Pelajar ${currentUser.jenjang}` 
-                                                : "Pelajar EduPlatform"}
+                                    {(() => {
+                                        const p = currentUser.profesi;
+                                        const j = currentUser.jenjang;
+                                        const s = currentUser.school;
+                                        if (s) {
+                                            return p === "Umum" ? s : (p ? `${p} di ${s}` : s);
+                                        }
+                                        if (p === "Umum") return "Umum";
+                                        if (p === "Pelajar" && j && j !== "Umum" && j !== "Kuliah") return `Pelajar ${j}`;
+                                        return p || (j ? `Pelajar ${j}` : "Pelajar EduPlatform");
+                                    })()}
                                 </span>
                             )}
                             

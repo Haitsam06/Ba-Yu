@@ -293,7 +293,7 @@ export default function HomePage() {
 
                                         {/*Badge Verifikasi*/}
                                         {heroNote.is_verified && (
-                                            <span className="flex items-center gap-1 bg-emerald-50 text-emerald-600 text-[11px] font-['Lexend_Deca'] font-bold px-2 py-1 rounded-[6px] uppercase tracking-wider border border-emerald-100">
+                                            <span className="flex items-center gap-1 text-[12px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 px-2 py-0.5 rounded-md ml-1">
                                                 <ShieldCheck className="w-3.5 h-3.5" />
                                             </span>
                                         )}
@@ -301,16 +301,42 @@ export default function HomePage() {
 
                                     <Link
                                         to={`/note/${heroNote.id}`}
-                                        className="block group/title"
+                                        className="block group/title outline-none"
                                     >
                                         <h2 className="text-[28px] md:text-[36px] font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 leading-[1.1] mb-4 tracking-tight group-hover/title:text-primary transition-colors line-clamp-3">
                                             {heroNote.title}
                                         </h2>
                                     </Link>
 
-                                    <p className="text-[16px] font-['Manrope'] text-gray-700 dark:text-gray-400 leading-relaxed mb-8 line-clamp-3 md:line-clamp-2">
+                                    <p className="text-[16px] font-['Manrope'] text-gray-700 dark:text-gray-400 leading-relaxed mb-6 line-clamp-3 md:line-clamp-2">
                                         {heroNote.description}
                                     </p>
+
+                                    {/* Mobile Thumbnail (Between text and profile) */}
+                                    <div className="md:hidden w-full h-[240px] overflow-hidden relative shrink-0 rounded-[2rem] bg-gray-50 dark:bg-[#1C1A29] shadow-md dark:shadow-none border border-gray-100 dark:border-white/5 mb-6 group-hover/title:shadow-lg transition-all duration-500">
+                                        <Link
+                                            to={`/note/${heroNote.id}`}
+                                            className="block w-full h-full outline-none cursor-pointer"
+                                        >
+                                            {heroNote.thumbnail ? (
+                                                <img
+                                                    src={heroNote.thumbnail}
+                                                    alt={heroNote.title}
+                                                    className="w-full h-full object-cover object-center transition-transform duration-700 ease-out"
+                                                />
+                                            ) : (
+                                                <DefaultThumbnail 
+                                                    className="w-full h-full" 
+                                                    subject={heroNote.mataPelajaran}
+                                                    title={heroNote.title}
+                                                />
+                                            )}
+                                            {/* Floating badge */}
+                                            <div className="absolute top-3 right-3 bg-white/90 dark:bg-black/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 text-[11px] font-['Lexend_Deca'] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1.5 z-20">
+                                                <Clock className="w-3.5 h-3.5" /> {heroNote.read_time || 1}m
+                                            </div>
+                                        </Link>
+                                    </div>
 
                                     <div className="flex items-center justify-between mt-auto">
                                         <div className="flex items-center gap-3">
@@ -319,7 +345,7 @@ export default function HomePage() {
                                                 return (
                                                     <Link
                                                         to={`/profile/${hAuthor?.id || hAuthor?._id}`}
-                                                        className="flex items-center gap-3 group/hauth"
+                                                        className="flex items-center gap-3 group/hauth outline-none cursor-pointer"
                                                     >
                                                         <AvatarImage
                                                             src={hAuthor?.avatar}
@@ -351,11 +377,11 @@ export default function HomePage() {
                                     </div>
                                 </div>
 
-                                {/* Hero Image / Placeholder */}
-                                <div className="w-full md:w-[45%] h-[240px] md:h-[320px] overflow-hidden relative shrink-0 rounded-[2rem] bg-gray-50 dark:bg-[#1C1A29] shadow-md dark:shadow-none border border-gray-100 dark:border-white/5 group-hover/title:shadow-lg transition-all duration-500">
+                                {/* Desktop Hero Image / Placeholder */}
+                                <div className="hidden md:block w-[45%] h-[320px] overflow-hidden relative shrink-0 rounded-[2rem] bg-gray-50 dark:bg-[#1C1A29] shadow-md dark:shadow-none border border-gray-100 dark:border-white/5 group-hover/title:shadow-lg transition-all duration-500">
                                     <Link
                                         to={`/note/${heroNote.id}`}
-                                        className="block w-full h-full"
+                                        className="block w-full h-full outline-none cursor-pointer"
                                     >
                                         {heroNote.thumbnail ? (
                                             <img

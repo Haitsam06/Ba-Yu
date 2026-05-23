@@ -35,6 +35,7 @@ export default function EditProfilePage() {
         username: user?.username || "",
         bio: user?.bio || "",
         jenjang_pendidikan: user?.jenjang_pendidikan || "SMP",
+        profesi: user?.profesi || "Pelajar",
         school: user?.school || "",
         phone: user?.phone || "",
     });
@@ -291,6 +292,7 @@ export default function EditProfilePage() {
                 "jenjang_pendidikan",
                 formData.jenjang_pendidikan,
             );
+            submitData.append("profesi", formData.profesi);
             submitData.append("school", formData.school);
             submitData.append("phone", formData.phone);
             if (avatarFile) {
@@ -505,6 +507,24 @@ export default function EditProfilePage() {
                                             { value: "SMA", label: "Menengah Atas (SMA/SMK)" },
                                             { value: "Kuliah", label: "Perguruan Tinggi (Kuliah)" },
                                             { value: "Umum", label: "Umum" },
+                                        ]}
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-['Manrope'] font-black text-gray-900 dark:text-gray-200 mb-2">
+                                    Profesi / Peran
+                                </label>
+                                <div className="relative">
+                                    <CustomSelect
+                                        value={formData.profesi}
+                                        onChange={(val) => setFormData({ ...formData, profesi: val as string })}
+                                        options={[
+                                            { value: "Pelajar", label: "Pelajar" },
+                                            { value: "Mahasiswa", label: "Mahasiswa" },
+                                            { value: "Pengajar", label: "Pengajar (Guru/Dosen)" },
+                                            { value: "Umum", label: "Umum / Profesional" },
                                         ]}
                                     />
                                 </div>

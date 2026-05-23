@@ -17,6 +17,7 @@ export interface User {
     username?: string;
     role: UserRole;
     jenjang_pendidikan?: string;
+    profesi?: string;
     avatar?: string;
     bio?: string;
     school?: string;
@@ -47,6 +48,7 @@ interface AuthContextType {
         email: string,
         password: string,
         jenjang: string,
+        profesi: string,
     ) => Promise<string | null>;
     logout: () => void;
     updateUserSession: (data: Partial<User>) => void;
@@ -138,6 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email: string,
         password: string,
         jenjang: string,
+        profesi: string,
     ): Promise<string | null> => {
         try {
             const response = await axios.post("/api/v1/register", {
@@ -146,6 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 email,
                 password,
                 jenjang_pendidikan: jenjang,
+                profesi: profesi,
             });
 
             const { access_token, data: userData } = response.data;
