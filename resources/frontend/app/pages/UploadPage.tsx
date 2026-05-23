@@ -23,8 +23,22 @@ async function getCroppedImg(imageSrc: string, pixelCrop: any): Promise<string> 
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   if (!ctx) return '';
-  canvas.width = pixelCrop.width;
-  canvas.height = pixelCrop.height;
+  
+  const MAX_WIDTH = 1200;
+  const MAX_HEIGHT = 1200;
+  
+  let targetWidth = pixelCrop.width;
+  let targetHeight = pixelCrop.height;
+  
+  if (targetWidth > MAX_WIDTH || targetHeight > MAX_HEIGHT) {
+    const ratio = Math.min(MAX_WIDTH / targetWidth, MAX_HEIGHT / targetHeight);
+    targetWidth = Math.round(targetWidth * ratio);
+    targetHeight = Math.round(targetHeight * ratio);
+  }
+
+  canvas.width = targetWidth;
+  canvas.height = targetHeight;
+  
   ctx.drawImage(
     image,
     pixelCrop.x,
@@ -33,10 +47,11 @@ async function getCroppedImg(imageSrc: string, pixelCrop: any): Promise<string> 
     pixelCrop.height,
     0,
     0,
-    pixelCrop.width,
-    pixelCrop.height
+    targetWidth,
+    targetHeight
   );
-  return canvas.toDataURL('image/jpeg', 0.9);
+  
+  return canvas.toDataURL('image/jpeg', 0.8);
 }
 
 import { registerQuillExtensions } from '../components/editor/editor.config';
@@ -330,7 +345,7 @@ export default function UploadPage() {
   };
 
   return (
-    <MobileLayout showBottomNav={false}>
+    <MobileLayout showBottomNav={false} hideTopNav={true}>
       {isLoadingDraft && (
         <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-[100] flex flex-col items-center justify-center animate-in fade-in duration-300">
           <div className="relative">
@@ -351,34 +366,40 @@ export default function UploadPage() {
       )}
       <div className="min-h-screen bg-white dark:bg-[#13111C]">
 
-        {/* Top Bar */}
-        <div className="sticky top-0 bg-white/95 dark:bg-[#13111C]/95 backdrop-blur-md border-b border-gray-100/60 dark:border-white/5 z-30 transition-all duration-300 shadow-[0_2px_10px_rgb(0,0,0,0.02)] dark:shadow-none">
-          <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-3 min-w-0">
-              <button
-                onClick={() => navigate(-1)}
-                className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-white/10 active:bg-gray-200 dark:active:bg-white/15 rounded-full transition-all duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 shrink-0"
-              >
-                <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
-              </button>
-              <div className="hidden sm:flex items-center gap-2.5 min-w-0">
-                <div className="w-2 h-2 rounded-full bg-indigo-500 shrink-0 shadow-[0_0_8px_rgba(99,102,241,0.4)] animate-pulse"></div>
-                <span className="text-[14px] font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 truncate max-w-[200px]">
-                  {title.trim() ? title : 'Draf Baru'}
-                </span>
+        {/* ─── Sticky Header: Top Bar + Formatting Toolbar ─── */}
+        <div className="sticky top-0 z-30">
+          {/* Top Bar */}
+          <div className="bg-white/95 dark:bg-[#13111C]/95 backdrop-blur-md border-b border-gray-100/60 dark:border-white/5 transition-all duration-300 shadow-[0_2px_10px_rgb(0,0,0,0.02)] dark:shadow-none">
+            <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-3 min-w-0">
+                <button
+                  onClick={() => navigate(-1)}
+                  className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-white/10 active:bg-gray-200 dark:active:bg-white/15 rounded-full transition-all duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 shrink-0"
+                >
+                  <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
+                </button>
+                <div className="hidden sm:flex items-center gap-2.5 min-w-0">
+                  <div className="w-2 h-2 rounded-full bg-indigo-500 shrink-0 shadow-[0_0_8px_rgba(99,102,241,0.4)] animate-pulse"></div>
+                  <span className="text-[14px] font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 truncate max-w-[200px]">
+                    {title.trim() ? title : 'Draf Baru'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2.5 shrink-0">
+                <button
+                  onClick={handleOpenPreview}
+                  disabled={!canOpenPreview}
+                  className="flex items-center gap-1.5 bg-primary text-white px-5 py-2.5 rounded-full text-[13px] font-['Lexend_Deca'] font-extrabold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary/90 hover:shadow-[0_4px_12px_rgba(79,70,229,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] transition-all duration-200"
+                >
+                  Publish
+                </button>
               </div>
             </div>
-
-            <div className="flex items-center gap-2.5 shrink-0">
-              <button
-                onClick={handleOpenPreview}
-                disabled={!canOpenPreview}
-                className="flex items-center gap-1.5 bg-primary text-white px-5 py-2.5 rounded-full text-[13px] font-['Lexend_Deca'] font-extrabold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary/90 hover:shadow-[0_4px_12px_rgba(79,70,229,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] transition-all duration-200"
-              >
-                Publish
-              </button>
-            </div>
           </div>
+
+          {/* ─── Formatting Toolbar ─── */}
+          <SideToolbar quillRef={quillRef} onFormulaClick={() => setShowFormulaModal(true)} />
         </div>
 
         <PublishPreviewModal
@@ -427,8 +448,8 @@ export default function UploadPage() {
         />
 
 
-        {/* Writing Area — centered and padded for plus button */}
-        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 sm:pl-16 relative">
+        {/* Writing Area */}
+        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 relative">
 
           {/* Title */}
           <input
@@ -494,7 +515,12 @@ export default function UploadPage() {
               .notion-editor .ql-editor pre.ql-syntax { background: #1e1e2e !important; color: #cdd6f4 !important; border-radius: 12px; padding: 20px 24px; margin: 1.2em 0; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 14px; line-height: 1.7; overflow-x: auto; border: 1px solid #313244; }
               .notion-editor .ql-editor .ql-video { border-radius: 12px; margin: 1.5em 0; width: 100%; aspect-ratio: 16/9; }
               .notion-editor .ql-editor code { background: #f1f5f9; color: #e11d48; padding: 0.2em 0.4em; border-radius: 6px; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.9em; font-weight: 600; }
-              .notion-editor .ql-snow .ql-tooltip { border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 8px 24px rgba(0,0,0,0.08); padding: 8px 14px; z-index: 100; }
+              .notion-editor .ql-editor a { color: #4f46e5; text-decoration: underline; text-decoration-color: rgba(79,70,229,0.3); text-underline-offset: 2px; transition: all 0.2s; cursor: pointer; }
+              .notion-editor .ql-editor a:hover { text-decoration-color: #4f46e5; }
+              .notion-editor .ql-snow .ql-tooltip { border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 10px 16px; z-index: 9999 !important; background: white; font-family: 'Manrope', sans-serif; font-size: 13px; }
+              .notion-editor .ql-snow .ql-tooltip a.ql-preview { color: #4f46e5; font-weight: 600; text-decoration: underline; max-width: 200px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
+              .notion-editor .ql-snow .ql-tooltip a.ql-action::after { content: 'Edit'; border-right: 1px solid #e5e7eb; padding-right: 8px; margin-left: 8px; color: #6366f1; font-weight: 600; }
+              .notion-editor .ql-snow .ql-tooltip a.ql-remove::before { content: 'Hapus'; margin-left: 8px; color: #ef4444; font-weight: 600; }
               .notion-editor .ql-snow .ql-tooltip input[type=text] { border-radius: 8px; border: 1px solid #d1d5db; padding: 6px 10px; font-family: 'Manrope', sans-serif; font-size: 13px; }
             `}} />
             <ReactQuill
@@ -510,9 +536,6 @@ export default function UploadPage() {
 
           {/* Floating Block Toolbar (Image controls + Delete action) */}
           <FloatingBlockToolbar quillRef={quillRef} onEditAlt={(index, text) => setAltModalParams({ index, text })} />
-
-          {/* Unified Side Toolbar (Text Formatting + Blocks) */}
-          <SideToolbar quillRef={quillRef} onFormulaClick={() => setShowFormulaModal(true)} />
         </div>
 
         <FormulaModal

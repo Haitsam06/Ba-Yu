@@ -572,25 +572,27 @@ export default function ProfilePage() {
                         </div>
                     </div>
 
-                        <div className="bg-gray-50 dark:bg-white/5 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 mb-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/20 rounded-xl flex items-center justify-center">
-                                    <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                        {currentUser.role !== "pakar" && currentUser.role !== "admin" && (
+                            <div className="bg-gray-50 dark:bg-white/5 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 mb-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/20 rounded-xl flex items-center justify-center">
+                                        <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                                    </div>
+                                    <div className="text-left">
+                                        <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[14px]">
+                                            Daftar Pakar
+                                        </h3>
+                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium font-['Manrope']">Jadilah kontributor terverifikasi Ba-Yu</p>
+                                    </div>
                                 </div>
-                                <div className="text-left">
-                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[14px]">
-                                        Daftar Pakar
-                                    </h3>
-                                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium font-['Manrope']">Jadilah kontributor terverifikasi Ba-Yu</p>
-                                </div>
+                                <button
+                                    onClick={() => setApplyModalOpen(true)}
+                                    className="w-full sm:w-auto bg-slate-900 dark:bg-indigo-600 hover:bg-black dark:hover:bg-indigo-700 text-white font-bold text-[13px] px-6 py-2 rounded-full transition-all shadow-sm dark:shadow-none"
+                                >
+                                    Daftar
+                                </button>
                             </div>
-                            <button
-                                onClick={() => setApplyModalOpen(true)}
-                                className="w-full sm:w-auto bg-slate-900 dark:bg-indigo-600 hover:bg-black dark:hover:bg-indigo-700 text-white font-bold text-[13px] px-6 py-2 rounded-full transition-all shadow-sm dark:shadow-none"
-                            >
-                                Daftar
-                            </button>
-                        </div>
+                        )}
                 </div>
 
                 {/* 3. Sticky Tab Navigation - Ba-Yu Signature Style */}

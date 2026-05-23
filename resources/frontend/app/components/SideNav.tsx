@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Home, Search, Bookmark, User, LayoutDashboard, ChevronLeft, Hash, Star, FileText, Settings } from 'lucide-react';
+import { Home, Search, Bookmark, User, LayoutDashboard, ChevronLeft, Hash, Star, FileText, Settings, Plus } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -32,15 +32,10 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
   const mainNavItems = [
     { path: '/home', icon: Home, label: 'Beranda' },
     { path: '/explore', icon: Search, label: 'Eksplorasi' },
+    { path: '/upload', icon: Plus, label: 'Tulis Catatan' },
     { path: '/profile?tab=bookmarks', icon: Bookmark, label: 'Tersimpan' },
     { path: '/profile', icon: User, label: 'Profil Saya' },
   ];
-
-  if (user?.role === 'pakar') {
-      mainNavItems.push({ path: '/pakar', icon: LayoutDashboard, label: 'Dashboard Pakar' });
-  } else if (user?.role === 'admin') {
-      mainNavItems.push({ path: '/admin', icon: LayoutDashboard, label: 'Sistem Admin' });
-  }
 
   return (
     <aside className="w-60 h-full flex flex-col bg-transparent overflow-hidden whitespace-nowrap">
@@ -72,19 +67,25 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
             })}
          </div>
 
-         {/* Stats Section */}
+         {/* Stats / Dashboard Section */}
          <div className="mt-8 mb-2 px-6 text-[11px] font-['Lexend_Deca'] font-black text-gray-600 dark:text-gray-500 tracking-wider">
-            WAWASAN
+            {user?.role === 'admin' || user?.role === 'pakar' ? 'DASHBOARD' : 'WAWASAN'}
          </div>
          <div className="px-3 space-y-1">
             <Link
-              to="/stats"
+              to={user?.role === 'admin' ? '/admin' : user?.role === 'pakar' ? '/pakar' : '/stats'}
               className={`flex items-center gap-3 px-3 py-[7px] rounded-[8px] transition-all duration-200 w-full group ${
-                isActive('/stats') ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200'
+                isActive(user?.role === 'admin' ? '/admin' : user?.role === 'pakar' ? '/pakar' : '/stats') ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
-              <Hash className={`shrink-0 transition-all duration-200 ${isActive('/stats') ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-700 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200'}`} strokeWidth={isActive('/stats') ? 2.5 : 2} />
-              <span className={`font-['Manrope'] text-[14px] truncate mt-[1px] ${isActive('/stats') ? 'font-bold' : 'font-medium'}`}>Statistik Belajar</span>
+              {user?.role === 'admin' || user?.role === 'pakar' ? (
+                <LayoutDashboard className={`shrink-0 transition-all duration-200 ${isActive(user?.role === 'admin' ? '/admin' : '/pakar') ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-700 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200'}`} strokeWidth={isActive(user?.role === 'admin' ? '/admin' : '/pakar') ? 2.5 : 2} />
+              ) : (
+                <Hash className={`shrink-0 transition-all duration-200 ${isActive('/stats') ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-700 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200'}`} strokeWidth={isActive('/stats') ? 2.5 : 2} />
+              )}
+              <span className={`font-['Manrope'] text-[14px] truncate mt-[1px] ${isActive(user?.role === 'admin' ? '/admin' : user?.role === 'pakar' ? '/pakar' : '/stats') ? 'font-bold' : 'font-medium'}`}>
+                {user?.role === 'admin' ? 'Sistem Admin' : user?.role === 'pakar' ? 'Dashboard Pakar' : 'Statistik Belajar'}
+              </span>
             </Link>
          </div>
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { X, ChevronDown, Trash2 } from 'lucide-react';
+import { X, ChevronDown, Trash2, Crop, Maximize, Check } from 'lucide-react';
 import Cropper from 'react-easy-crop';
 import { mataPelajaran } from '../../data/mockData';
 import { jenjangOptions } from './editor.constants';
@@ -70,7 +70,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
 
   return createPortal(
     <div className="fixed inset-0 bg-white dark:bg-[#13111C] z-[9999] overflow-y-auto animate-in fade-in zoom-in-95 duration-300">
-      <div className="max-w-6xl mx-auto px-6 py-8 min-h-screen flex flex-col">
+      <div className="max-w-6xl mx-auto px-6 py-8 pb-32 min-h-screen flex flex-col">
         
         {/* Modal Header */}
         <div className="flex items-center justify-between mb-12">
@@ -100,9 +100,13 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                     onCropComplete={(_, pixels) => setCroppedAreaPixels(pixels)}
                     onZoomChange={setZoom}
                   />
-                  <div className="absolute bottom-4 right-4 z-30 flex gap-2">
-                     <button onClick={() => setIsCropping(false)} className="px-3 py-1.5 bg-gray-900/50 text-white rounded text-xs font-bold hover:bg-gray-900/80 transition-colors">Batal</button>
-                     <button onClick={handleApplyCrop} className="px-3 py-1.5 bg-primary text-white rounded text-xs font-bold shadow-md hover:bg-primary/90 transition-colors">Terapkan Crop</button>
+                  <div className="absolute bottom-4 left-4 right-4 z-30 flex justify-between pointer-events-none">
+                     <button onClick={() => setIsCropping(false)} className="pointer-events-auto w-12 h-12 flex items-center justify-center bg-black/60 backdrop-blur-md text-white rounded-full hover:bg-black/80 border border-white/10 transition-all shadow-xl" title="Batal">
+                         <X className="w-6 h-6" strokeWidth={2.5} />
+                     </button>
+                     <button onClick={handleApplyCrop} className="pointer-events-auto w-12 h-12 flex items-center justify-center bg-primary text-white rounded-full shadow-xl hover:bg-primary/90 transition-all border border-primary/50" title="Terapkan">
+                         <Check className="w-6 h-6" strokeWidth={2.5} />
+                     </button>
                   </div>
                 </div>
               ) : finalThumbnail || extractedThumbnail ? (
@@ -115,10 +119,14 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
               )}
 
               {!isCropping && extractedThumbnail && (
-                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                   <div className="bg-white/95 dark:bg-[#1C1A29]/95 backdrop-blur-md rounded-lg shadow-sm border border-gray-200 dark:border-white/10 p-1 flex gap-1">
-                      <button onClick={() => { setFinalThumbnail(extractedThumbnail); setThumbnailFit('contain'); }} className={`px-2.5 py-1 text-[11px] font-bold rounded-md transition-colors ${thumbnailFit==='contain' && finalThumbnail === extractedThumbnail ? 'bg-gray-900 text-white':'text-gray-600 hover:bg-gray-100'}`}>Tampil Utuh</button>
-                      <button onClick={() => setIsCropping(true)} className="px-2.5 py-1 text-[11px] font-bold rounded-md bg-white dark:bg-[#252336] text-gray-950 dark:text-gray-200 border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none hover:bg-gray-50 dark:hover:bg-white/10 transition-colors">Sesuaikan Ruang Crop</button>
+                <div className="absolute top-3 right-3 z-10">
+                   <div className="bg-white/95 dark:bg-[#1C1A29]/95 backdrop-blur-md rounded-full shadow-md border border-gray-200/80 dark:border-white/10 p-1.5 flex gap-1.5">
+                      <button onClick={() => { setFinalThumbnail(extractedThumbnail); setThumbnailFit('contain'); }} className={`w-9 h-9 flex items-center justify-center rounded-full transition-all ${thumbnailFit==='contain' && finalThumbnail === extractedThumbnail ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5'}`} title="Tampil Utuh">
+                          <Maximize className="w-4 h-4" strokeWidth={2.5} />
+                      </button>
+                      <button onClick={() => setIsCropping(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-white dark:bg-[#252336] text-gray-950 dark:text-gray-100 border border-gray-200 dark:border-white/10 shadow-sm hover:bg-gray-50 dark:hover:bg-white/10 transition-all" title="Crop Foto">
+                          <Crop className="w-4 h-4" strokeWidth={2.5} />
+                      </button>
                    </div>
                 </div>
               )}
@@ -379,20 +387,20 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
             </div>
 
             {/* Publish Area */}
-            <div className="pt-6 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
-               <button
-                  onClick={handleSubmit}
-                  disabled={!canPublishFinal || isSubmitting}
-                  className="bg-primary text-white px-7 py-2 rounded-full text-[14px] font-['Manrope'] font-bold disabled:opacity-40 hover:bg-primary/90 transition-colors cursor-pointer"
-               >
-                  {isSubmitting ? 'Publishing...' : 'Publish now'}
-               </button>
+            <div className="pt-8 border-t border-gray-100 dark:border-white/5 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
                <button
                   onClick={handleSaveDraft}
                   disabled={isSavingDraft || isSubmitting}
-                  className="text-[14px] font-['Manrope'] text-gray-600 font-bold hover:text-gray-950 transition-colors disabled:opacity-50"
+                  className="w-full sm:w-auto text-[15px] font-['Manrope'] text-gray-600 dark:text-gray-400 font-bold hover:text-gray-950 dark:hover:text-gray-200 transition-colors disabled:opacity-50 py-3.5"
                 >
                   {isSavingDraft ? 'Menyimpan...' : 'Simpan draf'}
+               </button>
+               <button
+                  onClick={handleSubmit}
+                  disabled={!canPublishFinal || isSubmitting}
+                  className="w-full sm:w-auto bg-primary text-white px-8 py-3.5 rounded-xl text-[15px] font-['Manrope'] font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary/90 transition-all cursor-pointer shadow-lg shadow-primary/20"
+               >
+                  {isSubmitting ? 'Publishing...' : 'Publish now'}
                </button>
             </div>
           </div>
