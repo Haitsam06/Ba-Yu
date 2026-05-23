@@ -25,6 +25,15 @@ class ReportController extends Controller
 
         $userId = (string) Auth::id();
 
+        $existingReport = Report::where('reporter_id', $userId)
+            ->where('post_id', (string) $postId)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($existingReport) {
+            return response()->json(['message' => 'Kamu sudah melaporkan catatan ini.'], 400);
+        }
+
         $report = Report::create([
             'reporter_id' => $userId,
             'post_id' => (string) $postId,
@@ -196,6 +205,7 @@ class ReportController extends Controller
                 if ($comment) {
                     $postId = $comment->post_id;
                     $commentIdStr = (string)$comment->_id;
+                    $commentUserId = $comment->user_id;
                     
                     \App\Models\Comment::where('parent_comment_id', $commentIdStr)->delete();
                     $comment->delete();
@@ -206,10 +216,39 @@ class ReportController extends Controller
                             $post->update(['comments_count' => \App\Models\Comment::where('post_id', $postId)->count()]);
                         }
                     }
+
+                    // Notif ke pembuat komentar
+                    if ($commentUserId) {
+                        Notification::create([
+                            'user_id' => is_array($commentUserId) ? current($commentUserId) : (string)$commentUserId,
+                            'title'   => 'Komentar Dihapus (Takedown)',
+                            'message' => 'Komentar kamu telah dihapus oleh Admin karena melanggar panduan komunitas kami. Alasan admin: ' . ($request->admin_note ?: 'Pelanggaran pedoman.'),
+                            'type'    => 'report',
+                            'link'    => null,
+                            'is_read' => false,
+                        ]);
+                    }
                 }
                 $pesan = 'BAM! Komentar ngawur berhasil di-Take Down! 💥';
             } else {
-                Post::where('id', $report->post_id)->delete();
+                $post = Post::find($report->post_id);
+                if ($post) {
+                    $postUserId = $post->user_id;
+                    $postTitle = $post->title;
+                    $post->delete();
+
+                    // Notif ke pembuat catatan
+                    if ($postUserId) {
+                        Notification::create([
+                            'user_id' => is_array($postUserId) ? current($postUserId) : (string)$postUserId,
+                            'title'   => 'Catatan Dihapus (Takedown)',
+                            'message' => 'Catatan kamu "' . $postTitle . '" telah dihapus oleh Admin karena melanggar panduan komunitas kami. Alasan admin: ' . ($request->admin_note ?: 'Pelanggaran pedoman.'),
+                            'type'    => 'report',
+                            'link'    => null,
+                            'is_read' => false,
+                        ]);
+                    }
+                }
                 $pesan = 'BAM! Catatan ngawur berhasil di-Take Down! 💥';
             }
             $report->update(['status' => 'resolved', 'admin_note' => $request->admin_note]);
@@ -221,6 +260,7 @@ class ReportController extends Controller
                     User::where('id', $comment->user_id)->update(['role' => 'banned']);
                     $postId = $comment->post_id;
                     $commentIdStr = (string)$comment->_id;
+                    $commentUserId = $comment->user_id;
                     
                     \App\Models\Comment::where('parent_comment_id', $commentIdStr)->delete();
                     $comment->delete();
@@ -231,12 +271,36 @@ class ReportController extends Controller
                             $post->update(['comments_count' => \App\Models\Comment::where('post_id', $postId)->count()]);
                         }
                     }
+
+                    if ($commentUserId) {
+                        Notification::create([
+                            'user_id' => is_array($commentUserId) ? current($commentUserId) : (string)$commentUserId,
+                            'title'   => 'Akun Diblokir (Banned)',
+                            'message' => 'Akun kamu telah diblokir secara permanen oleh Admin akibat pelanggaran berat pada komentarmu. Alasan admin: ' . ($request->admin_note ?: 'Pelanggaran pedoman berat.'),
+                            'type'    => 'report',
+                            'link'    => null,
+                            'is_read' => false,
+                        ]);
+                    }
                 }
             } else {
                 $post = Post::find($report->post_id);
                 if ($post) {
-                    User::where('id', $post->user_id)->update(['role' => 'banned']);
+                    $postUserId = $post->user_id;
+                    $postTitle = $post->title;
+                    User::where('id', $postUserId)->update(['role' => 'banned']);
                     $post->delete();
+
+                    if ($postUserId) {
+                        Notification::create([
+                            'user_id' => is_array($postUserId) ? current($postUserId) : (string)$postUserId,
+                            'title'   => 'Akun Diblokir (Banned)',
+                            'message' => 'Akun kamu telah diblokir secara permanen oleh Admin akibat pelanggaran berat pada catatan "' . $postTitle . '". Alasan admin: ' . ($request->admin_note ?: 'Pelanggaran pedoman berat.'),
+                            'type'    => 'report',
+                            'link'    => null,
+                            'is_read' => false,
+                        ]);
+                    }
                 }
             }
             $report->update(['status' => 'resolved', 'admin_note' => $request->admin_note]);

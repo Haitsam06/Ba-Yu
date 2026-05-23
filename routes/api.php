@@ -28,6 +28,10 @@ Route::get('/v1/posts', [PostController::class, 'index']);
 Route::get('/v1/posts/{id}', [PostController::class, 'show']);
 
 // Public User Endpoints
+Route::get('/v1/debug', function() {
+    $n = \App\Models\Notification::where('type', 'sertifikasi')->orderBy('created_at', 'desc')->first();
+    return response()->json(['id' => $n->_id, 'id_string' => (string) $n->_id, 'user_id' => $n->user_id]);
+});
 Route::get('/v1/users/search', [UserController::class, 'search']);
 Route::get('/v1/users/{id}', [UserController::class, 'show']);
 Route::get('/v1/users/{id}/activities', [UserController::class, 'activities']);
@@ -41,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/v1/sertifikasi/pending', [SertifikasiController::class, 'getPending']);
     Route::put('/v1/sertifikasi/{id}/verifikasi', [SertifikasiController::class, 'verifikasi']);
     Route::get('/v1/notifikasi', [NotificationController::class, 'getNotifikasi']);
+    Route::get('/v1/notifikasi/{id}', [NotificationController::class, 'getNotifikasiById']);
     Route::put('/v1/notifikasi/read-all', [NotificationController::class, 'markAllAsRead']);
     Route::put('/v1/notifikasi/{id}/read', [NotificationController::class, 'markAsRead']);
 

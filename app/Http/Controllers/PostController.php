@@ -398,7 +398,7 @@ class PostController extends Controller
             'title'    => 'Catatan Disetujui Pakar! 🎉',
             'message'  => 'Selamat! Catatan "' . $post->title . '" telah diverifikasi. Rating: ' . $rating . ' Bintang. Pesan: "' . $feedback . '"',
             'type'     => 'verifikasi',
-            'link'     => '/note/' . $post->id, 
+            'link'     => '/note/' . $post->id . '?view=review', 
             'is_read'  => false,
         ]);
 
@@ -457,7 +457,8 @@ class PostController extends Controller
             'user_id' => $post->user_id,
             'title'   => 'Catatan Ditolak Pakar 😔',
             'message' => 'Maaf, catatan kamu yang berjudul "' . $post->title . '" belum memenuhi standar dan ditolak oleh Pakar.',
-            'type'    => 'system',
+            'type'    => 'catatan_ditolak',
+            'link'    => null,
             'is_read' => false,
         ]);
 
@@ -487,6 +488,10 @@ class PostController extends Controller
 
         if (!$post) {
             return response()->json(['message' => 'Catatan tidak ditemukan'], 404);
+        }
+
+        if ($post->submitted_for_review) {
+            return response()->json(['message' => 'Catatan sudah diajukan untuk verifikasi.'], 400);
         }
 
         // Mark the post as submitted for review

@@ -14,6 +14,7 @@ import ProfilePage from './pages/ProfilePage';
 import PublicProfilePage from './pages/PublicProfilePage';
 import SettingsPage from './pages/SettingsPage';
 import EditProfilePage from './pages/EditProfilePage';
+import NotificationDetailPage from './pages/NotificationDetailPage';
 import PakarDashboard from './pages/PakarDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import LearningStatisticsPage from './pages/LearningStatisticsPage';
@@ -107,6 +108,10 @@ export const router = createBrowserRouter([
           {
             path: 'notifications',
             element: <NotificationsPage />,
+          },
+          {
+            path: 'notifications/:id',
+            element: <NotificationDetailPage />,
           },
           {
             path: 'profile',

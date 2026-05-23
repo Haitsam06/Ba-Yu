@@ -44,18 +44,42 @@ class NotificationController extends Controller
         ], 200);
     }
 
-    public function markAsRead($id)
+    public function getNotifikasiById($id)
     {
-        $notifikasi = Notification::where('_id', $id)->first();
-        if (!$notifikasi) {
-            $notifikasi = Notification::where('id', $id)->first();
-        }
+        $notifikasi = Notification::find($id);
 
         if (!$notifikasi) {
             return response()->json(['message' => 'Notifikasi tidak ditemukan'], 404);
         }
 
-        if ($notifikasi->user_id !== (string) Auth::id()) {
+        if ((string)$notifikasi->user_id !== (string) Auth::id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Attach actor if exists
+        if ($notifikasi->actor_id) {
+            $actorId = (string) $notifikasi->actor_id;
+            $actor = \App\Models\User::where('_id', $actorId)->first() ?? \App\Models\User::where('id', $actorId)->first();
+            if ($actor) {
+                $notifikasi->actor = ['_id' => (string) $actor->id, 'name' => $actor->name, 'avatar' => $actor->avatar];
+            }
+        }
+
+        return response()->json([
+            'message' => 'Berhasil mengambil data notifikasi',
+            'data'    => $notifikasi
+        ], 200);
+    }
+
+    public function markAsRead($id)
+    {
+        $notifikasi = Notification::find($id);
+
+        if (!$notifikasi) {
+            return response()->json(['message' => 'Notifikasi tidak ditemukan'], 404);
+        }
+
+        if ((string)$notifikasi->user_id !== (string) Auth::id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

@@ -20,7 +20,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { AvatarImage } from "./DefaultImages";
 
 interface NotificationItem {
-    _id: string;
+    id?: string;
+    _id?: string;
     user_id: string;
     title: string;
     message: string;
@@ -107,7 +108,7 @@ export default function AvatarNotifications() {
                 );
                 setNotifications((prev) =>
                     prev.map((n) =>
-                        n._id === id ? { ...n, is_read: true } : n,
+                        (n._id || n.id) === id ? { ...n, is_read: true } : n,
                     ),
                 );
             } catch (err) {
@@ -117,10 +118,20 @@ export default function AvatarNotifications() {
         setOpen(false);
         if (link) {
             navigate(link);
-        } else if (type === "report" && user?.role === "admin") {
-            navigate("/admin", { state: { tab: "laporan" } });
-        } else if (type === "sertifikasi" && user?.role === "admin") {
-            navigate("/admin", { state: { tab: "sertifikasi" } });
+        } else if (type === "report") {
+            if (user?.role === "admin") {
+                navigate("/admin", { state: { tab: "laporan" } });
+            } else {
+                navigate(`/notifications/${id}`);
+            }
+        } else if (type === "sertifikasi") {
+            if (user?.role === "admin") {
+                navigate("/admin", { state: { tab: "sertifikasi" } });
+            } else {
+                navigate(`/notifications/${id}`);
+            }
+        } else {
+            navigate(`/notifications/${id}`);
         }
     };
 
@@ -213,10 +224,10 @@ export default function AvatarNotifications() {
                         <div className="flex flex-col">
                             {notifications.slice(0, 8).map((item) => (
                                 <div
-                                    key={item._id}
+                                    key={item._id || item.id}
                                     onClick={() =>
                                         handleMarkAsRead(
-                                            item._id,
+                                            (item._id || item.id) as string,
                                             item.is_read,
                                             item.type,
                                             item.link,

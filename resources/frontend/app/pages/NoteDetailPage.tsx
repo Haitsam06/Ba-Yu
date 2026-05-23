@@ -766,6 +766,13 @@ export default function NoteDetailPage() {
     }, [comments, window.location.hash]);
 
     useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        if (searchParams.get("view") === "review") {
+            setIsReviewModalOpen(true);
+        }
+    }, [location.search]);
+
+    useEffect(() => {
         const fetchNoteDetail = async () => {
             if (!id) return;
             try {

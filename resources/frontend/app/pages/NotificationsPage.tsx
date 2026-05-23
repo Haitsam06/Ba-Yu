@@ -20,7 +20,8 @@ import axios from "axios";
 import { cn } from "../lib/utils";
 
 interface Notification {
-    _id: string;
+    id?: string;
+    _id?: string;
     user_id: string;
     title: string;
     message: string;
@@ -144,7 +145,7 @@ export default function NotificationsPage() {
                 );
                 setNotifications((prev) =>
                     prev.map((n) =>
-                        n._id === id ? { ...n, is_read: true } : n,
+                        (n._id || n.id) === id ? { ...n, is_read: true } : n,
                     ),
                 );
             } catch (err) {
@@ -155,11 +156,19 @@ export default function NotificationsPage() {
         if (link) {
             navigate(link);
         } else if (type === "report") {
-            if (user?.role === "admin")
+            if (user?.role === "admin") {
                 navigate("/admin", { state: { tab: "laporan" } });
+            } else {
+                navigate(`/notifications/${id}`);
+            }
         } else if (type === "sertifikasi") {
-            if (user?.role === "admin")
+            if (user?.role === "admin") {
                 navigate("/admin", { state: { tab: "sertifikasi" } });
+            } else {
+                navigate(`/notifications/${id}`);
+            }
+        } else {
+            navigate(`/notifications/${id}`);
         }
     };
 
@@ -292,10 +301,10 @@ export default function NotificationsPage() {
                             <div className="flex flex-col gap-3">
                                 {displayedNotifications.map((notif, index) => (
                                     <div
-                                        key={notif._id}
+                                        key={notif._id || notif.id}
                                         onClick={() =>
                                             handleMarkAsRead(
-                                                notif._id,
+                                                (notif._id || notif.id) as string,
                                                 notif.is_read,
                                                 notif.type,
                                                 notif.link,
