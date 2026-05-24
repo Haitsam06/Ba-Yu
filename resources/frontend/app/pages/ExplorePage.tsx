@@ -19,6 +19,7 @@ import {
     Star,
     X,
     ShieldCheck,
+    Shield,
     Compass,
     Users,
     Lock as LockIcon,
@@ -459,6 +460,10 @@ export default function ExplorePage() {
                 queryParamsAPI.tags = selectedTags.join(',');
             }
 
+            if (contentTypeFilter === 'catatan_terverifikasi') {
+                queryParamsAPI.is_verified = true;
+            }
+
             const response = await axios.get("/api/v1/posts", {
                 params: queryParamsAPI,
             });
@@ -487,7 +492,7 @@ export default function ExplorePage() {
     useEffect(() => {
         setPage(1);
         fetchPosts(1, true);
-    }, [debouncedSearchQuery, activeSegment, sortOrder, selectedJenjang, selectedKelas, selectedTags]);
+    }, [debouncedSearchQuery, activeSegment, sortOrder, selectedJenjang, selectedKelas, selectedTags, contentTypeFilter]);
 
     // Fetch users when Pengguna tab is active and search query changes
     const fetchUsers = async (pageNum: number, isReset: boolean = false) => {
@@ -498,9 +503,22 @@ export default function ExplorePage() {
             const authHeader = isAuthenticated
                 ? { Authorization: `Bearer ${localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token")}` }
                 : {};
+            const queryParamsAPI: any = {
+                page: pageNum,
+                limit: 12
+            };
+
+            if (debouncedSearchQuery !== "") {
+                queryParamsAPI.q = debouncedSearchQuery;
+            }
+
+            if (contentTypeFilter === 'orang_terverifikasi') {
+                queryParamsAPI.role = 'admin,pakar';
+            }
+
             const res = await axios.get("/api/v1/users/search", {
-                params: { q: debouncedSearchQuery, page: pageNum, limit: 12 },
                 headers: authHeader,
+                params: queryParamsAPI,
             });
             
             const newData = res.data.data || [];
@@ -526,10 +544,11 @@ export default function ExplorePage() {
     };
 
     useEffect(() => {
-        if (activeSegment !== 'pengguna') return;
-        setUsersPage(1);
-        fetchUsers(1, true);
-    }, [debouncedSearchQuery, activeSegment, isAuthenticated]);
+        if (activeSegment === 'pengguna') {
+            setUsersPage(1);
+            fetchUsers(1, true);
+        }
+    }, [debouncedSearchQuery, activeSegment, contentTypeFilter, isAuthenticated]);
 
     useEffect(() => {
         if (page > 1 && activeSegment !== 'pengguna') {
@@ -572,7 +591,7 @@ export default function ExplorePage() {
         const elementToObserve = scrollContainer || window;
 
         elementToObserve.addEventListener("scroll", handleScroll);
-        return () => elementToObserve.removeEventListener("scroll", handleScroll as EventListener);
+        return () => scrollContainer?.removeEventListener("scroll", handleScroll as EventListener);
     }, [isLoadingMore, hasMore, isLoadingNotes, isLoadingMoreUsers, hasMoreUsers, isLoadingUsers, activeSegment]);
 
     const formattedNotes = useMemo(() => {
@@ -619,12 +638,8 @@ export default function ExplorePage() {
             });
         }
 
-        if (contentTypeFilter === 'catatan_terverifikasi') {
-            result = result.filter(note => note.author?.role === 'pakar' || note.author?.role === 'admin');
-        }
-
         return result;
-    }, [notes, selectedJenjang, selectedKelas, selectedTags, contentTypeFilter]);
+    }, [notes, selectedJenjang, selectedKelas, selectedTags]);
 
     // Auth modal for guest users
     const [showAuthModal, setShowAuthModal] = useState(false);
@@ -859,7 +874,7 @@ export default function ExplorePage() {
                                     </div>
 
                                     {/* Bagian Kanan: Dropdown Filter Order */}
-                                    <div className="pb-3 pl-4 flex items-center gap-2 shrink-0">
+                                    <div className="pb-3 pl-4 flex items-center gap-2 shrink-0 relative z-20">
                                         <div className="hidden sm:block w-[140px]">
                                         <CustomSelect
                                             value={sortOrder}
@@ -901,9 +916,9 @@ export default function ExplorePage() {
                                             </div>
                                         ))}
                                     </div>
-                                ) : (contentTypeFilter === 'orang_terverifikasi' ? searchedUsers.filter((u: any) => u.role === 'pakar' || u.role === 'admin') : searchedUsers).length > 0 ? (
+                                ) : searchedUsers.length > 0 ? (
                                     <div className="space-y-3 pt-4">
-                                        {(contentTypeFilter === 'orang_terverifikasi' ? searchedUsers.filter((u: any) => u.role === 'pakar' || u.role === 'admin') : searchedUsers).map((u: any) => {
+                                        {searchedUsers.map((u: any) => {
                                             const userId = u._id || u.id;
                                             return (
                                                 <div
@@ -931,13 +946,13 @@ export default function ExplorePage() {
                                                                     <LockIcon className="w-3.5 h-3.5 text-gray-400 shrink-0" />
                                                                 )}
                                                                 {u.role === 'admin' && (
-                                                                    <span title="Admin">
-                                                                        <ShieldCheck className="w-[18px] h-[18px] text-slate-800 dark:text-slate-300" fill="currentColor" stroke="white" strokeWidth={1} />
+                                                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 font-bold text-[12px] border border-purple-100 dark:border-purple-500/20" title="Admin">
+                                                                        <Shield className="w-3.5 h-3.5" /> {t('profile.admin_badge') || 'Admin'}
                                                                     </span>
                                                                 )}
                                                                 {u.role === 'pakar' && (
-                                                                    <span title="Pakar Terverifikasi">
-                                                                        <ShieldCheck className="w-[18px] h-[18px] text-indigo-500 dark:text-indigo-400" fill="currentColor" stroke="white" strokeWidth={1} />
+                                                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[12px] border border-emerald-100 dark:border-emerald-500/20" title="Pakar Terverifikasi">
+                                                                        <ShieldCheck className="w-3.5 h-3.5" /> {t('profile.expert_badge') || 'Pakar'}
                                                                     </span>
                                                                 )}
                                                             </div>

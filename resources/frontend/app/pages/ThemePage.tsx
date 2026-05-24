@@ -2,32 +2,34 @@ import { MobileLayout } from '../components/MobileLayout';
 import { ArrowLeft, Monitor, Moon, Sun, Check } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { useTheme } from '../contexts/ThemeContext';
+import { useTranslation } from '../hooks/useTranslation';
 
 export default function ThemePage() {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
 
   const themeOptions = [
     {
       id: 'light',
-      title: 'Terang',
-      description: 'Tampilan bersih dan cerah, cocok untuk kondisi ruangan terang.',
+      title: t("theme.light") || 'Terang',
+      description: t("theme.light_desc") || 'Tampilan bersih dan cerah, cocok untuk kondisi ruangan terang.',
       icon: Sun,
       color: 'text-amber-500',
       bgColor: 'bg-amber-50 dark:bg-amber-500/10'
     },
     {
       id: 'dark',
-      title: 'Gelap',
-      description: 'Meredupkan layar, nyaman untuk mata di malam hari.',
+      title: t("theme.dark") || 'Gelap',
+      description: t("theme.dark_desc") || 'Meredupkan layar, nyaman untuk mata di malam hari.',
       icon: Moon,
       color: 'text-indigo-400',
       bgColor: 'bg-indigo-50 dark:bg-indigo-500/10'
     },
     {
       id: 'system',
-      title: 'Ikuti Sistem',
-      description: 'Menyesuaikan tampilan dengan pengaturan perangkat Anda.',
+      title: t("theme.system") || 'Ikuti Sistem',
+      description: t("theme.system_desc") || 'Menyesuaikan tampilan dengan pengaturan perangkat Anda.',
       icon: Monitor,
       color: 'text-slate-500 dark:text-slate-400',
       bgColor: 'bg-slate-100 dark:bg-white/10'
@@ -47,7 +49,7 @@ export default function ThemePage() {
               <ArrowLeft size={24} />
             </button>
             <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-              Tampilan
+              {t("theme.title") || "Tampilan"}
             </h1>
           </div>
 
@@ -55,10 +57,10 @@ export default function ThemePage() {
           <div className="px-6 py-8">
             <div className="mb-8">
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">
-                Pilih Tema Aplikasi
+                {t("theme.subtitle") || "Pilih Tema Aplikasi"}
               </h2>
               <p className="text-[14px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
-                Sesuaikan tampilan aplikasi Ba-Yu untuk pengalaman membaca dan belajar yang lebih nyaman bagi Anda.
+                {t("theme.description") || "Sesuaikan tampilan aplikasi Ba-Yu untuk pengalaman membaca dan belajar yang lebih nyaman bagi Anda."}
               </p>
             </div>
 

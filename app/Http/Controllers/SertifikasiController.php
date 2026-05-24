@@ -7,6 +7,7 @@ use App\Models\Sertifikasi;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Cloudinary\Cloudinary;
 
 class SertifikasiController extends Controller
 {
@@ -14,7 +15,7 @@ class SertifikasiController extends Controller
     {
         $request->validate([
             'bidang_keahlian' => 'required|string|max:255',
-            'file_sertifikat' => 'required|file|mimes:pdf,jpg,jpeg|max:5120',
+            'file_sertifikat' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
         $cekPengajuan = Sertifikasi::where('user_id', Auth::id())
@@ -27,7 +28,13 @@ class SertifikasiController extends Controller
             ], 400);
         }
 
-        $pathFile = $request->file('file_sertifikat')->store('sertifikat', 'public');
+        $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
+        $upload = $cloudinary->uploadApi()->upload($request->file('file_sertifikat')->getRealPath(), [
+            'folder' => 'bayu_sertifikat',
+            'resource_type' => 'auto'
+        ]);
+        
+        $pathFile = $upload['secure_url'];
 
         $sertifikasi = Sertifikasi::create([
             'user_id' => Auth::id(),
@@ -62,10 +69,10 @@ class SertifikasiController extends Controller
         }
         // --------------------
 
-        $pengajuan = Sertifikasi::where('status', 'pending')->get();
+        $pengajuan = Sertifikasi::orderBy('created_at', 'desc')->get();
 
         return response()->json([
-            'message' => 'Berhasil mengambil daftar antrean',
+            'message' => 'Berhasil mengambil daftar sertifikasi',
             'data' => $pengajuan
         ], 200);
     }

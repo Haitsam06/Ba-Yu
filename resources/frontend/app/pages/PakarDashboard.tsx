@@ -220,20 +220,20 @@ export default function PakarDashboard() {
             const noteId = selectedNoteForFeedback.id;
             if (feedbackType === "approve") {
                 await axios.put(`/api/v1/posts/${noteId}/verify`, { rating, reason }, config);
-                showToast("Catatan berhasil divalidasi!", "success");
+                showToast(t('pakar_dashboard.toast_validated'), "success");
                 setNotes(prev => prev.map(n => n.id === noteId ? { ...n, isValidated: true, isRejected: false } : n));
             } else if (feedbackType === "cancel") {
                 await axios.put(`/api/v1/posts/${noteId}/unverify`, { reason }, config);
-                showToast("Verifikasi catatan dibatalkan.", "info");
+                showToast(t('pakar_dashboard.toast_unverified'), "info");
                 setNotes(prev => prev.map(n => n.id === noteId ? { ...n, isValidated: false } : n));
             } else {
                 await axios.put(`/api/v1/posts/${noteId}/reject`, { reason }, config);
-                showToast("Catatan ditolak dengan alasan.", "success");
+                showToast(t('pakar_dashboard.toast_rejected'), "success");
                 setNotes(prev => prev.map(n => n.id === noteId ? { ...n, isRejected: true, isValidated: false } : n));
             }
             setIsFeedbackModalOpen(false);
         } catch (error) {
-            showToast("Gagal memproses verifikasi", "error");
+            showToast(t('pakar_dashboard.toast_fail'), "error");
         }
     };
 
@@ -324,13 +324,13 @@ export default function PakarDashboard() {
                             <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
                                 <div className="relative w-full sm:max-w-xs group">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Search className="h-4 w-4 text-gray-400" /></div>
-                                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Cari materi..." className="w-full pl-9 pr-4 py-2 bg-gray-100/50 dark:bg-white/5 border-none rounded-full text-[14px] text-gray-900 dark:text-gray-100 placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all" />
+                                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={t('pakar_dashboard.search_placeholder')} className="w-full pl-9 pr-4 py-2 bg-gray-100/50 dark:bg-white/5 border-none rounded-full text-[14px] text-gray-900 dark:text-gray-100 placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all" />
                                 </div>
                                 <div className="flex w-full sm:w-auto border-b border-gray-200 dark:border-white/10">
                                     {[
-                                        { id: "pending", label: "Antrean" },
-                                        { id: "approved", label: "Terverifikasi" },
-                                        { id: "all", label: "Semua" },
+                                        { id: "pending", label: t('pakar_dashboard.tab_queue') },
+                                        { id: "approved", label: t('pakar_dashboard.tab_verified') },
+                                        { id: "all", label: t('pakar_dashboard.tab_all') },
                                     ].map((tab) => {
                                         const active = filter === tab.id;
                                         return (
@@ -354,8 +354,8 @@ export default function PakarDashboard() {
                                 ) : filteredNotes.length === 0 ? (
                                     <div className="bg-white dark:bg-[#1C1A29] rounded-[24px] py-20 border border-slate-200 dark:border-white/10 border-dashed text-center flex flex-col items-center shadow-sm dark:shadow-none">
                                         <div className="w-20 h-20 bg-slate-50 dark:bg-white/5 rounded-[20px] flex items-center justify-center mb-5"><CheckCircle className="w-10 h-10 text-slate-300 dark:text-white/20" /></div>
-                                        <h3 className="font-['Lexend_Deca'] text-xl font-bold text-slate-800 dark:text-slate-100 mb-1.5">Tugas Selesai!</h3>
-                                        <p className="text-slate-500 dark:text-slate-400 font-medium text-[14px]">Antrean materi verifikasi kamu kosong hari ini.</p>
+                                        <h3 className="font-['Lexend_Deca'] text-xl font-bold text-slate-800 dark:text-slate-100 mb-1.5">{t('pakar_dashboard.empty_queue_title')}</h3>
+                                        <p className="text-slate-500 dark:text-slate-400 font-medium text-[14px]">{t('pakar_dashboard.empty_queue_desc')}</p>
                                     </div>
                                 ) : (
                                     <>
@@ -368,13 +368,13 @@ export default function PakarDashboard() {
                                                         <>
                                                             {n.isValidated ? (
                                                                 <>
-                                                                    <div className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full px-3 py-1.5 border border-emerald-100 dark:border-emerald-500/20 font-['Lexend_Deca'] font-bold text-[10px] flex items-center gap-1.5 uppercase tracking-widest"><ShieldCheck size={14} /> Verified</div>
-                                                                    <button onClick={() => handleActionClick(n, "cancel")} className="px-3 py-1.5 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full font-['Lexend_Deca'] font-bold text-[10px] flex items-center gap-1.5 uppercase tracking-widest hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-all border border-transparent hover:border-rose-200 dark:hover:border-rose-500/30">Batal Verif</button>
+                                                                    <div className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full px-3 py-1.5 border border-emerald-100 dark:border-emerald-500/20 font-['Lexend_Deca'] font-bold text-[10px] flex items-center gap-1.5 uppercase tracking-widest"><ShieldCheck size={14} /> {t('pakar_dashboard.verified')}</div>
+                                                                    <button onClick={() => handleActionClick(n, "cancel")} className="px-3 py-1.5 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full font-['Lexend_Deca'] font-bold text-[10px] flex items-center gap-1.5 uppercase tracking-widest hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-all border border-transparent hover:border-rose-200 dark:hover:border-rose-500/30">{t('pakar_dashboard.cancel_verification')}</button>
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <button onClick={() => handleActionClick(n, "approve")} className="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-full font-['Lexend_Deca'] font-bold text-[10px] hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all flex items-center gap-1.5 uppercase tracking-widest border border-indigo-100 dark:border-indigo-500/20"><CheckCircle size={14} /> Setuju</button>
-                                                                    <button onClick={() => handleActionClick(n, "reject")} className="px-3 py-1.5 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full font-['Lexend_Deca'] font-bold text-[10px] hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-all flex items-center gap-1.5 uppercase tracking-widest border border-rose-100 dark:border-rose-500/20"><XCircle size={14} /> Tolak</button>
+                                                                    <button onClick={() => handleActionClick(n, "approve")} className="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-full font-['Lexend_Deca'] font-bold text-[10px] hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all flex items-center gap-1.5 uppercase tracking-widest border border-indigo-100 dark:border-indigo-500/20"><CheckCircle size={14} /> {t('pakar_dashboard.approve')}</button>
+                                                                    <button onClick={() => handleActionClick(n, "reject")} className="px-3 py-1.5 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full font-['Lexend_Deca'] font-bold text-[10px] hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-all flex items-center gap-1.5 uppercase tracking-widest border border-rose-100 dark:border-rose-500/20"><XCircle size={14} /> {t('pakar_dashboard.reject')}</button>
                                                                 </>
                                                             )}
                                                         </>
@@ -385,7 +385,7 @@ export default function PakarDashboard() {
                                         {filteredNotes.length > visibleItemsCount && (
                                             <div className="mt-8 flex justify-center">
                                                 <button onClick={handleLoadMore} className="px-6 py-3 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 text-[13px] shadow-sm transition-all">
-                                                    Load More
+                                                    {t('pakar_dashboard.load_more')}
                                                 </button>
                                             </div>
                                         )}
@@ -401,7 +401,7 @@ export default function PakarDashboard() {
                             
                             <div className="pb-8 border-b border-gray-100 dark:border-white/5 mb-8">
                                 <h3 className="font-['Lexend_Deca'] font-extrabold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-6">
-                                    Statistik Kurasi
+                                    {t('pakar_dashboard.curation_stats')}
                                 </h3>
                                 <div className="grid grid-cols-1 gap-4">
                                     {stats.map((stat, index) => {
@@ -427,13 +427,13 @@ export default function PakarDashboard() {
                             <div className="bg-white dark:bg-[#1C1A29] rounded-xl p-5 border border-gray-200 dark:border-white/10 mb-4">
                                 <div className="flex items-center gap-2 mb-4">
                                     <BookOpen className="w-4 h-4 text-gray-500" />
-                                    <h3 className="font-bold text-gray-900 dark:text-gray-100 text-[14px]">Pedoman Kurasi</h3>
+                                    <h3 className="font-bold text-gray-900 dark:text-gray-100 text-[14px]">{t('pakar_dashboard.curation_guidelines')}</h3>
                                 </div>
                                 <div className="space-y-4">
                                     {[
-                                        { title: "Verifikasi Teori", desc: "Pastikan rumus & konsep sesuai standar." },
-                                        { title: "Originalitas", desc: "Hindari plagiarisme penuh." },
-                                        { title: "Kualitas Visual", desc: "Tulisan dan gambar harus jelas terbaca." },
+                                        { title: t('pakar_dashboard.guide_1_title'), desc: t('pakar_dashboard.guide_1_desc') },
+                                        { title: t('pakar_dashboard.guide_2_title'), desc: t('pakar_dashboard.guide_2_desc') },
+                                        { title: t('pakar_dashboard.guide_3_title'), desc: t('pakar_dashboard.guide_3_desc') },
                                     ].map((rule, idx) => (
                                         <div key={idx} className="flex gap-3">
                                             <div className="text-gray-400 font-bold text-[12px] pt-0.5">{idx + 1}.</div>
@@ -449,9 +449,9 @@ export default function PakarDashboard() {
                             <div className="bg-gray-50 dark:bg-white/5 rounded-xl p-5 border border-gray-200 dark:border-white/10">
                                 <div className="flex items-center gap-2 mb-2">
                                     <ShieldCheck className="w-4 h-4 text-indigo-500" />
-                                    <h4 className="font-bold text-gray-900 dark:text-gray-100 text-[14px]">Kualitas Prioritas</h4>
+                                    <h4 className="font-bold text-gray-900 dark:text-gray-100 text-[14px]">{t('pakar_dashboard.quality_priority')}</h4>
                                 </div>
-                                <p className="text-gray-500 dark:text-gray-400 text-[13px] leading-relaxed">Terima kasih telah berkontribusi menjaga kualitas materi di Ba-Yu.</p>
+                                <p className="text-gray-500 dark:text-gray-400 text-[13px] leading-relaxed">{t('pakar_dashboard.quality_desc')}</p>
                             </div>
                         </div>
                     </div>

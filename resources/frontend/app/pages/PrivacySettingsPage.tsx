@@ -6,11 +6,13 @@ import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
+import { useTranslation } from "../hooks/useTranslation";
 
 export default function PrivacySettingsPage() {
     const navigate = useNavigate();
     const { user, updateUserSession, logout } = useAuth();
     const { showToast } = useToast();
+    const { t } = useTranslation();
     
     // We assume `is_private` is a boolean on the user object. If not present, default to false.
     const [isPrivate, setIsPrivate] = useState<boolean>(user?.is_private || false);
@@ -33,11 +35,11 @@ export default function PrivacySettingsPage() {
             });
             updateUserSession({ ...user, is_private: newValue });
             
-            showToast(`Akun berhasil diubah menjadi ${newValue ? "Privat" : "Publik"}`, "success");
+            showToast(newValue ? t("privacy_settings.success_private") : t("privacy_settings.success_public"), "success");
         } catch (error) {
             console.error("Failed to update privacy", error);
             setIsPrivate(!newValue); // Revert
-            showToast("Gagal memperbarui pengaturan privasi", "error");
+            showToast(t("privacy_settings.update_failed"), "error");
         } finally {
             setLoadingPrivacy(false);
         }
@@ -52,7 +54,7 @@ export default function PrivacySettingsPage() {
                 headers: { Authorization: `Bearer ${token}` }
             });
             
-            showToast("Akun berhasil dinonaktifkan (Dormant). Anda akan dialihkan keluar.", "success");
+            showToast(t("privacy_settings.deactivate_success"), "success");
             setShowDeactivateDialog(false);
             
             setTimeout(() => {
@@ -62,7 +64,7 @@ export default function PrivacySettingsPage() {
             
         } catch (error) {
             console.error("Failed to deactivate account", error);
-            showToast("Gagal menonaktifkan akun. Silakan coba lagi.", "error");
+            showToast(t("privacy_settings.deactivate_failed"), "error");
             setShowDeactivateDialog(false);
         } finally {
             setDeactivating(false);
@@ -81,7 +83,7 @@ export default function PrivacySettingsPage() {
                         <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                     </button>
                     <h1 className="text-gray-900 dark:text-gray-100 font-['Lexend_Deca'] font-bold text-lg">
-                        Privasi & Akun
+                        {t("privacy_settings.title")}
                     </h1>
                     <div className="w-10"></div>
                 </div>
@@ -93,7 +95,7 @@ export default function PrivacySettingsPage() {
                             <div className="flex items-center gap-2 mb-2">
                                 <ShieldCheck className="w-5 h-5 text-emerald-500" />
                                 <h2 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100">
-                                    Privasi Akun
+                                    {t("privacy_settings.account_privacy")}
                                 </h2>
                             </div>
 
@@ -106,13 +108,13 @@ export default function PrivacySettingsPage() {
                                             <Globe className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                         )}
                                         <h3 className="font-['Manrope'] font-bold text-[15px] text-gray-900 dark:text-gray-100">
-                                            Akun {isPrivate ? "Privat" : "Publik"}
+                                            {isPrivate ? t("privacy_settings.account_private") : t("privacy_settings.account_public")}
                                         </h3>
                                     </div>
                                     <p className="font-['Manrope'] text-[13px] text-gray-500 dark:text-gray-400 leading-relaxed">
                                         {isPrivate 
-                                            ? "Hanya pengikut yang dapat melihat profil dan catatanmu. Komentarmu di postingan orang lain tetap terlihat secara publik."
-                                            : "Semua orang dapat melihat profil dan catatanmu, serta berinteraksi dengan konten yang kamu bagikan."
+                                            ? t("privacy_settings.desc_private")
+                                            : t("privacy_settings.desc_public")
                                         }
                                     </p>
                                 </div>
@@ -136,19 +138,17 @@ export default function PrivacySettingsPage() {
                             <div className="flex items-center gap-2 mb-2">
                                 <AlertTriangle className="w-5 h-5 text-red-500" />
                                 <h2 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100">
-                                    Hapus / Nonaktifkan Akun
+                                    {t("privacy_settings.deactivate_title")}
                                 </h2>
                             </div>
                             
-                            <p className="font-['Manrope'] text-[13px] text-gray-500 dark:text-gray-400 leading-relaxed">
-                                Menonaktifkan akun akan menyembunyikan profil dan semua catatanmu dari pengguna lain. Akunmu akan masuk ke masa <strong>Dormant selama 30 hari</strong>. Jika kamu login kembali dalam waktu tersebut, akunmu akan otomatis aktif kembali. Jika tidak, akun akan dihapus permanen.
-                            </p>
+                            <p className="font-['Manrope'] text-[13px] text-gray-500 dark:text-gray-400 leading-relaxed" dangerouslySetInnerHTML={{__html: t("privacy_settings.deactivate_desc") }} />
 
                             <button
                                 onClick={() => setShowDeactivateDialog(true)}
                                 className="w-full mt-4 flex items-center justify-center gap-2 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 py-3.5 rounded-xl font-['Lexend_Deca'] font-bold text-[14px] transition-colors"
                             >
-                                Nonaktifkan Akun
+                                {t("privacy_settings.deactivate_button")}
                             </button>
                         </div>
                     </div>
@@ -159,10 +159,10 @@ export default function PrivacySettingsPage() {
                 isOpen={showDeactivateDialog}
                 onOpenChange={(open) => setShowDeactivateDialog(open)}
                 onConfirm={handleDeactivate}
-                title="Nonaktifkan Akun?"
-                description="Akunmu akan disembunyikan dari publik dan masuk masa Dormant selama 30 hari. Kamu bisa mengaktifkannya kembali dengan login sebelum masa 30 hari berakhir. Yakin ingin melanjutkan?"
-                confirmText={deactivating ? "Memproses..." : "Ya, Nonaktifkan"}
-                cancelText="Batal"
+                title={t("privacy_settings.dialog_title")}
+                description={t("privacy_settings.dialog_desc")}
+                confirmText={deactivating ? t("privacy_settings.processing") : t("privacy_settings.yes_deactivate")}
+                cancelText={t("privacy_settings.cancel")}
                 variant="danger"
             />
         </MobileLayout>

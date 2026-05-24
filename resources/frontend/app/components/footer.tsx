@@ -1,7 +1,9 @@
 import { Link } from 'react-router';
 import { BookOpen, Github, Twitter, Instagram } from 'lucide-react';
+import { useTranslation } from '../hooks/useTranslation';
 
 export function Footer() {
+  const { t } = useTranslation();
   return (
     <footer className="bg-[#F8F9FF] dark:bg-[#0E0C17] border-t border-border dark:border-white/5 mt-32">
       <div className="max-w-7xl mx-auto px-6 py-16">
@@ -17,7 +19,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-muted-foreground mb-6">
-              Platform catatan belajar terstruktur untuk pelajar Indonesia
+              {t("footer.desc") || "Platform catatan belajar terstruktur untuk pelajar Indonesia"}
             </p>
             <div className="flex gap-3">
               <a
@@ -43,21 +45,21 @@ export function Footer() {
 
           {/* Product */}
           <div>
-            <h4 className="font-semibold mb-4 dark:text-gray-100">Produk</h4>
+            <h4 className="font-semibold mb-4 dark:text-gray-100">{t("footer.product") || "Produk"}</h4>
             <ul className="space-y-3">
               <li>
                 <Link to="/explore" className="text-muted-foreground hover:text-primary transition-colors">
-                  Jelajahi Catatan
+                  {t("footer.explore_notes") || "Jelajahi Catatan"}
                 </Link>
               </li>
               <li>
                 <Link to="/dashboard" className="text-muted-foreground hover:text-primary transition-colors">
-                  Dashboard
+                  {t("footer.dashboard") || "Dashboard"}
                 </Link>
               </li>
               <li>
                 <Link to="/#features" className="text-muted-foreground hover:text-primary transition-colors">
-                  Fitur
+                  {t("footer.features") || "Fitur"}
                 </Link>
               </li>
             </ul>
@@ -65,21 +67,21 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h4 className="font-semibold mb-4 dark:text-gray-100">Sumber Daya</h4>
+            <h4 className="font-semibold mb-4 dark:text-gray-100">{t("footer.resources") || "Sumber Daya"}</h4>
             <ul className="space-y-3">
               <li>
                 <Link to="/settings/help" className="text-muted-foreground hover:text-primary transition-colors">
-                  Panduan
+                  {t("footer.guide") || "Panduan"}
                 </Link>
               </li>
               <li>
                 <Link to="/blog" className="text-muted-foreground hover:text-primary transition-colors">
-                  Blog
+                  {t("footer.blog") || "Blog"}
                 </Link>
               </li>
               <li>
                 <Link to="/settings/help" className="text-muted-foreground hover:text-primary transition-colors">
-                  Bantuan
+                  {t("footer.help") || "Bantuan"}
                 </Link>
               </li>
             </ul>
@@ -87,21 +89,21 @@ export function Footer() {
 
           {/* Company */}
           <div>
-            <h4 className="font-semibold mb-4 dark:text-gray-100">Perusahaan</h4>
+            <h4 className="font-semibold mb-4 dark:text-gray-100">{t("footer.company") || "Perusahaan"}</h4>
             <ul className="space-y-3">
               <li>
                 <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
-                  Tentang Kami
+                  {t("footer.about_us") || "Tentang Kami"}
                 </Link>
               </li>
               <li>
                 <Link to="/careers" className="text-muted-foreground hover:text-primary transition-colors">
-                  Karir
+                  {t("footer.careers") || "Karir"}
                 </Link>
               </li>
               <li>
                 <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
-                  Kontak
+                  {t("footer.contact") || "Kontak"}
                 </Link>
               </li>
             </ul>
@@ -114,10 +116,10 @@ export function Footer() {
           </p>
           <div className="flex gap-6 text-sm">
             <Link to="/privacy" className="text-muted-foreground hover:text-primary transition-colors">
-              Kebijakan Privasi
+              {t("footer.privacy") || "Kebijakan Privasi"}
             </Link>
             <Link to="/terms" className="text-muted-foreground hover:text-primary transition-colors">
-              Syarat & Ketentuan
+              {t("footer.terms") || "Syarat & Ketentuan"}
             </Link>
           </div>
         </div>

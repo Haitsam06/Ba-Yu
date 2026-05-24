@@ -3,6 +3,7 @@ import { X, Mail, Lock, User, Eye, EyeOff, BookOpen, ArrowRight, GraduationCap, 
 import { useNavigate, Link } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { useTranslation } from '../hooks/useTranslation';
 import ApplicationLogo from './ApplicationLogo';
 import axios from 'axios';
 
@@ -16,6 +17,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
   const [activeTab, setActiveTab] = useState<'login' | 'register' | 'forgot'>(defaultTab);
   const [showPassword, setShowPassword] = useState(false);
   const { showToast } = useToast();
+  const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -136,12 +138,12 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                     <ApplicationLogo className="w-11 h-11 sm:w-12 sm:h-12 drop-shadow-md" />
                   </div>
                   <h2 className="font-['Lexend_Deca'] text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1 leading-tight tracking-tight">
-                    {activeTab === 'login' ? 'Selamat Datang' : 'Buat Akun Baru'}
+                    {activeTab === 'login' ? t("auth_modal.welcome") || 'Selamat Datang' : t("auth_modal.create_account") || 'Buat Akun Baru'}
                   </h2>
                   <p className="font-['Manrope'] text-[14px] text-gray-600 dark:text-gray-400 font-medium">
                     {activeTab === 'login' 
-                      ? "Masuk untuk mengakses semua fitur Ba-Yu." 
-                      : "Daftar dan mulai kelola catatanmu sekarang."}
+                      ? t("auth_modal.login_desc") || "Masuk untuk mengakses semua fitur Ba-Yu." 
+                      : t("auth_modal.register_desc") || "Daftar dan mulai kelola catatanmu sekarang."}
                   </p>
                 </div>
 
@@ -155,7 +157,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                     }`}
                   >
-                    Masuk
+                    {t("auth_modal.login") || "Masuk"}
                   </button>
                   <button
                     onClick={() => { setActiveTab('register'); }}
@@ -165,7 +167,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                     }`}
                   >
-                    Daftar Baru
+                    {t("auth_modal.register") || "Daftar Baru"}
                   </button>
                 </div>
               </div>
@@ -177,7 +179,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                 {activeTab === 'register' && (
                   <>
                     <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
-                      <label className={labelClass}>Nama Lengkap (Display Name)</label>
+                      <label className={labelClass}>{t("auth_modal.fullname") || "Nama Lengkap (Display Name)"}</label>
                       <div className="relative group">
                         <User className={iconClass} strokeWidth={2.5} />
                         <input
@@ -192,7 +194,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       </div>
                     </div>
                     <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
-                      <label className={labelClass}>Username</label>
+                      <label className={labelClass}>{t("auth_modal.username") || "Username"}</label>
                       <div className="relative group">
                         <span className={`absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500 group-focus-within:text-indigo-600 transition-colors`}>@</span>
                         <input
@@ -209,14 +211,14 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                           required={activeTab === 'register'}
                         />
                       </div>
-                      <p className="text-[11px] text-gray-500 pl-1 font-medium">Hanya huruf kecil, angka, dan underscore (_)</p>
+                      <p className="text-[11px] text-gray-500 pl-1 font-medium">{t("auth_modal.username_hint") || "Hanya huruf kecil, angka, dan underscore (_)"}</p>
                     </div>
                   </>
                 )}
 
                 {/* Email / Username (Login Only) or Email (Register Only) */}
                 <div className="space-y-1.5">
-                  <label className={labelClass}>{activeTab === 'login' ? 'Email atau Username' : 'Alamat Email'}</label>
+                  <label className={labelClass}>{activeTab === 'login' ? (t("auth_modal.email_or_username") || 'Email atau Username') : (t("auth_modal.email") || 'Alamat Email')}</label>
                   <div className="relative group">
                     <Mail className={iconClass} strokeWidth={2.5} />
                     <input
@@ -233,7 +235,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
 
                 {/* Password */}
                 <div className="space-y-1.5">
-                  <label className={labelClass}>Password</label>
+                  <label className={labelClass}>{t("auth_modal.password") || "Password"}</label>
                   <div className="relative group">
                     <Lock className={iconClass} strokeWidth={2.5} />
                     <input
@@ -258,7 +260,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                 {/* Profesi — Register Only */}
                 {activeTab === 'register' && (
                   <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
-                    <label className={labelClass}>Profesi / Peran</label>
+                    <label className={labelClass}>{t("auth_modal.role") || "Profesi / Peran"}</label>
                     <div className="relative group">
                       <User className={`${iconClass} pointer-events-none`} strokeWidth={2.5} />
                       <select
@@ -268,10 +270,10 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         className={`${inputClass} appearance-none cursor-pointer font-bold`}
                         required={activeTab === 'register'}
                       >
-                        <option value="Pelajar">Pelajar</option>
-                        <option value="Mahasiswa">Mahasiswa</option>
-                        <option value="Pengajar">Pengajar (Guru/Dosen)</option>
-                        <option value="Umum">Umum / Profesional</option>
+                        <option value="Pelajar">{t("auth_modal.role_pelajar") || "Pelajar"}</option>
+                        <option value="Mahasiswa">{t("auth_modal.role_mahasiswa") || "Mahasiswa"}</option>
+                        <option value="Pengajar">{t("auth_modal.role_pengajar") || "Pengajar (Guru/Dosen)"}</option>
+                        <option value="Umum">{t("auth_modal.role_umum") || "Umum / Profesional"}</option>
                       </select>
                       <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-500 pointer-events-none transform rotate-90" />
                     </div>
@@ -281,7 +283,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                 {/* Jenjang — Register Only */}
                 {activeTab === 'register' && (
                   <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
-                    <label className={labelClass}>Jenjang Pendidikan</label>
+                    <label className={labelClass}>{t("auth_modal.level") || "Jenjang Pendidikan"}</label>
                     <div className="relative group">
                       <GraduationCap className={`${iconClass} pointer-events-none`} strokeWidth={2.5} />
                       <select
@@ -291,11 +293,11 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         className={`${inputClass} appearance-none cursor-pointer font-bold`}
                         required={activeTab === 'register'}
                       >
-                        <option value="SD">Sekolah Dasar (SD)</option>
-                        <option value="SMP">Menengah Pertama (SMP)</option>
-                        <option value="SMA">Menengah Atas (SMA/SMK)</option>
-                        <option value="Kuliah">Perguruan Tinggi (Kuliah)</option>
-                        <option value="Umum">Umum</option>
+                        <option value="SD">{t("auth_modal.level_sd") || "Sekolah Dasar (SD)"}</option>
+                        <option value="SMP">{t("auth_modal.level_smp") || "Menengah Pertama (SMP)"}</option>
+                        <option value="SMA">{t("auth_modal.level_sma") || "Menengah Atas (SMA/SMK)"}</option>
+                        <option value="Kuliah">{t("auth_modal.level_kuliah") || "Perguruan Tinggi (Kuliah)"}</option>
+                        <option value="Umum">{t("auth_modal.level_umum") || "Umum"}</option>
                       </select>
                       <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-500 pointer-events-none transform rotate-90" />
                     </div>
@@ -318,7 +320,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         </div>
                       </div>
                       <span className="ml-2.5 text-[14px] text-gray-700 dark:text-gray-400 font-medium group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors">
-                        Ingat saya
+                        {t("auth_modal.remember_me") || "Ingat saya"}
                       </span>
                     </label>
                     <button 
@@ -326,7 +328,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       onClick={() => setActiveTab('forgot')} 
                       className="text-[13px] text-indigo-600 font-bold hover:text-indigo-800 transition-colors"
                     >
-                      Lupa Password?
+                      {t("auth_modal.forgot_password") || "Lupa Password?"}
                     </button>
                   </div>
                 )}
@@ -338,14 +340,14 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                     <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-50 dark:bg-primary/10 rounded-2xl mb-4 border border-indigo-200 dark:border-primary/20 shadow-sm dark:shadow-none">
                       <Sparkles className="w-6 h-6 text-indigo-600" />
                     </div>
-                    <h3 className="font-['Lexend_Deca'] text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1.5">Lupa Password?</h3>
+                    <h3 className="font-['Lexend_Deca'] text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1.5">{t("auth_modal.forgot_password") || "Lupa Password?"}</h3>
                     <p className="font-['Manrope'] text-[14px] text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
-                      Masukkan email terdaftar untuk menerima link reset password.
+                      {t("auth_modal.forgot_desc") || "Masukkan email terdaftar untuk menerima link reset password."}
                     </p>
                   </div>
                   
                   <div className="space-y-1.5">
-                    <label className={labelClass}>Alamat Email</label>
+                    <label className={labelClass}>{t("auth_modal.email") || "Alamat Email"}</label>
                     <div className="relative">
                       <Mail className={iconClass} strokeWidth={2.5} />
                       <input
@@ -365,7 +367,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       disabled={isSubmitting}
                       onClick={async () => {
                         if (!formData.email) {
-                          showToast("Isi email terlebih dahulu!", "error");
+                          showToast(t("auth_modal.email_required") || "Isi email terlebih dahulu!", "error");
                           return;
                         }
                         setIsSubmitting(true);
@@ -381,7 +383,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                             showToast(response.data.message, "error");
                           }
                         } catch (error: any) {
-                          const errorMsg = error.response?.data?.message || "Koneksi gagal";
+                          const errorMsg = error.response?.data?.message || (t("auth_modal.connection_failed") || "Koneksi gagal");
                           showToast(errorMsg, "error");
                         } finally {
                           setIsSubmitting(false);
@@ -389,7 +391,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       }}
                       className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-full font-['Lexend_Deca'] font-bold text-[15px] shadow-lg shadow-indigo-600/20 transition-all active:scale-[0.98]"
                     >
-                      {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Kirim Link Reset"}
+                      {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (t("auth_modal.send_reset_link") || "Kirim Link Reset")}
                     </button>
                   </div>
 
@@ -399,7 +401,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       onClick={() => setActiveTab('login')}
                       className="text-[13px] font-bold text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-primary transition-colors font-['Lexend_Deca']"
                     >
-                      Kembali ke Login
+                      {t("auth_modal.back_to_login") || "Kembali ke Login"}
                     </button>
                   </div>
                 </div>
@@ -417,7 +419,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
                       <>
-                        {activeTab === 'login' ? 'Masuk ke Akun' : 'Daftar Sekarang'}
+                        {activeTab === 'login' ? (t("auth_modal.login_btn") || 'Masuk ke Akun') : (t("auth_modal.register_btn") || 'Daftar Sekarang')}
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}
@@ -430,7 +432,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                     </div>
                     <div className="relative flex justify-center text-[12px]">
                       <span className="px-4 bg-white dark:bg-[#1C1A29] text-gray-500 dark:text-gray-500 font-['Lexend_Deca'] font-semibold">
-                        atau lanjutkan dengan
+                        {t("auth_modal.or_continue_with") || "atau lanjutkan dengan"}
                       </span>
                     </div>
                   </div>
@@ -459,23 +461,23 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                   {activeTab === 'register' && (
                     <div className="mt-6 px-2 text-center">
                       <p className="text-[12px] text-gray-500 leading-relaxed font-medium font-['Manrope']">
-                        Dengan mendaftar, Anda menyetujui{' '}
+                        {t("auth_modal.terms_prefix") || "Dengan mendaftar, Anda menyetujui"}{' '}
                         <Link 
                           to="/terms" 
                           target="_blank" 
                           className="text-indigo-600 font-bold hover:text-indigo-800 hover:underline transition-colors"
                         >
-                          Syarat & Ketentuan
+                          {t("auth_modal.terms") || "Syarat & Ketentuan"}
                         </Link>
-                        {' '}serta{' '}
+                        {' '}{t("auth_modal.terms_and") || "serta"}{' '}
                         <Link 
                           to="/privacy" 
                           target="_blank" 
                           className="text-indigo-600 font-bold hover:text-indigo-800 hover:underline transition-colors"
                         >
-                          Kebijakan Privasi
+                          {t("auth_modal.privacy") || "Kebijakan Privasi"}
                         </Link>
-                        {' '}layanan Ba-Yu.
+                        {' '}{t("auth_modal.terms_suffix") || "layanan Ba-Yu."}
                       </p>
                     </div>
                   )}

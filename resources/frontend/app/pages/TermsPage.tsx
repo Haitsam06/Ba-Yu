@@ -1,9 +1,29 @@
 import { ArrowLeft, ShieldCheck, UserCheck, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { MobileLayout } from '../components/MobileLayout';
+import { useTranslation } from '../hooks/useTranslation';
 
 export default function TermsPage() {
     const navigate = useNavigate();
+    const { t } = useTranslation();
+
+    const section2Items = [
+        t("terms_page.section2_items.0") || 'Menjaga kerahasiaan kata sandi akun Anda.',
+        t("terms_page.section2_items.1") || 'Segala aktivitas yang terjadi di bawah akun Anda.',
+        t("terms_page.section2_items.2") || 'Memberikan informasi yang benar dan akurat.'
+    ];
+
+    const allowedItems = [
+        t("terms_page.allowed_items.0") || 'Berbagi materi pelajaran asli.',
+        t("terms_page.allowed_items.1") || 'Memberikan komentar positif.',
+        t("terms_page.allowed_items.2") || 'Mengunduh untuk referensi pribadi.'
+    ];
+
+    const prohibitedItems = [
+        t("terms_page.prohibited_items.0") || 'Mengunggah konten plagiat.',
+        t("terms_page.prohibited_items.1") || 'Menyebarkan ujaran kebencian.',
+        t("terms_page.prohibited_items.2") || 'Merusak sistem platform.'
+    ];
 
     return (
         <MobileLayout showBottomNav={false}>
@@ -17,7 +37,7 @@ export default function TermsPage() {
                         <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                     </button>
                     <h1 className="text-gray-900 dark:text-gray-100 font-['Lexend_Deca'] font-bold text-lg">
-                        Syarat & Ketentuan
+                        {t("terms_page.title") || "Syarat & Ketentuan"}
                     </h1>
                     <div className="w-10"></div>
                 </div>
@@ -29,10 +49,10 @@ export default function TermsPage() {
                             <ShieldCheck className="w-10 h-10 text-indigo-600 dark:text-indigo-400" />
                         </div>
                         <h2 className="font-['Lexend_Deca'] font-extrabold text-2xl text-gray-900 dark:text-gray-100 mb-3">
-                            Syarat & Ketentuan
+                            {t("terms_page.hero_title") || "Syarat & Ketentuan"}
                         </h2>
                         <p className="font-['Manrope'] text-[15px] leading-relaxed text-gray-500 dark:text-gray-400">
-                            Terakhir diperbarui: 7 Mei 2026. Aturan main untuk kenyamanan ekosistem belajar Ba-Yu.
+                            {t("terms_page.hero_desc") || "Terakhir diperbarui: 7 Mei 2026. Aturan main untuk kenyamanan ekosistem belajar Ba-Yu."}
                         </p>
                     </div>
 
@@ -41,10 +61,10 @@ export default function TermsPage() {
                         <div className="bg-white dark:bg-[#1C1A29] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none">
                             <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
                                 <ShieldCheck className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                                1. Penerimaan Ketentuan
+                                {t("terms_page.section1_title") || "1. Penerimaan Ketentuan"}
                             </h3>
                             <p className="font-['Manrope'] text-[14px] text-gray-600 dark:text-gray-400 leading-relaxed">
-                                Dengan mengakses dan menggunakan platform Ba-Yu, Anda dianggap telah membaca, memahami, dan menyetujui untuk terikat oleh Syarat dan Ketentuan ini. Jika Anda tidak setuju, mohon untuk tidak melanjutkan penggunaan layanan kami demi keamanan bersama.
+                                {t("terms_page.section1_desc") || "Dengan mengakses dan menggunakan platform Ba-Yu, Anda dianggap telah membaca, memahami, dan menyetujui untuk terikat oleh Syarat dan Ketentuan ini. Jika Anda tidak setuju, mohon untuk tidak melanjutkan penggunaan layanan kami demi keamanan bersama."}
                             </p>
                         </div>
 
@@ -52,17 +72,13 @@ export default function TermsPage() {
                         <div className="bg-white dark:bg-[#1C1A29] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none">
                             <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
                                 <UserCheck className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                                2. Pendaftaran Akun
+                                {t("terms_page.section2_title") || "2. Pendaftaran Akun"}
                             </h3>
                             <p className="font-['Manrope'] text-[14px] text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                                Untuk menggunakan fitur berbagi catatan, Anda diwajibkan mendaftar dengan informasi yang akurat. Anda bertanggung jawab penuh atas:
+                                {t("terms_page.section2_desc") || "Untuk menggunakan fitur berbagi catatan, Anda diwajibkan mendaftar dengan informasi yang akurat. Anda bertanggung jawab penuh atas:"}
                             </p>
                             <div className="space-y-3">
-                                {[
-                                    'Menjaga kerahasiaan kata sandi akun Anda.',
-                                    'Segala aktivitas yang terjadi di bawah akun Anda.',
-                                    'Memberikan informasi yang benar dan akurat.'
-                                ].map((item, i) => (
+                                {section2Items.map((item, i) => (
                                     <div key={i} className="flex gap-3 items-start p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/5">
                                         <div className="w-5 h-5 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-[10px] font-bold text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-white/10 shrink-0">
                                             {i + 1}
@@ -77,11 +93,11 @@ export default function TermsPage() {
                         <div className="bg-white dark:bg-[#1C1A29] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none">
                             <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
                                 <AlertCircle className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                                3. Hak Kekayaan Intelektual
+                                {t("terms_page.section3_title") || "3. Hak Kekayaan Intelektual"}
                             </h3>
                             <div className="p-4 bg-indigo-50/50 dark:bg-indigo-500/10 rounded-2xl border border-indigo-100 dark:border-white/5">
                                 <p className="font-['Manrope'] text-[14px] text-gray-700 dark:text-gray-300 leading-relaxed italic">
-                                    "Setiap catatan yang Anda unggah ke Ba-Yu tetap menjadi milik Anda. Namun, dengan mengunggahnya, Anda memberikan lisensi kepada Ba-Yu untuk menampilkan, mendistribusikan, dan mempromosikan konten tersebut di dalam ekosistem platform kami untuk tujuan pendidikan."
+                                    {t("terms_page.section3_quote") || '"Setiap catatan yang Anda unggah ke Ba-Yu tetap menjadi milik Anda. Namun, dengan mengunggahnya, Anda memberikan lisensi kepada Ba-Yu untuk menampilkan, mendistribusikan, dan mempromosikan konten tersebut di dalam ekosistem platform kami untuk tujuan pendidikan."'}
                                 </p>
                             </div>
                         </div>
@@ -89,23 +105,23 @@ export default function TermsPage() {
                         {/* 4. Aturan Penggunaan */}
                         <div className="bg-white dark:bg-[#1C1A29] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none">
                             <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
-                                4. Aturan Penggunaan
+                                {t("terms_page.section4_title") || "4. Aturan Penggunaan"}
                             </h3>
                             <div className="grid gap-4">
                                 <div className="p-5 bg-emerald-50/50 dark:bg-emerald-500/10 rounded-2xl border border-emerald-100 dark:border-emerald-500/20">
-                                    <h4 className="font-['Lexend_Deca'] font-bold text-emerald-900 dark:text-emerald-400 text-[14px] mb-3">Hal yang Diperbolehkan</h4>
+                                    <h4 className="font-['Lexend_Deca'] font-bold text-emerald-900 dark:text-emerald-400 text-[14px] mb-3">{t("terms_page.allowed_title") || "Hal yang Diperbolehkan"}</h4>
                                     <ul className="space-y-2">
-                                        <li className="flex gap-2 items-center"><span className="text-emerald-500 font-bold">✓</span> <span className="font-['Manrope'] text-[13px] text-gray-600 dark:text-gray-300">Berbagi materi pelajaran asli.</span></li>
-                                        <li className="flex gap-2 items-center"><span className="text-emerald-500 font-bold">✓</span> <span className="font-['Manrope'] text-[13px] text-gray-600 dark:text-gray-300">Memberikan komentar positif.</span></li>
-                                        <li className="flex gap-2 items-center"><span className="text-emerald-500 font-bold">✓</span> <span className="font-['Manrope'] text-[13px] text-gray-600 dark:text-gray-300">Mengunduh untuk referensi pribadi.</span></li>
+                                        {allowedItems.map((item, i) => (
+                                            <li key={i} className="flex gap-2 items-center"><span className="text-emerald-500 font-bold">✓</span> <span className="font-['Manrope'] text-[13px] text-gray-600 dark:text-gray-300">{item}</span></li>
+                                        ))}
                                     </ul>
                                 </div>
                                 <div className="p-5 bg-red-50/50 dark:bg-red-500/10 rounded-2xl border border-red-100 dark:border-red-500/20">
-                                    <h4 className="font-['Lexend_Deca'] font-bold text-red-900 dark:text-red-400 text-[14px] mb-3">Hal yang Dilarang</h4>
+                                    <h4 className="font-['Lexend_Deca'] font-bold text-red-900 dark:text-red-400 text-[14px] mb-3">{t("terms_page.prohibited_title") || "Hal yang Dilarang"}</h4>
                                     <ul className="space-y-2">
-                                        <li className="flex gap-2 items-center"><span className="text-red-500 font-bold">✕</span> <span className="font-['Manrope'] text-[13px] text-gray-600 dark:text-gray-300">Mengunggah konten plagiat.</span></li>
-                                        <li className="flex gap-2 items-center"><span className="text-red-500 font-bold">✕</span> <span className="font-['Manrope'] text-[13px] text-gray-600 dark:text-gray-300">Menyebarkan ujaran kebencian.</span></li>
-                                        <li className="flex gap-2 items-center"><span className="text-red-500 font-bold">✕</span> <span className="font-['Manrope'] text-[13px] text-gray-600 dark:text-gray-300">Merusak sistem platform.</span></li>
+                                        {prohibitedItems.map((item, i) => (
+                                            <li key={i} className="flex gap-2 items-center"><span className="text-red-500 font-bold">✕</span> <span className="font-['Manrope'] text-[13px] text-gray-600 dark:text-gray-300">{item}</span></li>
+                                        ))}
                                     </ul>
                                 </div>
                             </div>
@@ -113,12 +129,8 @@ export default function TermsPage() {
                     </div>
                     
                     <div className="text-center pb-8 pt-4">
-                        <p className="font-['Manrope'] text-[13px] text-gray-400 dark:text-gray-500 mb-2">
-                            Ada pertanyaan? Hubungi <a href="mailto:support@ba-yu.id" className="text-indigo-600 dark:text-indigo-400 font-bold">support@ba-yu.id</a>
-                        </p>
-                        <p className="font-['Manrope'] text-[13px] text-gray-400 dark:text-gray-500 mt-6">
-                            &copy; 2026 Ba-Yu Platform.<br/>Semua Hak Dilindungi.
-                        </p>
+                        <p className="font-['Manrope'] text-[13px] text-gray-400 dark:text-gray-500 mb-2" dangerouslySetInnerHTML={{ __html: t("terms_page.contact") || 'Ada pertanyaan? Hubungi <a href="mailto:support@ba-yu.id" className="text-indigo-600 dark:text-indigo-400 font-bold">support@ba-yu.id</a>' }} />
+                        <p className="font-['Manrope'] text-[13px] text-gray-400 dark:text-gray-500 mt-6" dangerouslySetInnerHTML={{ __html: t("terms_page.footer") || '&copy; 2026 Ba-Yu Platform.<br/>Semua Hak Dilindungi.' }} />
                     </div>
                 </div>
             </div>

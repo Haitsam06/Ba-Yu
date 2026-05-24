@@ -83,6 +83,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Reports
     Route::post('/v1/posts/{postId}/report', [ReportController::class, 'store']);
     Route::post('/v1/comments/{commentId}/report', [ReportController::class, 'storeCommentReport']);
+    Route::post('/v1/users/{userId}/report', [ReportController::class, 'storeUserReport']);
     Route::get('/v1/reports', [ReportController::class, 'index']); // Admin only
     Route::put('/v1/reports/{id}', [ReportController::class, 'update']); // Admin only
 

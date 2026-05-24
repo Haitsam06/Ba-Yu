@@ -148,6 +148,63 @@ class ReportController extends Controller
         ], 201);
     }
 
+    public function storeUserReport(Request $request, $userId)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:255',
+            'description' => 'required|string',
+        ]);
+
+        $reportedUser = User::find($userId);
+        if (!$reportedUser) {
+            return response()->json(['message' => 'User tidak ditemukan'], 404);
+        }
+
+        $reporterId = (string) Auth::id();
+
+        $existingReport = Report::where('reporter_id', $reporterId)
+            ->where('reported_user_id', (string) $userId)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($existingReport) {
+            return response()->json(['message' => 'Kamu sudah melaporkan pengguna ini sebelumnya.'], 400);
+        }
+
+        $report = Report::create([
+            'reporter_id' => $reporterId,
+            'reported_user_id' => (string) $userId,
+            'reason' => $request->reason,
+            'description' => $request->description,
+        ]);
+
+        // Notif pelapor
+        Notification::create([
+            'user_id' => $reporterId,
+            'title'   => 'Laporan Pengguna Diterima',
+            'message' => 'Laporan kamu untuk pengguna @' . $reportedUser->username . ' sedang direview oleh admin.',
+            'type'    => 'report',
+            'link'    => '/profile/' . $userId,
+            'is_read' => false,
+        ]);
+
+        $admins = User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            Notification::create([
+                'user_id' => (string) $admin->id,
+                'title'   => 'Laporan Pengguna Baru',
+                'message' => 'Ada pengguna dilaporkan dengan alasan: ' . $request->reason . '. Segera periksa.',
+                'type'    => 'report',
+                'is_read' => false,
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Report pengguna berhasil dikirim',
+            'data' => $report
+        ], 201);
+    }
+
     public function index()
     {
         if (Auth::user()->role !== 'admin') {
@@ -155,7 +212,6 @@ class ReportController extends Controller
         }
 
         $reports = Report::with(['reporter', 'post'])
-            ->where('status', 'pending')
             ->orderBy('created_at', 'desc')->get();
 
         return response()->json([

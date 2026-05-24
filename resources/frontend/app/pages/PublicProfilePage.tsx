@@ -26,7 +26,11 @@ import {
     Loader2,
     Lock,
     Share2,
+    Flag,
+    MessageSquarePlus,
 } from "lucide-react";
+import { formatEducationLevel } from "../utils/formatEducationLevel";
+import { formatProfileRole } from "../utils/formatProfileRole";
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
@@ -39,10 +43,12 @@ import {
 } from "../components/ui/dropdown-menu";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { useTranslation } from '../hooks/useTranslation';
+import { CustomSelect } from "../components/ui/CustomSelect";
 
 export default function PublicProfilePage() {
     const { id } = useParams(); // Mengambil ID dari URL
     const navigate = useNavigate();
+    const { t, language } = useTranslation();
     const [searchParams, setSearchParams] = useSearchParams();
     const tabParam = searchParams.get("tab");
     const [activeTab, setActiveTab] = useState<"catatan" | "aktivitas">(
@@ -54,6 +60,12 @@ export default function PublicProfilePage() {
     const [followersList, setFollowersList] = useState<any[]>([]);
     const [followingList, setFollowingList] = useState<any[]>([]);
     const [isLoadingFollows, setIsLoadingFollows] = useState(false);
+
+    // Report User State
+    const [showReportModal, setShowReportModal] = useState(false);
+    const [reportReason, setReportReason] = useState<string>("");
+    const [reportDescription, setReportDescription] = useState("");
+    const [isSubmittingReport, setIsSubmittingReport] = useState(false);
 
     const { user: currentUser } = useAuth();
 
@@ -80,7 +92,6 @@ export default function PublicProfilePage() {
         }
     }, [showFollowers, showFollowing]);
     const { showToast } = useToast();
-    const { t } = useTranslation();
 
     const [profileUser, setProfileUser] = useState<any>(null);
     const [isLoadingProfile, setIsLoadingProfile] = useState(true);
@@ -178,18 +189,17 @@ export default function PublicProfilePage() {
                     ...note,
                     id: note._id || note.id,
                     title: note.title,
-                    description: String(note.description || note.plain_content || "").replace(/&nbsp;/g, ' '),
-                    createdAt: note.created_at
-                        ? new Date(note.created_at).toLocaleDateString("id-ID", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                        })
-                        : "",
+                    description: note.content 
+                        ? note.content.replace(/<[^>]*>?/gm, "").substring(0, 150) + "..."
+                        : String(note.description || note.plain_content || "").replace(/&nbsp;/g, ' ').substring(0, 150),
+                    createdAt: note.created_at || "",
                     thumbnail: note.thumbnail || null,
-                    mataPelajaran: note.mapel || "Umum",
+                    mataPelajaran: note.mapel || note.mataPelajaran || note.mata_pelajaran || "Umum",
                     jenjang: note.jenjang || "-",
                     kelas: note.kelas || "-",
+                    semester: note.semester || "-",
+                    tags: note.tags || [],
+                    read_time: note.read_time || 1,
                     isValidated: note.is_verified,
                     likes: note.likes_count || 0,
                     is_liked: note.is_liked || false,
@@ -340,10 +350,49 @@ export default function PublicProfilePage() {
             setShowUnfollowDialog(false);
             setUnfollowTarget(null);
         } catch (error) {
-            console.error(error);
-            showToast("Gagal memproses permintaan", "error");
+            console.error("Gagal mengubah status ikuti", error);
         } finally {
             setIsTogglingFollow(false);
+        }
+    };
+
+    const handleReportSubmit = async () => {
+        if (!currentUser) {
+            document.getElementById('login-modal')?.classList.remove('hidden');
+            return;
+        }
+        if (!reportReason || !reportDescription) {
+            return showToast(t('common.fill_all_fields') || "Mohon isi semua field!", "warning");
+        }
+        
+        setIsSubmittingReport(true);
+        try {
+            const token =
+                localStorage.getItem("bayu-token") ||
+                sessionStorage.getItem("bayu-token");
+            
+            await axios.post(
+                `/api/v1/users/${id}/report`,
+                { reason: reportReason, description: reportDescription },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                },
+            );
+            
+            showToast(
+                t('public_profile.report_success') || "Laporan berhasil dikirim, terima kasih telah menjaga lingkungan hijau Ba-Yu!",
+                "success",
+            );
+            setShowReportModal(false);
+            setReportReason("");
+            setReportDescription("");
+        } catch (e: any) {
+            showToast(
+                e.response?.data?.message || t('public_profile.report_failed') || "Gagal mengirim laporan.",
+                "error",
+            );
+        } finally {
+            setIsSubmittingReport(false);
         }
     };
 
@@ -421,12 +470,14 @@ export default function PublicProfilePage() {
             : p === "Umum" ? (t('edit_profile.profesi_umum') || p)
             : p;
         const jenjangLabel = j ? (t(`edu_levels.${j}`) || j) : j;
-        if (s) {
-            return p === "Umum" ? s : (profesiLabel ? `${profesiLabel} di ${s}` : s);
-        }
-        if (p === "Umum") return t('edit_profile.profesi_umum') || "Umum";
-        if (p === "Pelajar" && j && j !== "Umum" && j !== "Kuliah") return `${t('edit_profile.profesi_pelajar') || 'Pelajar'} ${jenjangLabel}`;
-        return profesiLabel || (j ? `${t('edit_profile.profesi_pelajar') || 'Pelajar'} ${jenjangLabel}` : (t('edit_profile.profesi_pelajar') || 'Pelajar'));
+        return formatProfileRole(
+            p, j, s, 
+            profesiLabel, 
+            jenjangLabel, 
+            t('edit_profile.profesi_pelajar') || "Pelajar", 
+            t('edit_profile.profesi_umum') || "Umum", 
+            language
+        );
     })();
 
 
@@ -478,17 +529,23 @@ export default function PublicProfilePage() {
 
                              <DropdownMenu>
                                 <DropdownMenuTrigger className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors outline-none">
-                                    <MoreHorizontal className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                                    <MoreHorizontal className="w-5 h-5 text-gray-800 dark:text-gray-200" />
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-48 bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-xl shadow-lg font-['Manrope'] p-2">
                                     <DropdownMenuItem onClick={() => {
                                         navigator.clipboard.writeText(window.location.href);
-                                        showToast("Link disalin", "success");
+                                        showToast(t('common.link_copied') || "Link disalin", "success");
                                     }} className="text-[13px] font-bold text-gray-700 dark:text-gray-300 p-2 cursor-pointer focus:bg-gray-50 dark:focus:bg-white/5 rounded-lg">
-                                        <Share2 size={16} className="mr-2.5 text-gray-400" /> {t('public_profile.share_profile')}
+                                        <Share2 size={16} className="mr-2.5 text-gray-500 dark:text-gray-400" /> {t('public_profile.share_profile')}
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => document.getElementById('report-user-modal')?.classList.remove('hidden')} className="text-[13px] font-bold text-red-600 dark:text-red-400 p-2 cursor-pointer focus:bg-red-50 dark:focus:bg-red-500/10 rounded-lg">
-                                        <Shield size={16} className="mr-2.5" /> {t('public_profile.report_user')}
+                                    <DropdownMenuItem onClick={() => {
+                                        if (!currentUser) {
+                                            document.getElementById('login-modal')?.classList.remove('hidden');
+                                            return;
+                                        }
+                                        setShowReportModal(true);
+                                    }} className="text-[13px] font-bold text-red-600 dark:text-red-400 p-2 cursor-pointer focus:bg-red-50 dark:focus:bg-red-500/10 rounded-lg">
+                                        <Flag size={16} className="mr-2.5 text-red-600 dark:text-red-400" /> {t('public_profile.report_user')}
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                              </DropdownMenu>
@@ -506,17 +563,17 @@ export default function PublicProfilePage() {
                                 <div className="flex items-center gap-2 flex-wrap">
                                     {profileUser?.role === "pakar" && (
                                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[12px] border border-emerald-100 dark:border-emerald-500/20">
-                                            <ShieldCheck className="w-3.5 h-3.5" /> Pakar
+                                            <ShieldCheck className="w-3.5 h-3.5" /> {t('profile.expert_badge') || 'Pakar'}
                                         </span>
                                     )}
                                     {profileUser?.role === "admin" && (
                                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 font-bold text-[12px] border border-purple-100 dark:border-purple-500/20">
-                                            <Shield className="w-3.5 h-3.5" /> Admin
+                                            <Shield className="w-3.5 h-3.5" /> {t('profile.admin_badge') || 'Admin'}
                                         </span>
                                     )}
                                     {(profileUser?.follows_me || searchParams.get('hint') === 'follower') && (
                                         <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 text-[10px] font-black uppercase tracking-wider">
-                                            Mengikuti Anda
+                                            {t('profile.follows_you') || 'Mengikuti Anda'}
                                         </span>
                                     )}
                                 </div>
@@ -526,15 +583,15 @@ export default function PublicProfilePage() {
                             )}
                         </div>
 
-                        <div className="flex flex-col gap-2 mt-2 font-['Manrope'] text-[14px] text-gray-500">
+                        <div className="flex flex-row flex-wrap items-center gap-3 sm:gap-4 mt-2 font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400">
                             {profileUser?.role !== "pakar" && profileUser?.role !== "admin" && (
-                                <span className="flex items-center gap-1.5">
+                                <span className="flex items-center gap-1.5 mt-0.5">
                                     <MapPin className="w-4 h-4" /> {jenjangSekolah}
                                 </span>
                             )}
                             
-                            <span className="flex items-center gap-1.5 mt-0.5">
-                                <Calendar className="w-4 h-4" /> Bergabung 2023
+                            <span className="flex items-center gap-1.5 mt-0.5 text-gray-500 dark:text-gray-400">
+                                <Calendar className="w-4 h-4" /> {t('public_profile.joined')} {profileUser?.created_at ? new Date(profileUser.created_at).toLocaleDateString(language === 'id' ? 'id-ID' : language, { month: "long", year: "numeric" }) : (t('public_profile.recently') || 'Baru saja')}
                             </span>
                         </div>
 
@@ -546,11 +603,8 @@ export default function PublicProfilePage() {
 
                         {/* Stats - Horizontal Twitter Style */}
                         <div className="flex items-center gap-5 mt-4 text-[14px] font-['Manrope']">
-                            <button 
-                                onClick={() => setShowFollowing(true)}
-                                className="hover:underline outline-none text-gray-500 transition-colors"
-                            >
-                                <strong className="text-gray-900 dark:text-gray-100 font-bold">{profileUser?.following_count ?? profileUser?.following ?? 0}</strong> Mengikuti
+                            <button onClick={() => setShowFollowing(true)} className="flex items-center gap-1.5 hover:opacity-80 transition-opacity">
+                                <strong className="text-gray-900 dark:text-gray-100 font-bold">{profileUser?.following_count ?? profileUser?.following ?? 0}</strong> {t('public_profile.following')}
                             </button>
                             
                             <button 
@@ -572,7 +626,7 @@ export default function PublicProfilePage() {
                         <div className="flex gap-8 overflow-x-auto scrollbar-hide px-1">
                             {[
                                 { id: "catatan", label: t('public_profile.tab_notes'), count: userNotes.length },
-                                { id: "aktivitas", label: t('public_profile.tab_about'), count: activities.length },
+                                { id: "aktivitas", label: t('public_profile.tab_activity'), count: activities.length },
                             ].map((tab) => (
                                 <button
                                     key={tab.id}
@@ -627,7 +681,7 @@ export default function PublicProfilePage() {
                             ) : userNotes.length > 0 ? (
                                 userNotes.map((note) => (
                                     <NoteCard
-                                        key={note.id || note._id}
+                                        key={note.id + '_' + Math.random().toString(36).substr(2, 5)}
                                         note={note}
                                         onLike={handleLikePost}
                                     />
@@ -674,67 +728,73 @@ export default function PublicProfilePage() {
                                         <article
                                             key={activity.id}
                                             onClick={() => navigate(`/note/${activity.post_id}#comment-${activity.id}`)}
-                                            className="group flex flex-col-reverse sm:flex-row items-center sm:items-start justify-between gap-6 py-6 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors bg-transparent outline-none cursor-pointer"
+                                            className="group relative flex flex-col sm:flex-row items-start gap-5 p-5 bg-white dark:bg-[#1C1A29] rounded-[24px] border border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10 shadow-[0_8px_30px_-10px_rgba(0,0,0,0.06)] dark:shadow-none hover:shadow-[0_12px_40px_-10px_rgba(0,0,0,0.1)] transition-all duration-300 cursor-pointer overflow-hidden"
                                         >
-                                            <div className="flex-1 min-w-0 flex flex-col w-full h-full text-left">
-                                                <div className="flex items-center gap-1.5 mb-2 flex-wrap text-[13px] font-['Manrope'] text-gray-950 dark:text-gray-100 font-bold">
-                                                     <div className="flex items-center gap-1.5">
-                                                         <AvatarImage src={profileUser?.avatar} alt={profileUser?.name} size={20} className="ring-2 ring-transparent" />
-                                                         <span className="font-black text-gray-950 dark:text-gray-100 tracking-tight">{profileUser?.name}</span>
-                                                     </div>
-                                                     <span className="text-gray-700 dark:text-gray-400 px-0.5">{activity.parent_comment_id ? "membalas komentar di" : "berkomentar di"}</span>
-                                                     <span className="font-black text-gray-950 dark:text-gray-100 tracking-tight line-clamp-1">{activity.post?.title || "Catatan"}</span>
+                                            <div className="w-full sm:w-[140px] h-[160px] sm:h-[120px] shrink-0 rounded-[20px] overflow-hidden bg-gray-50 dark:bg-white/5 relative border border-gray-100/50 dark:border-white/5 shadow-sm">
+                                                {activity.post?.thumbnail ? (
+                                                    <img src={activity.post.thumbnail} alt={activity.post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                                                ) : (
+                                                    <DefaultThumbnail 
+                                                        className="w-full h-full group-hover:scale-105 transition-transform duration-700 ease-out" 
+                                                        subject={activity.post?.mapel}
+                                                        title={activity.post?.title}
+                                                    />
+                                                )}
+                                                <div className="absolute top-2 left-2 bg-white/90 dark:bg-[#13111C]/90 backdrop-blur-md text-gray-800 dark:text-gray-200 text-[10px] font-['Lexend_Deca'] font-bold px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1.5 border border-white/20">
+                                                    <MessageCircle className="w-3 h-3 text-indigo-500" /> {t('public_profile.discussion_label') || 'DISKUSI'}
+                                                </div>
+                                            </div>
+
+                                            <div className="flex-1 min-w-0 flex flex-col h-full text-left py-1 w-full">
+                                                <div className="flex items-center gap-1.5 mb-2.5 text-[12.5px] font-['Manrope'] text-slate-500 dark:text-slate-400 font-medium line-clamp-1">
+                                                    <span>{activity.parent_comment_id ? (t('public_profile.activity_reply') || 'Membalas komentar di') : (t('public_profile.activity_discuss') || 'Berkomentar di')}</span>
+                                                    <span className="font-['Lexend_Deca'] font-bold text-slate-900 dark:text-gray-100">{activity.post?.title || (t('public_profile.activity_note') || 'Catatan')}</span>
                                                 </div>
 
-                                                <div className="block mb-3 font-['Lexend_Deca']">
-                                                    <h2 className="text-[17px] md:text-[19px] font-extrabold text-gray-950 dark:text-gray-100 leading-[1.5] tracking-tight group-hover:text-primary transition-colors line-clamp-3 italic">
+                                                <div className="mb-4 bg-slate-50/80 dark:bg-white/5 rounded-2xl p-4 border border-slate-100 dark:border-white/5 relative">
+                                                    <div className="absolute -left-[5px] top-4 w-3 h-3 bg-slate-50/80 dark:bg-[#1E1C2E] border-t border-l border-slate-100 dark:border-white/5 rotate-[-45deg] z-0 hidden sm:block"></div>
+                                                    <h2 className="relative z-10 text-[14.5px] font-medium text-slate-700 dark:text-gray-300 leading-relaxed font-['Manrope'] line-clamp-3 italic">
                                                         "{activity.content}"
                                                     </h2>
                                                 </div>
 
-                                                <div className="flex items-center justify-between mt-auto">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
-                                                            <Clock className="w-[14px] h-[14px] text-gray-500 dark:text-gray-400" strokeWidth={2} />
-                                                            <span className="text-[13px] font-['Manrope'] font-semibold">
-                                                                {new Date(activity.created_at).toLocaleDateString("id-ID", { month: "short", day: "numeric", year: "numeric" })}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex items-center gap-3 ml-2">
-                                                            <button className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:text-red-500 transition-colors">
-                                                                <Heart className="w-[14px] h-[14px]" />
+                                                    <div className="flex items-center justify-between mt-auto">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="flex items-center gap-1.5 text-gray-500">
+                                                                <Clock className="w-3.5 h-3.5" />
+                                                                <span className="text-[12px] font-['Manrope'] font-bold">
+                                                                    {activity.created_at ? new Date(activity.created_at).toLocaleDateString(language === 'id' ? 'id-ID' : language, { month: "short", day: "numeric", year: "numeric" }) : (t('public_profile.recently') || 'Baru saja')}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5 text-gray-500 group-hover:text-pink-500 transition-colors">
+                                                                <Heart className="w-3.5 h-3.5" />
                                                                 <span className="text-[12px] font-bold">{activity.likes_count || 0}</span>
-                                                            </button>
+                                                            </div>
                                                         </div>
+                                                        
+                                                        <button 
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                navigate(`/note/${activity.post_id}#comment-${activity.id}`);
+                                                            }}
+                                                            className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 transition-colors"
+                                                        >
+                                                            <MessageSquarePlus className="w-3.5 h-3.5" />
+                                                            <span className="text-[11px] font-extrabold">{t('public_profile.btn_reply') || 'Balas'}</span>
+                                                        </button>
                                                     </div>
                                                 </div>
-                                            </div>
-
-                                            <div className="w-full sm:w-[160px] md:w-[200px] h-[180px] sm:h-[130px] md:h-[150px] shrink-0 rounded-2xl overflow-hidden bg-gray-100 dark:bg-[#1C1A29] relative shadow-sm dark:shadow-none border border-gray-100/50 dark:border-white/5">
-                                                {activity.post?.thumbnail ? (
-                                                    <img src={activity.post.thumbnail} alt={activity.post.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
-                                                ) : (
-                                                    <div className="w-full h-full bg-gray-100 dark:bg-white/5 flex items-center justify-center">
-                                                        <FileText className="w-8 h-8 text-gray-300 dark:text-gray-600" />
-                                                    </div>
-                                                )}
-                                                <div className="absolute top-2 right-2 bg-white/90 dark:bg-black/50 backdrop-blur-sm text-gray-800 dark:text-gray-100 text-[10px] font-['Lexend_Deca'] font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1.5">
-                                                    <MessageCircle className="w-3 h-3" /> DISKUSI
-                                                </div>
-                                            </div>
                                         </article>
                                     ))}
                                 </div>
                             ) : (
-                                <div className="py-20 text-center flex flex-col items-center justify-center">
-                                    <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
+                                <div className="py-20 text-center">
+                                    <div className="w-20 h-20 mx-auto bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
                                         <MessageCircle className="w-8 h-8 text-gray-400" />
                                     </div>
-                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[18px] mb-2">
-                                        Belum Ada Aktivitas
-                                    </h3>
-                                    <p className="font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400 mb-6 max-w-sm mx-auto">
-                                        {profileUser?.name} belum memberikan komentar pada catatan apa pun.
+                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-white text-lg mb-2">{t('public_profile.no_history') || 'Belum Ada Aktivitas'}</h3>
+                                    <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+                                        {profileUser?.name} {t('public_profile.no_history_sub') || "belum memberikan komentar pada catatan apa pun."}
                                     </p>
                                 </div>
                             )}
@@ -749,7 +809,7 @@ export default function PublicProfilePage() {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/20 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowFollowers(false)}>
                     <div className="bg-white dark:bg-[#1C1A29] w-full max-w-sm rounded-2xl shadow-xl dark:shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/5">
-                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[16px]">Pengikut {profileUser?.name}</h3>
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{t('public_profile.followers_modal') || 'Pengikut'} {profileUser?.name}</h2>
                             <button onClick={() => setShowFollowers(false)} className="text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
@@ -789,7 +849,7 @@ export default function PublicProfilePage() {
                                                         }
                                                     }}
                                                 >
-                                                    {f.is_followed_by_me ? 'Mengikuti' : f.is_follow_pending ? 'Diminta' : 'Ikuti'}
+                                                    {f.is_followed_by_me ? (t('public_profile.following') || 'Mengikuti') : f.is_follow_pending ? (t('public_profile.requested') || 'Diminta') : (t('public_profile.follow') || 'Ikuti')}
                                                 </button>
                                             )}
                                         </div>
@@ -811,7 +871,7 @@ export default function PublicProfilePage() {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/20 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowFollowing(false)}>
                     <div className="bg-white dark:bg-[#1C1A29] w-full max-w-sm rounded-2xl shadow-xl dark:shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/5">
-                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[16px]">{profileUser?.name} Mengikuti</h3>
+                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[16px]">{profileUser?.name} {t('public_profile.following_modal') || 'Mengikuti'}</h3>
                             <button onClick={() => setShowFollowing(false)} className="text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
@@ -851,7 +911,7 @@ export default function PublicProfilePage() {
                                                         }
                                                     }}
                                                 >
-                                                    {f.is_followed_by_me ? 'Mengikuti' : f.is_follow_pending ? 'Diminta' : 'Ikuti'}
+                                                    {f.is_followed_by_me ? (t('public_profile.following') || 'Mengikuti') : f.is_follow_pending ? (t('public_profile.requested') || 'Diminta') : (t('public_profile.follow') || 'Ikuti')}
                                                 </button>
                                             )}
                                         </div>
@@ -883,6 +943,86 @@ export default function PublicProfilePage() {
                 cancelText="Tidak"
                 variant="danger"
             />
+
+            {/* Modal Report */}
+            {showReportModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-300">
+                    <div className="bg-white dark:bg-[#1C1A29] rounded-[32px] w-full max-w-md max-h-[90vh] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.2)] overflow-hidden border border-white dark:border-white/5 transform animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 flex flex-col">
+                        {/* Header with Icon */}
+                        <div className="bg-rose-50 dark:bg-rose-500/10 p-8 pb-5 text-center border-b border-rose-100/50 dark:border-white/5 shrink-0">
+                            <div className="w-16 h-16 bg-white dark:bg-[#252336] text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm dark:shadow-none border border-rose-200/30 dark:border-rose-500/20">
+                                <Flag className="w-8 h-8" strokeWidth={2.5} />
+                            </div>
+                            <h3 className="font-['Lexend_Deca'] font-extrabold text-2xl text-gray-900 dark:text-gray-100 mb-1">
+                                {t('public_profile.report_modal_title') || "Laporkan Pengguna"}
+                            </h3>
+                            <p className="font-['Manrope'] text-[14px] text-gray-600 dark:text-gray-400 font-bold px-6">
+                                {t('public_profile.report_modal_desc') || "Bantu kami menjaga ekosistem Ba-Yu tetap edukatif, aman, dan nyaman."}
+                            </p>
+                        </div>
+
+                        <div className="p-8 pt-7 overflow-y-auto custom-scrollbar flex-1">
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block font-['Manrope'] text-[12px] font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-[0.1em] mb-2 ml-1">
+                                        {t('public_profile.report_reason_label') || "Alasan Utama"}
+                                    </label>
+                                    <div className="relative group">
+                                        <CustomSelect
+                                            value={reportReason}
+                                            onChange={(val) => setReportReason(val as string)}
+                                            options={[
+                                                { value: "", label: t('public_profile.report_reason_placeholder') || "Pilih alasan pelaporan..." },
+                                                { value: "Spam", label: t('public_profile.report_reason_spam') || "Spam pemasaran / Iklan mengganggu" },
+                                                { value: "Informasi Palsu", label: t('public_profile.report_reason_false_info') || "Informasi keliru / Misinformasi" },
+                                                { value: "Kata Kasar", label: t('public_profile.report_reason_harsh_words') || "Ujaran kebencian / Kata-kata kasar" },
+                                                { value: "Pelecehan", label: t('public_profile.report_reason_harassment') || "Pelecehan / Intimidasi terhadap user" },
+                                                { value: "Hak Cipta", label: t('public_profile.report_reason_copyright') || "Pelanggaran Hak Cipta / Plagiasi" },
+                                                { value: "Lainnya", label: t('public_profile.report_reason_other') || "Alasan lainnya..." },
+                                            ]}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block font-['Manrope'] text-[12px] font-extrabold text-gray-500 uppercase tracking-[0.1em] mb-2 ml-1">
+                                        {t('public_profile.report_detail_label') || "Detail Tambahan"}
+                                    </label>
+                                    <textarea
+                                        value={reportDescription}
+                                        onChange={(e) => setReportDescription(e.target.value)}
+                                        placeholder={t('public_profile.report_detail_placeholder') || "Jelaskan secara singkat mengapa Anda melaporkan pengguna ini..."}
+                                        className="w-full px-5 py-4 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[14.5px] focus:outline-none focus:ring-4 focus:ring-rose-500/5 focus:border-rose-400 focus:bg-white dark:focus:bg-white/10 transition-all resize-none h-32 text-gray-800 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 font-bold hover:border-gray-300 dark:hover:border-white/20"
+                                    ></textarea>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 mt-10 shrink-0">
+                                <button
+                                    onClick={() => setShowReportModal(false)}
+                                    className="px-6 py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-all active:scale-95"
+                                >
+                                    {t('public_profile.cancel') || "Batalkan"}
+                                </button>
+                                <button
+                                    onClick={handleReportSubmit}
+                                    disabled={isSubmittingReport || !reportReason}
+                                    className="px-6 py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] bg-rose-500 text-white hover:bg-rose-600 transition-all shadow-lg shadow-rose-200 dark:shadow-none disabled:opacity-50 disabled:shadow-none hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2"
+                                >
+                                    {isSubmittingReport ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                            {t('public_profile.submitting') || "Mengirim..."}
+                                        </>
+                                    ) : (
+                                        t('public_profile.submit_report') || "Laporkan"
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </MobileLayout>
     );
 }

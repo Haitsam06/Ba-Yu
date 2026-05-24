@@ -1,9 +1,11 @@
 import { ArrowLeft, Server, Activity, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { MobileLayout } from '../components/MobileLayout';
+import { useTranslation } from '../hooks/useTranslation';
 
 export default function StatusPage() {
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     return (
         <MobileLayout showBottomNav={false}>
@@ -17,7 +19,7 @@ export default function StatusPage() {
                         <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                     </button>
                     <h1 className="text-gray-900 dark:text-gray-100 font-['Lexend_Deca'] font-bold text-lg">
-                        Status Sistem
+                        {t("status_page.title") || "Status Sistem"}
                     </h1>
                     <div className="w-10"></div>
                 </div>
@@ -29,19 +31,19 @@ export default function StatusPage() {
                             <CheckCircle2 className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
                         </div>
                         <h2 className="font-['Lexend_Deca'] font-extrabold text-2xl text-gray-900 dark:text-gray-100 mb-3">
-                            Semua Sistem Normal
+                            {t("status_page.hero_title") || "Semua Sistem Normal"}
                         </h2>
                         <p className="font-['Manrope'] text-[15px] leading-relaxed text-gray-500 dark:text-gray-400">
-                            Platform beroperasi dengan baik.
+                            {t("status_page.hero_desc") || "Platform beroperasi dengan baik."}
                         </p>
                     </div>
 
                     <div className="space-y-4 mb-10">
                         {[
-                            { name: "API Services", status: "Operational", icon: Activity },
-                            { name: "Database", status: "Operational", icon: Server },
-                            { name: "File Storage", status: "Operational", icon: Server },
-                            { name: "CDN & Assets", status: "Operational", icon: Activity }
+                            { name: "API Services", status: t("status_page.status_operational") || "Operational", icon: Activity },
+                            { name: "Database", status: t("status_page.status_operational") || "Operational", icon: Server },
+                            { name: "File Storage", status: t("status_page.status_operational") || "Operational", icon: Server },
+                            { name: "CDN & Assets", status: t("status_page.status_operational") || "Operational", icon: Activity }
                         ].map((service, i) => (
                             <div key={i} className="flex items-center justify-between p-5 rounded-3xl bg-white dark:bg-[#1C1A29] border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none">
                                 <div className="flex items-center gap-4">
@@ -58,9 +60,7 @@ export default function StatusPage() {
                     </div>
                     
                     <div className="text-center pb-8 pt-4">
-                        <p className="font-['Manrope'] text-[13px] text-gray-400 dark:text-gray-500">
-                            &copy; 2026 Ba-Yu Platform.<br/>Semua Hak Dilindungi.
-                        </p>
+                        <p className="font-['Manrope'] text-[13px] text-gray-400 dark:text-gray-500" dangerouslySetInnerHTML={{ __html: t("status_page.footer") || '&copy; 2026 Ba-Yu Platform.<br/>Semua Hak Dilindungi.' }} />
                     </div>
                 </div>
             </div>

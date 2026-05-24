@@ -6,6 +6,7 @@ import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
 import { AvatarImage } from "../components/ui/DefaultImages";
+import { useTranslation } from "../hooks/useTranslation";
 
 interface FollowRequest {
     _id: string;
@@ -23,24 +24,25 @@ interface FollowRequest {
     };
 }
 
-function timeAgo(dateStr: string): string {
-    const now = new Date();
-    const date = new Date(dateStr);
-    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
-    if (diff < 60) return "Baru saja";
-    if (diff < 3600) return `${Math.floor(diff / 60)} menit lalu`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)} jam lalu`;
-    if (diff < 604800) return `${Math.floor(diff / 86400)} hari lalu`;
-    return date.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
-}
-
 export default function FollowRequestsPage() {
     const navigate = useNavigate();
     const { user } = useAuth();
     const { showToast } = useToast();
+    const { t } = useTranslation();
     const [requests, setRequests] = useState<FollowRequest[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
+
+    function timeAgo(dateStr: string): string {
+        const now = new Date();
+        const date = new Date(dateStr);
+        const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+        if (diff < 60) return t("follow_requests.just_now") || "Baru saja";
+        if (diff < 3600) return (t("follow_requests.minutes_ago") || "{{minutes}} menit lalu").replace("{{minutes}}", Math.floor(diff / 60).toString());
+        if (diff < 86400) return (t("follow_requests.hours_ago") || "{{hours}} jam lalu").replace("{{hours}}", Math.floor(diff / 3600).toString());
+        if (diff < 604800) return (t("follow_requests.days_ago") || "{{days}} hari lalu").replace("{{days}}", Math.floor(diff / 86400).toString());
+        return date.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+    }
 
     useEffect(() => {
         fetchRequests();
@@ -56,7 +58,7 @@ export default function FollowRequestsPage() {
             setRequests(res.data);
         } catch (error) {
             console.error("Gagal mengambil permintaan pertemanan", error);
-            showToast("Gagal memuat permintaan mengikuti", "error");
+            showToast(t("follow_requests.fetch_failed") || "Gagal memuat permintaan mengikuti", "error");
         } finally {
             setIsLoading(false);
         }
@@ -71,10 +73,10 @@ export default function FollowRequestsPage() {
             });
             
             setRequests(prev => prev.filter(r => (r.id || r._id) !== requestId));
-            showToast(action === 'accept' ? "Permintaan diterima" : "Permintaan ditolak", "success");
+            showToast(action === 'accept' ? (t("follow_requests.accept_success") || "Permintaan diterima") : (t("follow_requests.decline_success") || "Permintaan ditolak"), "success");
         } catch (error) {
             console.error("Gagal merespons permintaan", error);
-            showToast("Gagal memproses permintaan", "error");
+            showToast(t("follow_requests.process_failed") || "Gagal memproses permintaan", "error");
         } finally {
             setProcessingId(null);
         }
@@ -94,11 +96,11 @@ export default function FollowRequestsPage() {
                         </button>
                         <div className="flex-1">
                             <h1 className="text-slate-900 dark:text-gray-100 font-['Lexend_Deca'] font-black text-xl tracking-tight">
-                                Permintaan Mengikuti
+                                {t("follow_requests.title") || "Permintaan Mengikuti"}
                             </h1>
                             {!isLoading && requests.length > 0 && (
                                 <p className="text-slate-500 dark:text-gray-500 font-['Manrope'] text-[12px] font-bold mt-0.5">
-                                    {requests.length} permintaan menunggu
+                                    {(t("follow_requests.pending_requests") || "{{count}} permintaan menunggu").replace("{{count}}", requests.length.toString())}
                                 </p>
                             )}
                         </div>
@@ -158,7 +160,7 @@ export default function FollowRequestsPage() {
                                                     to={`/profile/${request.follower_user?.username || request.follower_id}`}
                                                     className="font-['Lexend_Deca'] font-bold text-[16px] text-slate-900 dark:text-gray-100 leading-tight hover:text-primary transition-colors block truncate"
                                                 >
-                                                    {request.follower_user?.name || "Anonim"}
+                                                    {request.follower_user?.name || (t("follow_requests.anonymous") || "Anonim")}
                                                 </Link>
                                                 <p className="font-['Manrope'] text-[13px] text-slate-400 dark:text-gray-500 font-semibold truncate">
                                                     @{request.follower_user?.username || "user"}
@@ -180,7 +182,7 @@ export default function FollowRequestsPage() {
                                                 className="flex-1 h-11 flex items-center justify-center gap-2 bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-gray-400 rounded-2xl font-['Manrope'] font-bold text-[13px] border border-slate-200/60 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/10 hover:border-slate-300 dark:hover:border-white/15 transition-all active:scale-[0.97] disabled:opacity-40"
                                             >
                                                 <X className="w-4 h-4" strokeWidth={2.5} />
-                                                Tolak
+                                                {t("follow_requests.decline") || "Tolak"}
                                             </button>
                                             <button
                                                 onClick={() => handleResponse(reqId, 'accept')}
@@ -192,7 +194,7 @@ export default function FollowRequestsPage() {
                                                 ) : (
                                                     <>
                                                         <Check className="w-4 h-4" strokeWidth={3} />
-                                                        Terima
+                                                        {t("follow_requests.accept") || "Terima"}
                                                     </>
                                                 )}
                                             </button>
@@ -212,10 +214,10 @@ export default function FollowRequestsPage() {
                                 </div>
                             </div>
                             <h3 className="font-['Lexend_Deca'] font-black text-slate-900 dark:text-gray-100 text-lg mb-2">
-                                Semua Beres!
+                                {t("follow_requests.all_caught_up") || "Semua Beres!"}
                             </h3>
                             <p className="text-slate-400 dark:text-gray-500 font-['Manrope'] font-semibold text-[14px] max-w-xs leading-relaxed">
-                                Tidak ada permintaan mengikuti baru. Saat seseorang meminta untuk mengikutimu, kamu bisa kelola di sini.
+                                {t("follow_requests.no_requests") || "Tidak ada permintaan mengikuti baru. Saat seseorang meminta untuk mengikutimu, kamu bisa kelola di sini."}
                             </p>
                         </div>
                     )}

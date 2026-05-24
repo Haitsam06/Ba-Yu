@@ -28,6 +28,8 @@ import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { Link, useSearchParams, useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import { useBookmarks } from "../contexts/BookmarkContext";
+import { formatEducationLevel } from "../utils/formatEducationLevel";
+import { formatProfileRole } from "../utils/formatProfileRole";
 import { ApplyPakarModal } from "../components/ApplyPakarModal";
 import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
@@ -525,7 +527,7 @@ export default function ProfilePage() {
                                 )}
                                 {currentUser.role === "admin" && (
                                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 font-bold text-[12px] border border-purple-100 dark:border-purple-500/20">
-                                        <Shield className="w-3.5 h-3.5" /> Admin
+                                        <Shield className="w-3.5 h-3.5" /> {t('profile.admin_badge') || 'Admin'}
                                     </span>
                                 )}
                             </div>
@@ -536,27 +538,30 @@ export default function ProfilePage() {
                             )}
                         </div>
 
-                        <div className="flex flex-col gap-2 mt-3 font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400">
+                        <div className="flex flex-row flex-wrap items-center gap-3 sm:gap-4 mt-3 font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400">
                             {currentUser.role !== "pakar" && currentUser.role !== "admin" && (
                                 <span className="flex items-center gap-1.5">
                                     <MapPin className="w-4 h-4" /> 
-                                    {(() => {
-                                        const p = currentUser.profesi;
-                                        const j = currentUser.jenjang;
-                                        const s = currentUser.school;
-                                        const profesiLabel = p === "Pelajar" ? (t('edit_profile.profesi_pelajar') || p)
-                                            : p === "Mahasiswa" ? (t('edit_profile.profesi_mahasiswa') || p)
-                                            : p === "Pengajar" ? (t('edit_profile.profesi_pengajar') || p)
-                                            : p === "Umum" ? (t('edit_profile.profesi_umum') || p)
-                                            : p;
-                                        const jenjangLabel = j ? (t(`edu_levels.${j}`) || j) : j;
-                                        if (s) {
-                                            return p === "Umum" ? s : (profesiLabel ? `${profesiLabel} di ${s}` : s);
-                                        }
-                                        if (p === "Umum") return t('edit_profile.profesi_umum') || "Umum";
-                                        if (p === "Pelajar" && j && j !== "Umum" && j !== "Kuliah") return `${t('edit_profile.profesi_pelajar') || 'Pelajar'} ${jenjangLabel}`;
-                                        return profesiLabel || (j ? `${t('edit_profile.profesi_pelajar') || 'Pelajar'} ${jenjangLabel}` : (t('edit_profile.profesi_pelajar') || 'Pelajar'));
-                                    })()}
+                                {(() => {
+                                    const p = currentUser.profesi;
+                                    const j = currentUser.jenjang;
+                                    const s = currentUser.school;
+                                    const profesiLabel = p === "Pelajar" ? (t('edit_profile.profesi_pelajar') || p)
+                                        : p === "Mahasiswa" ? (t('edit_profile.profesi_mahasiswa') || p)
+                                        : p === "Pengajar" ? (t('edit_profile.profesi_pengajar') || p)
+                                        : p === "Umum" ? (t('edit_profile.profesi_umum') || p)
+                                        : p;
+                                    const jenjangLabel = j ? (t(`edu_levels.${j}`) || j) : j;
+                                    
+                                    return formatProfileRole(
+                                        p, j, s, 
+                                        profesiLabel, 
+                                        jenjangLabel, 
+                                        t('edit_profile.profesi_pelajar') || "Pelajar", 
+                                        t('edit_profile.profesi_umum') || "Umum", 
+                                        language
+                                    );
+                                })()}
                                 </span>
                             )}
                             

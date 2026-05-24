@@ -14,6 +14,7 @@ import {
     Flag,
     BarChart3,
     ShieldCheck,
+    Shield,
     DownloadCloud,
     Server,
     Activity,
@@ -26,6 +27,7 @@ import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
 import { AvatarImage } from "../components/ui/DefaultImages";
 import { ExportDataModal } from "../components/ExportDataModal";
+import { CertificateViewerModal } from "../components/ui/CertificateViewerModal";
 import { CustomSelect } from "../components/ui/CustomSelect";
 import { PromptDialog } from "../components/ui/PromptDialog";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
@@ -48,7 +50,10 @@ export default function AdminDashboard() {
     const [totalNotes, setTotalNotes] = useState<number>(0);
 
     const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+    const [viewCert, setViewCert] = useState<any | null>(null);
     const [statusFilter, setStatusFilter] = useState<"semua" | "terverifikasi" | "belum">("semua");
+    const [certSubTab, setCertSubTab] = useState<"pending" | "history">("pending");
+    const [reportSubTab, setReportSubTab] = useState<"pending" | "history">("pending");
     const [sortBy, setSortBy] = useState<"terbaru" | "terlama">("terbaru");
     const [visibleItemsCount, setVisibleItemsCount] = useState(15);
     const [showFilterPopup, setShowFilterPopup] = useState(false);
@@ -78,6 +83,35 @@ export default function AdminDashboard() {
         description: "",
         onConfirm: () => {},
     });
+
+    const translateReason = (reason: string) => {
+        switch (reason) {
+            case "Spam":
+            case "Spam / Promosi": 
+            case "Spam pemasaran / Iklan mengganggu": return t("note_detail.report_reason_spam") || reason;
+            
+            case "Informasi Palsu":
+            case "Informasi keliru / Misinformasi": return t("public_profile.report_reason_false_info") || reason;
+            
+            case "Konten Tidak Pantas": return t("note_detail.report_reason_inappropriate") || reason;
+            
+            case "Kata Kasar":
+            case "Ujaran kebencian / Kata-kata kasar": return t("public_profile.report_reason_harsh_words") || reason;
+            
+            case "Pelecehan":
+            case "Pelecehan / Ujaran Kebencian": 
+            case "Pelecehan / Intimidasi terhadap user": return t("note_detail.report_reason_harassment") || reason;
+            
+            case "Hak Cipta":
+            case "Pelanggaran Hak Cipta": 
+            case "Pelanggaran Hak Cipta / Plagiasi": return t("note_detail.report_reason_copyright") || reason;
+            
+            case "Lainnya": 
+            case "Alasan lainnya...": return t("note_detail.report_reason_other") || reason;
+            
+            default: return reason;
+        }
+    };
 
     useEffect(() => {
         if (location.state?.tab) {
@@ -173,14 +207,14 @@ export default function AdminDashboard() {
         },
         {
             label: t('admin_dashboard.pending_reports'),
-            value: reportsList.length,
+            value: reportsList.filter((r) => r.status === 'pending').length,
             color: "text-orange-500",
             icon: AlertCircle,
             increment: "+2%",
         },
         {
             label: t('admin_dashboard.expert_certs'),
-            value: pendingCerts.length,
+            value: pendingCerts.filter((c) => c.status === 'pending').length,
             color: "text-fuchsia-600",
             icon: ShieldCheck,
             increment: "Baru",
@@ -190,15 +224,15 @@ export default function AdminDashboard() {
     const handleDeleteNote = (noteId: string) => {
         setPromptConfig({
             isOpen: true,
-            title: "Hapus Catatan Permanen",
-            placeholder: "Ketik 'HAPUS' untuk konfirmasi...",
+            title: t('admin_dashboard.prompt_delete_note'),
+            placeholder: t('admin_dashboard.prompt_delete_placeholder'),
             defaultValue: "",
             onConfirm: (val) => {
-                if (val.toUpperCase() === "HAPUS") {
+                if (val.toUpperCase() === "HAPUS" || val.toUpperCase() === "DELETE") {
                     // Logic hapus sebenernya manggil API, tapi di sini masih toast doang dari sebelumnya
-                    showToast("Catatan berhasil dihapus!", "success");
+                    showToast(t('admin_dashboard.toast_delete_success'), "success");
                 } else {
-                    showToast("Konfirmasi gagal, catatan tidak dihapus.", "info");
+                    showToast(t('admin_dashboard.toast_delete_fail'), "info");
                 }
             }
         });
@@ -209,9 +243,9 @@ export default function AdminDashboard() {
         actionType: "abaikan" | "takedown" | "banned",
     ) => {
         const config = {
-            abaikan: { title: "Abaikan Laporan", placeholder: "Alasan diabaikan...", default: "Sesuai panduan komunitas" },
-            takedown: { title: "Takedown Konten", placeholder: "Alasan takedown...", default: "Konten melanggar aturan komunitas" },
-            banned: { title: "Banned Pengguna", placeholder: "Alasan banned...", default: "Pelanggaran berat berulang" }
+            abaikan: { title: t('admin_dashboard.prompt_ignore'), placeholder: t('admin_dashboard.prompt_ignore_placeholder'), default: t('admin_dashboard.prompt_ignore_default') },
+            takedown: { title: t('admin_dashboard.prompt_takedown'), placeholder: t('admin_dashboard.prompt_takedown_placeholder'), default: t('admin_dashboard.prompt_takedown_default') },
+            banned: { title: t('admin_dashboard.prompt_ban'), placeholder: t('admin_dashboard.prompt_ban_placeholder'), default: t('admin_dashboard.prompt_ban_default') }
         };
 
         setPromptConfig({
@@ -241,7 +275,12 @@ export default function AdminDashboard() {
             );
             showToast(res.data.message || "Berhasil diproses!", "success");
             setReportsList((prev) =>
-                prev.filter((r) => r.id !== reportId && r._id !== reportId),
+                prev.map((r) => {
+                    if (r.id === reportId || r._id === reportId) {
+                        return { ...r, status: actionType === "abaikan" ? "rejected" : "resolved" };
+                    }
+                    return r;
+                }),
             );
         } catch (e: any) {
             showToast(
@@ -257,9 +296,9 @@ export default function AdminDashboard() {
     ) => {
         setPromptConfig({
             isOpen: true,
-            title: action === "approve" ? "Setujui Pakar" : "Tolak Pengajuan",
-            placeholder: "Catatan untuk user...",
-            defaultValue: action === "approve" ? "Selamat! Anda kini resmi menjadi Pakar di Ba-Yu." : "Maaf, portofolio Anda belum memenuhi kriteria kami.",
+            title: action === "approve" ? t('admin_dashboard.prompt_approve_pakar') : t('admin_dashboard.prompt_reject_pakar'),
+            placeholder: t('admin_dashboard.prompt_pakar_placeholder'),
+            defaultValue: action === "approve" ? t('admin_dashboard.prompt_approve_default') : t('admin_dashboard.prompt_reject_default'),
             onConfirm: async (adminNote) => {
                 try {
                     const token =
@@ -276,9 +315,16 @@ export default function AdminDashboard() {
                         },
                     );
 
-                    setPendingCerts((prev) => prev.filter((c) => c.id !== id));
+                    setPendingCerts((prev) => 
+                        prev.map((c) => {
+                            if (c.id === id) {
+                                return { ...c, status: action === "approve" ? "approved" : "rejected" };
+                            }
+                            return c;
+                        })
+                    );
                     showToast(
-                        `Pengajuan Pakar ${action === "approve" ? "diterima" : "ditolak"}.`,
+                        action === "approve" ? t('admin_dashboard.toast_pakar_approved') : t('admin_dashboard.toast_pakar_rejected'),
                         "success",
                     );
                 } catch (e: any) {
@@ -294,8 +340,8 @@ export default function AdminDashboard() {
     const handleDemoteUser = async (u: any) => {
         setConfirmConfig({
             isOpen: true,
-            title: "Turunkan Pangkat?",
-            description: `Yakin ingin menurunkan pangkat ${u.name} menjadi user biasa? Tindakan ini tidak bisa dibatalkan secara otomatis.`,
+            title: t('admin_dashboard.confirm_demote'),
+            description: t('admin_dashboard.confirm_demote_desc'),
             variant: "danger",
             onConfirm: async () => {
                 try {
@@ -332,8 +378,23 @@ export default function AdminDashboard() {
             return sortBy === "terbaru" ? dateB - dateA : dateA - dateB;
         });
 
+    const filteredCerts = pendingCerts
+        .filter((cert) => {
+            if (certSubTab === "pending" && cert.status !== "pending") return false;
+            if (certSubTab === "history" && cert.status === "pending") return false;
+            return true;
+        })
+        .sort((a, b) => {
+            const dateA = new Date(a.created_at || 0).getTime();
+            const dateB = new Date(b.created_at || 0).getTime();
+            return sortBy === "terbaru" ? dateB - dateA : dateA - dateB;
+        });
+
     const filteredReports = reportsList
         .filter((report) => {
+            if (reportSubTab === "pending" && report.status !== "pending") return false;
+            if (reportSubTab === "history" && report.status === "pending") return false;
+            
             const searchTarget = (report.noteTitle || report.userName || report.post_id || "").toLowerCase();
             if (searchQuery && !searchTarget.includes(searchQuery.toLowerCase())) return false;
             return true;
@@ -490,8 +551,8 @@ export default function AdminDashboard() {
                                                 className={`relative flex-none px-4 py-3 text-[14px] font-bold transition-colors whitespace-nowrap ${isActive ? "text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5"}`}
                                             >
                                                 {tab.label}
-                                                {tab.id === "sertifikasi" && pendingCerts.length > 0 && (
-                                                    <span className="ml-1.5 text-rose-500">({pendingCerts.length})</span>
+                                                {tab.id === "sertifikasi" && pendingCerts.filter((c) => c.status === 'pending').length > 0 && (
+                                                    <span className="ml-1.5 text-rose-500">({pendingCerts.filter((c) => c.status === 'pending').length})</span>
                                                 )}
                                                 {isActive && <div className="absolute bottom-0 left-0 right-0 h-1 bg-indigo-500 rounded-t-full" />}
                                             </button>
@@ -505,7 +566,7 @@ export default function AdminDashboard() {
                                 {/* Sertifikasi Tab */}
                                 {activeTab === "sertifikasi" && (
                                     <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-white/5">
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-white/5 gap-4">
                                             <div>
                                                 <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">
                                                     {t('admin_dashboard.verify_title')}
@@ -514,9 +575,31 @@ export default function AdminDashboard() {
                                                     {t('admin_dashboard.verify_desc')}
                                                 </p>
                                             </div>
+                                            <div className="flex bg-gray-100/50 dark:bg-[#1C1A29]/50 p-1.5 rounded-2xl border border-gray-200/50 dark:border-white/5 shrink-0 self-start">
+                                                <button
+                                                    onClick={() => setCertSubTab("pending")}
+                                                    className={`px-4 py-2 text-sm font-bold font-['Manrope'] rounded-xl transition-all ${
+                                                        certSubTab === "pending"
+                                                            ? "bg-white dark:bg-white/10 text-gray-900 dark:text-white shadow-sm"
+                                                            : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                                                    }`}
+                                                >
+                                                    {t('admin_dashboard.tab_pending') !== 'admin_dashboard.tab_pending' ? t('admin_dashboard.tab_pending') : 'Menunggu Tindakan'}
+                                                </button>
+                                                <button
+                                                    onClick={() => setCertSubTab("history")}
+                                                    className={`px-4 py-2 text-sm font-bold font-['Manrope'] rounded-xl transition-all ${
+                                                        certSubTab === "history"
+                                                            ? "bg-white dark:bg-white/10 text-gray-900 dark:text-white shadow-sm"
+                                                            : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                                                    }`}
+                                                >
+                                                    {t('admin_dashboard.tab_history') !== 'admin_dashboard.tab_history' ? t('admin_dashboard.tab_history') : 'Riwayat'}
+                                                </button>
+                                            </div>
                                         </div>
 
-                                        {pendingCerts.length === 0 ? (
+                                        {filteredCerts.length === 0 ? (
                                             <div className="py-16 text-center bg-gray-50/50 dark:bg-white/[0.02] border border-gray-200/50 dark:border-white/10 border-dashed rounded-3xl">
                                                 <ShieldCheck className="w-16 h-16 text-gray-400 dark:text-slate-600 mx-auto mb-4" strokeWidth={1} />
                                                 <h4 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 dark:text-gray-100 mb-1">
@@ -528,7 +611,7 @@ export default function AdminDashboard() {
                                             </div>
                                         ) : (
                                             <div className="flex flex-col gap-4">
-                                                {pendingCerts.map((cert) => (
+                                                {filteredCerts.map((cert) => (
                                                     <article key={cert.id} className="group flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-6 px-6 bg-transparent hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors border border-slate-100 dark:border-white/5 rounded-[24px]">
                                                         <div className="flex-1 min-w-0 flex flex-col w-full">
                                                             <div className="flex items-center gap-3 mb-2">
@@ -542,32 +625,36 @@ export default function AdminDashboard() {
                                                             </div>
                                                             <div className="flex items-center gap-3 mt-4">
                                                                 <span className="text-[10px] font-['Lexend_Deca'] font-bold bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 px-3 py-1.5 rounded-lg border border-amber-200 dark:border-amber-500/20 uppercase tracking-widest shrink-0">
-                                                                    {cert.status}
+                                                                    {cert.status === "pending" ? t('export_modal.status_pending') : cert.status === "approved" ? t('export_modal.status_approved') : t('export_modal.status_rejected')}
                                                                 </span>
-                                                                <a
-                                                                    href={`http://localhost:8000/storage/${cert.file_sertifikat}`}
-                                                                    target="_blank"
-                                                                    rel="noreferrer"
+                                                                <button
+                                                                    onClick={() => setViewCert({
+                                                                        url: cert.file_sertifikat.startsWith('http') ? cert.file_sertifikat : `${process.env.VITE_API_URL || 'http://localhost:8000'}/storage/${cert.file_sertifikat}`,
+                                                                        userName: usersList.find(u => u.id === cert.user_id)?.name || usersList.find(u => u.id === cert.user_id)?.username || cert.user_id,
+                                                                        bidangKeahlian: cert.bidang_keahlian
+                                                                    })}
                                                                     className="flex items-center gap-1.5 text-[12px] text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 font-bold transition-colors bg-white dark:bg-[#1C1A29] px-4 py-2 rounded-full border border-gray-200 dark:border-white/10 shrink-0"
                                                                 >
                                                                     <Eye size={14} /> {t('admin_dashboard.card_view_doc') !== 'admin_dashboard.card_view_doc' ? t('admin_dashboard.card_view_doc') : 'Lihat Dokumen'}
-                                                                </a>
+                                                                </button>
                                                             </div>
                                                         </div>
-                                                        <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto shrink-0 border-t sm:border-t-0 pt-4 sm:pt-0 border-gray-200 dark:border-white/10">
-                                                            <button
-                                                                onClick={() => handleVerifyCert(cert.id, "approve")}
-                                                                className="flex-1 sm:flex-none px-4 py-2 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-full font-bold text-[12px] hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all flex items-center justify-center gap-1.5"
-                                                            >
-                                                                <CheckCircle size={14} /> {t('admin_dashboard.card_approve') !== 'admin_dashboard.card_approve' ? t('admin_dashboard.card_approve') : 'Setujui'}
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleVerifyCert(cert.id, "reject")}
-                                                                className="flex-1 sm:flex-none px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full font-bold text-[12px] hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-all flex items-center justify-center gap-1.5"
-                                                            >
-                                                                <XCircle size={14} /> {t('admin_dashboard.card_reject') !== 'admin_dashboard.card_reject' ? t('admin_dashboard.card_reject') : 'Tolak'}
-                                                            </button>
-                                                        </div>
+                                                        {cert.status === "pending" && (
+                                                            <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto shrink-0 border-t sm:border-t-0 pt-4 sm:pt-0 border-gray-200 dark:border-white/10">
+                                                                <button
+                                                                    onClick={() => handleVerifyCert(cert.id, "approve")}
+                                                                    className="flex-1 sm:flex-none px-4 py-2 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-full font-bold text-[12px] hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all flex items-center justify-center gap-1.5"
+                                                                >
+                                                                    <CheckCircle size={14} /> {t('admin_dashboard.card_approve') !== 'admin_dashboard.card_approve' ? t('admin_dashboard.card_approve') : 'Setujui'}
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleVerifyCert(cert.id, "reject")}
+                                                                    className="flex-1 sm:flex-none px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full font-bold text-[12px] hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-all flex items-center justify-center gap-1.5"
+                                                                >
+                                                                    <XCircle size={14} /> {t('admin_dashboard.card_reject') !== 'admin_dashboard.card_reject' ? t('admin_dashboard.card_reject') : 'Tolak'}
+                                                                </button>
+                                                            </div>
+                                                        )}
                                                     </article>
                                                 ))}
                                             </div>
@@ -581,11 +668,10 @@ export default function AdminDashboard() {
                                         <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-white/5">
                                             <div>
                                                 <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">
-                                                    Database Catatan
+                                                    {t('admin_dashboard.notes_db_title')}
                                                 </h3>
                                                 <p className="text-sm font-['Manrope'] text-gray-500 mt-1">
-                                                    Kelola direktori konten
-                                                    edukasi publik.
+                                                    {t('admin_dashboard.notes_db_desc')}
                                                 </p>
                                             </div>
                                         </div>
@@ -593,8 +679,7 @@ export default function AdminDashboard() {
                                         <div className="flex flex-col">
                                             {filteredNotes.length === 0 ? (
                                                 <div className="text-center py-10 font-['Manrope'] text-gray-500">
-                                                    Tidak ada catatan dalam
-                                                    database.
+                                                    {t('admin_dashboard.empty_notes')}
                                                 </div>
                                             ) : (
                                                 filteredNotes
@@ -625,16 +710,16 @@ export default function AdminDashboard() {
                                                                                 <span className="bg-rose-100 text-rose-600 text-[9px] px-1.5 py-0.5 rounded font-black tracking-widest uppercase">DORMANT</span>
                                                                             )}
                                                                         </div>
-                                                                        <span className="text-slate-700 px-0.5 font-bold">di</span>
-                                                                        <span className="font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">{note.mataPelajaran || note.mapel || "Lainnya"}</span>
+                                                                        <span className="text-slate-700 px-0.5 font-bold">{t('admin_dashboard.at')}</span>
+                                                                        <span className="font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">{(note.mataPelajaran || note.mapel) ? (t(`subjects.${(note.mataPelajaran || note.mapel).toLowerCase().replace(/ /g, '-')}`) !== `subjects.${(note.mataPelajaran || note.mapel).toLowerCase().replace(/ /g, '-')}` ? t(`subjects.${(note.mataPelajaran || note.mapel).toLowerCase().replace(/ /g, '-')}`) : (note.mataPelajaran || note.mapel)) : t('admin_dashboard.others')}</span>
                                                                         {note.kelas && note.kelas !== "-" && note.kelas !== "Semua" && (
                                                                             <>
                                                                                 <span className="text-[10px] text-slate-400 mx-0.5 font-bold">•</span>
-                                                                                <span className="text-slate-800 dark:text-slate-300 font-bold tracking-tight">Kelas {note.kelas}</span>
+                                                                                <span className="text-slate-800 dark:text-slate-300 font-bold tracking-tight">{t('admin_dashboard.class')} {note.kelas}</span>
                                                                             </>
                                                                         )}
                                                                         <span className="text-[10px] text-slate-400 mx-0.5 font-bold">•</span>
-                                                                        <span className="text-[12px] text-slate-500 dark:text-slate-400 font-bold">{new Date(note.createdAt || note.created_at || Date.now()).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+                                                                        <span className="text-[12px] text-slate-500 dark:text-slate-400 font-bold">{new Date(note.createdAt || note.created_at || Date.now()).toLocaleDateString(language === 'id' ? 'id-ID' : language, { day: 'numeric', month: 'short' })}</span>
                                                                     </div>
 
                                                                     {/* Title */}
@@ -650,10 +735,10 @@ export default function AdminDashboard() {
                                                                     {/* Action Buttons */}
                                                                     <div className="flex items-center gap-2 mt-auto flex-wrap">
                                                                         {(note.isValidated || note.is_verified) && (
-                                                                            <div className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full px-3 py-1.5 border border-emerald-100 dark:border-emerald-500/20 font-bold text-[11px] flex items-center gap-1"><ShieldCheck size={14} /> Verified</div>
+                                                                            <div className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full px-3 py-1.5 border border-emerald-100 dark:border-emerald-500/20 font-bold text-[11px] flex items-center gap-1"><ShieldCheck size={14} /> {t('admin_dashboard.verified')}</div>
                                                                         )}
-                                                                        <Link to={`/note/${note.id || note._id}`} className="px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-full font-bold text-[12px] flex items-center gap-1.5 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors group/btn">Detail<ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" /></Link>
-                                                                        <button onClick={() => handleDeleteNote(note.id || note._id)} className="px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors flex items-center font-bold text-[12px] tooltip" title="Hapus Permanen"><Trash2 size={14} /></button>
+                                                                        <Link to={`/note/${note.id || note._id}`} className="px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-full font-bold text-[12px] flex items-center gap-1.5 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors group/btn">{t('admin_dashboard.notes_detail')}<ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" /></Link>
+                                                                        <button onClick={() => handleDeleteNote(note.id || note._id)} className="px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors flex items-center font-bold text-[12px] tooltip" title={t('admin_dashboard.notes_delete')}><Trash2 size={14} /></button>
                                                                     </div>
                                                                 </div>
 
@@ -675,7 +760,7 @@ export default function AdminDashboard() {
                                         {filteredNotes.length > visibleItemsCount && (
                                             <div className="mt-8 flex justify-center">
                                                 <button onClick={handleLoadMore} className="px-6 py-3 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 text-[13px] shadow-sm transition-all">
-                                                    Load More
+                                                    {t('admin_dashboard.load_more')}
                                                 </button>
                                             </div>
                                         )}
@@ -685,15 +770,36 @@ export default function AdminDashboard() {
                                 {/* Laporan Tab */}
                                 {activeTab === "laporan" && (
                                     <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-white/5">
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100 dark:border-white/5">
                                             <div>
                                                 <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">
-                                                    Resolusi Laporan
+                                                    {t('admin_dashboard.reports_title')}
                                                 </h3>
                                                 <p className="text-sm font-['Manrope'] text-gray-500 mt-1">
-                                                    Tindak lanjuti user toxic
-                                                    atau konten ilegal.
+                                                    {t('admin_dashboard.reports_desc')}
                                                 </p>
+                                            </div>
+                                            <div className="flex bg-gray-100/50 dark:bg-[#1C1A29]/50 p-1.5 rounded-2xl border border-gray-200/50 dark:border-white/5 shrink-0 self-start">
+                                                <button
+                                                    onClick={() => setReportSubTab("pending")}
+                                                    className={`px-4 py-2 text-sm font-bold font-['Manrope'] rounded-xl transition-all ${
+                                                        reportSubTab === "pending"
+                                                            ? "bg-white dark:bg-white/10 text-gray-900 dark:text-white shadow-sm"
+                                                            : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                                                    }`}
+                                                >
+                                                    {t('admin_dashboard.tab_pending') !== 'admin_dashboard.tab_pending' ? t('admin_dashboard.tab_pending') : 'Menunggu Tindakan'}
+                                                </button>
+                                                <button
+                                                    onClick={() => setReportSubTab("history")}
+                                                    className={`px-4 py-2 text-sm font-bold font-['Manrope'] rounded-xl transition-all ${
+                                                        reportSubTab === "history"
+                                                            ? "bg-white dark:bg-white/10 text-gray-900 dark:text-white shadow-sm"
+                                                            : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                                                    }`}
+                                                >
+                                                    {t('admin_dashboard.tab_history') !== 'admin_dashboard.tab_history' ? t('admin_dashboard.tab_history') : 'Riwayat'}
+                                                </button>
                                             </div>
                                         </div>
 
@@ -701,8 +807,7 @@ export default function AdminDashboard() {
                                             {filteredReports.length === 0 ? (
                                                 <div className="text-center py-10">
                                                     <p className="font-['Manrope'] text-gray-500">
-                                                        Tidak ada laporan masuk
-                                                        yang perlu diperiksa.
+                                                        {t('admin_dashboard.empty_reports')}
                                                     </p>
                                                 </div>
                                             ) : (
@@ -710,49 +815,56 @@ export default function AdminDashboard() {
                                                     <article key={report.id || report._id} className="group flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 sm:gap-8 py-6 px-6 bg-transparent hover:bg-slate-50/50 dark:hover:bg-white/[0.02] transition-colors border border-slate-100 dark:border-white/5 rounded-[24px]">
                                                         <div className="flex-1 min-w-0 flex flex-col w-full h-full">
                                                             <div className="flex items-center gap-2 mb-3 flex-wrap">
-                                                                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border uppercase tracking-widest ${report.type === "catatan" || report.post_id ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20" : "bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-500/20"}`}>
-                                                                    REPORTED {report.type || "CATATAN"}
+                                                                <span className="bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[10px] px-2 py-0.5 rounded font-black tracking-widest uppercase">
+                                                                    {t('admin_dashboard.reported_prefix')} {report.type ? t(`admin_dashboard.report_type_${report.type}`) : t('admin_dashboard.report_type_catatan')}
                                                                 </span>
                                                                 <span className="text-[12px] font-['Manrope'] text-slate-500 dark:text-slate-400 font-bold">
-                                                                    {report.date || new Date(report.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                                                                    {report.date || new Date(report.created_at).toLocaleDateString(language === 'id' ? 'id-ID' : language, { day: 'numeric', month: 'short' })}
                                                                 </span>
+                                                                {report.status !== "pending" && (
+                                                                    <span className="bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] px-2 py-0.5 rounded font-black tracking-widest uppercase ml-2">
+                                                                        {report.status === "resolved" ? t('export_modal.status_resolved') : report.status === "rejected" ? t('export_modal.status_rejected') : report.status}
+                                                                    </span>
+                                                                )}
                                                             </div>
                                                             <h2 className="text-[18px] md:text-[20px] font-extrabold text-slate-900 dark:text-slate-100 leading-[1.25] tracking-tight group-hover:text-indigo-600 transition-colors line-clamp-2 mb-2 font-['Lexend_Deca']">
-                                                                {report.post_id ? `Catatan ID: ${report.post_id}` : report.type === "catatan" ? report.noteTitle : report.userName}
+                                                                {report.post_id ? `${t('admin_dashboard.note_id')}: ${report.post_id}` : report.type === "catatan" ? report.noteTitle : report.userName}
                                                             </h2>
                                                             <div className="mb-4">
-                                                                <p className="text-[14px] font-['Manrope'] text-rose-500 font-bold mb-1">{report.reason}</p>
+                                                                <p className="text-[14px] font-['Manrope'] text-rose-500 font-bold mb-1">{translateReason(report.reason)}</p>
                                                                 <p className="text-[14px] font-['Manrope'] text-slate-600 dark:text-slate-400 leading-relaxed break-words whitespace-pre-wrap font-medium border-l-2 border-rose-200 dark:border-rose-500/30 pl-3">
                                                                     {report.description || "-"}
                                                                 </p>
                                                             </div>
                                                             <div className="mt-auto flex items-center gap-2">
                                                                 <span className="text-[11px] font-['Lexend_Deca'] font-bold uppercase tracking-widest text-slate-400">
-                                                                    Dilaporkan oleh: <span className="text-slate-700 dark:text-slate-300">{report.reporter?.name || "Anonim"}</span>
+                                                                    {t('admin_dashboard.reports_reporter')} <span className="text-slate-700 dark:text-slate-300">{report.reporter?.name || t('admin_dashboard.anon')}</span>
                                                                 </span>
                                                             </div>
                                                         </div>
 
-                                                        <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-[140px] shrink-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-gray-200 dark:border-white/10">
-                                                            <button
-                                                                onClick={() => handleResolveReport(report.id || report._id, "abaikan")}
-                                                                className="flex-1 px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 rounded-full font-bold text-[12px] transition-colors text-center"
-                                                            >
-                                                                Abaikan
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleResolveReport(report.id || report._id, "takedown")}
-                                                                className="flex-1 px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-full font-bold text-[12px] transition-colors text-center"
-                                                            >
-                                                                Takedown
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleResolveReport(report.id || report._id, "banned")}
-                                                                className="flex-1 px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-full font-bold text-[12px] transition-colors text-center"
-                                                            >
-                                                                Banned
-                                                            </button>
-                                                        </div>
+                                                        {report.status === "pending" && (
+                                                            <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-[140px] shrink-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-gray-200 dark:border-white/10">
+                                                                <button
+                                                                    onClick={() => handleResolveReport(report.id || report._id, "abaikan")}
+                                                                    className="flex-1 px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 rounded-full font-bold text-[12px] transition-colors text-center"
+                                                                >
+                                                                    {t('admin_dashboard.reports_ignore')}
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleResolveReport(report.id || report._id, "takedown")}
+                                                                    className="flex-1 px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-full font-bold text-[12px] transition-colors text-center"
+                                                                >
+                                                                    {t('admin_dashboard.reports_takedown')}
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleResolveReport(report.id || report._id, "banned")}
+                                                                    className="flex-1 px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-full font-bold text-[12px] transition-colors text-center"
+                                                                >
+                                                                    {t('admin_dashboard.reports_banned')}
+                                                                </button>
+                                                            </div>
+                                                        )}
                                                     </article>
                                                 ))
                                             )}
@@ -773,7 +885,7 @@ export default function AdminDashboard() {
                                         <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-white/5">
                                             <div>
                                                 <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">
-                                                    Manajemen Pengguna
+                                                    {t('admin_dashboard.users_db_title') || 'Basis Data Pengguna'}
                                                 </h3>
                                             </div>
                                         </div>
@@ -781,7 +893,7 @@ export default function AdminDashboard() {
                                         <div className="flex flex-col">
                                             {filteredUsers.length === 0 ? (
                                                 <div className="text-center py-10 font-['Manrope'] text-gray-500">
-                                                    Tidak ada pengguna terpilih.
+                                                    {t('admin_dashboard.empty_users')}
                                                 </div>
                                             ) : (
                                                 filteredUsers.slice(0, visibleItemsCount).map((u) => {
@@ -791,42 +903,46 @@ export default function AdminDashboard() {
                                                             <div className="flex items-center gap-5 min-w-0 flex-1">
                                                                 <div className="relative shrink-0">
                                                                     <AvatarImage src={u.avatar} alt={u.name} size={64} className="rounded-2xl object-cover bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10" />
-                                                                    <div className={`absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-lg flex items-center justify-center border-2 border-white dark:border-[#1C1A29] ${u.role === 'admin' ? 'bg-indigo-500 text-white' : u.role === 'pakar' ? 'bg-emerald-500 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'}`}>
-                                                                        <ShieldCheck className="w-3.5 h-3.5" />
-                                                                    </div>
                                                                 </div>
                                                                 <div className="min-w-0">
-                                                                    <h4 className="font-['Lexend_Deca'] font-bold text-slate-900 dark:text-slate-100 text-[18px] mb-0.5 truncate group-hover:text-indigo-600 transition-colors flex items-center gap-2">
+                                                                    <h4 className="font-['Lexend_Deca'] font-bold text-slate-900 dark:text-slate-100 text-[18px] mb-2 truncate group-hover:text-indigo-600 transition-colors flex items-center gap-2 flex-wrap">
                                                                         {u.name}
                                                                         {u.is_dormant && (
                                                                             <span className="bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 text-[10px] px-2 py-0.5 rounded border border-rose-200 dark:border-rose-500/30 font-black tracking-widest uppercase">DORMANT</span>
                                                                         )}
+                                                                        {u.role === "admin" && (
+                                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 font-bold text-[12px] border border-purple-100 dark:border-purple-500/20">
+                                                                                <Shield className="w-3.5 h-3.5" /> {t('admin_dashboard.role_admin') || 'Admin'}
+                                                                            </span>
+                                                                        )}
+                                                                        {u.role === "pakar" && (
+                                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[12px] border border-emerald-100 dark:border-emerald-500/20">
+                                                                                <ShieldCheck className="w-3.5 h-3.5" /> {t('admin_dashboard.role_expert') || 'Pakar'}
+                                                                            </span>
+                                                                        )}
                                                                     </h4>
-                                                                    <p className="text-[11px] font-['Lexend_Deca'] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
-                                                                        {u.role === "admin" ? "Administrator" : u.role === "pakar" ? "Expert" : "Pelajar"}
-                                                                    </p>
                                                                     <div className="flex gap-4">
                                                                         <div className="bg-slate-50 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-slate-100 dark:border-white/5 flex items-center gap-2">
                                                                             <div className="font-['Lexend_Deca'] font-bold text-[13px] text-slate-800 dark:text-slate-200">{userPostsCount}</div>
-                                                                            <div className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Catatan</div>
+                                                                            <div className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('admin_dashboard.notes')}</div>
                                                                         </div>
                                                                         <div className="bg-slate-50 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-slate-100 dark:border-white/5 flex items-center gap-2">
                                                                             <div className="font-['Lexend_Deca'] font-bold text-[13px] text-slate-800 dark:text-slate-200">{u.followers || 0}</div>
-                                                                            <div className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Followers</div>
+                                                                            <div className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('admin_dashboard.followers')}</div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div className="shrink-0 flex items-center gap-2 mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-gray-200 dark:border-white/10 w-full sm:w-auto">
                                                                 <Link to={`/profile/${u.id || u._id}`} className="flex-1 sm:flex-none px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/10 rounded-full flex items-center justify-center transition-colors font-bold text-[12px] text-gray-700 dark:text-gray-300">
-                                                                    Lihat Profil <ArrowUpRight size={14} className="ml-1" />
+                                                                    {t('admin_dashboard.view_profile')} <ArrowUpRight size={14} className="ml-1" />
                                                                 </Link>
                                                                 {u.role !== 'user' && u.id !== user?.id && u._id !== user?.id && (
                                                                     <button 
                                                                         onClick={() => handleDemoteUser(u)}
                                                                         className="flex-1 sm:flex-none px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-colors font-bold text-[12px]"
                                                                     >
-                                                                        Turunkan Pangkat
+                                                                        {t('admin_dashboard.btn_demote')}
                                                                     </button>
                                                                 )}
                                                             </div>
@@ -838,7 +954,7 @@ export default function AdminDashboard() {
                                         {filteredUsers.length > visibleItemsCount && (
                                             <div className="mt-8 flex justify-center">
                                                 <button onClick={handleLoadMore} className="px-6 py-3 bg-white dark:bg-[#1C1A29] border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 text-[13px] shadow-sm transition-all">
-                                                    Load More
+                                                    {t('admin_dashboard.load_more')}
                                                 </button>
                                             </div>
                                         )}
@@ -854,7 +970,7 @@ export default function AdminDashboard() {
                             
                             <div className="pb-8 border-b border-gray-200 dark:border-white/10 mb-8">
                                 <h3 className="font-bold text-[14px] text-gray-900 dark:text-gray-100 tracking-tight mb-6">
-                                    Ringkasan Platform
+                                    {t('admin_dashboard.platform_summary')}
                                 </h3>
                                 <div className="grid grid-cols-1 gap-4">
                                     {stats.map((stat, index) => {
@@ -881,7 +997,7 @@ export default function AdminDashboard() {
                             {/* System Status Redesigned */}
                             <div className="mb-8 border-b border-gray-200 dark:border-white/10 pb-8">
                                 <h3 className="font-bold text-[14px] text-gray-900 dark:text-gray-100 tracking-tight mb-4">
-                                    Sistem & Server
+                                    {t('admin_dashboard.system_server')}
                                 </h3>
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between">
@@ -910,7 +1026,7 @@ export default function AdminDashboard() {
                             {/* Activity Feed Redesigned */}
                             <div className="mb-8 border-b border-gray-200 dark:border-white/10 pb-8">
                                 <h3 className="font-bold text-[14px] text-gray-900 dark:text-gray-100 tracking-tight mb-4">
-                                    Aktivitas Terbaru
+                                    {t('admin_dashboard.recent_activity')}
                                 </h3>
                                 <div className="space-y-4">
                                     {[
@@ -937,9 +1053,9 @@ export default function AdminDashboard() {
                             <div className="bg-gray-50 dark:bg-white/5 rounded-xl p-5 border border-gray-200 dark:border-white/10">
                                 <div className="flex items-center gap-2 mb-2">
                                     <ShieldCheck className="w-4 h-4 text-indigo-500" />
-                                    <h4 className="font-bold text-gray-900 dark:text-gray-100 text-[14px]">Bantuan Teknis</h4>
+                                    <h4 className="font-bold text-gray-900 dark:text-gray-100 text-[14px]">{t('admin_dashboard.tech_support')}</h4>
                                 </div>
-                                <p className="text-gray-500 dark:text-gray-400 text-[13px] leading-relaxed">Hubungi tim DevOps Ba-Yu untuk pemeliharaan server.</p>
+                                <p className="text-gray-500 dark:text-gray-400 text-[13px] leading-relaxed">{t('admin_dashboard.tech_support_desc')}</p>
                             </div>
 
                         </div>
@@ -954,6 +1070,8 @@ export default function AdminDashboard() {
                 placeholder={promptConfig.placeholder}
                 defaultValue={promptConfig.defaultValue}
                 onConfirm={promptConfig.onConfirm}
+                cancelText={t('admin_dashboard.btn_cancel')}
+                confirmText={t('admin_dashboard.btn_confirm')}
             />
 
             <ConfirmDialog
@@ -963,6 +1081,8 @@ export default function AdminDashboard() {
                 description={confirmConfig.description}
                 variant={confirmConfig.variant}
                 onConfirm={confirmConfig.onConfirm}
+                cancelText={t('admin_dashboard.btn_cancel')}
+                confirmText={t('admin_dashboard.btn_continue')}
             />
 
             <ExportDataModal 
@@ -970,7 +1090,16 @@ export default function AdminDashboard() {
                 onClose={() => setIsExportModalOpen(false)} 
                 notesList={notesList} 
                 reportsList={reportsList} 
-                usersList={usersList} 
+                usersList={usersList}
+                certsList={pendingCerts}
+            />
+
+            <CertificateViewerModal
+                isOpen={!!viewCert}
+                onClose={() => setViewCert(null)}
+                certUrl={viewCert?.url}
+                userName={viewCert?.userName}
+                bidangKeahlian={viewCert?.bidangKeahlian}
             />
         </MobileLayout>
     );

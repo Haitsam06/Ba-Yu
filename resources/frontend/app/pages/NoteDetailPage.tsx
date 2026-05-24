@@ -502,10 +502,10 @@ export default function NoteDetailPage() {
                 return [...filtered, newHl];
             });
             window.getSelection()?.removeAllRanges();
-            showToast("Teks berhasil di-highlight!", "success");
+            showToast(t("note_detail.highlight_success"), "success");
         } catch (e: any) {
             console.error(e);
-            showToast(e.response?.data?.message || "Gagal menyimpan highlight", "error");
+            showToast(e.response?.data?.message || t("note_detail.highlight_failed"), "error");
         }
     };
 
@@ -517,10 +517,10 @@ export default function NoteDetailPage() {
             });
             setHighlights((prev) => prev.filter((h) => (h._id || h.id) !== highlightId));
             setActiveHighlightId(null);
-            showToast("Highlight berhasil dihapus", "success");
+            showToast(t("note_detail.highlight_delete_success"), "success");
         } catch (e: any) {
             console.error(e);
-            showToast("Gagal menghapus highlight", "error");
+            showToast(t("note_detail.highlight_delete_failed"), "error");
         }
     };
 
@@ -593,6 +593,8 @@ export default function NoteDetailPage() {
         description: string;
         onConfirm: () => void;
         variant?: "danger" | "primary";
+        cancelText?: string;
+        confirmText?: string;
     }>({
         isOpen: false,
         title: "",
@@ -951,9 +953,7 @@ export default function NoteDetailPage() {
     if (!note || !author) {
         const notFoundContent = (
             <div className="flex items-center justify-center h-[60vh]">
-                <p className="text-gray-500 font-['Manrope']">
-                    Catatan tidak ditemukan atau telah dihapus.
-                </p>
+                <p className="text-gray-500 font-['Manrope']">{t("note_detail.not_found")}</p>
             </div>
         );
         if (isAuthenticated)
@@ -995,11 +995,11 @@ export default function NoteDetailPage() {
             setComments((prev: any[]) => [res.data.data, ...prev]);
             setCommentText("");
             setQuoteContext("");
-            showToast("Komentar berhasil dikirim!", "success");
+            showToast(t("note_detail.comment_success"), "success");
         } catch (e: any) {
-            console.error("Gagal mengirim komentar", e);
+            console.error(t("note_detail.comment_failed"), e);
             showToast(
-                e.response?.data?.message || "Gagal mengirim komentar",
+                e.response?.data?.message || t("note_detail.comment_failed"),
                 "error",
             );
         } finally {
@@ -1051,8 +1051,8 @@ export default function NoteDetailPage() {
 
         setConfirmConfig({
             isOpen: true,
-            title: "Hapus Komentar?",
-            description: "Komentar yang dihapus tidak bisa dikembalikan lagi.",
+            title: t("note_detail.delete_comment_title"),
+            description: t("note_detail.delete_comment_desc"),
             variant: "danger",
             onConfirm: () => processDeleteComment(commentId)
         });
@@ -1072,11 +1072,11 @@ export default function NoteDetailPage() {
             );
 
             setNote((prev: any) => ({ ...prev, comments: prev.comments - 1 }));
-            showToast("Komentar berhasil dihapus!", "success");
+            showToast(t("note_detail.delete_comment_success"), "success");
         } catch (e: any) {
             console.error(e);
             showToast(
-                e.response?.data?.message || "Gagal menghapus komentar",
+                e.response?.data?.message || t("note_detail.delete_comment_failed"),
                 "error",
             );
         }
@@ -1108,11 +1108,11 @@ export default function NoteDetailPage() {
 
             setEditingCommentId(null);
             setEditingCommentText("");
-            showToast("Komentar berhasil diperbarui!", "success");
+            showToast(t("note_detail.update_comment_success"), "success");
         } catch (e: any) {
             console.error(e);
             showToast(
-                e.response?.data?.message || "Gagal memperbarui komentar",
+                e.response?.data?.message || t("note_detail.update_comment_failed"),
                 "error",
             );
         }
@@ -1175,11 +1175,11 @@ export default function NoteDetailPage() {
             setReplyText("");
             setQuoteContext("");
             setNote((prev: any) => ({ ...prev, comments: prev.comments + 1 }));
-            showToast("Komentar berhasil dikirim!", "success");
+            showToast(t("note_detail.comment_success"), "success");
         } catch (e: any) {
             console.error(e);
             showToast(
-                e.response?.data?.message || "Gagal mengirim komentar",
+                e.response?.data?.message || t("note_detail.comment_failed"),
                 "error",
             );
         } finally {
@@ -1252,18 +1252,22 @@ export default function NoteDetailPage() {
     const handleVerifyPakar = async () => {
         setConfirmConfig({
             isOpen: true,
-            title: "Verifikasi Catatan",
-            description: "Verifikasi catatan ini sebagai materi yang akurat dan berkualitas?",
-            onConfirm: () => processVerifyPakar()
+            title: t('note_detail.verify_title'),
+            description: t('note_detail.verify_desc'),
+            onConfirm: () => processVerifyPakar(),
+            cancelText: t('admin_dashboard.btn_cancel'),
+            confirmText: t('admin_dashboard.btn_continue')
         });
     };
 
     const handleUnverify = async () => {
         setConfirmConfig({
             isOpen: true,
-            title: "Batal Verifikasi?",
-            description: "Yakin ingin membatalkan status verifikasi pada catatan ini?",
+            title: t('note_detail.unverify_title'),
+            description: t('note_detail.unverify_desc'),
             variant: "danger",
+            cancelText: t('admin_dashboard.btn_cancel'),
+            confirmText: t('admin_dashboard.btn_continue'),
             onConfirm: () => processUnverify()
         });
     };
@@ -1367,15 +1371,13 @@ export default function NoteDetailPage() {
                                         onClick={handleUnverify}
                                         className="hidden sm:flex mr-2 items-center gap-1.5 px-3 py-1.5 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 rounded-lg text-[13px] font-['Lexend_Deca'] font-bold transition-colors"
                                     >
-                                        <X className="w-4 h-4" /> Batal Verifikasi
-                                    </button>
+                                        <X className="w-4 h-4" />{t("note_detail.cancel_verification")}</button>
                                 ) : (
                                     <button
                                         onClick={handleVerifyPakar}
                                         className="hidden sm:flex mr-2 items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 rounded-lg text-[13px] font-['Lexend_Deca'] font-bold transition-colors"
                                     >
-                                        <ShieldCheck className="w-4 h-4" /> Verifikasi
-                                    </button>
+                                        <ShieldCheck className="w-4 h-4" />{t("note_detail.verify")}</button>
                                 )}
                             </>
                         )}
@@ -1475,21 +1477,19 @@ export default function NoteDetailPage() {
                                                 : "text-emerald-600 hover:text-emerald-700"
                                         }`}
                                     >
-                                        • {isFollowing ? "Mengikuti" : isFollowPending ? "Menunggu" : "Ikuti"}
+                                        • {isFollowing ? t("note_detail.author_following") : isFollowPending ? t("note_detail.author_pending") : t("note_detail.author_follow")}
                                     </button>
                                 )}
                             {!isAuthenticated && (
                                 <button
                                     onClick={() => openAuthModal("login")}
                                     className="text-sm font-['Manrope'] text-emerald-600 font-bold hover:text-emerald-700 transition-colors"
-                                >
-                                    • Ikuti
-                                </button>
+                                >• {t("note_detail.author_follow")}</button>
                             )}
                         </div>
                         <div className="flex items-center gap-3 text-[13px] font-['Manrope'] text-gray-600 dark:text-gray-400 mt-0.5 font-bold">
                             <div className="flex items-center gap-1.5">
-                                <span>{note.createdAt}</span>
+                                <span>{new Date(note.createdAt).toLocaleDateString(language, { year: "numeric", month: "long", day: "numeric" })}</span>
                             </div>
                             <span className="w-1 h-1 rounded-full bg-gray-400"></span>
                             <div className="flex items-center gap-1.5">
@@ -1507,7 +1507,7 @@ export default function NoteDetailPage() {
                                             className="w-3.5 h-3.5"
                                             strokeWidth={2.5}
                                         />{" "}
-                                        Pakar Terverifikasi
+                                        {t("note_detail.verified_expert")}
                                     </span>
                                 </>
                             )}
@@ -1562,9 +1562,7 @@ export default function NoteDetailPage() {
                     <div className="flex items-center gap-3">
                         {note.isValidated && (
                             <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest border border-emerald-100 dark:border-emerald-500/20 shadow-sm dark:shadow-none animate-in fade-in duration-700">
-                                <ShieldCheck className="w-3.5 h-3.5" />
-                                Review Pakar
-                            </div>
+                                <ShieldCheck className="w-3.5 h-3.5" />{t("note_detail.expert_review")}</div>
                         )}
                     </div>
                 </div>
@@ -1599,13 +1597,9 @@ export default function NoteDetailPage() {
                                     <LockIcon className="w-7 h-7 text-slate-700 dark:text-slate-300" />
                                 </div>
                                 
-                                <h4 className="font-['Lexend_Deca'] font-bold text-2xl text-slate-900 dark:text-slate-100 mb-3 tracking-tight">
-                                    Akses Dibatasi
-                                </h4>
+                                <h4 className="font-['Lexend_Deca'] font-bold text-2xl text-slate-900 dark:text-slate-100 mb-3 tracking-tight">{t("note_detail.restricted_access")}</h4>
                                 
-                                <p className="font-['Manrope'] text-[15px] text-slate-600 dark:text-slate-400 mb-8 font-medium leading-relaxed max-w-md mx-auto">
-                                    Penulis membatasi akses penuh untuk catatan ini. Ikuti <b>@{author?.username}</b> untuk membuka keseluruhan materi.
-                                </p>
+                                <p className="font-['Manrope'] text-[15px] text-slate-600 dark:text-slate-400 mb-8 font-medium leading-relaxed max-w-md mx-auto">{t("note_detail.restricted_desc")} <b>@{author?.username}</b></p>
                                 
                                 <button 
                                     onClick={() => requireAuth(handleFollowToggle)}
@@ -1617,9 +1611,9 @@ export default function NoteDetailPage() {
                                     }`}
                                 >
                                     {isFollowPending ? (
-                                        <>Permintaan Terkirim</>
+                                        <>{t("note_detail.request_sent")}</>
                                     ) : (
-                                        <>Minta Akses (Ikuti)</>
+                                        <>{t("note_detail.request_access")}</>
                                     )}
                                 </button>
                             </div>
@@ -1636,20 +1630,13 @@ export default function NoteDetailPage() {
                         <div className="w-16 h-16 bg-white dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-md dark:shadow-none border border-indigo-50 dark:border-white/10 transition-transform">
                             <Download className="w-8 h-8 text-indigo-600 dark:text-primary" />
                         </div>
-                        <h3 className="font-['Lexend_Deca'] font-extrabold text-2xl text-slate-900 dark:text-slate-100 mb-4">
-                            Materi Lengkap dalam Genggaman
-                        </h3>
-                        <p className="font-['Manrope'] text-[16px] text-slate-500 dark:text-slate-400 mb-10 max-w-md mx-auto leading-relaxed font-medium">
-                            Unduh versi PDF asli untuk dipelajari kapan saja,
-                            bahkan saat Anda sedang tidak terhubung ke internet.
-                        </p>
+                        <h3 className="font-['Lexend_Deca'] font-extrabold text-2xl text-slate-900 dark:text-slate-100 mb-4">{t("note_detail.full_material")}</h3>
+                        <p className="font-['Manrope'] text-[16px] text-slate-500 dark:text-slate-400 mb-10 max-w-md mx-auto leading-relaxed font-medium">{t("note_detail.download_desc")}</p>
                         <button
                             onClick={handleDownloadPDF}
                             className="mx-auto flex items-center justify-center gap-3 px-10 py-5 bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 text-white rounded-2xl text-[13px] font-['Lexend_Deca'] font-black uppercase tracking-widest transition-all shadow-xl shadow-slate-900/10 dark:shadow-none active:scale-95"
                         >
-                            <FileText className="w-5 h-5 opacity-50" />
-                            Download PDF Materi
-                        </button>
+                            <FileText className="w-5 h-5 opacity-50" />{t("note_detail.download_pdf")}</button>
                     </div>
                 </div>
 
@@ -1665,13 +1652,9 @@ export default function NoteDetailPage() {
                             </div>
                             <div className="space-y-3">
                                 <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
-                                    <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.25em] bg-emerald-50 dark:bg-emerald-500/10 px-4 py-1.5 rounded-full border border-emerald-100/50 dark:border-emerald-500/20 shadow-sm dark:shadow-none">
-                                        Expert Verified
-                                    </span>
+                                    <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.25em] bg-emerald-50 dark:bg-emerald-500/10 px-4 py-1.5 rounded-full border border-emerald-100/50 dark:border-emerald-500/20 shadow-sm dark:shadow-none">{t("note_detail.expert_verified")}</span>
                                 </div>
-                                <h4 className="font-['Lexend_Deca'] font-black text-3xl text-slate-900 dark:text-slate-100 tracking-tight">
-                                    Kurasi Materi Pakar
-                                </h4>
+                                <h4 className="font-['Lexend_Deca'] font-black text-3xl text-slate-900 dark:text-slate-100 tracking-tight">{t("note_detail.expert_curation")}</h4>
                                 {note.verify_reason ? (
                                     <div className="relative">
                                         <MessageSquare className="absolute -left-2 -top-2 w-10 h-10 text-emerald-100 dark:text-emerald-900/30 opacity-50" />
@@ -1682,17 +1665,11 @@ export default function NoteDetailPage() {
                                             <button 
                                                 onClick={() => setIsReviewModalOpen(true)}
                                                 className="mt-3 ml-2 text-[13px] font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors uppercase tracking-widest font-['Lexend_Deca']"
-                                            >
-                                                Baca Selengkapnya &rarr;
-                                            </button>
+                                            >{t("note_detail.read_more")}</button>
                                         )}
                                     </div>
                                 ) : (
-                                    <p className="font-['Manrope'] text-slate-400 dark:text-slate-500 text-[15px] leading-relaxed max-w-lg font-medium italic">
-                                        Pakar memberikan rating tinggi untuk
-                                        akurasi materi ini tanpa catatan
-                                        tambahan.
-                                    </p>
+                                    <p className="font-['Manrope'] text-slate-400 dark:text-slate-500 text-[15px] leading-relaxed max-w-lg font-medium italic">{t("note_detail.high_rating")}</p>
                                 )}
                             </div>
                         </div>
@@ -1716,9 +1693,7 @@ export default function NoteDetailPage() {
                                 </div>
                             </div>
                             <div>
-                                <p className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.25em] mb-1.5">
-                                    Verified By
-                                </p>
+                                <p className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.25em] mb-1.5">{t("note_detail.verified_by")}</p>
                                 <p className="text-[18px] font-['Lexend_Deca'] font-black text-slate-900 dark:text-slate-100 group-hover/pakar:text-indigo-600 dark:group-hover/pakar:text-primary transition-colors leading-none mb-2">
                                     {validator.name || validator.username}
                                 </p>
@@ -1766,8 +1741,8 @@ export default function NoteDetailPage() {
                                 <div className="w-16 h-16 bg-emerald-500 rounded-[20px] flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/25 relative z-10">
                                     <ShieldCheck className="w-8 h-8 text-white" />
                                 </div>
-                                <h3 className="font-['Lexend_Deca'] font-extrabold text-2xl text-slate-900 dark:text-slate-100 mb-2 relative z-10">Review Pakar Lengkap</h3>
-                                <p className="text-slate-500 dark:text-slate-400 font-medium font-['Manrope'] relative z-10">Catatan kurasi dari {validator?.name}</p>
+                                <h3 className="font-['Lexend_Deca'] font-extrabold text-2xl text-slate-900 dark:text-slate-100 mb-2 relative z-10">{t("note_detail.full_expert_review")}</h3>
+                                <p className="text-slate-500 dark:text-slate-400 font-medium font-['Manrope'] relative z-10">{t("note_detail.curation_notes_from")} {validator?.name}</p>
                             </div>
                             <div className="p-8 md:p-10 overflow-y-auto">
                                 <p className="font-['Manrope'] text-slate-700 dark:text-slate-300 text-[16px] leading-relaxed font-medium whitespace-pre-wrap italic">
@@ -1783,9 +1758,7 @@ export default function NoteDetailPage() {
 
                 {/* Author Bottom Profile (Substack style) */}
                 <div className="mb-20">
-                    <h4 className="font-['Lexend_Deca'] font-extrabold text-[13px] text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-6 text-center sm:text-left">
-                        DITULIS OLEH
-                    </h4>
+                    <h4 className="font-['Lexend_Deca'] font-extrabold text-[13px] text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-6 text-center sm:text-left">{t("note_detail.written_by")}</h4>
                     <div className="bg-transparent flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
                         <Link to={`/profile/${author._id || author.id}`}>
                             <AvatarImage
@@ -1808,7 +1781,7 @@ export default function NoteDetailPage() {
                                 {author.role === "pakar" && (
                                     <div
                                         className="bg-green-500 text-white p-0.5 rounded-full"
-                                        title="Pakar Terverifikasi"
+                                        title={t("note_detail.verified_expert")}
                                     >
                                         <ShieldCheck className="w-3.5 h-3.5" />
                                     </div>
@@ -1817,8 +1790,8 @@ export default function NoteDetailPage() {
                             <p className="font-['Manrope'] text-[16px] text-gray-800 dark:text-gray-300 mb-6 max-w-xl leading-relaxed font-medium">
                                 {author.bio ? author.bio : (
                                     author.role === "pakar"
-                                        ? "Pakar Pendidikan tersertifikasi yang aktif membimbing siswa dan meninjau ribuan catatan."
-                                        : `Pelajar yang aktif membagikan catatannya. Mari belajar bersama dan raih prestasi!`
+                                        ? t("note_detail.default_pakar_bio")
+                                        : t("note_detail.default_user_bio")
                                 )}
                             </p>
 
@@ -1833,9 +1806,7 @@ export default function NoteDetailPage() {
                                             : "bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-black dark:hover:bg-gray-200 shadow-sm"
                                     }`}
                                 >
-                                    {isFollowing
-                                        ? "Mengikuti"
-                                        : "Ikuti Penulis"}
+                                    {isFollowing ? t("note_detail.author_following") : t("note_detail.follow_author")}
                                 </button>
 
                                 <div className="flex items-center gap-6 mt-4 sm:mt-0 font-['Manrope'] text-[15px] text-gray-600 dark:text-gray-400 font-bold">
@@ -1846,7 +1817,7 @@ export default function NoteDetailPage() {
                                         <span className="font-extrabold text-gray-900 dark:text-gray-100 group-hover:text-primary transition-colors">
                                             {followerCount}
                                         </span>{" "}
-                                        Pengikut
+                                        {t("note_detail.followers")}
                                     </Link>
                                     <Link 
                                         to={`/profile/${author._id || author.id}?tab=catatan`}
@@ -1855,7 +1826,7 @@ export default function NoteDetailPage() {
                                         <span className="font-extrabold text-gray-900 dark:text-gray-100 group-hover:text-primary transition-colors">
                                             {author.totalCatatan || 0}
                                         </span>{" "}
-                                        Tulisan
+                                        {t("note_detail.posts")}
                                     </Link>
                                 </div>
                             </div>
@@ -1867,15 +1838,12 @@ export default function NoteDetailPage() {
                 <div className="mt-12 border-t border-gray-100 dark:border-white/5 pt-12">
                     <div className="flex items-center justify-between mb-8">
                         <h4 className="font-['Lexend_Deca'] font-extrabold text-2xl text-gray-900 dark:text-gray-100 flex items-center gap-3">
-                            <MessageSquare className="w-6 h-6 text-primary" strokeWidth={2.5} />
-                            Diskusi ({comments.length})
+                            <MessageSquare className="w-6 h-6 text-primary" strokeWidth={2.5} />{t("note_detail.discussion")} ({comments.length})
                         </h4>
                         <button
                             onClick={() => setIsCommentDrawerOpen(true)}
                             className="font-['Manrope'] font-bold text-[14px] text-primary hover:text-indigo-600 transition-colors"
-                        >
-                            Tulis Komentar
-                        </button>
+                        >{t("note_detail.write_comment")}</button>
                     </div>
 
                     <div className="space-y-6">
@@ -1901,7 +1869,7 @@ export default function NoteDetailPage() {
                                         <textarea
                                             value={commentText}
                                             onChange={(e) => setCommentText(e.target.value)}
-                                            placeholder="Tulis diskusi atau pertanyaan..."
+                                            placeholder={t("note_detail.write_discussion")}
                                             className="w-full bg-transparent border-none text-[14px] font-['Manrope'] text-left focus:outline-none focus:ring-0 resize-none min-h-[60px] text-gray-900 dark:text-gray-100 placeholder:text-gray-500 font-medium"
                                         />
                                         <div className="flex justify-end items-center mt-2 border-t border-gray-100 dark:border-white/5 pt-2">
@@ -1910,7 +1878,7 @@ export default function NoteDetailPage() {
                                                 disabled={!commentText.trim() || isSubmittingComment}
                                                 className="px-5 py-2 bg-primary hover:bg-indigo-600 disabled:opacity-50 text-white rounded-xl text-[13px] font-['Lexend_Deca'] font-bold transition-all shadow-sm flex items-center gap-1.5"
                                             >
-                                                {isSubmittingComment ? "Mengirim" : "Kirim"} <Send className="w-4 h-4" />
+                                                {isSubmittingComment ? t('note_detail.comment_sending') : t('note_detail.comment_send')} <Send className="w-4 h-4" />
                                             </button>
                                         </div>
                                     </div>
@@ -1918,7 +1886,7 @@ export default function NoteDetailPage() {
                             </div>
                         ) : (
                             <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-6 text-center mb-8">
-                                <p className="font-['Manrope'] text-[14px] text-gray-600 dark:text-gray-400 mb-4 font-medium">Masuk untuk ikut berdiskusi dengan penulis dan pembaca lain.</p>
+                                <p className="font-['Manrope'] text-[14px] text-gray-600 dark:text-gray-400 mb-4 font-medium">{t("note_detail.login_to_discuss")}</p>
                                 <button onClick={() => { setIsCommentDrawerOpen(false); openAuthModal("login"); }} className="px-6 py-2.5 bg-white dark:bg-[#252336] border border-gray-200 dark:border-white/10 text-gray-800 dark:text-gray-200 rounded-xl text-[13px] font-['Lexend_Deca'] font-bold shadow-sm hover:border-gray-300 dark:hover:border-white/20 transition-colors inline-flex items-center gap-2">
                                     <LogIn className="w-4 h-4" /> Masuk Sekarang
                                 </button>
@@ -1950,7 +1918,7 @@ export default function NoteDetailPage() {
                                                     <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl rounded-tl-none">
                                                         <div className="flex justify-between items-start mb-2">
                                                             <h5 className="font-['Lexend_Deca'] font-bold text-[14px] text-gray-900 dark:text-gray-100">{cAuth.name || cAuth.username || "Anonim"}</h5>
-                                                            <span className="font-['Manrope'] text-[11px] font-bold text-gray-500 dark:text-gray-500">{comment.created_at ? new Date(comment.created_at).toLocaleDateString("id-ID") : "Baru saja"}</span>
+                                                            <span className="font-['Manrope'] text-[11px] font-bold text-gray-500 dark:text-gray-500">{comment.created_at ? new Date(comment.created_at).toLocaleDateString(language === 'id' ? 'id-ID' : language) : t("note_detail.date_just_now")}</span>
                                                         </div>
                                                         {comment.quote_context && (
                                                             <div className="mb-2 pl-3 border-l-[3px] border-indigo-200 dark:border-indigo-500/50 bg-indigo-50/50 dark:bg-indigo-500/10 py-1.5 pr-2 rounded-r-lg">
@@ -1971,18 +1939,14 @@ export default function NoteDetailPage() {
                                                                     <button
                                                                         onClick={() => handleUpdateComment(rootId)}
                                                                         className="px-4 py-1.5 bg-primary text-white text-[11px] font-['Lexend_Deca'] font-bold rounded-lg hover:bg-indigo-600 transition-colors"
-                                                                    >
-                                                                        Simpan
-                                                                    </button>
+                                                                    >{t("note_detail.save")}</button>
                                                                     <button
                                                                         onClick={() => {
                                                                             setEditingCommentId(null);
                                                                             setEditingCommentText("");
                                                                         }}
                                                                         className="px-4 py-1.5 bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 text-[11px] font-['Lexend_Deca'] font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-white/20 transition-colors"
-                                                                    >
-                                                                        Batal
-                                                                    </button>
+                                                                    >{t("note_detail.cancel")}</button>
                                                                 </div>
                                                             </div>
                                                         ) : (
@@ -1996,7 +1960,7 @@ export default function NoteDetailPage() {
                                                                 className={`flex items-center gap-1.5 transition-colors ${isLiked ? 'text-red-500' : 'hover:text-red-500'}`}
                                                             >
                                                                 <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-red-500' : ''}`} strokeWidth={3} />
-                                                                {comment.likes_count > 0 ? comment.likes_count : 'Suka'}
+                                                                {comment.likes_count > 0 ? comment.likes_count : t('note_detail.comment_like')}
                                                             </button>
                                                              <button 
                                                                  onClick={() => {
@@ -2005,9 +1969,7 @@ export default function NoteDetailPage() {
                                                                  }}
                                                                  className="flex items-center gap-1.5 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
                                                              >
-                                                                 <MessageSquare className="w-3.5 h-3.5" strokeWidth={3} />
-                                                                 Balas
-                                                             </button>
+                                                                 <MessageSquare className="w-3.5 h-3.5" strokeWidth={3} />{t("note_detail.reply")}</button>
                                                              
                                                              <div className="relative">
                                                                 <button 
@@ -2028,9 +1990,7 @@ export default function NoteDetailPage() {
                                                                                     }}
                                                                                     className="w-full text-left px-4 py-2.5 text-xs font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2.5 transition-colors"
                                                                                 >
-                                                                                    <Pencil className="w-3.5 h-3.5" />
-                                                                                    Edit Komentar
-                                                                                </button>
+                                                                                    <Pencil className="w-3.5 h-3.5" />{t("note_detail.edit_comment")}</button>
                                                                                 <button
                                                                                     onClick={() => {
                                                                                         setActiveCommentMenu(null);
@@ -2038,9 +1998,7 @@ export default function NoteDetailPage() {
                                                                                     }}
                                                                                     className="w-full text-left px-4 py-2.5 text-xs font-['Manrope'] font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 flex items-center gap-2.5 transition-colors"
                                                                                 >
-                                                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                                                    Hapus
-                                                                                </button>
+                                                                                    <Trash2 className="w-3.5 h-3.5" />{t("note_detail.delete")}</button>
                                                                             </>
                                                                         ) : (
                                                                             <button
@@ -2051,9 +2009,7 @@ export default function NoteDetailPage() {
                                                                                 }}
                                                                                 className="w-full text-left px-4 py-2.5 text-xs font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400 transition-colors flex items-center gap-2.5"
                                                                             >
-                                                                                <Flag className="w-3.5 h-3.5" />
-                                                                                Laporkan
-                                                                            </button>
+                                                                                <Flag className="w-3.5 h-3.5" />{t("note_detail.report")}</button>
                                                                         )}
                                                                     </div>
                                                                 )}
@@ -2073,7 +2029,7 @@ export default function NoteDetailPage() {
                                                                         <div className="flex-1 bg-gray-50/50 dark:bg-white/5 p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-white/5">
                                                                             <div className="flex justify-between items-start mb-1">
                                                                                 <h5 className="font-['Lexend_Deca'] font-bold text-[12px] text-gray-900 dark:text-gray-100">{rAuth.name || rAuth.username || "Anonim"}</h5>
-                                                                                <span className="font-['Manrope'] text-[10px] font-bold text-gray-500 dark:text-gray-500">{reply.created_at ? new Date(reply.created_at).toLocaleDateString("id-ID") : "Baru saja"}</span>
+                                                                                <span className="font-['Manrope'] text-[10px] font-bold text-gray-500 dark:text-gray-500">{reply.created_at ? new Date(reply.created_at).toLocaleDateString(language === 'id' ? 'id-ID' : language) : t("note_detail.date_just_now")}</span>
                                                                             </div>
                                                                             <p className="font-['Manrope'] text-[13px] text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
                                                                                 {reply.content}
@@ -2087,7 +2043,7 @@ export default function NoteDetailPage() {
                                                                     onClick={() => setIsCommentDrawerOpen(true)}
                                                                     className="ml-[40px] text-[12px] font-['Manrope'] font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors flex items-center gap-1"
                                                                 >
-                                                                    Lihat {childReplies.length - 2} balasan lainnya...
+                                                                    {t("note_detail.view_more_replies").replace("{{count}}", (childReplies.length - 2).toString())}
                                                                 </button>
                                                             )}
                                                         </div>
@@ -2101,7 +2057,7 @@ export default function NoteDetailPage() {
                                         onClick={() => setIsCommentDrawerOpen(true)}
                                         className="w-full py-4 mt-2 bg-gray-50 hover:bg-gray-100 dark:bg-white/5 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400 rounded-xl font-['Lexend_Deca'] font-bold text-[14px] transition-colors border border-dashed border-gray-200 dark:border-white/10 flex items-center justify-center gap-2"
                                     >
-                                        Muat Lebih Banyak ({comments.length - 2})
+                                        {t("note_detail.load_more_comments").replace("{{count}}", (comments.length - 2).toString())}
                                     </button>
                                 )}
                             </>
@@ -2117,9 +2073,7 @@ export default function NoteDetailPage() {
                                 Lainnya dari <span className="text-primary">{author.name || author.username}</span>
                             </h4>
                             {moreFromAuthor.length >= 4 && (
-                                <Link to={`/profile/${author.id || author._id}`} className="text-sm font-bold text-primary hover:text-indigo-700 transition-colors">
-                                    Lihat Semua
-                                </Link>
+                                <Link to={`/profile/${author.id || author._id}`} className="text-sm font-bold text-primary hover:text-indigo-700 transition-colors">{t("note_detail.view_all")}</Link>
                             )}
                         </div>
                         <div className="grid grid-cols-1 gap-4">
@@ -2131,7 +2085,7 @@ export default function NoteDetailPage() {
                                     description: recNote.content ? recNote.content.replace(/<[^>]*>?/gm, "").substring(0, 150) + "..." : "Tidak ada deskripsi",
                                     thumbnail: recNote.thumbnail || null,
                                     author: recNote.user ? { ...recNote.user, avatar: recNote.user.avatar || null } : { name: "Anonim", avatar: null },
-                                    mataPelajaran: recNote.mapel || "Lainnya",
+                                    mataPelajaran: recNote.mapel || t("note_detail.report_reason_other"),
                                     jenjang: recNote.jenjang || "-",
                                     kelas: recNote.kelas || "-",
                                     semester: recNote.semester || "-",
@@ -2150,7 +2104,7 @@ export default function NoteDetailPage() {
                 {/* Recommended Notes Section */}
                 <div className={`mt-8 mb-24 ${moreFromAuthor.length > 0 ? 'border-t border-gray-100 dark:border-white/5 pt-16' : 'border-t border-gray-100 dark:border-white/5 pt-16'}`}>
                     <h4 className="font-['Lexend_Deca'] font-extrabold text-2xl text-gray-900 dark:text-gray-100 mb-8">
-                        Rekomendasi <span className="text-primary">Catatan Lainnya</span>
+                        {t("note_detail.recommendation_title")} <span className="text-primary">{t("note_detail.recommendation_subtitle")}</span>
                     </h4>
                     <div className="grid grid-cols-1 gap-4">
                         {recommendedNotes.map((recNote: any) => {
@@ -2161,7 +2115,7 @@ export default function NoteDetailPage() {
                                 description: recNote.content ? recNote.content.replace(/<[^>]*>?/gm, "").substring(0, 150) + "..." : "Tidak ada deskripsi",
                                 thumbnail: recNote.thumbnail || null,
                                 author: recNote.user ? { ...recNote.user, avatar: recNote.user.avatar || null } : { name: "Anonim", avatar: null },
-                                mataPelajaran: recNote.mapel || "Lainnya",
+                                mataPelajaran: recNote.mapel || t("note_detail.report_reason_other"),
                                 jenjang: recNote.jenjang || "-",
                                 kelas: recNote.kelas || "-",
                                 semester: recNote.semester || "-",
@@ -2190,8 +2144,7 @@ export default function NoteDetailPage() {
                 } flex flex-col`}
             >
                 <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-white/5">
-                    <h4 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">
-                        Diskusi ({comments.length})
+                    <h4 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">{t("note_detail.discussion")} ({comments.length})
                     </h4>
                     <button
                         onClick={() => setIsCommentDrawerOpen(false)}
@@ -2206,9 +2159,7 @@ export default function NoteDetailPage() {
                     <div className="space-y-6 sm:space-y-8">
                         {comments.length === 0 ? (
                             <div className="text-center py-12">
-                                <p className="font-['Manrope'] text-base text-gray-600 dark:text-gray-400 font-bold">
-                                    Belum ada komentar.
-                                </p>
+                                <p className="font-['Manrope'] text-base text-gray-600 dark:text-gray-400 font-bold">{t("note_detail.no_comments_yet")}</p>
                             </div>
                         ) : (
                             comments
@@ -2274,7 +2225,7 @@ export default function NoteDetailPage() {
                                                                     comment.created_at ||
                                                                         Date.now(),
                                                                 ).toLocaleDateString(
-                                                                    "id-ID",
+                                                                    language === 'id' ? 'id-ID' : language,
                                                                 )}
                                                             </span>
                                                         </div>
@@ -2306,9 +2257,7 @@ export default function NoteDetailPage() {
                                                                                 }}
                                                                                 className="w-full text-left px-4 py-2.5 text-xs font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2.5 transition-colors"
                                                                             >
-                                                                                <Pencil className="w-3.5 h-3.5" />
-                                                                                Edit Komentar
-                                                                            </button>
+                                                                                <Pencil className="w-3.5 h-3.5" />{t("note_detail.edit_comment")}</button>
                                                                             <button
                                                                                 onClick={() => {
                                                                                     setActiveCommentMenu(null);
@@ -2316,9 +2265,7 @@ export default function NoteDetailPage() {
                                                                                 }}
                                                                                 className="w-full text-left px-4 py-2.5 text-xs font-['Manrope'] font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 flex items-center gap-2.5 transition-colors"
                                                                             >
-                                                                                <Trash2 className="w-3.5 h-3.5" />
-                                                                                Hapus
-                                                                            </button>
+                                                                                <Trash2 className="w-3.5 h-3.5" />{t("note_detail.delete")}</button>
                                                                         </>
                                                                     ) : (
                                                                         <button
@@ -2329,9 +2276,7 @@ export default function NoteDetailPage() {
                                                                             }}
                                                                             className="w-full text-left px-4 py-2.5 text-xs font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400 transition-colors flex items-center gap-2.5"
                                                                         >
-                                                                            <Flag className="w-3.5 h-3.5" />
-                                                                            Laporkan
-                                                                        </button>
+                                                                            <Flag className="w-3.5 h-3.5" />{t("note_detail.report")}</button>
                                                                     )}
                                                                 </div>
                                                             )}
@@ -2357,18 +2302,14 @@ export default function NoteDetailPage() {
                                                                 <button
                                                                     onClick={() => handleUpdateComment(cid)}
                                                                     className="px-4 py-1.5 bg-primary text-white text-[11px] font-['Lexend_Deca'] font-bold rounded-lg hover:bg-indigo-600 transition-colors"
-                                                                >
-                                                                    Simpan
-                                                                </button>
+                                                                >{t("note_detail.save")}</button>
                                                                 <button
                                                                     onClick={() => {
                                                                         setEditingCommentId(null);
                                                                         setEditingCommentText("");
                                                                     }}
                                                                     className="px-4 py-1.5 bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 text-[11px] font-['Lexend_Deca'] font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-white/20 transition-colors"
-                                                                >
-                                                                    Batal
-                                                                </button>
+                                                                >{t("note_detail.cancel")}</button>
                                                             </div>
                                                         </div>
                                                     ) : (
@@ -2387,7 +2328,7 @@ export default function NoteDetailPage() {
                                                                 }
                                                                 className={`w-3.5 h-3.5 ${isLiked ? "fill-red-500" : ""}`}
                                                             />{" "}
-                                                            Suka{" "}
+                                                            {t("note_detail.comment_like")}{" "}
                                                             {currentLikes > 0 &&
                                                                 `(${currentLikes})`}
                                                         </button>
@@ -2406,7 +2347,7 @@ export default function NoteDetailPage() {
                                                                 className="w-3.5 h-3.5"
                                                                 strokeWidth={2.5}
                                                             />{" "}
-                                                            Balas
+                                                            {t("note_detail.comment_reply")}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -2441,7 +2382,7 @@ export default function NoteDetailPage() {
                     {replyingTo && (
                         <div className="flex items-center justify-between mb-3 px-4 py-2 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl border border-indigo-100 dark:border-indigo-500/20">
                             <p className="text-xs font-['Manrope'] font-bold text-indigo-600 dark:text-indigo-400">
-                                Membalas{" "}
+                                {t("note_detail.comment_replying")} {" "}
                                 <span className="font-extrabold">
                                     @{replyingTo.name}
                                 </span>
@@ -2473,8 +2414,8 @@ export default function NoteDetailPage() {
                             onChange={(e) => setReplyText(e.target.value)}
                             placeholder={
                                 replyingTo
-                                    ? `Tulis balasan...`
-                                    : "Tulis diskusi..."
+                                    ? t("note_detail.write_reply")
+                                    : t("note_detail.write_discussion_short")
                             }
                             className="flex-1 px-4 py-3 bg-white dark:bg-[#13111C] border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none h-[48px] custom-scrollbar text-gray-900 dark:text-gray-100"
                         />
@@ -2535,9 +2476,7 @@ export default function NoteDetailPage() {
                                 }}
                                 className="flex items-center gap-1.5 px-2 py-1 text-[13px] font-['Lexend_Deca'] font-bold hover:text-amber-500 transition-colors hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg"
                             >
-                                <Highlighter className="w-4 h-4" strokeWidth={2.5} />
-                                HIGHLIGHT
-                            </button>
+                                <Highlighter className="w-4 h-4" strokeWidth={2.5} />{t("note_detail.highlight_btn")}</button>
                         </>
                     ) : (
                         <div className="flex items-center gap-1.5 px-1 animate-in fade-in zoom-in-95 duration-200">
@@ -2587,7 +2526,7 @@ export default function NoteDetailPage() {
                                 onClick={() => handleDeleteHighlight(activeHighlightId)}
                                 className="flex items-center gap-1.5 px-2 py-1 text-xs font-['Lexend_Deca'] font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-md transition-colors"
                             >
-                                <Trash2 className="w-3 h-3" /> Hapus Highlight
+                                <Trash2 className="w-3 h-3" /> {t("note_detail.delete_highlight")}
                             </button>
                             <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-white dark:border-t-[#2D2B3F]"></div>
                         </div>
@@ -2621,11 +2560,9 @@ export default function NoteDetailPage() {
                             <div className="w-14 h-14 bg-white dark:bg-[#252336] text-indigo-600 dark:text-primary rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm dark:shadow-none border border-indigo-200/30 dark:border-primary/20">
                                 <Share2 className="w-7 h-7" strokeWidth={2.5} />
                             </div>
-                            <h3 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 dark:text-gray-100 mb-1">
-                                Bagikan Catatan
-                            </h3>
+                            <h3 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 dark:text-gray-100 mb-1">{t("note_detail.share_note")}</h3>
                             <p className="font-['Manrope'] text-[13px] text-gray-600 font-bold px-6">
-                                Sebarkan ilmu bermanfaat ini ke teman-temanmu.
+                                {t("note_detail.share_cta")}
                             </p>
                         </div>
 
@@ -2817,9 +2754,7 @@ export default function NoteDetailPage() {
                             </div>
 
                             <div className="relative group mb-2">
-                                <label className="block text-left text-[11px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">
-                                    Salin Tautan
-                                </label>
+                                <label className="block text-left text-[11px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">{t("note_detail.copy_link")}</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400">
                                         <Link2 className="w-4 h-4" />
@@ -2836,13 +2771,13 @@ export default function NoteDetailPage() {
                                                 window.location.href,
                                             );
                                             showToast(
-                                                "Link berhasil disalin!",
+                                                t("note_detail.copy_link_copied"),
                                                 "success",
                                             );
                                         }}
                                         className="absolute right-2 top-2 bottom-2 px-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 dark:shadow-none active:scale-95"
                                     >
-                                        Salin
+                                        {t("note_detail.copy_btn")}
                                     </button>
                                 </div>
                             </div>
@@ -2852,9 +2787,7 @@ export default function NoteDetailPage() {
                             <button
                                 onClick={() => setShowShareModal(false)}
                                 className="w-full py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-all active:scale-95"
-                            >
-                                Tutup Modal
-                            </button>
+                            >{t("note_detail.close_modal")}</button>
                         </div>
                     </div>
                 </div>
@@ -2870,35 +2803,28 @@ export default function NoteDetailPage() {
                                 <Flag className="w-8 h-8" strokeWidth={2.5} />
                             </div>
                             <h3 className="font-['Lexend_Deca'] font-extrabold text-2xl text-gray-900 dark:text-gray-100 mb-1">
-                                Laporkan{" "}
-                                {reportTarget?.type === "note"
-                                    ? "Catatan"
-                                    : "Komentar"}
+                                {reportTarget?.type === "note" ? t("note_detail.report_note") : t("note_detail.report_comment")}{" "}
+
                             </h3>
-                            <p className="font-['Manrope'] text-[14px] text-gray-600 dark:text-gray-400 font-bold px-6">
-                                Bantu kami menjaga ekosistem Ba-Yu tetap
-                                edukatif, aman, dan nyaman.
-                            </p>
+                            <p className="font-['Manrope'] text-[14px] text-gray-600 dark:text-gray-400 font-bold px-6">{t("note_detail.report_help_desc")}</p>
                         </div>
 
                         <div className="p-8 pt-7 overflow-y-auto custom-scrollbar flex-1">
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block font-['Manrope'] text-[12px] font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-[0.1em] mb-2 ml-1">
-                                        Alasan Utama
-                                    </label>
+                                    <label className="block font-['Manrope'] text-[12px] font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-[0.1em] mb-2 ml-1">{t("note_detail.report_main_reason")}</label>
                                     <div className="relative group">
                                         <CustomSelect
                                             value={reportReason}
                                             onChange={(val) => setReportReason(val as string)}
                                             options={[
-                                                { value: "", label: "Pilih alasan pelaporan..." },
-                                                { value: "Spam", label: "Spam pemasaran / Iklan mengganggu" },
-                                                { value: "Informasi Palsu", label: "Informasi keliru / Misinformasi materi" },
-                                                { value: "Kata Kasar", label: "Ujaran kebencian / Kata-kata kasar" },
-                                                { value: "Pelecehan", label: "Pelecehan / Intimidasi terhadap user" },
-                                                { value: "Hak Cipta", label: "Pelanggaran Hak Cipta / Plagiasi" },
-                                                { value: "Lainnya", label: "Alasan lainnya..." },
+                                                { value: "", label: t("note_detail.report_reason_placeholder") },
+                                                { value: "Spam", label: t("note_detail.report_reason_spam") },
+                                                { value: "Informasi Palsu", label: t("note_detail.report_reason_inappropriate") },
+                                                { value: "Kata Kasar", label: t("note_detail.report_reason_harassment") },
+                                                { value: "Pelecehan", label: t("note_detail.report_reason_harassment") },
+                                                { value: "Hak Cipta", label: t("note_detail.report_reason_copyright") },
+                                                { value: t("note_detail.report_reason_other"), label: t("note_detail.report_reason_other") },
                                             ]}
                                         />
                                     </div>
@@ -2913,7 +2839,7 @@ export default function NoteDetailPage() {
                                         onChange={(e) =>
                                             setReportDescription(e.target.value)
                                         }
-                                        placeholder="Jelaskan secara singkat mengapa Anda melaporkan konten ini..."
+                                        placeholder={t("note_detail.report_desc_placeholder")}
                                         className="w-full px-5 py-4 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[14.5px] focus:outline-none focus:ring-4 focus:ring-rose-500/5 focus:border-rose-400 focus:bg-white dark:focus:bg-white/10 transition-all resize-none h-32 text-gray-800 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 font-bold hover:border-gray-300 dark:hover:border-white/20"
                                     ></textarea>
                                 </div>
@@ -2924,7 +2850,7 @@ export default function NoteDetailPage() {
                                     onClick={() => setShowReportModal(false)}
                                     className="px-6 py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-all active:scale-95"
                                 >
-                                    Batalkan
+                                    {t("note_detail.report_cancel")}
                                 </button>
                                 <button
                                     onClick={handleReportSubmit}
@@ -2936,10 +2862,10 @@ export default function NoteDetailPage() {
                                     {isSubmittingReport ? (
                                         <>
                                             <Loader2 className="w-4 h-4 animate-spin" />
-                                            Mengirim...
+                                            {t("note_detail.report_sending")}
                                         </>
                                     ) : (
-                                        "Kirim Laporan"
+                                        t("note_detail.report_send")
                                     )}
                                 </button>
                             </div>
@@ -2955,6 +2881,8 @@ export default function NoteDetailPage() {
                 description={confirmConfig.description}
                 variant={confirmConfig.variant}
                 onConfirm={confirmConfig.onConfirm}
+                cancelText={confirmConfig.cancelText}
+                confirmText={confirmConfig.confirmText}
             />
         </>
     );

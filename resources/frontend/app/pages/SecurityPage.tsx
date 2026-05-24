@@ -4,11 +4,13 @@ import { ArrowLeft, Lock, Shield, Smartphone, Loader2, KeyRound } from "lucide-r
 import { useNavigate } from "react-router";
 import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
+import { useTranslation } from "../hooks/useTranslation";
 
 export default function SecurityPage() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const { showToast } = useToast();
+    const { t } = useTranslation();
 
     const [passwords, setPasswords] = useState({
         current_password: "",
@@ -18,17 +20,17 @@ export default function SecurityPage() {
 
     const handleSavePassword = async () => {
         if (!passwords.current_password || !passwords.new_password || !passwords.new_password_confirmation) {
-            showToast("Semua kolom kata sandi harus diisi", "error");
+            showToast(t("security.all_fields_required"), "error");
             return;
         }
 
         if (passwords.new_password !== passwords.new_password_confirmation) {
-            showToast("Konfirmasi kata sandi baru tidak cocok", "error");
+            showToast(t("security.password_mismatch"), "error");
             return;
         }
 
         if (passwords.new_password.length < 8) {
-            showToast("Kata sandi baru minimal 8 karakter", "error");
+            showToast(t("security.password_min_length"), "error");
             return;
         }
 
@@ -49,7 +51,7 @@ export default function SecurityPage() {
             });
             */
 
-            showToast("Kata sandi berhasil diperbarui!", "success");
+            showToast(t("security.password_updated"), "success");
             setPasswords({
                 current_password: "",
                 new_password: "",
@@ -58,7 +60,7 @@ export default function SecurityPage() {
         } catch (error: any) {
             console.error("Failed to update password", error);
             showToast(
-                error.response?.data?.message || "Gagal mengubah kata sandi. Periksa kata sandi lama anda.",
+                error.response?.data?.message || t("security.password_update_failed"),
                 "error"
             );
         } finally {
@@ -78,7 +80,7 @@ export default function SecurityPage() {
                         <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                     </button>
                     <h1 className="text-gray-900 dark:text-gray-100 font-['Lexend_Deca'] font-bold text-lg">
-                        Kata Sandi & Keamanan
+                        {t("security.title")}
                     </h1>
                     <div className="w-10"></div>
                 </div>
@@ -90,18 +92,18 @@ export default function SecurityPage() {
                             <div className="flex items-center gap-2 mb-2">
                                 <Lock className="w-4 h-4 text-indigo-600 dark:text-primary" />
                                 <h2 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100">
-                                    Ubah Kata Sandi
+                                    {t("security.change_password")}
                                 </h2>
                             </div>
 
                             <p className="text-[13px] text-gray-500 dark:text-gray-400 font-['Manrope'] leading-relaxed mb-4">
-                                Pastikan kata sandi barumu unik dan kuat, setidaknya terdiri dari 8 karakter dengan kombinasi angka dan huruf.
+                                {t("security.change_password_desc")}
                             </p>
 
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-['Manrope'] font-bold text-gray-900 dark:text-gray-200 mb-2">
-                                        Kata Sandi Saat Ini
+                                        {t("security.current_password")}
                                     </label>
                                     <div className="relative">
                                         <KeyRound className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -110,7 +112,7 @@ export default function SecurityPage() {
                                             value={passwords.current_password}
                                             onChange={(e) => setPasswords({ ...passwords, current_password: e.target.value })}
                                             className="w-full pl-11 pr-4 py-3.5 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                                            placeholder="Masukkan kata sandi lama"
+                                            placeholder={t("security.current_password_placeholder")}
                                             disabled={loading}
                                         />
                                     </div>
@@ -118,28 +120,28 @@ export default function SecurityPage() {
 
                                 <div>
                                     <label className="block text-sm font-['Manrope'] font-bold text-gray-900 dark:text-gray-200 mb-2">
-                                        Kata Sandi Baru
+                                        {t("security.new_password")}
                                     </label>
                                     <input
                                         type="password"
                                         value={passwords.new_password}
                                         onChange={(e) => setPasswords({ ...passwords, new_password: e.target.value })}
                                         className="w-full px-4 py-3.5 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                                        placeholder="Ketik kata sandi baru"
+                                        placeholder={t("security.new_password_placeholder")}
                                         disabled={loading}
                                     />
                                 </div>
 
                                 <div>
                                     <label className="block text-sm font-['Manrope'] font-bold text-gray-900 dark:text-gray-200 mb-2">
-                                        Konfirmasi Kata Sandi Baru
+                                        {t("security.confirm_new_password")}
                                     </label>
                                     <input
                                         type="password"
                                         value={passwords.new_password_confirmation}
                                         onChange={(e) => setPasswords({ ...passwords, new_password_confirmation: e.target.value })}
                                         className="w-full px-4 py-3.5 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                                        placeholder="Ketik ulang kata sandi baru"
+                                        placeholder={t("security.confirm_new_password_placeholder")}
                                         disabled={loading}
                                     />
                                 </div>
@@ -151,9 +153,9 @@ export default function SecurityPage() {
                                 className="w-full mt-4 flex items-center justify-center gap-2 bg-gray-900 dark:bg-primary text-white py-3.5 rounded-xl font-['Lexend_Deca'] font-bold text-[14px] shadow-md shadow-gray-200 dark:shadow-primary/10 hover:bg-black dark:hover:bg-primary/90 transition-all disabled:opacity-70"
                             >
                                 {loading ? (
-                                    <><Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...</>
+                                    <><Loader2 className="w-4 h-4 animate-spin" /> {t("security.saving")}</>
                                 ) : (
-                                    "Perbarui Kata Sandi"
+                                    t("security.update_password")
                                 )}
                             </button>
                         </div>
@@ -166,10 +168,10 @@ export default function SecurityPage() {
                                 </div>
                                 <div className="flex-1">
                                     <h2 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100">
-                                        Autentikasi Dua Faktor
+                                        {t("security.two_factor_auth")}
                                     </h2>
                                     <p className="text-[12px] text-gray-500 dark:text-gray-400 font-['Manrope'] mt-0.5">
-                                        Perlindungan ekstra untuk akunmu
+                                        {t("security.extra_protection")}
                                     </p>
                                 </div>
                                 <div className="w-12 h-6 bg-gray-200 dark:bg-white/10 rounded-full relative cursor-not-allowed opacity-60">
@@ -179,7 +181,7 @@ export default function SecurityPage() {
                             <div className="mt-4 p-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/5">
                                 <p className="text-[12px] text-gray-500 dark:text-gray-400 font-['Manrope'] font-medium flex items-center gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0"></span>
-                                    Fitur sedang dalam pengembangan
+                                    {t("security.feature_in_development")}
                                 </p>
                             </div>
                         </div>
@@ -187,7 +189,7 @@ export default function SecurityPage() {
                         {/* Section 3: Login Activity (Mock) */}
                         <div className="bg-white dark:bg-[#1C1A29] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none space-y-4">
                             <h2 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100">
-                                Tempat Anda Login
+                                {t("security.login_activity")}
                             </h2>
                             
                             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/5">
@@ -195,7 +197,7 @@ export default function SecurityPage() {
                                     <Smartphone className="w-6 h-6 text-gray-400 dark:text-gray-500" />
                                     <div>
                                         <h4 className="font-['Manrope'] font-bold text-[14px] text-gray-900 dark:text-gray-100">Windows • Chrome</h4>
-                                        <p className="text-[12px] text-emerald-600 dark:text-emerald-400 font-medium mt-0.5">Sedang aktif sekarang</p>
+                                        <p className="text-[12px] text-emerald-600 dark:text-emerald-400 font-medium mt-0.5">{t("security.active_now_extended")}</p>
                                     </div>
                                 </div>
                             </div>

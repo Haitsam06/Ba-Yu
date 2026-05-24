@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { AuthModal } from './auth-modal';
 import { useAuth } from '../contexts/AuthContext';
 import { AvatarImage } from './ui/DefaultImages';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface NavbarProps {
   variant?: 'default' | 'dashboard';
@@ -15,6 +16,7 @@ export function Navbar({ variant = 'default' }: NavbarProps) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
   const [isScrolled, setIsScrolled] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -66,19 +68,19 @@ export function Navbar({ variant = 'default' }: NavbarProps) {
               to="/"
               className="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors font-semibold text-[15px] hover:-translate-y-0.5 transform duration-200"
             >
-              Beranda
+              {t("navbar.home") || "Beranda"}
             </Link>
             <a
               href="#tentang"
               className="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors font-semibold text-[15px] hover:-translate-y-0.5 transform duration-200"
             >
-              Tentang
+              {t("navbar.about") || "Tentang"}
             </a>
             <Link
               to="/katalog"
               className="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors font-semibold text-[15px] hover:-translate-y-0.5 transform duration-200"
             >
-              Jelajahi
+              {t("navbar.explore") || "Jelajahi"}
             </Link>
           </div>
 
@@ -99,13 +101,13 @@ export function Navbar({ variant = 'default' }: NavbarProps) {
                   className="hidden md:block font-bold text-gray-700 dark:text-gray-300 hover:text-primary px-3 sm:px-4 py-2 hover:bg-gray-50/50 dark:hover:bg-white/5 rounded-full transition-colors text-sm"
                   onClick={() => openAuthModal('login')}
                 >
-                  Masuk
+                  {t("navbar.login") || "Masuk"}
                 </button>
                 <button
                   className={`bg-primary hover:bg-indigo-700 text-white rounded-full font-bold shadow-md hover:shadow-lg hover:shadow-primary/30 transition-all hover:-translate-y-0.5 ${isScrolled ? 'px-5 py-2 text-sm' : 'px-6 md:px-7 py-2.5 md:py-3 text-sm md:text-[15px]'}`}
                   onClick={() => openAuthModal('register')}
                 >
-                  Daftar Gratis
+                  {t("navbar.register_free") || "Daftar Gratis"}
                 </button>
               </>
             )}

@@ -143,15 +143,25 @@ const LearningStatisticsPage = () => {
         // 3. Ubah format grafik dari Backend biar cocok sama Recharts Frontend
         // Backend ngirim: { Sen: 4, Sel: 0, ... }
         // Frontend butuh: [{ label: 'Sen', value: 4 }, ...]
-        const formattedWeeklyChart = Object.keys(apiData.weekly_chart).map(key => ({
-            label: key,
-            value: apiData.weekly_chart[key] // Ini dalam menit ya!
-        }));
+        const dayMap: Record<string, number> = {
+            'Min': 0, 'Sen': 1, 'Sel': 2, 'Rab': 3, 'Kam': 4, 'Jum': 5, 'Sab': 6,
+            'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6
+        };
+        const calendarDays = t('calendar.days', { returnObjects: true }) as string[];
+
+        const formattedWeeklyChart = Object.keys(apiData.weekly_chart).map(key => {
+            const dayIndex = dayMap[key];
+            const localizedLabel = dayIndex !== undefined && calendarDays ? calendarDays[dayIndex] : key;
+            return {
+                label: localizedLabel,
+                value: apiData.weekly_chart[key] // Ini dalam menit ya!
+            };
+        });
         setDynamicWeeklyData(formattedWeeklyChart);
 
         if (apiData.monthly_chart) {
             const formattedMonthlyChart = Object.keys(apiData.monthly_chart).map(key => ({
-                label: key,
+                label: key.replace(/Minggu|Week/i, t('stats.week') || 'Minggu'),
                 value: apiData.monthly_chart[key] // Durasi dalam menit per minggu
             }));
             setDynamicMonthlyData(formattedMonthlyChart);
@@ -317,8 +327,8 @@ const LearningStatisticsPage = () => {
                                  </div>
                               </div>
                               <div className="grid grid-cols-7 gap-1 text-center mb-1">
-                                 {(t('calendar.days', { returnObjects: true }) as string[]).map((d, i) => (
-                                    <span key={i} className="text-[9px] font-bold text-white/60">{d}</span>
+                                 {((t('calendar.days', { returnObjects: true }) || ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"]) as string[]).map((d, i) => (
+                                    <span key={i} className="text-[9px] font-bold text-white/60">{d.charAt(0).toUpperCase()}</span>
                                  ))}
                               </div>
                               <div className="grid grid-cols-7 gap-1">
@@ -497,8 +507,8 @@ const LearningStatisticsPage = () => {
                     </div>
                  </div>
                  <div className="grid grid-cols-7 gap-1.5 text-center mb-2">
-                    {["M", "S", "S", "R", "K", "J", "S"].map((d, i) => (
-                       <span key={i} className="text-[10px] font-bold text-slate-400">{d}</span>
+                    {((t('calendar.days', { returnObjects: true }) || ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"]) as string[]).map((d, i) => (
+                       <span key={i} className="text-[10px] font-bold text-slate-400">{d.charAt(0).toUpperCase()}</span>
                     ))}
                  </div>
                  <div className="grid grid-cols-7 gap-1.5">

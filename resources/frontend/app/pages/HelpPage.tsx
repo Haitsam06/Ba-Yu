@@ -2,30 +2,32 @@ import { useState } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import { ArrowLeft, Search, Mail, MessageCircle, ChevronDown, BookOpen, ExternalLink } from "lucide-react";
 import { Link, useNavigate } from "react-router";
-
-const FAQS = [
-    {
-        question: "Bagaimana cara menjadi Pakar di Ba-Yu?",
-        answer: "Untuk menjadi Pakar, kamu harus sering membagikan catatan berkualitas. Jika catatanmu sering masuk kategori 'Populer' dan mendapatkan banyak like, tim Admin kami akan meninjaunya dan memberikan status Pakar."
-    },
-    {
-        question: "Apakah saya bisa mendownload catatan ke PDF?",
-        answer: "Tentu saja! Di setiap halaman detail catatan, kamu bisa menekan tombol Download di pojok kanan atas atau di bagian bawah konten untuk menyimpannya dalam format PDF."
-    },
-    {
-        question: "Kenapa akun saya tidak bisa login?",
-        answer: "Pastikan email dan kata sandi yang kamu masukkan benar. Jika kamu baru saja menghapus akun, akunmu mungkin berada dalam status Dormant. Coba login kembali untuk mengaktifkannya."
-    },
-    {
-        question: "Bagaimana cara menulis rumus matematika?",
-        answer: "Di halaman penulisan catatan, klik ikon kalkulator di toolbar samping untuk membuka editor rumus. Kamu bisa menulis formula menggunakan format KaTeX."
-    }
-];
+import { useTranslation } from "../hooks/useTranslation";
 
 export default function HelpPage() {
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState("");
     const [openFaq, setOpenFaq] = useState<number | null>(0);
+    const { t } = useTranslation();
+
+    const FAQS = [
+        {
+            question: t("help_page.faqs.0.q") || "Bagaimana cara menjadi Pakar di Ba-Yu?",
+            answer: t("help_page.faqs.0.a") || "Untuk menjadi Pakar, kamu harus sering membagikan catatan berkualitas. Jika catatanmu sering masuk kategori 'Populer' dan mendapatkan banyak like, tim Admin kami akan meninjaunya dan memberikan status Pakar."
+        },
+        {
+            question: t("help_page.faqs.1.q") || "Apakah saya bisa mendownload catatan ke PDF?",
+            answer: t("help_page.faqs.1.a") || "Tentu saja! Di setiap halaman detail catatan, kamu bisa menekan tombol Download di pojok kanan atas atau di bagian bawah konten untuk menyimpannya dalam format PDF."
+        },
+        {
+            question: t("help_page.faqs.2.q") || "Kenapa akun saya tidak bisa login?",
+            answer: t("help_page.faqs.2.a") || "Pastikan email dan kata sandi yang kamu masukkan benar. Jika kamu baru saja menghapus akun, akunmu mungkin berada dalam status Dormant. Coba login kembali untuk mengaktifkannya."
+        },
+        {
+            question: t("help_page.faqs.3.q") || "Bagaimana cara menulis rumus matematika?",
+            answer: t("help_page.faqs.3.a") || "Di halaman penulisan catatan, klik ikon kalkulator di toolbar samping untuk membuka editor rumus. Kamu bisa menulis formula menggunakan format KaTeX."
+        }
+    ];
 
     const filteredFaqs = FAQS.filter(faq => 
         faq.question.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -44,7 +46,7 @@ export default function HelpPage() {
                         <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                     </button>
                     <h1 className="text-gray-900 dark:text-gray-100 font-['Lexend_Deca'] font-bold text-lg">
-                        Pusat Bantuan
+                        {t("help_page.title") || "Pusat Bantuan"}
                     </h1>
                     <div className="w-10"></div>
                 </div>
@@ -53,10 +55,10 @@ export default function HelpPage() {
                     {/* Hero Section */}
                     <div className="text-center mb-8">
                         <h2 className="font-['Lexend_Deca'] font-extrabold text-2xl text-gray-900 dark:text-gray-100 mb-2">
-                            Halo, ada yang bisa dibantu?
+                            {t("help_page.hero_title") || "Halo, ada yang bisa dibantu?"}
                         </h2>
                         <p className="font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400">
-                            Cari jawaban atau hubungi tim dukungan kami di bawah ini.
+                            {t("help_page.hero_desc") || "Cari jawaban atau hubungi tim dukungan kami di bawah ini."}
                         </p>
                     </div>
 
@@ -67,7 +69,7 @@ export default function HelpPage() {
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Cari pertanyaan..."
+                            placeholder={t("help_page.search_placeholder") || "Cari pertanyaan..."}
                             className="w-full pl-12 pr-4 py-4 bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm transition-all"
                         />
                     </div>
@@ -77,7 +79,7 @@ export default function HelpPage() {
                         <div className="bg-white dark:bg-[#1C1A29] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none">
                             <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
                                 <BookOpen className="w-5 h-5 text-primary" />
-                                Pertanyaan Umum (FAQ)
+                                {t("help_page.faq_title") || "Pertanyaan Umum (FAQ)"}
                             </h3>
                             
                             <div className="divide-y divide-gray-100 dark:divide-white/5">
@@ -106,7 +108,7 @@ export default function HelpPage() {
                                     ))
                                 ) : (
                                     <div className="py-6 text-center text-gray-500 font-['Manrope'] text-[13px]">
-                                        Tidak ada hasil untuk pencarian "{searchQuery}"
+                                        {(t("help_page.no_results") || 'Tidak ada hasil untuk pencarian "{query}"').replace('{query}', searchQuery)}
                                     </div>
                                 )}
                             </div>
@@ -115,7 +117,7 @@ export default function HelpPage() {
                         {/* Contact Support */}
                         <div className="bg-white dark:bg-[#1C1A29] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-sm dark:shadow-none">
                             <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 mb-4">
-                                Masih Butuh Bantuan?
+                                {t("help_page.contact_title") || "Masih Butuh Bantuan?"}
                             </h3>
                             
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -129,8 +131,8 @@ export default function HelpPage() {
                                         <MessageCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                                     </div>
                                     <div>
-                                        <h4 className="font-['Manrope'] font-bold text-[14px] text-emerald-900 dark:text-emerald-100">WhatsApp</h4>
-                                        <p className="font-['Manrope'] text-[12px] text-emerald-700 dark:text-emerald-300/80 mt-0.5">Respons cepat</p>
+                                        <h4 className="font-['Manrope'] font-bold text-[14px] text-emerald-900 dark:text-emerald-100">{t("help_page.contact_wa_title") || "WhatsApp"}</h4>
+                                        <p className="font-['Manrope'] text-[12px] text-emerald-700 dark:text-emerald-300/80 mt-0.5">{t("help_page.contact_wa_desc") || "Respons cepat"}</p>
                                     </div>
                                 </a>
 
@@ -142,8 +144,8 @@ export default function HelpPage() {
                                         <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                                     </div>
                                     <div>
-                                        <h4 className="font-['Manrope'] font-bold text-[14px] text-blue-900 dark:text-blue-100">Email</h4>
-                                        <p className="font-['Manrope'] text-[12px] text-blue-700 dark:text-blue-300/80 mt-0.5">Detail & lampiran</p>
+                                        <h4 className="font-['Manrope'] font-bold text-[14px] text-blue-900 dark:text-blue-100">{t("help_page.contact_email_title") || "Email"}</h4>
+                                        <p className="font-['Manrope'] text-[12px] text-blue-700 dark:text-blue-300/80 mt-0.5">{t("help_page.contact_email_desc") || "Detail & lampiran"}</p>
                                     </div>
                                 </a>
                             </div>
@@ -154,10 +156,10 @@ export default function HelpPage() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h3 className="font-['Lexend_Deca'] font-bold text-white mb-1">
-                                        Panduan Komunitas
+                                        {t("help_page.guidelines_title") || "Panduan Komunitas"}
                                     </h3>
                                     <p className="font-['Manrope'] text-[13px] text-gray-400">
-                                        Baca aturan dan etika berbagi catatan di Ba-Yu.
+                                        {t("help_page.guidelines_desc") || "Baca aturan dan etika berbagi catatan di Ba-Yu."}
                                     </p>
                                 </div>
                                 <ExternalLink className="w-5 h-5 text-gray-500 group-hover:text-white transition-colors" />
