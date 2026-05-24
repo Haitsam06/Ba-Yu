@@ -22,6 +22,8 @@ import { TagList } from "./ui/TagList";
 import { useBookmarks } from "../contexts/BookmarkContext";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../contexts/ToastContext";
+import { useTranslation } from "../hooks/useTranslation";
+import { formatEducationLevel } from "../utils/formatEducationLevel";
 
 interface NoteCardProps {
     note: {
@@ -65,6 +67,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
     const { user } = useAuth();
     const { showToast } = useToast();
     const navigate = useNavigate();
+    const { t, language } = useTranslation();
     
     const [showMenu, setShowMenu] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -84,10 +87,10 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
     const authorId = note.author?.id || note.author?._id;
     
     const formatDate = (dateValue: any) => {
-        if (!dateValue) return "Baru saja";
+        if (!dateValue) return t('notifications.time_just_now') !== 'notifications.time_just_now' ? t('notifications.time_just_now') : "Baru saja";
         const d = new Date(dateValue);
-        if (isNaN(d.getTime())) return "Baru saja";
-        return d.toLocaleDateString("id-ID", {
+        if (isNaN(d.getTime())) return t('notifications.time_just_now') !== 'notifications.time_just_now' ? t('notifications.time_just_now') : "Baru saja";
+        return d.toLocaleDateString(language === 'id' ? 'id-ID' : language, {
             day: "numeric",
             month: "short",
             year: "numeric",
@@ -128,10 +131,12 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                         </div>
                     </Link>
                     <span className="text-gray-700 dark:text-gray-500 px-0.5 font-bold">
-                        di
+                        {t('noteCard.in') !== 'noteCard.in' ? t('noteCard.in') : 'di'}
                     </span>
-                    <span className="font-extrabold text-gray-900 dark:text-gray-300 tracking-tight">
-                        {note.mataPelajaran}
+                    <span className="text-gray-800 dark:text-gray-400 font-bold tracking-tight">
+                        {t(`subjects.${note.mataPelajaran.toLowerCase().replace(/ /g, '-')}`) !== `subjects.${note.mataPelajaran.toLowerCase().replace(/ /g, '-')}` 
+                          ? t(`subjects.${note.mataPelajaran.toLowerCase().replace(/ /g, '-')}`) 
+                          : note.mataPelajaran}
                     </span>
                     {note.jenjang && note.jenjang !== "Umum" && note.jenjang !== "-" && (
                         <>
@@ -139,9 +144,11 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                 •
                             </span>
                             <span className="text-gray-800 dark:text-gray-400 font-bold tracking-tight">
-                                {note.jenjang === "Kuliah"
-                                    ? `${note.kelas || "S1/D4"} Semester ${note.semester || 1}`
-                                    : (note.kelas && note.kelas !== "Semua" && note.kelas !== "-" ? `${note.jenjang} Kelas ${note.kelas}` : note.jenjang)}
+                                {note.jenjang && note.kelas && note.semester 
+                                    ? formatEducationLevel(note.jenjang, note.kelas, Number(note.semester), language)
+                                    : note.jenjang === "Kuliah"
+                                        ? `${note.kelas || "S1/D4"} Semester ${note.semester || 1}`
+                                        : (note.kelas && note.kelas !== "Semua" && note.kelas !== "-" ? `${note.jenjang} Kelas ${note.kelas}` : note.jenjang)}
                             </span>
                         </>
                     )}
@@ -154,7 +161,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
 
                     {isDraft && (
                         <span className="ml-1.5 px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20 text-[10px] font-bold uppercase tracking-wider">
-                            Draft
+                            {t('noteCard.draft_label') !== 'noteCard.draft_label' ? t('noteCard.draft_label') : 'Draft'}
                         </span>
                     )}
                 </div>
@@ -165,7 +172,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                     className="block mb-2 outline-none font-['Lexend_Deca'] cursor-pointer"
                 >
                     <h2 className="text-[20px] md:text-[22px] font-extrabold text-gray-900 dark:text-gray-100 leading-[1.25] tracking-tight group-hover:text-primary transition-colors line-clamp-2">
-                        {note.title || (isDraft ? "Draft Tanpa Judul" : "Tanpa Judul")}
+                        {note.title || (isDraft ? (t('noteCard.untitled_draft') !== 'noteCard.untitled_draft' ? t('noteCard.untitled_draft') : "Draft Tanpa Judul") : (t('noteCard.untitled') !== 'noteCard.untitled' ? t('noteCard.untitled') : "Tanpa Judul"))}
                     </h2>
                 </Link>
 
@@ -187,7 +194,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                             strokeWidth={2.5}
                         />
                         <span className="text-[13px] font-['Manrope']">
-                            {isDraft ? `Edit terakhir: ${formattedUpdateDate}` : formattedDate}
+                            {isDraft ? `${t('noteCard.last_edit') !== 'noteCard.last_edit' ? t('noteCard.last_edit') : 'Edit terakhir:'} ${formattedUpdateDate}` : formattedDate}
                         </span>
                     </div>
 
@@ -271,7 +278,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                             }}
                                             className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
                                         >
-                                            <Share2 className="w-4 h-4 text-gray-500 dark:text-gray-400" /> Bagikan
+                                            <Share2 className="w-4 h-4 text-gray-500 dark:text-gray-400" /> {t('noteCard.share') !== 'noteCard.share' ? t('noteCard.share') : 'Bagikan'}
                                         </button>
                                         <button
                                             onClick={async (e) => { 
@@ -284,14 +291,14 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                                     const res = await axios.get(`/api/v1/posts/${note.id}`, {
                                                         headers: token ? { Authorization: `Bearer ${token}` } : {}
                                                     });
-                                                    downloadNoteAsPDF(res.data.data, showToast);
+                                                    downloadNoteAsPDF(res.data.data, showToast, t, language);
                                                 } catch (err) {
-                                                    showToast("Gagal mengunduh catatan", "error");
+                                                    showToast(t('noteCard.download_fail') !== 'noteCard.download_fail' ? t('noteCard.download_fail') : "Gagal mengunduh catatan", "error");
                                                 }
                                             }}
                                             className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
                                         >
-                                            <Download className="w-4 h-4 text-gray-500 dark:text-gray-400" /> Unduh
+                                            <Download className="w-4 h-4 text-gray-500 dark:text-gray-400" /> {t('noteCard.download') !== 'noteCard.download' ? t('noteCard.download') : 'Unduh'}
                                         </button>
                                         
                                         {user && (user.id === authorId || user._id === authorId) && !note.is_verified && !note.submitted_for_review && (
@@ -331,7 +338,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                                     }}
                                                     className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
                                                 >
-                                                    <Edit2 className="w-4 h-4 text-gray-500 dark:text-gray-400" /> Edit Catatan
+                                                    <Edit2 className="w-4 h-4 text-gray-500 dark:text-gray-400" /> {t('noteCard.edit') !== 'noteCard.edit' ? t('noteCard.edit') : 'Edit Catatan'}
                                                 </button>
                                                 <button
                                                     onClick={(e) => { 
@@ -342,7 +349,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                                     }}
                                                     className="w-full text-left px-4 py-2 text-[13px] font-['Manrope'] font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 flex items-center gap-2"
                                                 >
-                                                    <Trash2 className="w-4 h-4" /> Hapus
+                                                    <Trash2 className="w-4 h-4" /> {t('noteCard.delete') !== 'noteCard.delete' ? t('noteCard.delete') : 'Hapus'}
                                                 </button>
                                             </>
                                         )}
@@ -376,7 +383,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                     {/* Floating badge */}
                     <div className="absolute top-2 right-2 bg-white/90 dark:bg-black/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 text-[10px] font-['Lexend_Deca'] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
                         {isDraft ? (
-                            <><FileText className="w-3 h-3" /> DRAF</>
+                            <><FileText className="w-3 h-3" /> {t('noteCard.draft_badge') !== 'noteCard.draft_badge' ? t('noteCard.draft_badge') : 'DRAF'}</>
                         ) : (
                             <><Clock className="w-3 h-3" /> {note.read_time || 1}m</>
                         )}
@@ -396,10 +403,10 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                 <AlertTriangle className="w-8 h-8" strokeWidth={2.5} />
                             </div>
                             <h3 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 dark:text-gray-100 mb-2">
-                                Hapus Catatan?
+                                {t('noteCard.delete_title') !== 'noteCard.delete_title' ? t('noteCard.delete_title') : 'Hapus Catatan?'}
                             </h3>
                             <p className="text-[13px] text-gray-600 dark:text-gray-400 font-['Manrope'] font-medium mb-6">
-                                Tindakan ini tidak dapat dibatalkan. Catatan "{note.title}" akan dihapus permanen dari sistem.
+                                {t('noteCard.delete_desc') !== 'noteCard.delete_desc' ? t('noteCard.delete_desc').replace('{{title}}', note.title) : `Tindakan ini tidak dapat dibatalkan. Catatan "${note.title}" akan dihapus permanen dari sistem.`}
                             </p>
                             
                             <div className="flex gap-3">
@@ -408,7 +415,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                     disabled={isDeleting}
                                     className="flex-1 py-3 px-4 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 rounded-xl font-['Manrope'] font-bold text-[14px] hover:bg-gray-200 dark:hover:bg-white/15 transition-colors disabled:opacity-50"
                                 >
-                                    Batal
+                                    {t('upload.cancel') !== 'upload.cancel' ? t('upload.cancel') : 'Batal'}
                                 </button>
                                 <button
                                     onClick={async () => {
@@ -418,7 +425,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                             await axios.delete(`/api/v1/posts/${note.id}`, {
                                                 headers: { Authorization: `Bearer ${token}` }
                                             });
-                                            showToast("Catatan berhasil dihapus", "success");
+                                            showToast(t('noteCard.delete_success') !== 'noteCard.delete_success' ? t('noteCard.delete_success') : "Catatan berhasil dihapus", "success");
                                             setShowDeleteModal(false);
                                             if (onDelete) {
                                                 onDelete(note.id);
@@ -426,7 +433,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                                 window.location.reload();
                                             }
                                         } catch (error) {
-                                            showToast("Gagal menghapus catatan", "error");
+                                            showToast(t('noteCard.delete_error') !== 'noteCard.delete_error' ? t('noteCard.delete_error') : "Gagal menghapus catatan", "error");
                                         } finally {
                                             setIsDeleting(false);
                                         }
@@ -437,7 +444,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                                     {isDeleting ? (
                                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                     ) : (
-                                        "Ya, Hapus"
+                                        t('noteCard.delete_confirm') !== 'noteCard.delete_confirm' ? t('noteCard.delete_confirm') : 'Ya, Hapus'
                                     )}
                                 </button>
                             </div>
@@ -449,7 +456,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
     );
 }
 
-const downloadNoteAsPDF = (fullNote: any, showToast: any) => {
+const downloadNoteAsPDF = (fullNote: any, showToast: any, t: any, language: string) => {
     const rawHtmlToExport = fullNote.content || fullNote.plain_content || "";
     let exportHtml = "";
 
@@ -469,7 +476,7 @@ const downloadNoteAsPDF = (fullNote: any, showToast: any) => {
         return;
     }
     const authorName = fullNote.user?.name || fullNote.user?.username || "Penulis";
-    const dateStr = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+    const dateStr = new Date().toLocaleDateString(language === 'id' ? 'id-ID' : language, { year: 'numeric', month: 'long', day: 'numeric' });
 
     printWindow.document.write(`
         <!DOCTYPE html>
@@ -611,9 +618,9 @@ const downloadNoteAsPDF = (fullNote: any, showToast: any) => {
             <div class="header">
                 <h1>${fullNote.title || "Materi Catatan"}</h1>
                 <div class="meta">
-                    <span>Ditulis oleh: ${authorName}</span>
+                    <span>${t('noteCard.pdf_written_by') !== 'noteCard.pdf_written_by' ? t('noteCard.pdf_written_by') : 'Ditulis oleh:'} ${authorName}</span>
                     <span>&bull;</span>
-                    <span>Diunduh: ${dateStr}</span>
+                    <span>${t('noteCard.pdf_downloaded') !== 'noteCard.pdf_downloaded' ? t('noteCard.pdf_downloaded') : 'Diunduh:'} ${dateStr}</span>
                 </div>
             </div>
             
@@ -623,15 +630,15 @@ const downloadNoteAsPDF = (fullNote: any, showToast: any) => {
 
             ${fullNote.is_restricted ? `
             <div style="margin-top: 40px; padding: 25px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center;">
-                <h4 style="margin: 0 0 8px 0; color: #0f172a; font-family: 'Lexend Deca', sans-serif; font-size: 14pt;">Materi Terproteksi</h4>
+                <h4 style="margin: 0 0 8px 0; color: #0f172a; font-family: 'Lexend Deca', sans-serif; font-size: 14pt;">${t('noteCard.pdf_protected_title') !== 'noteCard.pdf_protected_title' ? t('noteCard.pdf_protected_title') : 'Materi Terproteksi'}</h4>
                 <p style="margin: 0; color: #475569; font-size: 10.5pt; font-family: 'Manrope', sans-serif;">
-                    Versi PDF ini hanya memuat sebagian materi. Ikuti penulis <b>@${fullNote.user?.username || 'penulis'}</b> di aplikasi Ba-Yu untuk mengunduh versi lengkapnya.
+                    ${t('noteCard.pdf_protected_desc') !== 'noteCard.pdf_protected_desc' ? t('noteCard.pdf_protected_desc').replace('{{author}}', fullNote.user?.username || 'penulis') : `Versi PDF ini hanya memuat sebagian materi. Ikuti penulis <b>@${fullNote.user?.username || 'penulis'}</b> di aplikasi Ba-Yu untuk mengunduh versi lengkapnya.`}
                 </p>
             </div>
             ` : ''}
 
-            <div class="footer">
-                Dokumen ini diunduh dari <span class="footer-brand">Ba-Yu</span> - Platform Belajar Masa Depan
+                <div class="footer">
+                ${t('noteCard.pdf_footer') !== 'noteCard.pdf_footer' ? t('noteCard.pdf_footer') : 'Dokumen ini diunduh dari <span class="footer-brand">Ba-Yu</span> - Platform Belajar Masa Depan'}
             </div>
             
             <script>

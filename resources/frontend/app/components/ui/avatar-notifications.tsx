@@ -18,6 +18,7 @@ import axios from "axios";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
 import { AvatarImage } from "./DefaultImages";
+import { useTranslation } from "../../hooks/useTranslation";
 
 interface NotificationItem {
     id?: string;
@@ -43,6 +44,7 @@ export default function AvatarNotifications() {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(false);
+    const { t, language } = useTranslation();
 
     const fetchNotifications = async () => {
         try {
@@ -142,11 +144,12 @@ export default function AvatarNotifications() {
         const diffMin = Math.floor(
             (new Date().getTime() - new Date(dateStr).getTime()) / 60000,
         );
-        if (diffMin < 1) return "Baru saja";
-        if (diffMin < 60) return `${diffMin}m`;
+        if (diffMin < 1) return t('notifications.time_just_now') !== 'notifications.time_just_now' ? t('notifications.time_just_now') : "Baru saja";
+        if (diffMin < 60) return `${diffMin}${t('notifications.time_short_m') !== 'notifications.time_short_m' ? t('notifications.time_short_m') : 'm'}`;
         const diffHr = Math.floor(diffMin / 60);
-        if (diffHr < 24) return `${diffHr}j`;
-        return new Date(dateStr).toLocaleDateString("id-ID", {
+        if (diffHr < 24) return `${diffHr}${t('notifications.time_short_h') !== 'notifications.time_short_h' ? t('notifications.time_short_h') : 'j'}`;
+        if (diffHr < 48) return t('notifications.time_yesterday') !== 'notifications.time_yesterday' ? t('notifications.time_yesterday') : "Kemarin";
+        return new Date(dateStr).toLocaleDateString(language === 'id' ? 'id-ID' : language, {
             day: "numeric",
             month: "short",
         });
@@ -195,7 +198,7 @@ export default function AvatarNotifications() {
                     <div className="flex justify-between items-center px-5 py-4 bg-white dark:bg-[#1C1A29] sticky top-0 z-10 border-b border-gray-200 dark:border-white/10">
                         <div className="flex items-center gap-2">
                             <h2 className="text-[15px] font-bold text-gray-900 dark:text-gray-100 tracking-tight">
-                                Notifikasi
+                                {t('notifications.title') !== 'notifications.title' ? t('notifications.title') : 'Notifikasi'}
                             </h2>
                             {hasNotifications && (
                                 <span className="bg-indigo-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
@@ -208,7 +211,7 @@ export default function AvatarNotifications() {
                                 onClick={clearAll}
                                 className="text-[12px] font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
                             >
-                                Tandai dibaca
+                                {t('notifications.mark_all_read') !== 'notifications.mark_all_read' ? t('notifications.mark_all_read') : 'Tandai dibaca'}
                             </button>
                         )}
                     </div>
@@ -218,7 +221,7 @@ export default function AvatarNotifications() {
                             <div className="w-12 h-12 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center">
                                 <Bell className="w-6 h-6 text-gray-300 dark:text-gray-600" />
                             </div>
-                            <p className="font-medium">Belum ada kabar terbaru</p>
+                            <p className="font-medium">{t('notifications.no_unread') !== 'notifications.no_unread' ? t('notifications.no_unread') : 'Belum ada kabar terbaru'}</p>
                         </div>
                     ) : (
                         <div className="flex flex-col">
@@ -296,7 +299,7 @@ export default function AvatarNotifications() {
                                                 </p>
                                             </div>
                                         </div>
-                                        <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium pl-3.5">
+                                        <span className="text-[11px] text-gray-500 dark:text-gray-400 font-medium pl-3.5">
                                             {timeAgo(item.created_at)}
                                         </span>
                                     </div>
@@ -313,7 +316,7 @@ export default function AvatarNotifications() {
                         }}
                         className="w-full py-2.5 text-[13px] font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-full transition-colors"
                     >
-                        Lihat Semua Notifikasi
+                        {t('notifications.view_all_notifications') !== 'notifications.view_all_notifications' ? t('notifications.view_all_notifications') : 'Lihat Semua Notifikasi'}
                     </button>
                 </div>
             </PopoverContent>

@@ -41,6 +41,7 @@ import { NoteCard } from '../components/NoteCard';
 import { MobileLayout } from '../components/MobileLayout';
 import { Facebook, MessageCircle as MessageCircleIcon, Send, Twitter, Link2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from '../hooks/useTranslation';
 
 const LearningStatisticsPage = () => {
   const [notes, setNotes] = useState<any[]>([]);
@@ -59,6 +60,7 @@ const LearningStatisticsPage = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { user } = useAuth();
+  const { t, language } = useTranslation();
 
   const handleLikePost = async (postId: string) => {
       if (!user)
@@ -182,8 +184,7 @@ const LearningStatisticsPage = () => {
       return (
         <div className="bg-slate-900 text-white p-3 rounded-xl shadow-2xl border border-slate-800 animate-in fade-in zoom-in duration-200">
           <p className="text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">{payload[0].payload.label}</p>
-          {/* Gua ganti dari 'Jam' ke 'Menit' biar sesuai sama data aslinya */}
-          <p className="text-sm font-black">{payload[0].value} <span className="font-medium text-xs text-slate-400 ml-1">Menit</span></p>
+          <p className="text-sm font-black">{payload[0].value} <span className="font-medium text-xs text-slate-400 ml-1">{t('stats.minutes')}</span></p>
         </div>
       );
     }
@@ -202,8 +203,8 @@ const LearningStatisticsPage = () => {
                  <X size={22} />
               </button>
               <div>
-                 <h1 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100 leading-none">Statistik Belajar</h1>
-                 <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">{monthNames[displayMonth]} {displayYear} • Progres</p>
+                 <h1 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100 leading-none">{t('stats.title')}</h1>
+                 <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">{new Intl.DateTimeFormat(language, { month: 'long', year: 'numeric' }).format(new Date(displayYear, displayMonth))} • {t('stats.progress')}</p>
               </div>
            </div>
            <button onClick={handleShare} className="w-10 h-10 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-primary transition-colors active:scale-95">
@@ -220,12 +221,12 @@ const LearningStatisticsPage = () => {
               {/* DAILY HIGHLIGHT */}
               <section>
                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100">Ringkasan Hari Ini</h2>
+                    <h2 className="text-xl font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100">{t('stats.summary_today')}</h2>
                     <button 
                       onClick={() => setIsGoalModalOpen(true)}
                       className="text-[13px] font-bold text-indigo-600 hover:text-indigo-700 transition-colors"
                     >
-                       Set Target
+                       {t('stats.set_target')}
                     </button>
                  </div>
 
@@ -241,8 +242,8 @@ const LearningStatisticsPage = () => {
                        </div>
                        
                        <div className="mb-4">
-                          <span className="text-sm font-bold">{stats?.summary?.today_duration || 0}m</span> <span className="text-[11px] sm:text-sm font-medium text-slate-500">/ {Math.floor((stats?.daily_target || 0) / 60)}j {(stats?.daily_target || 0) % 60}m</span>
-                          <p className="text-[11px] sm:text-[13px] font-medium text-slate-500 mt-1">Target harian</p>
+                          <span className="text-sm font-bold">{stats?.summary?.today_duration || 0}m</span> <span className="text-[11px] sm:text-sm font-medium text-slate-500">/ {Math.floor((stats?.daily_target || 0) / 60)}h {(stats?.daily_target || 0) % 60}m</span>
+                          <p className="text-[11px] sm:text-[13px] font-medium text-slate-500 mt-1">{t('stats.daily_target')}</p>
                        </div>
 
                        <div className="w-full h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden mb-2 mt-auto">
@@ -261,7 +262,7 @@ const LearningStatisticsPage = () => {
                            </div>
                            <div className="flex-1 min-w-0">
                               <h4 className="text-[14px] sm:text-[15px] font-bold text-slate-800 dark:text-slate-100 leading-none truncate">{stats?.achievements?.notes_created || 0}</h4>
-                              <p className="text-[10px] font-medium text-slate-500 mt-1 truncate">Catatan</p>
+                              <p className="text-[10px] font-medium text-slate-500 mt-1 truncate">{t('stats.notes')}</p>
                            </div>
                         </div>
                         <div className="flex items-center gap-2.5 bg-slate-50 dark:bg-white/5 p-2.5 rounded-2xl border border-slate-100 dark:border-white/5 flex-1">
@@ -270,7 +271,7 @@ const LearningStatisticsPage = () => {
                            </div>
                            <div className="flex-1 min-w-0">
                               <h4 className="text-[14px] sm:text-[15px] font-bold text-slate-800 dark:text-slate-100 leading-none truncate">{stats?.achievements?.materials_completed || 0}</h4>
-                              <p className="text-[10px] font-medium text-slate-500 mt-1 truncate">Materi</p>
+                              <p className="text-[10px] font-medium text-slate-500 mt-1 truncate">{t('stats.materials')}</p>
                            </div>
                         </div>
                     </div>
@@ -287,20 +288,20 @@ const LearningStatisticsPage = () => {
                               <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
                                  <Flame size={18} className="text-white" />
                               </div>
-                              <span className="text-[13px] font-bold text-orange-50">Current Streak</span>
+                              <span className="text-[13px] font-bold text-orange-50">{t('stats.current_streak')}</span>
                            </div>
                            <button onClick={() => setIsMobileCalendarOpen(!isMobileCalendarOpen)} className="lg:hidden flex items-center gap-1.5 text-[11px] font-bold bg-white/20 hover:bg-white/30 backdrop-blur-sm px-3 py-1.5 rounded-full transition-colors">
                               <Calendar size={12} />
-                              {isMobileCalendarOpen ? 'Tutup' : 'Lihat Kalender'}
+                              {isMobileCalendarOpen ? t('stats.close') : t('stats.see_calendar')}
                            </button>
                        </div>
                        
                        <div className="relative z-10 mt-auto pt-6">
                           <h3 className="text-4xl font-['Lexend_Deca'] font-bold tracking-tight">
-                             {stats?.summary?.current_streak || 0} <span className="text-lg font-medium text-orange-100">Hari</span>
+                             {stats?.summary?.current_streak || 0} <span className="text-lg font-medium text-orange-100">{t('stats.days')}</span>
                           </h3>
                           <p className="text-[13px] text-orange-50 font-medium mt-1">
-                             Pertahankan semangat belajarmu!
+                             {t('stats.keep_spirit')}
                           </p>
                        </div>
 
@@ -308,15 +309,15 @@ const LearningStatisticsPage = () => {
                        <div className={`lg:hidden relative z-10 overflow-hidden transition-all duration-300 ease-in-out ${isMobileCalendarOpen ? 'max-h-[500px] mt-6 opacity-100' : 'max-h-0 opacity-0'}`}>
                            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
                               <div className="flex items-center justify-between mb-4">
-                                 <h3 className="text-[14px] font-['Lexend_Deca'] font-bold text-white">Kalender Belajar</h3>
+                                 <h3 className="text-[14px] font-['Lexend_Deca'] font-bold text-white">{t('stats.calendar_title')}</h3>
                                  <div className="flex items-center gap-2">
                                     <button onClick={() => setMonthOffset(m => m - 1)} className="p-1 text-white/70 hover:text-white transition-colors rounded-full hover:bg-white/10"><ChevronRight size={14} className="rotate-180" /></button>
-                                    <span className="text-[11px] font-bold text-white min-w-[70px] text-center">{monthNames[displayMonth]}</span>
+                                    <span className="text-[11px] font-bold text-white min-w-[70px] text-center">{new Intl.DateTimeFormat(language, { month: 'long' }).format(displayDate)}</span>
                                     <button onClick={() => setMonthOffset(m => m + 1)} className="p-1 text-white/70 hover:text-white transition-colors rounded-full hover:bg-white/10"><ChevronRight size={14} /></button>
                                  </div>
                               </div>
                               <div className="grid grid-cols-7 gap-1 text-center mb-1">
-                                 {["M", "S", "S", "R", "K", "J", "S"].map((d, i) => (
+                                 {(t('calendar.days', { returnObjects: true }) as string[]).map((d, i) => (
                                     <span key={i} className="text-[9px] font-bold text-white/60">{d}</span>
                                  ))}
                               </div>
@@ -350,19 +351,19 @@ const LearningStatisticsPage = () => {
               {/* ACTIVITY CHART SECTION */}
               <section>
                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100">Analisis Aktivitas</h2>
+                    <h2 className="text-xl font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100">{t('stats.activity_analysis')}</h2>
                     <div className="flex bg-slate-100 dark:bg-white/5 rounded-xl p-1">
                        <button 
                          onClick={() => setChartView('weekly')}
                          className={`px-4 py-1.5 rounded-lg text-[12px] font-bold transition-all ${chartView === 'weekly' ? 'bg-white dark:bg-[#1C1A29] shadow-sm text-slate-800 dark:text-slate-100' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'}`}
                        >
-                         Mingguan
+                         {t('stats.weekly')}
                        </button>
                        <button 
                          onClick={() => setChartView('monthly')}
                          className={`px-4 py-1.5 rounded-lg text-[12px] font-bold transition-all ${chartView === 'monthly' ? 'bg-white dark:bg-[#1C1A29] shadow-sm text-slate-800 dark:text-slate-100' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'}`}
                        >
-                         Bulanan
+                         {t('stats.monthly')}
                        </button>
                     </div>
                  </div>
@@ -406,7 +407,7 @@ const LearningStatisticsPage = () => {
               {/* RECENT FEED (BA-YU APP STYLE) */}
               <section>
                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100">Riwayat Terakhir</h2>
+                    <h2 className="text-xl font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100">{t('stats.recent_history')}</h2>
                  </div>
 
                  <div className="grid gap-4">
@@ -445,13 +446,13 @@ const LearningStatisticsPage = () => {
                           return <NoteCard key={mappedNote.id} note={mappedNote} onLike={handleLikePost} />;
                        })
                     ) : (
-                       <div className="text-center py-10 text-slate-500 font-medium text-[14px]">Belum ada riwayat catatan yang dibuka.</div>
+                       <div className="text-center py-10 text-slate-500 font-medium text-[14px]">{t('stats.no_history')}</div>
                     )}
                  </div>
                  
                  {allNotes.length > 3 && (
                     <button onClick={() => setShowFullHistory(!showFullHistory)} className="w-full mt-6 py-3.5 bg-white dark:bg-[#1C1A29] text-[13px] font-bold text-slate-600 dark:text-slate-400 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-colors border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none">
-                       {showFullHistory ? "Sembunyikan Sebagian" : "Lihat Semua Riwayat"}
+                       {showFullHistory ? t('stats.hide_some') : t('stats.see_all')}
                     </button>
                  )}
               </section>
@@ -462,15 +463,15 @@ const LearningStatisticsPage = () => {
               
               {/* TOP PERFORMANCE */}
               <div className="bg-white dark:bg-[#1C1A29] rounded-[24px] p-6 border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none">
-                 <h3 className="text-[16px] font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100 mb-5">Pencapaian</h3>
+                 <h3 className="text-[16px] font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100 mb-5">{t('stats.achievements')}</h3>
                  <div className="space-y-3">
                     <div className="flex items-center gap-4 bg-slate-50 dark:bg-white/5 p-3.5 rounded-2xl border border-slate-100 dark:border-white/5">
                        <div className="w-10 h-10 bg-white dark:bg-[#252336] rounded-xl flex items-center justify-center text-amber-500 shadow-sm dark:shadow-none">
                           <Award size={20} />
                        </div>
                        <div>
-                          <p className="text-[11px] font-medium text-slate-500 mb-0.5">Catatan</p>
-                          <h4 className="text-[14px] font-bold text-slate-800 dark:text-slate-100 leading-none">{stats?.achievements?.notes_created || 0} Catatan dibuat</h4>
+                          <p className="text-[11px] font-medium text-slate-500 mb-0.5">{t('stats.notes')}</p>
+                          <h4 className="text-[14px] font-bold text-slate-800 dark:text-slate-100 leading-none">{stats?.achievements?.notes_created || 0} {t('stats.notes_created')}</h4>
                        </div>
                     </div>
                     <div className="flex items-center gap-4 bg-slate-50 dark:bg-white/5 p-3.5 rounded-2xl border border-slate-100 dark:border-white/5">
@@ -478,8 +479,8 @@ const LearningStatisticsPage = () => {
                           <BookOpen size={20} />
                        </div>
                        <div>
-                          <p className="text-[11px] font-medium text-slate-500 mb-0.5">Total Materi</p>
-                          <h4 className="text-[14px] font-bold text-slate-800 dark:text-slate-100 leading-none">{stats?.achievements?.materials_completed || 0} Selesai</h4>
+                          <p className="text-[11px] font-medium text-slate-500 mb-0.5">{t('stats.total_materials')}</p>
+                          <h4 className="text-[14px] font-bold text-slate-800 dark:text-slate-100 leading-none">{stats?.achievements?.materials_completed || 0} {t('stats.completed')}</h4>
                        </div>
                     </div>
                  </div>
@@ -488,10 +489,10 @@ const LearningStatisticsPage = () => {
               {/* CALENDAR MINI */}
               <div className="bg-white dark:bg-[#1C1A29] rounded-[24px] p-6 border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none">
                  <div className="flex items-center justify-between mb-5">
-                    <h3 className="text-[16px] font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100">Kalender Belajar</h3>
+                    <h3 className="text-[16px] font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100">{t('stats.calendar_title')}</h3>
                     <div className="flex items-center gap-2">
                        <button onClick={() => setMonthOffset(m => m - 1)} className="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-primary transition-colors rounded-full hover:bg-indigo-50 dark:hover:bg-primary/10"><ChevronRight size={16} className="rotate-180" /></button>
-                       <span className="text-[12px] font-bold text-slate-500 dark:text-slate-400 min-w-[70px] text-center">{monthNames[displayMonth]}</span>
+                       <span className="text-[12px] font-bold text-slate-500 dark:text-slate-400 min-w-[70px] text-center">{new Intl.DateTimeFormat(language, { month: 'long' }).format(displayDate)}</span>
                        <button onClick={() => setMonthOffset(m => m + 1)} className="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-primary transition-colors rounded-full hover:bg-indigo-50 dark:hover:bg-primary/10"><ChevronRight size={16} /></button>
                     </div>
                  </div>
@@ -528,7 +529,7 @@ const LearningStatisticsPage = () => {
 
               {/* FOOTER INFO */}
               <p className="text-[12px] font-medium text-slate-400 text-center px-4 leading-relaxed">
-                 Data diperbarui otomatis setiap sesi belajar berakhir. © 2026 Ba-Yu Education.
+                 {t('stats.footer_info')}
               </p>
            </div>
         </div>
@@ -555,9 +556,9 @@ const LearningStatisticsPage = () => {
                 <Target className="text-indigo-600 w-8 h-8" />
               </div>
               
-              <h3 className="font-['Lexend_Deca'] text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2 tracking-tight">Set Goal Harian</h3>
+              <h3 className="font-['Lexend_Deca'] text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2 tracking-tight">{t('stats.set_goal_title')}</h3>
               <p className="text-slate-500 text-sm font-medium mb-10 max-w-[280px]">
-                Tentukan target durasi belajar harianmu dengan presisi digital.
+                {t('stats.set_goal_desc')}
               </p>
               
               <div className="w-full">
@@ -581,7 +582,7 @@ const LearningStatisticsPage = () => {
                          }}
                          className="w-full h-full bg-transparent text-center text-4xl sm:text-5xl font-['Lexend_Deca'] font-bold text-indigo-600 tracking-tighter tabular-nums focus:outline-none relative z-10"
                        />
-                       <div className="absolute bottom-2 text-[9px] font-bold text-indigo-300 uppercase tracking-[0.2em]">Hours</div>
+                       <div className="absolute bottom-2 text-[9px] font-bold text-indigo-300 uppercase tracking-[0.2em]">{t('stats.hours')}</div>
                     </div>
                     <button 
                       onClick={() => setTempHours((prev: number) => (prev - 1 + 24) % 24)}
@@ -615,7 +616,7 @@ const LearningStatisticsPage = () => {
                          }}
                          className="w-full h-full bg-transparent text-center text-4xl sm:text-5xl font-['Lexend_Deca'] font-bold text-indigo-600 tracking-tighter tabular-nums focus:outline-none relative z-10"
                        />
-                       <div className="absolute bottom-2 text-[9px] font-bold text-indigo-300 uppercase tracking-[0.2em]">Mins</div>
+                       <div className="absolute bottom-2 text-[9px] font-bold text-indigo-300 uppercase tracking-[0.2em]">{t('stats.mins')}</div>
                     </div>
                     <button 
                       onClick={() => setTempMinutes((prev: number) => (prev - 5 + 60) % 60)}
@@ -653,13 +654,13 @@ const LearningStatisticsPage = () => {
 }}
                       className="w-full py-5 bg-indigo-600 text-white rounded-[24px] text-[13px] font-bold uppercase tracking-widest shadow-xl shadow-indigo-100 dark:shadow-none hover:-translate-y-1 hover:bg-indigo-700 transition-all duration-300"
                    >
-                      Simpan Target Belajar
+                      {t('stats.save_target')}
                    </button>
                    <button 
                       onClick={() => setIsGoalModalOpen(false)}
                       className="w-full mt-4 py-3 text-slate-400 text-[11px] font-bold uppercase tracking-widest hover:text-slate-600 transition-colors"
                    >
-                      Batalkan
+                      {t('stats.cancel')}
                    </button>
                 </div>
               </div>
@@ -677,10 +678,10 @@ const LearningStatisticsPage = () => {
                         <Share2 className="w-7 h-7" strokeWidth={2.5} />
                     </div>
                     <h3 className="font-['Lexend_Deca'] font-extrabold text-xl text-gray-900 dark:text-gray-100 mb-1">
-                        Bagikan Statistik Belajarmu
+                        {t('stats.share_title')}
                     </h3>
                     <p className="font-['Manrope'] text-[13px] text-gray-600 dark:text-gray-400 font-bold px-6">
-                        Pamerin progres belajar dan streak kamu ke teman-teman.
+                        {t('stats.share_desc')}
                     </p>
                 </div>
 
@@ -714,7 +715,7 @@ const LearningStatisticsPage = () => {
 
                     <div className="relative group mb-2">
                         <label className="block text-left text-[11px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">
-                            Salin Tautan
+                            {t('stats.copy_link')}
                         </label>
                         <div className="relative">
                             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400">
@@ -722,7 +723,7 @@ const LearningStatisticsPage = () => {
                             </div>
                             <input type="text" readOnly value={window.location.href} className="w-full pl-11 pr-24 py-3.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl text-[12.5px] font-bold text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-400 transition-all" />
                             <button onClick={() => { navigator.clipboard.writeText(window.location.href); showToast("Link berhasil disalin!", "success"); }} className="absolute right-2 top-2 bottom-2 px-4 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 active:scale-95">
-                                Salin
+                                {t('stats.copy')}
                             </button>
                         </div>
                     </div>
@@ -730,7 +731,7 @@ const LearningStatisticsPage = () => {
 
                 <div className="p-5 border-t border-gray-50 dark:border-white/5 shrink-0">
                     <button onClick={() => setShowShareModal(false)} className="w-full py-3.5 rounded-2xl font-['Lexend_Deca'] font-black text-[14px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-all active:scale-95">
-                        Tutup Modal
+                        {t('stats.close_modal')}
                     </button>
                 </div>
             </div>

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { HIGHLIGHT_COLORS } from './editor.constants';
 import { PromptDialog } from '../ui/PromptDialog';
+import { useTranslation } from '../../hooks/useTranslation';
 
 interface SideToolbarProps {
   quillRef: React.RefObject<ReactQuill | null>;
@@ -48,6 +49,7 @@ function PortalDropdown({ anchorRef, children, isOpen, portalRef }: {
 }
 
 export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
+  const { t } = useTranslation();
   const [formats, setFormats] = useState<Record<string, any>>({});
   const [expandedPlus, setExpandedPlus] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -140,8 +142,8 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
         const savedRange = { ...range };
         setPromptConfig({
           isOpen: true,
-          title: 'Sisipkan Link',
-          placeholder: 'https://example.com',
+          title: t('editor.insert_link'),
+          placeholder: t('editor.link_placeholder'),
           value: '',
           onConfirm: (url) => {
             if (url) {
@@ -203,7 +205,7 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
           if (file) {
             const reader = new FileReader();
             reader.onload = () => {
-              const captionText = 'Ketik caption gambar di sini...';
+              const captionText = t('editor.image_caption');
               quill.insertEmbed(range.index, 'image', reader.result, 'user');
               quill.formatText(range.index, 1, 'layout', 'inline');
               quill.insertText(range.index + 1, '\n' + captionText, 'user');
@@ -226,8 +228,8 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
         const savedRange = { ...range };
         setPromptConfig({
           isOpen: true,
-          title: 'Sisipkan Video',
-          placeholder: 'Masukkan URL YouTube atau Vimeo...',
+          title: t('editor.insert_video'),
+          placeholder: t('editor.video_placeholder'),
           value: '',
           onConfirm: (rawUrl) => {
             if (rawUrl) {
@@ -247,7 +249,7 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
                   if (videoId) finalUrl = `https://www.youtube.com/embed/${videoId}`;
                 } catch (e) {}
               }
-              const captionText = 'Ketik caption video di sini...';
+              const captionText = t('editor.video_caption');
               q.insertEmbed(savedRange.index, 'video', finalUrl, 'user');
               q.insertText(savedRange.index + 1, '\n' + captionText, 'user');
               q.formatLine(savedRange.index + 2, 1, 'align', 'center');
@@ -288,12 +290,12 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
   }, [getQuill, onFormulaClick, quillRef]);
 
   const insertActions = [
-    { id: 'image', icon: ImageIcon, label: 'Gambar', color: 'text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10' },
-    { id: 'video', icon: Film, label: 'Video', color: 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10' },
-    { id: 'code', icon: Terminal, label: 'Kode', color: 'text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-500/10' },
-    { id: 'formula', icon: Calculator, label: 'Rumus', color: 'text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-500/10' },
-    { id: 'divider', icon: Minus, label: 'Pemisah', color: 'text-slate-500 hover:bg-slate-50 dark:hover:bg-white/5' },
-    { id: 'quote', icon: Quote, label: 'Kutipan', color: 'text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-500/10' },
+    { id: 'image', icon: ImageIcon, label: t('editor.image'), color: 'text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10' },
+    { id: 'video', icon: Film, label: t('editor.video'), color: 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10' },
+    { id: 'code', icon: Terminal, label: t('editor.code'), color: 'text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-500/10' },
+    { id: 'formula', icon: Calculator, label: t('editor.formula'), color: 'text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-500/10' },
+    { id: 'divider', icon: Minus, label: t('editor.divider'), color: 'text-slate-500 hover:bg-slate-50 dark:hover:bg-white/5' },
+    { id: 'quote', icon: Quote, label: t('editor.quote'), color: 'text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-500/10' },
   ];
 
   const btnClass = (active: boolean) =>
@@ -388,10 +390,10 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
                   ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
                   : 'text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10'
               }`}
-              title="Sisipkan blok"
+              title={t('editor.insert_block_title')}
             >
               <Plus className={`w-[14px] h-[14px] transition-transform duration-300 ${expandedPlus ? 'rotate-45' : ''}`} strokeWidth={2.5} />
-              <span className="hidden sm:inline">Sisipkan</span>
+              <span className="hidden sm:inline">{t('editor.insert')}</span>
               <ChevronDown className={`w-3 h-3 hidden sm:inline transition-transform duration-300 ${expandedPlus ? 'rotate-180' : ''}`} strokeWidth={2.5} />
             </button>
 
@@ -402,7 +404,7 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
       {/* ─── Portal: Highlight Color Picker ─── */}
       <PortalDropdown anchorRef={highlightBtnRef} isOpen={showColorPicker} portalRef={highlightPortalRef}>
         <div className={`${dropdownBase} p-3`}>
-          <p className="text-[10px] font-['Lexend_Deca'] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Warna Sorot</p>
+          <p className="text-[10px] font-['Lexend_Deca'] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">{t('editor.highlight_color')}</p>
           <div className="flex items-center gap-1.5 mb-2.5">
             {HIGHLIGHT_COLORS.map((c) => (
               <button
@@ -420,7 +422,7 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
             onClick={removeHighlight}
             className="w-full py-1.5 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 flex items-center justify-center gap-1 text-slate-500 dark:text-slate-400 hover:text-red-500 hover:border-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all text-[11px] font-bold"
           >
-            <X className="w-3 h-3" strokeWidth={3} /> Hapus Warna
+            <X className="w-3 h-3" strokeWidth={3} /> {t('editor.remove_color')}
           </button>
         </div>
       </PortalDropdown>
@@ -428,7 +430,7 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
       {/* ─── Portal: Insert Block Menu ─── */}
       <PortalDropdown anchorRef={insertBtnRef} isOpen={expandedPlus} portalRef={insertPortalRef}>
         <div className={`${dropdownBase} p-2 min-w-[160px]`}>
-          <p className="text-[12px] font-medium text-slate-500 dark:text-slate-400 px-2 pt-1 pb-2">Sisipkan Blok</p>
+          <p className="text-[12px] font-medium text-slate-500 dark:text-slate-400 px-2 pt-1 pb-2">{t('editor.insert_block_title')}</p>
           <div className="flex flex-col gap-0.5">
             {insertActions.map((action) => (
             <button
@@ -451,6 +453,8 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
         placeholder={promptConfig.placeholder}
         defaultValue={promptConfig.value}
         onConfirm={promptConfig.onConfirm}
+        cancelText={t('upload.cancel')}
+        confirmText={t('upload.confirm')}
       />
     </>
   );

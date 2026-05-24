@@ -54,6 +54,8 @@ import axios from "axios";
 import { ArticleSkeleton } from "../components/ui/skeletons";
 import { TagList } from "../components/ui/TagList";
 import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
+import { useTranslation } from '../hooks/useTranslation';
+import { formatEducationLevel } from '../utils/formatEducationLevel';
 import { NoteCard } from "../components/NoteCard";
 export default function NoteDetailPage() {
     const { id } = useParams();
@@ -78,6 +80,12 @@ export default function NoteDetailPage() {
     const [followerCount, setFollowerCount] = useState(0);
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [isCommentDrawerOpen, setIsCommentDrawerOpen] = useState(false);
+    // Mobile drawer states
+    const [isMenuDrawerOpen, setIsMenuDrawerOpen] = useState(false);
+    
+    const { t, language } = useTranslation();
+
+    const [isCheckingToken, setIsCheckingToken] = useState(true);
     const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
     const [editingCommentText, setEditingCommentText] = useState("");
     
@@ -1422,15 +1430,10 @@ export default function NoteDetailPage() {
                 {/* Category & Tags (Substack / Medium style over title) */}
                 <div className="flex flex-wrap gap-2.5 mb-4 items-center">
                     <span className="text-[12px] font-['Lexend_Deca'] font-bold text-primary uppercase tracking-widest bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
-                        {note.mataPelajaran}
+                        {t(`subjects.${note.mataPelajaran.toLowerCase().replace(/ /g, '-')}`, note.mataPelajaran)}
                     </span>
                     <span className="text-[14px] font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 bg-gray-200/60 dark:bg-white/10 px-3 py-1 rounded-full border border-gray-300/30 dark:border-white/10">
-                        {note.jenjang === "Kuliah"
-                            ? `${note.kelas || "1"}`
-                            : `${note.jenjang} Kelas ${note.kelas}`}
-                    </span>
-                    <span className="text-[14px] font-['Manrope'] font-bold text-gray-700 dark:text-gray-300 bg-gray-200/60 dark:bg-white/10 px-3 py-1 rounded-full border border-gray-300/30 dark:border-white/10 hidden sm:block">
-                        Semester {note.semester}
+                        {formatEducationLevel(note.jenjang, note.kelas || 1, note.semester || 1, language)}
                     </span>
                 </div>
                 {note.tags && note.tags.length > 0 && (

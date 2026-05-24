@@ -497,12 +497,12 @@ mark.user-highlight,
 }
 
 /* Fix for the white background box in editor */
-.dark .ql-formula,
-.dark .katex {
+.dark .ql-formula {
   background-color: rgba(255, 255, 255, 0.08) !important;
   padding: 4px 10px !important;
   border-radius: 8px !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  display: inline-block;
 }
 
 /* Ensure specific KaTeX symbols are caught */

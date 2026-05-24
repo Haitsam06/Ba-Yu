@@ -29,10 +29,28 @@ import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { AvatarImage } from '../components/ui/DefaultImages';
+import { useLanguage, type LanguagePreference } from '../contexts/LanguageContext';
+import { useTranslation } from '../hooks/useTranslation';
+
+const langDisplayNames: Record<LanguagePreference, string> = {
+  id: 'Indonesia',
+  en: 'English',
+  ja: '日本語',
+  ko: '한국어',
+  zh: '中文',
+  es: 'Español',
+  fr: 'Français',
+  de: 'Deutsch',
+  pt: 'Português',
+  ru: 'Русский',
+  system: 'Sistem',
+};
 
 export default function SettingsPage() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { language } = useLanguage();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   
   if (!user) return null;
@@ -98,7 +116,7 @@ export default function SettingsPage() {
           <button onClick={() => navigate(-1)} className="text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-white/10 p-1 rounded-full transition-colors">
             <ArrowLeft size={24} />
           </button>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Pengaturan</h1>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">{t('settings.title')}</h1>
         </div>
 
         {/* SEARCH BAR */}
@@ -107,7 +125,7 @@ export default function SettingsPage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-indigo-600 dark:group-focus-within:text-primary transition-colors" size={18} />
             <input 
               type="text" 
-              placeholder="Cari pengaturan..." 
+              placeholder={t('settings.search_placeholder')} 
               className="w-full bg-slate-100 dark:bg-white/5 border-none rounded-full py-3 pl-12 pr-4 text-sm font-medium text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-primary/20 focus:bg-white dark:focus:bg-white/10 transition-all"
             />
           </div>
@@ -121,7 +139,7 @@ export default function SettingsPage() {
                 <div className="w-5 h-5 bg-indigo-600 dark:bg-primary rounded-md flex items-center justify-center">
                   <Sparkles size={12} className="text-white" />
                 </div>
-                <span className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Pusat Akun</span>
+                <span className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">{t('settings.account_center')}</span>
               </div>
               <ChevronRight size={14} className="text-slate-300 dark:text-slate-600" />
             </div>
@@ -135,26 +153,26 @@ export default function SettingsPage() {
               />
               <div className="flex-1">
                 <h2 className="font-bold text-slate-900 dark:text-slate-100 text-[15px]">{user.name}</h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Profil & Detail Pribadi</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{t('settings.profile_details')}</p>
               </div>
             </div>
 
             <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed mb-4 font-medium">
-              Kelola pengaturan akun dan pengalaman yang terhubung di seluruh platform Ba-Yu.
+              {t('settings.account_desc')}
             </p>
 
             <div className="space-y-4 border-t border-slate-50 dark:border-white/5 pt-4">
               <Link to="/edit-profile" className="flex items-center justify-between text-[13px] font-semibold text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-primary transition-colors group">
                 <div className="flex items-center gap-3">
                   <User size={18} className="text-slate-400 dark:text-slate-500" />
-                  Detail Pribadi
+                  {t('settings.personal_details')}
                 </div>
                 <ChevronRight size={16} className="text-slate-200 dark:text-slate-600 group-hover:translate-x-0.5 transition-transform" />
               </Link>
               <Link to="/settings/security" className="flex items-center justify-between text-[13px] font-semibold text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-primary transition-colors group cursor-pointer">
                 <div className="flex items-center gap-3">
                   <Lock size={18} className="text-slate-400 dark:text-slate-500" />
-                  Kata Sandi & Keamanan
+                  {t('settings.password_security')}
                 </div>
                 <ChevronRight size={16} className="text-slate-200 dark:text-slate-600 group-hover:translate-x-0.5 transition-transform" />
               </Link>
@@ -164,32 +182,39 @@ export default function SettingsPage() {
 
         {/* SETTINGS LIST */}
         <div className="mt-4">
-          <SectionHeader title="Aktivitas Anda" />
+          <SectionHeader title={t('settings.your_activity')} />
           <div className="divide-y divide-slate-50 dark:divide-white/5">
-            <SettingRow icon={Bell} title="Notifikasi" to="/notifications" />
+            <SettingRow icon={Bell} title={t('settings.notifications')} to="/notifications" />
             <SettingRow 
               icon={theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor} 
-              title="Tampilan" 
+              title={t('settings.appearance')} 
               to="/settings/theme"
               rightElement={
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-slate-400 dark:text-slate-500 font-medium bg-slate-100 dark:bg-white/10 px-3 py-1 rounded-full">
-                    {theme === 'dark' ? 'Gelap' : theme === 'light' ? 'Terang' : 'Sistem'}
+                    {theme === 'dark' ? t('settings.theme_dark') : theme === 'light' ? t('settings.theme_light') : t('settings.theme_system')}
                   </span>
                   <ChevronRight size={16} className="text-slate-300 dark:text-slate-600" />
                 </div>
               } 
             />
-            <SettingRow icon={Globe} title="Bahasa" rightElement={<span className="text-sm text-slate-400 dark:text-slate-500 font-medium">Indonesia</span>} />
+            <SettingRow icon={Globe} title={t('settings.language')} to="/settings/language" rightElement={
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-slate-400 dark:text-slate-500 font-medium bg-slate-100 dark:bg-white/10 px-3 py-1 rounded-full">
+                  {langDisplayNames[language] || 'Indonesia'}
+                </span>
+                <ChevronRight size={16} className="text-slate-300 dark:text-slate-600" />
+              </div>
+            } />
           </div>
 
-          <SectionHeader title="Privasi & Konten" />
+          <SectionHeader title={t('settings.privacy_content')} />
           <div className="divide-y divide-slate-50 dark:divide-white/5">
-            <SettingRow icon={ShieldCheck} title="Privasi Akun" to="/settings/privacy" rightElement={<span className="text-sm text-slate-400 dark:text-slate-500 font-medium">{user.is_private ? "Privat" : "Publik"}</span>} />
+            <SettingRow icon={ShieldCheck} title={t('settings.privacy_account')} to="/settings/privacy" rightElement={<span className="text-sm text-slate-400 dark:text-slate-500 font-medium">{user.is_private ? t('settings.private') : t('settings.public')}</span>} />
             {user.is_private && (
               <SettingRow 
                 icon={UserPlus} 
-                title="Permintaan Mengikuti" 
+                title={t('settings.follow_requests')} 
                 to="/settings/follow-requests" 
                 rightElement={
                   <div className="flex items-center gap-3">
@@ -205,24 +230,24 @@ export default function SettingsPage() {
             )}
           </div>
 
-          <SectionHeader title="Dukungan & Info" />
+          <SectionHeader title={t('settings.support_info')} />
           <div className="divide-y divide-slate-50 dark:divide-white/5">
-             <SettingRow icon={HelpCircle} title="Bantuan" to="/settings/help" />
-             <SettingRow icon={Shield} title="Kebijakan Privasi" to="/privacy" />
-             <SettingRow icon={ExternalLink} title="Status Aplikasi" rightElement={<span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold rounded-md">Aktif</span>} />
+             <SettingRow icon={HelpCircle} title={t('settings.help')} to="/settings/help" />
+             <SettingRow icon={Shield} title={t('settings.privacy_policy')} to="/privacy" />
+             <SettingRow icon={ExternalLink} title={t('settings.app_status')} rightElement={<span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold rounded-md">{t('settings.active')}</span>} />
           </div>
 
-          <SectionHeader title="Login" />
+          <SectionHeader title={t('settings.login_section')} />
           <div className="divide-y divide-slate-50 dark:divide-white/5 pb-10">
              <SettingRow 
                 icon={LogOut} 
-                title="Keluar" 
+                title={t('settings.logout')} 
                 color="text-red-500" 
                 onClick={handleLogout}
              />
              <SettingRow 
                 icon={AlertTriangle} 
-                title="Nonaktifkan Akun" 
+                title={t('settings.deactivate')} 
                 color="text-red-500" 
                 to="/settings/privacy"
              />
@@ -236,7 +261,7 @@ export default function SettingsPage() {
                </div>
                <span className="font-['Lexend_Deca'] font-black text-slate-900 dark:text-slate-100 tracking-tighter text-sm">Ba-Yu</span>
             </div>
-            <p className="text-[10px] font-bold text-slate-300 dark:text-slate-600 uppercase tracking-[0.3em]">Version 1.2.4</p>
+            <p className="text-[10px] font-bold text-slate-300 dark:text-slate-600 uppercase tracking-[0.3em]">{t('settings.version')} 1.2.4</p>
           </div>
         </div>
         </div>

@@ -2,8 +2,9 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { X, ChevronDown, Trash2, Crop, Maximize, Check } from 'lucide-react';
 import Cropper from 'react-easy-crop';
-import { mataPelajaran } from '../../data/mockData';
 import { jenjangOptions } from './editor.constants';
+import { useTranslation } from '../../hooks/useTranslation';
+import { formatClassOption, formatSemesterOption } from '../../utils/formatEducationLevel';
 
 interface PublishPreviewModalProps {
   isOpen: boolean;
@@ -62,6 +63,8 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
     isSubmitting, isSavingDraft, canPublishFinal, mapelDropdownRef
   } = props;
 
+  const { t, language } = useTranslation();
+
   if (!isOpen) return null;
 
   const currentJenjang = jenjangOptions.find(j => j.id === meta.jenjang);
@@ -74,7 +77,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
         
         {/* Modal Header */}
         <div className="flex items-center justify-between mb-12">
-          <h1 className="font-['Lexend_Deca'] font-extrabold text-2xl md:text-3xl text-gray-900 dark:text-gray-100 tracking-tight">Preview</h1>
+          <h1 className="font-['Lexend_Deca'] font-extrabold text-2xl md:text-3xl text-gray-900 dark:text-gray-100 tracking-tight">{t('upload.preview_title')}</h1>
           <button 
             onClick={onClose}
             className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-950 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors"
@@ -101,10 +104,10 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                     onZoomChange={setZoom}
                   />
                   <div className="absolute bottom-4 left-4 right-4 z-30 flex justify-between pointer-events-none">
-                     <button onClick={() => setIsCropping(false)} className="pointer-events-auto w-12 h-12 flex items-center justify-center bg-black/60 backdrop-blur-md text-white rounded-full hover:bg-black/80 border border-white/10 transition-all shadow-xl" title="Batal">
+                     <button onClick={() => setIsCropping(false)} className="pointer-events-auto w-12 h-12 flex items-center justify-center bg-black/60 backdrop-blur-md text-white rounded-full hover:bg-black/80 border border-white/10 transition-all shadow-xl" title={t('upload.cancel')}>
                          <X className="w-6 h-6" strokeWidth={2.5} />
                      </button>
-                     <button onClick={handleApplyCrop} className="pointer-events-auto w-12 h-12 flex items-center justify-center bg-primary text-white rounded-full shadow-xl hover:bg-primary/90 transition-all border border-primary/50" title="Terapkan">
+                     <button onClick={handleApplyCrop} className="pointer-events-auto w-12 h-12 flex items-center justify-center bg-primary text-white rounded-full shadow-xl hover:bg-primary/90 transition-all border border-primary/50" title={t('upload.apply')}>
                          <Check className="w-6 h-6" strokeWidth={2.5} />
                      </button>
                   </div>
@@ -113,18 +116,18 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                 <img src={finalThumbnail || extractedThumbnail!} alt="Thumbnail" className={`absolute inset-0 w-full h-full ${thumbnailFit === 'cover' ? 'object-cover' : 'object-contain'}`} />
               ) : (
                 <>
-                  <h4 className="font-['Manrope'] font-bold text-gray-600 mb-2">Include a high-quality image in your story to make it more inviting to readers.</h4>
-                  <p className="text-xs text-gray-500 font-['Manrope'] font-medium">Gambar yang kamu tambahkan di dalam tulisan otomatis akan tampil di sini.</p>
+                  <h4 className="font-['Manrope'] font-bold text-gray-600 mb-2">{t('upload.no_image_title')}</h4>
+                  <p className="text-xs text-gray-500 font-['Manrope'] font-medium">{t('upload.no_image_desc')}</p>
                 </>
               )}
 
               {!isCropping && extractedThumbnail && (
                 <div className="absolute top-3 right-3 z-10">
                    <div className="bg-white/95 dark:bg-[#1C1A29]/95 backdrop-blur-md rounded-full shadow-md border border-gray-200/80 dark:border-white/10 p-1.5 flex gap-1.5">
-                      <button onClick={() => { setFinalThumbnail(extractedThumbnail); setThumbnailFit('contain'); }} className={`w-9 h-9 flex items-center justify-center rounded-full transition-all ${thumbnailFit==='contain' && finalThumbnail === extractedThumbnail ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5'}`} title="Tampil Utuh">
+                      <button onClick={() => { setFinalThumbnail(extractedThumbnail); setThumbnailFit('contain'); }} className={`w-9 h-9 flex items-center justify-center rounded-full transition-all ${thumbnailFit==='contain' && finalThumbnail === extractedThumbnail ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5'}`} title={t('upload.full_view')}>
                           <Maximize className="w-4 h-4" strokeWidth={2.5} />
                       </button>
-                      <button onClick={() => setIsCropping(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-white dark:bg-[#252336] text-gray-950 dark:text-gray-100 border border-gray-200 dark:border-white/10 shadow-sm hover:bg-gray-50 dark:hover:bg-white/10 transition-all" title="Crop Foto">
+                      <button onClick={() => setIsCropping(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-white dark:bg-[#252336] text-gray-950 dark:text-gray-100 border border-gray-200 dark:border-white/10 shadow-sm hover:bg-gray-50 dark:hover:bg-white/10 transition-all" title={t('upload.crop_photo')}>
                           <Crop className="w-4 h-4" strokeWidth={2.5} />
                       </button>
                    </div>
@@ -135,7 +138,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
             {/* Thumbnail Selector Carousel */}
             {!isCropping && availableImages.length > 1 && (
               <div className="mb-4 animate-in fade-in zoom-in-95 duration-300">
-                <p className="text-[13px] font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 mb-2.5">Pilih Sampul Khusus</p>
+                <p className="text-[13px] font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 mb-2.5">{t('upload.choose_cover')}</p>
                 <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
                    {availableImages.map((img, idx) => (
                        <button 
@@ -157,7 +160,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Ubah judul catatan..."
+                  placeholder={t('upload.title_placeholder_preview')}
                   className="w-full font-['Lexend_Deca'] text-xl font-bold text-gray-900 dark:text-gray-100 mb-1 border-b border-transparent hover:border-gray-300 dark:hover:border-white/10 focus:border-primary focus:outline-none bg-transparent transition-colors py-1"
                 />
                 <textarea 
@@ -166,14 +169,14 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                      setPreviewDescription(e.target.value);
                      setDescriptionEdited(true);
                   }}
-                  placeholder="Tulis subjudul/ringkasan singkat yang menarik..."
+                  placeholder={t('upload.desc_placeholder')}
                   className="w-full text-sm leading-relaxed border-b border-transparent hover:border-gray-300 dark:hover:border-white/10 focus:border-primary focus:outline-none bg-transparent transition-colors resize-none overflow-hidden min-h-[60px] text-gray-700 dark:text-gray-300 placeholder:text-gray-500 font-bold"
                   rows={3}
                 />
               </div>
             </div>
             <p className="text-[13px] text-gray-500 font-['Manrope'] font-bold mt-4">
-              Note: Perubahan metadata di sini akan memengaruhi cara catatanmu ditemukan oleh pelajar lain di Ba-Yu.
+              {t('upload.meta_note')}
             </p>
           </div>
 
@@ -182,8 +185,8 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
             
             {/* Mapel Row */}
             <div className="mb-8" ref={mapelDropdownRef}>
-               <p className="font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 text-[15px] mb-2">Kategori Mapel <span className="text-red-500">*</span></p>
-               <p className="text-[13px] text-gray-600 font-['Manrope'] mb-3 font-bold">Pilih satu kategori utama yang paling sesuai.</p>
+               <p className="font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 text-[15px] mb-2">{t('upload.category_title')} <span className="text-red-500">*</span></p>
+               <p className="text-[13px] text-gray-600 font-['Manrope'] mb-3 font-bold">{t('upload.category_desc')}</p>
                
                <div className="relative">
                   <div 
@@ -197,7 +200,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                            setMapelSearch(e.target.value);
                            setIsMapelDropdownOpen(true);
                         }}
-                        placeholder="Cari kategori mapel..."
+                        placeholder={t('upload.search_category')}
                         className="w-full bg-transparent border-none outline-none text-[14px] font-['Manrope'] text-gray-950 placeholder:text-gray-500 font-bold"
                      />
                      <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${isMapelDropdownOpen ? 'rotate-180' : ''}`} strokeWidth={2.5} />
@@ -214,7 +217,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                            }, {} as Record<string, any[]>)) as [string, any[]][]).map(([category, items]) => (
                               <div key={category} className="pb-1 last:pb-0">
                                  <div className="sticky top-0 bg-white/95 dark:bg-[#1C1A29]/95 backdrop-blur-sm px-4 py-2 text-[11px] font-['Lexend_Deca'] font-extrabold text-gray-500 dark:text-gray-400 uppercase tracking-wider z-10 border-b border-gray-100 dark:border-white/5">
-                                    {category}
+                                    {t(`subject_categories.${category}`) !== `subject_categories.${category}` ? t(`subject_categories.${category}`) : category}
                                  </div>
                                  <div className="py-1">
                                     {items.map((m: any) => (
@@ -228,8 +231,8 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                                           className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors ${meta.mataPelajaran === m.name ? 'bg-primary/5' : 'hover:bg-gray-50 dark:hover:bg-white/5'}`}
                                        >
                                           <span className="text-lg">{m.icon}</span>
-                                          <span className={`text-[14px] font-['Manrope'] ${meta.mataPelajaran === m.name ? 'font-bold text-primary' : 'font-medium text-gray-700'}`}>
-                                             {m.name}
+                                          <span className={`text-[14px] font-['Manrope'] ${meta.mataPelajaran === m.name ? 'font-bold text-primary' : 'font-medium text-gray-700 dark:text-gray-300'}`}>
+                                             {t(`subjects.${m.id}`) !== `subjects.${m.id}` ? t(`subjects.${m.id}`) : m.name}
                                           </span>
                                        </div>
                                     ))}
@@ -238,8 +241,8 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                            ))
                         ) : (
                            <div className="px-4 py-4 text-center">
-                              <p className="text-[13px] text-gray-600 font-['Manrope'] font-bold">Kategori tidak ditemukan.</p>
-                              <p className="text-[12px] text-gray-500 font-['Manrope'] mt-1 font-medium">Silakan pilih kategori yang terdekat, lalu tambahkan detailnya di bagian Tags.</p>
+                              <p className="text-[13px] text-gray-600 font-['Manrope'] font-bold">{t('upload.no_category')}</p>
+                              <p className="text-[12px] text-gray-500 font-['Manrope'] mt-1 font-medium">{t('upload.no_category_desc')}</p>
                            </div>
                         )}
                      </div>
@@ -249,8 +252,8 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
 
             {/* Pendidikan & Kelas Row */}
             <div className="mb-8">
-               <p className="font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 text-[15px] mb-2">Tingkat Pendidikan</p>
-               <p className="text-[13px] text-gray-600 font-['Manrope'] mb-3 font-bold">Tentukan audiens kelas sasaran catatan ini.</p>
+               <p className="font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 text-[15px] mb-2">{t('upload.edu_level')}</p>
+               <p className="text-[13px] text-gray-600 font-['Manrope'] mb-3 font-bold">{t('upload.edu_level_desc')}</p>
                
                <div className="flex gap-2 flex-wrap mb-3">
                 {jenjangOptions.map((j) => (
@@ -263,7 +266,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                         : 'bg-white dark:bg-[#1C1A29] text-gray-600 dark:text-gray-400 border-gray-300 dark:border-white/10 hover:border-gray-400 dark:hover:border-white/20 hover:text-gray-900 dark:hover:text-gray-200'
                     }`}
                   >
-                    {j.label}
+                    {t(`edu_levels.${j.id}`) !== `edu_levels.${j.id}` ? t(`edu_levels.${j.id}`) : j.label}
                   </button>
                 ))}
                </div>
@@ -280,7 +283,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                          }}
                       >
                          <span className="text-[14px] font-['Manrope'] text-gray-950 dark:text-gray-100 font-bold">
-                             {meta.kelas ? (meta.jenjang === 'Kuliah' ? meta.kelas : `Kelas ${meta.kelas}`) : 'Pilih Kelas'}
+                             {meta.kelas ? formatClassOption(meta.jenjang, meta.kelas, language) : t('upload.choose_class')}
                          </span>
                          <ChevronDown className="w-5 h-5 text-gray-500" strokeWidth={2.5} />
                       </div>
@@ -297,7 +300,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                                     }}
                                     className={`px-4 py-2.5 cursor-pointer transition-colors ${meta.kelas === k ? 'bg-primary/5 text-primary font-bold' : 'hover:bg-gray-50 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300 font-medium'} text-[14px] font-['Manrope']`}
                                  >
-                                     {meta.jenjang === 'Kuliah' ? k : `Kelas ${k}`}
+                                     {formatClassOption(meta.jenjang, k, language)}
                                  </div>
                               ))}
                           </div>
@@ -315,7 +318,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                          }}
                       >
                          <span className="text-[14px] font-['Manrope'] text-gray-950 dark:text-gray-100 font-bold">
-                             {meta.semester ? `Semester ${meta.semester}` : 'Pilih Semester'}
+                             {meta.semester ? formatSemesterOption(meta.semester, language) : t('upload.choose_semester')}
                          </span>
                          <ChevronDown className="w-5 h-5 text-gray-500" strokeWidth={2.5} />
                       </div>
@@ -332,7 +335,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                                     }}
                                     className={`px-4 py-2.5 cursor-pointer transition-colors ${meta.semester === s ? 'bg-primary/5 text-primary font-bold' : 'hover:bg-gray-50 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300 font-medium'} text-[14px] font-['Manrope']`}
                                  >
-                                     Semester {s}
+                                     {formatSemesterOption(s, language)}
                                  </div>
                               ))}
                           </div>
@@ -343,15 +346,15 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
 
             {/* Tags Row */}
             <div className="mb-10">
-              <p className="font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 text-[15px] mb-2">Tags / Keywords</p>
-              <p className="text-[13px] text-gray-600 font-['Manrope'] mb-3 font-bold">Tambahkan hingga 5 kata kunci agar mudah dicari.</p>
+              <p className="font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 text-[15px] mb-2">{t('upload.tags_title')}</p>
+              <p className="text-[13px] text-gray-600 font-['Manrope'] mb-3 font-bold">{t('upload.tags_desc')}</p>
               
               <input
                 type="text"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddTag(); }}}
-                placeholder="Add a topic (press Enter)..."
+                placeholder={t('upload.add_tag')}
                 className="w-full px-4 py-3 bg-gray-50 dark:bg-[#1C1A29] border border-transparent hover:border-gray-200 dark:hover:border-white/10 rounded-lg text-[14px] font-['Manrope'] focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:border-primary/50 transition-all mb-3 text-gray-950 dark:text-gray-100 placeholder:text-gray-500 font-bold"
               />
               
@@ -371,8 +374,8 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
             <div className="mb-8 bg-indigo-50/50 dark:bg-indigo-500/5 border border-indigo-100 dark:border-indigo-500/10 rounded-2xl p-5">
                <div className="flex items-center justify-between gap-4">
                   <div className="flex-1 min-w-0">
-                    <p className="font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100 text-[14px] mb-0.5">Ajukan ke Pakar</p>
-                    <p className="text-[12px] text-slate-500 dark:text-slate-400 font-['Manrope'] font-medium leading-snug">Catatan akan dikirim ke tim pakar untuk validasi dan mendapat badge verified.</p>
+                    <p className="font-['Lexend_Deca'] font-bold text-slate-800 dark:text-slate-100 text-[14px] mb-0.5">{t('upload.submit_expert')}</p>
+                    <p className="text-[12px] text-slate-500 dark:text-slate-400 font-['Manrope'] font-medium leading-snug">{t('upload.submit_expert_desc')}</p>
                   </div>
                   <button
                     type="button"
@@ -393,14 +396,14 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                   disabled={isSavingDraft || isSubmitting}
                   className="w-full sm:w-auto text-[15px] font-['Manrope'] text-gray-600 dark:text-gray-400 font-bold hover:text-gray-950 dark:hover:text-gray-200 transition-colors disabled:opacity-50 py-3.5"
                 >
-                  {isSavingDraft ? 'Menyimpan...' : 'Simpan draf'}
+                  {isSavingDraft ? t('upload.saving_draft') : t('upload.save_draft')}
                </button>
                <button
                   onClick={handleSubmit}
                   disabled={!canPublishFinal || isSubmitting}
                   className="w-full sm:w-auto bg-primary text-white px-8 py-3.5 rounded-xl text-[15px] font-['Manrope'] font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary/90 transition-all cursor-pointer shadow-lg shadow-primary/20"
                >
-                  {isSubmitting ? 'Publishing...' : 'Publish now'}
+                  {isSubmitting ? t('upload.publishing') : t('upload.publish_now')}
                </button>
             </div>
           </div>

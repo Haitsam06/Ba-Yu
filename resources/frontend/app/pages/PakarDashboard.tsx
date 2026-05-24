@@ -37,6 +37,7 @@ import axios from "axios";
 import { AvatarImage } from "../components/ui/DefaultImages";
 import { NoteCard } from "../components/NoteCard";
 import { NoteCardSkeleton } from "../components/ui/skeletons";
+import { useTranslation } from "../hooks/useTranslation";
 
 type VerificationStatus = "pending" | "approved" | "all";
 
@@ -49,6 +50,7 @@ interface FeedbackModalProps {
 }
 
 const FeedbackModal = ({ isOpen, onClose, onSubmit, type, noteTitle }: FeedbackModalProps) => {
+    const { t } = useTranslation();
     const [rating, setRating] = useState(5);
     const [reason, setReason] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -74,7 +76,7 @@ const FeedbackModal = ({ isOpen, onClose, onSubmit, type, noteTitle }: FeedbackM
                         </div>
                         <div>
                             <h3 className="font-['Lexend_Deca'] text-xl font-bold text-slate-800 dark:text-slate-100">
-                                {type === 'approve' ? 'Validasi Materi' : type === 'cancel' ? 'Batal Verifikasi' : 'Tolak Materi'}
+                                {type === 'approve' ? t('pakar_dashboard.validate') : type === 'cancel' ? t('pakar_dashboard.cancel_verification') : t('pakar_dashboard.reject_material')}
                             </h3>
                             <p className="text-slate-500 text-sm font-medium line-clamp-1 mt-0.5">{noteTitle}</p>
                         </div>
@@ -90,18 +92,18 @@ const FeedbackModal = ({ isOpen, onClose, onSubmit, type, noteTitle }: FeedbackM
                         <div className="space-y-6">
                             <div className="flex justify-between items-end">
                                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                                    <Sparkles size={14} className="text-amber-500" /> Kualitas Materi
+                                    <Sparkles size={14} className="text-amber-500" /> {t('pakar_dashboard.quality')}
                                 </label>
                                 <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-md ${
                                     rating <= 2 ? 'bg-orange-50 text-orange-600' : 
                                     rating <= 3 ? 'bg-indigo-50 text-indigo-600' : 
                                     'bg-emerald-50 text-emerald-600'
                                 }`}>
-                                    {rating === 1 && "Perlu Perbaikan"}
-                                    {rating === 2 && "Cukup Baik"}
-                                    {rating === 3 && "Bagus & Akurat"}
-                                    {rating === 4 && "Sangat Rekomendasi"}
-                                    {rating === 5 && "Luar Biasa / Sempurna"}
+                                    {rating === 1 && t('pakar_dashboard.needs_improvement')}
+                                    {rating === 2 && t('pakar_dashboard.fair')}
+                                    {rating === 3 && t('pakar_dashboard.good')}
+                                    {rating === 4 && t('pakar_dashboard.recommended')}
+                                    {rating === 5 && t('pakar_dashboard.excellent')}
                                 </span>
                             </div>
 
@@ -139,20 +141,20 @@ const FeedbackModal = ({ isOpen, onClose, onSubmit, type, noteTitle }: FeedbackM
                     <div className="space-y-3">
                         <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
                             <MessageSquare size={14} className="text-indigo-500" /> 
-                            {type === 'approve' ? 'Feedback untuk Penulis' : type === 'cancel' ? 'Alasan Pembatalan' : 'Alasan Penolakan'}
+                            {type === 'approve' ? t('pakar_dashboard.feedback_author') : type === 'cancel' ? t('pakar_dashboard.reason_cancel') : t('pakar_dashboard.reason_reject')}
                         </label>
                         <textarea
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
-                            placeholder={type === 'approve' ? 'Berikan saran yang membangun...' : type === 'cancel' ? 'Alasan membatalkan verifikasi...' : 'Jelaskan kekurangan materi ini...'}
+                            placeholder={type === 'approve' ? t('pakar_dashboard.placeholder_approve') : type === 'cancel' ? t('pakar_dashboard.placeholder_cancel') : t('pakar_dashboard.placeholder_reject')}
                             className="w-full h-28 p-4 bg-white dark:bg-[#13111C] border border-slate-200 dark:border-white/10 rounded-xl text-[14px] font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all resize-none shadow-sm dark:shadow-none"
                         />
                     </div>
 
                     <div className="flex gap-3">
-                        <button onClick={onClose} className="flex-1 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 text-slate-600 dark:text-slate-300 rounded-xl font-['Lexend_Deca'] font-bold text-[12px] uppercase tracking-wider hover:bg-slate-100 dark:hover:bg-white/10 transition-all shadow-sm dark:shadow-none">Batal</button>
+                        <button onClick={onClose} className="flex-1 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 text-slate-600 dark:text-slate-300 rounded-xl font-['Lexend_Deca'] font-bold text-[12px] uppercase tracking-wider hover:bg-slate-100 dark:hover:bg-white/10 transition-all shadow-sm dark:shadow-none">{t('pakar_dashboard.cancel_btn')}</button>
                         <button onClick={handleFormSubmit} disabled={isSubmitting || (type !== 'approve' && !reason.trim())} className={`flex-[2] py-3.5 rounded-xl font-['Lexend_Deca'] font-bold text-[12px] uppercase tracking-wider text-white shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 ${type === 'approve' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-rose-600 hover:bg-rose-700'}`}>
-                            {isSubmitting ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Send size={14} />{type === 'approve' ? 'Konfirmasi Validasi' : type === 'cancel' ? 'Konfirmasi Batal' : 'Konfirmasi Tolak'}</>}
+                            {isSubmitting ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Send size={14} />{type === 'approve' ? t('pakar_dashboard.confirm_validate') : type === 'cancel' ? t('pakar_dashboard.confirm_cancel') : t('pakar_dashboard.confirm_reject')}</>}
                         </button>
                     </div>
                 </div>
@@ -163,6 +165,7 @@ const FeedbackModal = ({ isOpen, onClose, onSubmit, type, noteTitle }: FeedbackM
 
 export default function PakarDashboard() {
     const { user } = useAuth();
+    const { t } = useTranslation();
     const [filter, setFilter] = useState<VerificationStatus>("pending");
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState<"terbaru" | "terlama">("terbaru");
@@ -238,9 +241,9 @@ export default function PakarDashboard() {
     const verifiedNotes = notes.filter((n) => n.isValidated);
 
     const stats = [
-        { label: "Menunggu Validasi", value: pendingNotes.length, color: "text-amber-600", icon: Clock, sparkColor: "#f59e0b" },
-        { label: "Materi Disetujui", value: verifiedNotes.length, color: "text-indigo-600", icon: CheckCircle, sparkColor: "#6366f1" },
-        { label: "Total Kontrol", value: notes.length, color: "text-slate-600", icon: Activity, sparkColor: "#64748b" },
+        { label: t('pakar_dashboard.waiting_validation'), value: pendingNotes.length, color: "text-amber-600", icon: Clock, sparkColor: "#f59e0b" },
+        { label: t('pakar_dashboard.approved'), value: verifiedNotes.length, color: "text-indigo-600", icon: CheckCircle, sparkColor: "#6366f1" },
+        { label: t('pakar_dashboard.total_control'), value: notes.length, color: "text-slate-600", icon: Activity, sparkColor: "#64748b" },
     ];
 
     const filteredNotes = (filter === "all" ? notes.filter(n => !n.isRejected) : filter === "pending" ? pendingNotes : verifiedNotes)
@@ -278,14 +281,14 @@ export default function PakarDashboard() {
                                 </div>
                                 <div>
                                     <h2 className="text-gray-900 dark:text-gray-100 font-bold text-xl tracking-tight leading-none mb-1.5 flex items-center gap-2">
-                                        {user?.name || "Pakar Ba-Yu"}
+                                        {user?.name || t('pakar_dashboard.title')}
                                     </h2>
-                                    <p className="text-[14px] text-gray-500 dark:text-gray-400">Panel kurasi materi</p>
+                                    <p className="text-[14px] text-gray-500 dark:text-gray-400">{t('pakar_dashboard.subtitle')}</p>
                                 </div>
                             </div>
                             <Link to="/explore" className="px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-full font-bold text-[13px] hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center gap-2">
                                 <BookOpen size={16} />
-                                Jelajahi
+                                {t('pakar_dashboard.explore')}
                             </Link>
                         </div>
 
@@ -294,7 +297,7 @@ export default function PakarDashboard() {
                             {/* Mobile Stats (Visible only on mobile) */}
                             <div className="lg:hidden pb-2">
                                 <h3 className="font-['Lexend_Deca'] font-extrabold text-[14px] text-gray-900 dark:text-gray-100 tracking-tight mb-4">
-                                    Statistik Kurasi
+                                    {t('pakar_dashboard.stats_title')}
                                 </h3>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                     {stats.map((stat, index) => {

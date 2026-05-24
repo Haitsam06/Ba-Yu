@@ -29,11 +29,13 @@ import { ExportDataModal } from "../components/ExportDataModal";
 import { CustomSelect } from "../components/ui/CustomSelect";
 import { PromptDialog } from "../components/ui/PromptDialog";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
+import { useTranslation } from "../hooks/useTranslation";
 
 type TabType = "catatan" | "laporan" | "users" | "sertifikasi";
 
 export default function AdminDashboard() {
     const { user } = useAuth();
+    const { t, language } = useTranslation();
     const { showToast } = useToast();
     const location = useLocation();
     const [activeTab, setActiveTab] = useState<TabType>("sertifikasi");
@@ -156,28 +158,28 @@ export default function AdminDashboard() {
 
     const stats = [
         {
-            label: "Total User",
+            label: t('admin_dashboard.total_users'),
             value: usersList.length,
             color: "text-blue-500",
             icon: Users,
             increment: "+12%",
         },
         {
-            label: "Total Catatan",
+            label: t('admin_dashboard.total_notes'),
             value: totalNotes,
             color: "text-indigo-500",
             icon: FileText,
             increment: "+8%",
         },
         {
-            label: "Pending Laporan",
+            label: t('admin_dashboard.pending_reports'),
             value: reportsList.length,
             color: "text-orange-500",
             icon: AlertCircle,
             increment: "+2%",
         },
         {
-            label: "Sertifikasi Pakar",
+            label: t('admin_dashboard.expert_certs'),
             value: pendingCerts.length,
             color: "text-fuchsia-600",
             icon: ShieldCheck,
@@ -377,16 +379,16 @@ export default function AdminDashboard() {
                                 />
                                 <div>
                                     <h2 className="text-gray-900 dark:text-gray-100 font-bold text-xl tracking-tight leading-none mb-1.5 flex items-center gap-2">
-                                        {user?.name || "Administrator"}
+                                        {user?.name || t('admin_dashboard.title')}
                                     </h2>
-                                    <p className="text-[14px] text-gray-500 dark:text-gray-400">Workspace Admin</p>
+                                    <p className="text-[14px] text-gray-500 dark:text-gray-400">{t('admin_dashboard.subtitle')}</p>
                                 </div>
                             </div>
                             <button 
                                 onClick={() => setIsExportModalOpen(true)}
                                 className="px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-full font-bold text-[13px] hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
                             >
-                                <DownloadCloud className="w-4 h-4 text-gray-500" /> Ekspor Data
+                                <DownloadCloud className="w-4 h-4 text-gray-500" /> {t('admin_dashboard.export_data')}
                             </button>
                         </div>
 
@@ -394,7 +396,7 @@ export default function AdminDashboard() {
                             {/* Mobile Stats (Visible only on mobile) */}
                             <div className="lg:hidden pb-2">
                                 <h3 className="font-bold text-[14px] text-gray-900 dark:text-gray-100 tracking-tight mb-4">
-                                    Ringkasan Platform
+                                    {t('admin_dashboard.platform_summary')}
                                 </h3>
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                     {stats.map((stat, index) => {
@@ -427,7 +429,7 @@ export default function AdminDashboard() {
                                             type="text"
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                            placeholder="Cari user, catatan, atau ID laporan..."
+                                            placeholder={t('admin_dashboard.search_placeholder')}
                                             className="w-full pl-9 pr-4 py-2 bg-gray-100/50 dark:bg-white/5 border-none rounded-full text-[14px] text-gray-900 dark:text-gray-100 placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
                                         />
                                     </div>
@@ -444,25 +446,25 @@ export default function AdminDashboard() {
                                                 <div className="fixed inset-0 z-[40]" onClick={() => setShowFilterPopup(false)} />
                                                 <div className="absolute top-full mt-2 right-0 w-[280px] bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl p-5 z-[100] animate-in fade-in slide-in-from-top-2">
                                                     <div className="mb-5">
-                                                        <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">Status Verifikasi</label>
+                                                        <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">{t('admin_dashboard.filter_status')}</label>
                                                         <CustomSelect
                                                             value={statusFilter}
                                                             onChange={(val) => setStatusFilter(val as any)}
                                                             options={[
-                                                                { value: "semua", label: "Semua Status" },
-                                                                { value: "terverifikasi", label: "Hanya Terverifikasi" },
-                                                                { value: "belum", label: "Belum Terverifikasi" },
+                                                                { value: "semua", label: t('admin_dashboard.filter_all') },
+                                                                { value: "terverifikasi", label: t('admin_dashboard.filter_verified') },
+                                                                { value: "belum", label: t('admin_dashboard.filter_unverified') },
                                                             ]}
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">Urutkan Berdasarkan</label>
+                                                        <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">{t('admin_dashboard.sort_by')}</label>
                                                         <CustomSelect
                                                             value={sortBy}
                                                             onChange={(val) => setSortBy(val as any)}
                                                             options={[
-                                                                { value: "terbaru", label: "Terbaru (Newest)" },
-                                                                { value: "terlama", label: "Terlama (Oldest)" },
+                                                                { value: "terbaru", label: t('admin_dashboard.sort_newest') },
+                                                                { value: "terlama", label: t('admin_dashboard.sort_oldest') },
                                                             ]}
                                                         />
                                                     </div>
@@ -475,10 +477,10 @@ export default function AdminDashboard() {
                                 {/* Tabs */}
                                 <div className="flex w-full md:w-auto border-b border-gray-200 dark:border-white/10 overflow-x-auto scrollbar-hide">
                                     {[
-                                        { id: "sertifikasi", label: "Verifikasi" },
-                                        { id: "catatan", label: "Catatan" },
-                                        { id: "laporan", label: "Laporan" },
-                                        { id: "users", label: "Users" },
+                                        { id: "sertifikasi", label: t('admin_dashboard.tab_verification') },
+                                        { id: "catatan", label: t('admin_dashboard.tab_notes') },
+                                        { id: "laporan", label: t('admin_dashboard.tab_reports') },
+                                        { id: "users", label: t('admin_dashboard.tab_users') },
                                     ].map((tab) => {
                                         const isActive = activeTab === tab.id;
                                         return (
@@ -506,11 +508,10 @@ export default function AdminDashboard() {
                                         <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-white/5">
                                             <div>
                                                 <h3 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">
-                                                    Verifikasi Sertifikat Pakar
+                                                    {t('admin_dashboard.verify_title')}
                                                 </h3>
                                                 <p className="text-sm font-['Manrope'] text-gray-500 mt-1">
-                                                    Tinjau dan proses portofolio
-                                                    kandidat pakar pendidikan.
+                                                    {t('admin_dashboard.verify_desc')}
                                                 </p>
                                             </div>
                                         </div>
@@ -519,11 +520,10 @@ export default function AdminDashboard() {
                                             <div className="py-16 text-center bg-gray-50/50 dark:bg-white/[0.02] border border-gray-200/50 dark:border-white/10 border-dashed rounded-3xl">
                                                 <ShieldCheck className="w-16 h-16 text-gray-400 dark:text-slate-600 mx-auto mb-4" strokeWidth={1} />
                                                 <h4 className="font-['Lexend_Deca'] font-bold text-lg text-gray-900 dark:text-gray-100 mb-1">
-                                                    Semua Pengajuan Selesai
+                                                    {t('admin_dashboard.all_done')}
                                                 </h4>
                                                 <p className="text-sm text-gray-500 dark:text-slate-400 font-['Manrope']">
-                                                    Saat ini antrean verifikasi
-                                                    pakar sedang kosong.
+                                                    {t('admin_dashboard.all_done_desc')}
                                                 </p>
                                             </div>
                                         ) : (
@@ -536,8 +536,8 @@ export default function AdminDashboard() {
                                                                     <FileText className="w-5 h-5" />
                                                                 </div>
                                                                 <div>
-                                                                    <h4 className="font-['Lexend_Deca'] font-bold text-slate-900 dark:text-slate-100 text-[16px] leading-none mb-1">User ID: {cert.user_id}</h4>
-                                                                    <p className="font-['Manrope'] text-[13px] text-slate-500 dark:text-slate-400 font-bold">Bidang: <span className="text-indigo-600 dark:text-indigo-400">{cert.bidang_keahlian}</span></p>
+                                                                    <h4 className="font-['Lexend_Deca'] font-bold text-slate-900 dark:text-slate-100 text-[16px] leading-none mb-1">{t('admin_dashboard.card_user_id') !== 'admin_dashboard.card_user_id' ? t('admin_dashboard.card_user_id') : 'User ID:'} {cert.user_id}</h4>
+                                                                    <p className="font-['Manrope'] text-[13px] text-slate-500 dark:text-slate-400 font-bold">{t('admin_dashboard.card_field') !== 'admin_dashboard.card_field' ? t('admin_dashboard.card_field') : 'Bidang:'} <span className="text-indigo-600 dark:text-indigo-400">{cert.bidang_keahlian}</span></p>
                                                                 </div>
                                                             </div>
                                                             <div className="flex items-center gap-3 mt-4">
@@ -550,7 +550,7 @@ export default function AdminDashboard() {
                                                                     rel="noreferrer"
                                                                     className="flex items-center gap-1.5 text-[12px] text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 font-bold transition-colors bg-white dark:bg-[#1C1A29] px-4 py-2 rounded-full border border-gray-200 dark:border-white/10 shrink-0"
                                                                 >
-                                                                    <Eye size={14} /> Lihat Dokumen
+                                                                    <Eye size={14} /> {t('admin_dashboard.card_view_doc') !== 'admin_dashboard.card_view_doc' ? t('admin_dashboard.card_view_doc') : 'Lihat Dokumen'}
                                                                 </a>
                                                             </div>
                                                         </div>
@@ -559,13 +559,13 @@ export default function AdminDashboard() {
                                                                 onClick={() => handleVerifyCert(cert.id, "approve")}
                                                                 className="flex-1 sm:flex-none px-4 py-2 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-full font-bold text-[12px] hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all flex items-center justify-center gap-1.5"
                                                             >
-                                                                <CheckCircle size={14} /> Setujui
+                                                                <CheckCircle size={14} /> {t('admin_dashboard.card_approve') !== 'admin_dashboard.card_approve' ? t('admin_dashboard.card_approve') : 'Setujui'}
                                                             </button>
                                                             <button
                                                                 onClick={() => handleVerifyCert(cert.id, "reject")}
                                                                 className="flex-1 sm:flex-none px-4 py-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full font-bold text-[12px] hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-all flex items-center justify-center gap-1.5"
                                                             >
-                                                                <XCircle size={14} /> Tolak
+                                                                <XCircle size={14} /> {t('admin_dashboard.card_reject') !== 'admin_dashboard.card_reject' ? t('admin_dashboard.card_reject') : 'Tolak'}
                                                             </button>
                                                         </div>
                                                     </article>

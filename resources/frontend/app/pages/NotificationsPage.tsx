@@ -18,6 +18,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 import { cn } from "../lib/utils";
+import { useTranslation } from "../hooks/useTranslation";
 
 interface Notification {
     id?: string;
@@ -75,19 +76,19 @@ const getNotificationBg = (type: string) => {
     }
 };
 
-function timeAgo(dateStr: string) {
+function timeAgo(dateStr: string, t: (key: string) => string, lang: string) {
     const now = new Date();
     const date = new Date(dateStr);
     const diffMs = now.getTime() - date.getTime();
     const diffMin = Math.floor(diffMs / 60000);
-    if (diffMin < 1) return "Baru saja";
-    if (diffMin < 60) return `${diffMin} menit lalu`;
+    if (diffMin < 1) return t('notifications.time_just_now');
+    if (diffMin < 60) return `${diffMin} ${t('notifications.time_minutes')}`;
     const diffHr = Math.floor(diffMin / 60);
-    if (diffHr < 24) return `${diffHr} jam lalu`;
+    if (diffHr < 24) return `${diffHr} ${t('notifications.time_hours')}`;
     const diffDay = Math.floor(diffHr / 24);
-    if (diffDay === 1) return "Kemarin";
-    if (diffDay < 30) return `${diffDay} hari lalu`;
-    return date.toLocaleDateString("id-ID", {
+    if (diffDay === 1) return t('notifications.time_yesterday');
+    if (diffDay < 30) return `${diffDay} ${t('notifications.time_days')}`;
+    return date.toLocaleDateString(lang === 'id' ? 'id-ID' : lang, {
         day: "numeric",
         month: "long",
         year: "numeric",
@@ -97,6 +98,7 @@ function timeAgo(dateStr: string) {
 export default function NotificationsPage() {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const { t, language } = useTranslation();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -206,24 +208,23 @@ export default function NotificationsPage() {
                 <div className="bg-slate-50/80 dark:bg-[#13111C]/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/10 sticky top-0 z-30">
                     <div className="max-w-3xl mx-auto px-6 pt-10 pb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                         <div className="flex flex-col gap-1">
-                            <h1 className="text-gray-900 dark:text-gray-100 font-bold text-[28px] tracking-tight">
-                                Notifikasi
+                            <h1 className="text-2xl sm:text-[28px] font-black text-slate-900 dark:text-white font-['Lexend_Deca'] tracking-tight">
+                                {t('notifications.title')}
                             </h1>
-                            <p className="text-gray-500 dark:text-gray-400 text-[14px]">
-                                {isLoading
-                                    ? "Memuat pembaruan..."
-                                    : unreadCount > 0
-                                      ? `Anda memiliki ${unreadCount} kabar baru.`
-                                      : "Semua sudah dibaca. Anda update!"}
-                            </p>
+                            <div className="flex items-center gap-2 mt-2 sm:mt-0 opacity-80 sm:opacity-100">
+                                <Bell className="w-5 h-5 text-indigo-500 animate-pulse" />
+                                <span className="text-[13px] font-['Manrope'] font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/5 px-3 py-1.5 rounded-full border border-slate-200/50 dark:border-white/10">
+                                    {t('notifications.you_have')} <strong className="text-indigo-600 dark:text-indigo-400 mx-0.5">{unreadCount}</strong> {t('notifications.new_updates')}
+                                </span>
+                            </div>
                         </div>
                         {unreadCount > 0 && (
                             <button
                                 onClick={handleMarkAllAsRead}
                                 className="flex items-center gap-2 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[13px] font-bold px-5 py-2 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors"
                             >
-                                <CheckCheck className="w-4 h-4" />
-                                Tandai Semua Dibaca
+                                <Check className="w-[14px] h-[14px] mr-1.5" strokeWidth={2.5} />
+                                {t('notifications.mark_all_read')}
                             </button>
                         )}
                     </div>
@@ -235,21 +236,35 @@ export default function NotificationsPage() {
                     <div className="flex gap-2">
                         <button
                             onClick={() => setFilter("all")}
-                            className={`px-5 py-2 rounded-full font-bold text-[13px] transition-colors border ${filter === "all" ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent" : "bg-white dark:bg-white/5 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/10"}`}
+                            className={cn(
+                                "relative px-4 sm:px-6 py-2.5 text-[14px] font-semibold font-['Manrope'] transition-all duration-300 rounded-full sm:rounded-none sm:rounded-t-xl overflow-hidden",
+                                filter === "all"
+                                    ? "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 sm:bg-transparent"
+                                    : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5"
+                            )}
                         >
-                            Semua
+                            <span className="relative z-10">{t('notifications.all')}</span>
+                            {filter === "all" && (
+                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 dark:bg-indigo-400 hidden sm:block" />
+                            )}
                         </button>
                         <button
                             onClick={() => setFilter("unread")}
-                            className={`px-5 py-2 rounded-full font-bold text-[13px] transition-colors flex items-center gap-2 border ${filter === "unread" ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent" : "bg-white dark:bg-white/5 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/10"}`}
+                            className={cn(
+                                "relative px-4 sm:px-6 py-2.5 text-[14px] font-semibold font-['Manrope'] transition-all duration-300 flex items-center gap-2 rounded-full sm:rounded-none sm:rounded-t-xl overflow-hidden",
+                                filter === "unread"
+                                    ? "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 sm:bg-transparent"
+                                    : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5"
+                            )}
                         >
-                            Belum Dibaca
+                            <span className="relative z-10">{t('notifications.unread')}</span>
                             {unreadCount > 0 && (
-                                <span
-                                    className={`flex items-center justify-center rounded-full text-[10px] px-1.5 py-0.5 font-bold min-w-[20px] ${filter === "unread" ? "bg-white/20 text-white dark:bg-gray-900/10 dark:text-gray-900" : "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"}`}
-                                >
+                                <span className="relative z-10 bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
                                     {unreadCount}
                                 </span>
+                            )}
+                            {filter === "unread" && (
+                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 dark:bg-indigo-400 hidden sm:block" />
                             )}
                         </button>
                     </div>
@@ -376,8 +391,8 @@ export default function NotificationsPage() {
                                                         {!notif.is_read && (
                                                             <div className="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
                                                         )}
-                                                        <span className="text-[12px] font-medium text-gray-500 dark:text-gray-400">
-                                                            {timeAgo(notif.created_at)}
+                                                        <span className="font-medium">
+                                                            {timeAgo(notif.created_at, t, language)}
                                                         </span>
                                                     </div>
                                                 </div>

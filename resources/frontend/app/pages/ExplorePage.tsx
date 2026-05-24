@@ -36,11 +36,13 @@ import { TagList } from "../components/ui/TagList";
 import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
 import { NoteCard } from "../components/NoteCard";
 import { useToast } from "../contexts/ToastContext";
+import { useTranslation } from "../hooks/useTranslation";
 
 export default function ExplorePage() {
     const { isAuthenticated } = useAuth();
     const { isBookmarked, toggleBookmark } = useBookmarks();
     const { showToast } = useToast();
+    const { t } = useTranslation();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const tabFromUrl = queryParams.get("tab") as "kategori" | "populer" | "terbaru" | "pengguna" | null;
@@ -115,7 +117,7 @@ export default function ExplorePage() {
                         className="w-4 h-4 text-primary"
                         strokeWidth={2.5}
                     />{" "}
-                    Pakar Edukasi
+                    {t('explore.expert_education')}
                 </h3>
                 <div className="flex flex-col gap-5">
                     {experts.length > 0 ? (
@@ -141,7 +143,7 @@ export default function ExplorePage() {
                                         <span className="font-['Manrope'] font-medium text-[12px] text-gray-500 dark:text-gray-400 truncate">
                                             {expert.followers_count ||
                                                 0}{" "}
-                                            pengikut
+                                            {t('explore.followers')}
                                         </span>
                                     </div>
                                 </Link>
@@ -160,16 +162,16 @@ export default function ExplorePage() {
                                         }`}
                                 >
                                     {expert.is_followed_by_me
-                                        ? "Mengikuti"
+                                        ? t('explore.following')
                                         : expert.is_follow_pending
-                                            ? "Diminta"
-                                            : "Ikuti"}
+                                            ? t('explore.requested')
+                                            : t('explore.follow')}
                                 </button>
                             </div>
                         ))
                     ) : (
                         <p className="text-gray-700 dark:text-gray-400 font-['Manrope'] text-sm font-bold">
-                            Belum ada pakar terdaftar.
+                            {t('explore.no_experts')}
                         </p>
                     )}
                 </div>
@@ -182,26 +184,26 @@ export default function ExplorePage() {
                         className="w-4 h-4 text-rose-500"
                         strokeWidth={2.5}
                     />{" "}
-                    Sering Dicari
+                    {t('explore.trending_searches')}
                 </h3>
                 <div className="flex flex-wrap gap-2.5">
                     {[
-                        "Fisika Kuantum",
-                        "Limit Trigonometri",
-                        "Grammar IELTS",
-                        "SBMPTN 2026",
-                        "Sistem Pencernaan",
+                        { key: "Fisika Kuantum", translateKey: "explore.trending_tag_1" },
+                        { key: "Limit Trigonometri", translateKey: "explore.trending_tag_2" },
+                        { key: "Grammar IELTS", translateKey: "explore.trending_tag_3" },
+                        { key: "SBMPTN 2026", translateKey: "explore.trending_tag_4" },
+                        { key: "Sistem Pencernaan", translateKey: "explore.trending_tag_5" },
                     ].map((term) => (
                         <button
-                            key={term}
-                            onClick={() => setSearchQuery(term)}
+                            key={term.key}
+                            onClick={() => setSearchQuery(term.key)}
                             className="px-3.5 py-2.5 bg-white dark:bg-[#1C1A29] hover:bg-primary/5 hover:text-primary hover:border-primary/20 text-gray-600 dark:text-gray-400 rounded-2xl font-['Manrope'] text-[13px] font-bold shadow-sm dark:shadow-none hover:shadow-md hover:-translate-y-0.5 border border-gray-100 dark:border-white/10 transition-all duration-300 truncate max-w-full text-left focus:outline-none"
                         >
                             <Search
                                 className="w-3.5 h-3.5 inline-block mr-1.5 opacity-70"
                                 strokeWidth={2.5}
                             />{" "}
-                            {term}
+                            {t(term.translateKey) !== term.translateKey ? t(term.translateKey) : term.key}
                         </button>
                     ))}
                 </div>
@@ -209,12 +211,12 @@ export default function ExplorePage() {
 
             {/* Quick Links */}
             <div className="pt-2 flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-['Manrope'] font-bold text-gray-700 dark:text-gray-500">
-                <Link to="/settings/help" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Bantuan</Link>
-                <Link to="/status" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Status</Link>
-                <Link to="/about" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Tentang Kami</Link>
-                <Link to="/careers" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Karir</Link>
-                <Link to="/privacy" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Privasi</Link>
-                <Link to="/terms" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">Ketentuan</Link>
+                <Link to="/settings/help" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">{t('footer.help') !== 'footer.help' ? t('footer.help') : 'Bantuan'}</Link>
+                <Link to="/status" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">{t('footer.status') !== 'footer.status' ? t('footer.status') : 'Status'}</Link>
+                <Link to="/about" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">{t('footer.about_us') !== 'footer.about_us' ? t('footer.about_us') : 'Tentang Kami'}</Link>
+                <Link to="/careers" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">{t('footer.careers') !== 'footer.careers' ? t('footer.careers') : 'Karir'}</Link>
+                <Link to="/privacy" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">{t('footer.privacy') !== 'footer.privacy' ? t('footer.privacy') : 'Privasi'}</Link>
+                <Link to="/terms" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">{t('footer.terms') !== 'footer.terms' ? t('footer.terms') : 'Ketentuan'}</Link>
             </div>
         </div>
     );
@@ -592,7 +594,7 @@ export default function ExplorePage() {
             rating: note.rating || 5,
             description: note.content
                 ? note.content.replace(/<[^>]*>?/gm, "").substring(0, 150) + "..."
-                : "Tidak ada deskripsi",
+                : t('home.no_description'),
             mataPelajaran: note.mapel || "Lainnya",
             jenjang: note.jenjang || "-",
             kelas: note.kelas || "-",
@@ -666,10 +668,10 @@ export default function ExplorePage() {
     }, [isAuthenticated, activeSegment]);
 
     const tabItems = [
-        { key: "kategori" as const, label: "Untuk Anda", icon: Sparkles },
-        { key: "populer" as const, label: "Terpopuler", icon: TrendingUp },
-        { key: "terbaru" as const, label: "Terbaru", icon: Clock },
-        { key: "pengguna" as const, label: "Pengguna", icon: Users },
+        { key: "kategori" as const, label: t('explore.for_you'), icon: Sparkles },
+        { key: "populer" as const, label: t('explore.popular'), icon: TrendingUp },
+        { key: "terbaru" as const, label: t('explore.newest'), icon: Clock },
+        { key: "pengguna" as const, label: t('explore.users'), icon: Users },
     ];
 
     // === SHARED CONTENT ===
@@ -688,17 +690,13 @@ export default function ExplorePage() {
                         >
                             <div className="inline-flex items-center gap-2 text-gray-700 text-xs font-bold tracking-widest uppercase mb-6">
                                 <BookOpen className="w-4 h-4 text-gray-600" />
-                                Perpustakaan Digital
+                                {t('explore.digital_library')}
                             </div>
                             <h1 className="font-['Lexend_Deca'] font-extrabold text-5xl sm:text-6xl text-gray-900 dark:text-gray-100 tracking-tight mb-6 leading-[1.05]">
-                                Jelajahi Ribuan{" "}
-                                <br className="hidden sm:block" />
-                                Catatan Belajar.
+                                {t('explore.hero_title')}
                             </h1>
                             <p className="text-gray-700 font-['Manrope'] text-lg sm:text-xl max-w-2xl leading-relaxed mb-10">
-                                Temukan materi terkurasi dari pelajar dan pakar
-                                pendidikan <br className="hidden md:block" /> di
-                                seluruh Indonesia. Gratis selamanya.
+                                {t('explore.hero_subtitle')}
                             </p>
                         </div>
 
@@ -720,7 +718,7 @@ export default function ExplorePage() {
                                     {/* Input Field */}
                                     <input
                                         type="text"
-                                        placeholder="Cari catatan, topik, atau pembuat..."
+                                        placeholder={t('explore.search_placeholder')}
                                         value={searchQuery}
                                         onChange={(e) => {setSearchQuery(e.target.value); setIsSuggestionOpen(true);}}
                                         onFocus={() => setIsSuggestionOpen(true)}
@@ -744,9 +742,9 @@ export default function ExplorePage() {
                                             {/* Header */}
                                             <div className="px-5 py-3 text-[11px] font-bold text-gray-600 uppercase tracking-wider bg-gray-50/80 border-b border-gray-100 flex items-center gap-1.5">
                                                 {searchQuery.trim() === "" ? (
-                                                    <><TrendingUp className="w-3.5 h-3.5 text-primary" /> Sering Dicari</>
+                                                    <><TrendingUp className="w-3.5 h-3.5 text-primary" /> {t('explore.trending_searches')}</>
                                                 ) : (
-                                                    <><Search className="w-3.5 h-3.5" /> Prediksi Pencarian</>
+                                                    <><Search className="w-3.5 h-3.5" /> {t('explore.search_prediction')}</>
                                                 )}
                                             </div>
 
@@ -795,10 +793,10 @@ export default function ExplorePage() {
                             <div className="px-6 md:px-0 pb-12 mb-4 w-full">
                                 <div className="relative">
                                     <h1 className="text-[36px] sm:text-[48px] font-['Lexend_Deca'] font-black text-gray-900 dark:text-gray-100 tracking-tight leading-none mb-4">
-                                        Eksplorasi<span className="text-primary">.</span>
+                                        {t('explore.title')}<span className="text-primary">.</span>
                                     </h1>
                                     <p className="text-gray-500 dark:text-gray-400 font-['Manrope'] text-[16px] sm:text-[18px] font-medium max-w-xl mb-8 leading-relaxed">
-                                        Temukan materi, topik, dan inspirasi belajar dari seluruh penjuru negeri.
+                                        {t('explore.subtitle')}
                                     </p>
 
                                     <div className="flex gap-4 items-center w-full max-w-[620px]">
@@ -809,7 +807,7 @@ export default function ExplorePage() {
                                             />
                                             <input
                                                 type="text"
-                                                placeholder="Cari materi, topik, atau penulis..."
+                                                placeholder={t('explore.search_placeholder')}
                                                 value={searchQuery}
                                                 onChange={(e) => {
                                                     setSearchQuery(e.target.value);
@@ -867,8 +865,8 @@ export default function ExplorePage() {
                                             value={sortOrder}
                                             onChange={(val) => setSortOrder(val as "desc" | "asc")}
                                             options={[
-                                                { value: "desc", label: "Terbaru" },
-                                                { value: "asc", label: "Terlama" },
+                                                { value: "desc", label: t('explore.newest') },
+                                                { value: "asc", label: t('explore.oldest') },
                                             ]}
                                             className="bg-gray-50/80 dark:bg-[#1C1A29] !border-none !rounded-full shadow-sm text-sm font-['Manrope'] font-bold text-gray-700 dark:text-gray-300"
                                         />
@@ -954,10 +952,10 @@ export default function ExplorePage() {
                                                             )}
                                                             <div className="flex items-center gap-4 font-['Manrope'] text-[13px] text-gray-500 dark:text-gray-400 font-medium">
                                                                 <div className="flex items-center gap-1.5 hover:underline">
-                                                                    <span><strong className="font-bold text-gray-900 dark:text-gray-100">{u.followers_count || 0}</strong> Pengikut</span>
+                                                                    <span><strong className="font-bold text-gray-900 dark:text-gray-100">{u.followers_count || 0}</strong> {t('explore.followers_count')}</span>
                                                                 </div>
                                                                 <div className="flex items-center gap-1.5 hover:underline">
-                                                                    <span><strong className="font-bold text-gray-900 dark:text-gray-100">{u.posts_count || 0}</strong> Tulisan</span>
+                                                                    <span><strong className="font-bold text-gray-900 dark:text-gray-100">{u.posts_count || 0}</strong> {t('explore.posts_count')}</span>
                                                                 </div>
                                                             </div>
                                                         </Link>
@@ -976,14 +974,14 @@ export default function ExplorePage() {
                                                             }`}
                                                         >
                                                             {u.is_followed_by_me ? (
-                                                                <span className="group-hover/btn:hidden">Mengikuti</span>
+                                                                <span className="group-hover/btn:hidden">{t('explore.following')}</span>
                                                             ) : u.is_follow_pending ? (
-                                                                <span>Diminta</span>
+                                                                <span>{t('explore.requested')}</span>
                                                             ) : (
-                                                                <span>Ikuti</span>
+                                                                <span>{t('explore.follow')}</span>
                                                             )}
                                                             {u.is_followed_by_me && (
-                                                                <span className="hidden group-hover/btn:inline">Berhenti</span>
+                                                                <span className="hidden group-hover/btn:inline">{t('explore.unfollow')}</span>
                                                             )}
                                                         </button>
                                                     </div>
@@ -1015,12 +1013,12 @@ export default function ExplorePage() {
                                             <Users className="w-8 h-8 text-gray-300 dark:text-gray-600" />
                                         </div>
                                         <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-lg mb-2">
-                                            {debouncedSearchQuery ? 'Pengguna Tidak Ditemukan' : 'Cari Pengguna'}
+                                            {debouncedSearchQuery ? t('explore.user_not_found') : t('explore.search_user')}
                                         </h3>
                                         <p className="text-gray-500 dark:text-gray-400 font-['Manrope']">
                                             {debouncedSearchQuery
-                                                ? 'Coba gunakan kata kunci lain.'
-                                                : 'Ketik nama atau username di kolom pencarian di atas.'}
+                                                ? t('explore.try_other_user_keywords')
+                                                : t('explore.type_username')}
                                         </p>
                                     </div>
                                 )
@@ -1051,7 +1049,7 @@ export default function ExplorePage() {
                                     
                                     {!hasMore && formattedNotes.length > 0 && (
                                         <div className="py-8 text-center">
-                                            <p className="text-gray-600 dark:text-gray-500 font-['Manrope'] text-[13px] font-medium">Anda sudah melihat semua catatan di kategori ini.</p>
+                                            <p className="text-gray-600 dark:text-gray-500 font-['Manrope'] text-[13px] font-medium">{t('explore.seen_all_notes')}</p>
                                         </div>
                                     )}
                                 </>
@@ -1061,10 +1059,10 @@ export default function ExplorePage() {
                                         <BookOpen className="w-8 h-8 text-gray-300 dark:text-gray-600" />
                                     </div>
                                     <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-lg mb-2">
-                                        Pencarian Tidak Ditemukan
+                                        {t('explore.search_not_found')}
                                     </h3>
                                     <p className="text-gray-500 dark:text-gray-400 font-['Manrope']">
-                                        Coba gunakan kata kunci atau filter lain.
+                                        {t('explore.try_other_keywords')}
                                     </p>
                                 </div>
                             ))}
@@ -1107,12 +1105,10 @@ export default function ExplorePage() {
 
                             <div className="relative z-10">
                                 <h3 className="font-['Lexend_Deca'] font-extrabold text-white text-2xl sm:text-3xl mb-3 tracking-tight">
-                                    Punya catatan bagus?
+                                    {t('explore.got_good_notes')}
                                 </h3>
                                 <p className="text-white/80 font-['Manrope'] text-sm sm:text-base mb-8 max-w-md mx-auto leading-relaxed">
-                                    Bergabung dan bagikan catatan belajarmu ke
-                                    ribuan pelajar di seluruh Indonesia. Gratis
-                                    selamanya!
+                                    {t('explore.join_and_share')}
                                 </p>
                                 <div className="flex items-center justify-center gap-4 flex-wrap">
                                     <button
@@ -1122,14 +1118,14 @@ export default function ExplorePage() {
                                         className="bg-white text-primary px-8 py-3.5 rounded-full font-bold text-sm hover:bg-gray-50 transition-all shadow-xl hover:-translate-y-0.5 flex items-center gap-2"
                                     >
                                         <Upload className="w-4 h-4" />
-                                        Daftar & Upload
+                                        {t('explore.register_upload')}
                                     </button>
                                     <button
                                         onClick={() => openAuthModal("login")}
                                         className="text-white border-2 border-white/30 px-8 py-3.5 rounded-full font-bold text-sm hover:bg-white/10 transition-all flex items-center gap-2"
                                     >
                                         <LogIn className="w-4 h-4" />
-                                        Sudah Punya Akun
+                                        {t('explore.already_have_account')}
                                     </button>
                                 </div>
                             </div>
@@ -1160,7 +1156,7 @@ export default function ExplorePage() {
                             />
                         </div>
                         <h3 className="font-['Lexend_Deca'] font-extrabold text-[18px] text-gray-900 dark:text-gray-100 tracking-tight">
-                            Filter Referensi
+                            {t('explore.filter_ref')}
                         </h3>
                     </div>
                     <button
@@ -1175,18 +1171,18 @@ export default function ExplorePage() {
                     {/* Tipe Konten */}
                     <div>
                         <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 dark:text-gray-100 mb-4 flex items-center justify-between">
-                            Tipe Pencarian
+                            {t('explore.search_type')}
                             {contentTypeFilter !== 'semua' && (
                                 <span className="text-[11px] font-['Lexend_Deca'] text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-md">
-                                    1 Dipilih
+                                    1 {t('explore.selected')}
                                 </span>
                             )}
                         </h4>
                         <div className="flex flex-wrap gap-2.5">
                             {[
-                                { key: 'semua' as const, label: 'Semua', icon: Compass },
-                                { key: 'catatan_terverifikasi' as const, label: 'Catatan Terverifikasi', icon: BookOpen },
-                                { key: 'orang_terverifikasi' as const, label: 'Orang Terverifikasi', icon: ShieldCheck },
+                                { key: 'semua' as const, label: t('explore.all'), icon: Compass },
+                                { key: 'catatan_terverifikasi' as const, label: t('explore.verified_notes'), icon: BookOpen },
+                                { key: 'orang_terverifikasi' as const, label: t('explore.verified_people'), icon: ShieldCheck },
                             ].map((item) => (
                                 <button
                                     key={item.key}
@@ -1206,10 +1202,10 @@ export default function ExplorePage() {
                     {/* Tingkat Pendidikan */}
                     <div>
                         <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 dark:text-gray-100 mb-4 flex items-center justify-between">
-                            Tingkat Pendidikan
+                            {t('explore.edu_level')}
                             {selectedJenjang !== "Semua" && (
                                 <span className="text-[11px] font-['Lexend_Deca'] text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-md">
-                                    1 Dipilih
+                                    1 {t('explore.selected')}
                                 </span>
                             )}
                         </h4>
@@ -1223,7 +1219,7 @@ export default function ExplorePage() {
                                             : "bg-white dark:bg-[#252336] text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:border-primary/40 hover:text-primary hover:bg-primary/5 hover:shadow-sm"
                                         }`}
                                 >
-                                    {jenjang}
+                                    {jenjang === 'Semua' ? t('explore.all') : t('explore.level_' + jenjang.toLowerCase().replace(/ /g, '_')) !== 'explore.level_' + jenjang.toLowerCase().replace(/ /g, '_') ? t('explore.level_' + jenjang.toLowerCase().replace(/ /g, '_')) : jenjang}
                                 </button>
                             ))}
                         </div>
@@ -1233,10 +1229,10 @@ export default function ExplorePage() {
                     {getKelasList(selectedJenjang).length > 0 && (
                         <div>
                             <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 dark:text-gray-100 mb-4 flex items-center justify-between">
-                                Tingkat / Kelas
+                                {t('explore.grade_level')}
                                 {selectedKelas !== "Semua" && (
                                     <span className="text-[11px] font-['Lexend_Deca'] text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-md">
-                                        1 Dipilih
+                                        1 {t('explore.selected')}
                                     </span>
                                 )}
                             </h4>
@@ -1248,7 +1244,7 @@ export default function ExplorePage() {
                                             : "bg-white dark:bg-[#252336] text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:border-primary/40 hover:text-primary hover:bg-primary/5 hover:shadow-sm"
                                         }`}
                                 >
-                                    Semua Kelas
+                                    {t('explore.all_grades')}
                                 </button>
                                 {getKelasList(selectedJenjang).map((kelas) => (
                                     <button
@@ -1269,10 +1265,10 @@ export default function ExplorePage() {
                     {/* Topik Pembelajaran / Tags */}
                     <div>
                         <h4 className="font-['Lexend_Deca'] font-bold text-[15px] text-gray-900 dark:text-gray-100 mb-4 flex items-center justify-between">
-                            Topik Belajar (Tags)
+                            {t('explore.learning_topic')}
                             {selectedTags.length > 0 && (
                                 <span className="text-[11px] font-['Lexend_Deca'] text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-md">
-                                    {selectedTags.length} Dipilih
+                                    {selectedTags.length} {t('explore.selected')}
                                 </span>
                             )}
                         </h4>
@@ -1301,7 +1297,7 @@ export default function ExplorePage() {
                             </div>
                             <input
                                 type="text"
-                                placeholder="Cari atau ketik topik (Contoh: Logaritma)..."
+                                placeholder={t('explore.search_topic_placeholder')}
                                 value={tagInput}
                                 onChange={(e) => {
                                     setTagInput(e.target.value);
@@ -1325,7 +1321,7 @@ export default function ExplorePage() {
                             {isTagSuggestionsOpen && filterTagSuggestions.length > 0 && (
                                 <div className="absolute w-full mt-2 bg-white dark:bg-[#1C1A29] rounded-[14px] border border-gray-100 dark:border-white/5 shadow-xl overflow-hidden z-[110]">
                                     <div className="px-3 py-2 text-[11px] font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider bg-gray-100/50 dark:bg-white/5">
-                                        Saran Topik
+                                        {t('explore.topic_suggestion')}
                                     </div>
                                     <ul className="max-h-48 overflow-y-auto no-scrollbar py-1">
                                         {filterTagSuggestions.map(tag => (
@@ -1351,7 +1347,7 @@ export default function ExplorePage() {
                                 </div>
                             )}
                         </div>
-                        <p className="text-xs text-gray-700 dark:text-gray-400 mt-2 font-['Manrope'] font-bold">Tekan <b>Enter</b> untuk menambahkan topik kustom jika tidak ada di saran.</p>
+                        <p className="text-xs text-gray-700 dark:text-gray-400 mt-2 font-['Manrope'] font-bold">{t('explore.press_enter_custom_topic')}</p>
                     </div>
                 </div>
 
@@ -1367,13 +1363,13 @@ export default function ExplorePage() {
                             }}
                             className="px-5 py-3.5 rounded-xl font-['Lexend_Deca'] text-[14px] font-extrabold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-gray-200 transition-colors w-1/3 border border-gray-200 dark:border-white/10"
                         >
-                            Reset
+                            {t('explore.reset')}
                         </button>
                         <button
                             onClick={() => setIsFilterOpen(false)}
                             className="flex-1 px-5 py-3.5 rounded-xl font-['Lexend_Deca'] text-[14px] font-extrabold text-white bg-primary hover:bg-primary/90 shadow-[0_4px_10px_rgb(93,92,230,0.25)] hover:shadow-[0_8px_20px_rgb(93,92,230,0.35)] hover:-translate-y-0.5 transition-all text-center"
                         >
-                            Terapkan Filter
+                            {t('explore.apply_filter')}
                         </button>
                     </div>
                 </div>

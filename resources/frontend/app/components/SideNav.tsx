@@ -3,6 +3,7 @@ import { Home, Search, Bookmark, User, LayoutDashboard, ChevronLeft, Hash, Star,
 import { Link, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface SideNavProps {
   isExpanded: boolean;
@@ -12,6 +13,7 @@ interface SideNavProps {
 export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
   const location = useLocation();
   const { user } = useAuth();
+  const { t } = useTranslation();
   
   const isActive = (path: string) => location.pathname === path;
 
@@ -34,11 +36,11 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
   }, []);
 
   const mainNavItems = [
-    { path: '/home', icon: Home, label: 'Beranda' },
-    { path: '/explore', icon: Search, label: 'Eksplorasi' },
-    { path: '/upload', icon: Plus, label: 'Tulis Catatan' },
-    { path: '/profile?tab=bookmarks', icon: Bookmark, label: 'Tersimpan' },
-    { path: '/profile', icon: User, label: 'Profil Saya' },
+    { path: '/home', icon: Home, label: t('nav.home') },
+    { path: '/explore', icon: Search, label: t('nav.explore') },
+    { path: '/upload', icon: Plus, label: t('nav.upload') },
+    { path: '/profile?tab=bookmarks', icon: Bookmark, label: t('nav.bookmarks') },
+    { path: '/profile', icon: User, label: t('nav.profile') },
   ];
 
   return (
@@ -73,7 +75,7 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
 
          {/* Stats / Dashboard Section */}
          <div className="mt-8 mb-2 px-6 text-[11px] font-['Lexend_Deca'] font-black text-gray-600 dark:text-gray-500 tracking-wider">
-            {user?.role === 'admin' || user?.role === 'pakar' ? 'DASHBOARD' : 'WAWASAN'}
+            {user?.role === 'admin' || user?.role === 'pakar' ? t('nav.dashboard') : t('nav.insights')}
          </div>
          <div className="px-3 space-y-1">
             {(user?.role === 'admin' || user?.role === 'pakar') && (
@@ -85,7 +87,7 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
                 >
                   <LayoutDashboard className={`shrink-0 transition-all duration-200 ${isActive(user?.role === 'admin' ? '/admin' : '/pakar') ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-700 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200'}`} strokeWidth={isActive(user?.role === 'admin' ? '/admin' : '/pakar') ? 2.5 : 2} />
                   <span className={`font-['Manrope'] text-[14px] truncate mt-[1px] ${isActive(user?.role === 'admin' ? '/admin' : '/pakar') ? 'font-bold' : 'font-medium'}`}>
-                    Workspace
+                    {t('nav.workspace')}
                   </span>
                 </Link>
             )}
@@ -98,14 +100,14 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
             >
               <Hash className={`shrink-0 transition-all duration-200 ${isActive('/stats') ? 'w-[18px] h-[18px] text-primary scale-105' : 'w-[18px] h-[18px] text-gray-700 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200'}`} strokeWidth={isActive('/stats') ? 2.5 : 2} />
               <span className={`font-['Manrope'] text-[14px] truncate mt-[1px] ${isActive('/stats') ? 'font-bold' : 'font-medium'}`}>
-                Statistik Belajar
+                {t('nav.statistics')}
               </span>
             </Link>
          </div>
 
          {/* Curated / Pakar Choice */}
          <div className="mt-8 mb-2 px-6 flex items-center gap-1.5 selection-none">
-            <span className="text-[11px] font-['Lexend_Deca'] font-black text-gray-600 dark:text-gray-500 tracking-wider">PAKAR CHOICE</span>
+            <span className="text-[11px] font-['Lexend_Deca'] font-black text-gray-600 dark:text-gray-500 tracking-wider">{t('nav.pakar_choice')}</span>
             <Star className="w-[10px] h-[10px] text-amber-500 fill-amber-500 mb-[1px]" />
          </div>
           {pakarChoiceNotes.length > 0 ? (
@@ -126,7 +128,7 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
                ))}
             </div>
           ) : (
-            <div className="px-5 py-2 text-[12px] font-['Manrope'] text-gray-600 dark:text-gray-500 font-bold">Belum ada pilihan pakar</div>
+            <div className="px-5 py-2 text-[12px] font-['Manrope'] text-gray-600 dark:text-gray-500 font-bold">{t('nav.no_pakar_choice')}</div>
           )}
       </div>
 
@@ -140,7 +142,7 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
          >
            <Settings className={`shrink-0 transition-all duration-200 ${isActive('/settings') ? 'w-[20px] h-[20px] text-primary scale-105' : 'w-[20px] h-[20px] text-gray-700 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200'}`} strokeWidth={isActive('/settings') ? 2.5 : 2} />
            <span className={`font-['Manrope'] text-[14px] truncate mt-[1px] ${isActive('/settings') ? 'font-bold' : 'font-medium'}`}>
-             Pengaturan
+             {t('nav.settings')}
            </span>
          </Link>
       </div>

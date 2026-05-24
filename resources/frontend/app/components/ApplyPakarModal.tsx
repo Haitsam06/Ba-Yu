@@ -1,5 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { useTranslation } from "../hooks/useTranslation";
 import { X, UploadCloud, FileText, CheckCircle2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { useAuth } from "../contexts/AuthContext";
@@ -13,10 +14,12 @@ interface ApplyPakarModalProps {
 
 export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
     const { user } = useAuth();
+    const { t } = useTranslation();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const { showToast } = useToast();
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [formData, setFormData] = useState({
         name: user?.name || "",
@@ -24,12 +27,28 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
         keahlian: "",
     });
 
+    useEffect(() => {
+        if (!isOpen) {
+            setFile(null);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+            setFormData({
+                name: user?.name || "",
+                email: user?.email || "",
+                keahlian: "",
+            });
+            setIsSubmitting(false);
+            setIsSuccess(false);
+        }
+    }, [isOpen, user]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!file) {
             showToast(
-                "Harap unggah dokumen bukti (PDF/JPG) terlebih dahulu!",
+                t('apply_pakar.require_file') !== 'apply_pakar.require_file' ? t('apply_pakar.require_file') : "Harap unggah dokumen bukti (PDF/JPG) terlebih dahulu!",
                 "warning",
             );
             return;
@@ -64,7 +83,7 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
             setIsSubmitting(false);
             showToast(
                 error.response?.data?.message ||
-                    "Gagal mengirim pengajuan. Pastikan file maksimal 5MB.",
+                    (t('apply_pakar.error_submit') !== 'apply_pakar.error_submit' ? t('apply_pakar.error_submit') : "Gagal mengirim pengajuan. Pastikan file maksimal 5MB."),
                 "error",
             );
         }
@@ -72,7 +91,14 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
-            setFile(e.target.files[0]);
+            const selectedFile = e.target.files[0];
+            if (selectedFile.size > 5 * 1024 * 1024) {
+                showToast(t('apply_pakar.file_too_large') !== 'apply_pakar.file_too_large' ? t('apply_pakar.file_too_large') : "Ukuran file tidak boleh lebih dari 5MB!", "error");
+                e.target.value = "";
+                setFile(null);
+                return;
+            }
+            setFile(selectedFile);
         }
     };
 
@@ -128,23 +154,20 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
                                         <CheckCircle2 className="w-10 h-10 text-emerald-500 dark:text-emerald-400" />
                                     </motion.div>
                                     <h3 className="text-2xl font-bold font-['Lexend_Deca'] text-gray-900 dark:text-gray-100 mb-2">
-                                        Berhasil Terkirim!
+                                        {t('apply_pakar.success_title') !== 'apply_pakar.success_title' ? t('apply_pakar.success_title') : 'Berhasil Terkirim!'}
                                     </h3>
                                     <p className="text-gray-500 dark:text-gray-400 font-['Manrope']">
-                                        Sertifikat Anda sedang ditinjau oleh
-                                        pihak Admin.
+                                        {t('apply_pakar.success_desc') !== 'apply_pakar.success_desc' ? t('apply_pakar.success_desc') : 'Sertifikat Anda sedang ditinjau oleh pihak Admin.'}
                                     </p>
                                 </div>
                             ) : (
                                 <>
                                     <div className="p-6 md:p-8 border-b border-gray-100 dark:border-white/10 bg-gray-50/50 dark:bg-white/5">
                                         <h2 className="text-xl md:text-2xl font-bold font-['Lexend_Deca'] text-gray-900 dark:text-gray-100">
-                                            Sertifikasi Pakar
+                                            {t('apply_pakar.title') !== 'apply_pakar.title' ? t('apply_pakar.title') : 'Sertifikasi Pakar'}
                                         </h2>
                                         <p className="text-sm text-gray-500 dark:text-gray-400 font-['Manrope'] mt-2 leading-relaxed">
-                                            Unggah portofolio/sertifikat yang
-                                            membuktikan keahlian Anda agar bisa
-                                            divalidasi sebagai Pakar Pendidikan.
+                                            {t('apply_pakar.description') !== 'apply_pakar.description' ? t('apply_pakar.description') : 'Unggah portofolio/sertifikat yang membuktikan keahlian Anda agar bisa divalidasi sebagai Pakar Pendidikan.'}
                                         </p>
                                     </div>
 
@@ -154,7 +177,7 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
                                     >
                                         <div>
                                             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 font-['Manrope']">
-                                                Nama Lengkap
+                                                {t('apply_pakar.full_name') !== 'apply_pakar.full_name' ? t('apply_pakar.full_name') : 'Nama Lengkap'}
                                             </label>
                                             <input
                                                 type="text"
@@ -169,14 +192,14 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
 
                                         <div>
                                             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 font-['Manrope']">
-                                                Pendidikan Terakhir / Keahlian
+                                                {t('apply_pakar.education_expertise') !== 'apply_pakar.education_expertise' ? t('apply_pakar.education_expertise') : 'Pendidikan Terakhir / Keahlian'}
                                             </label>
                                             <input
                                                 type="text"
                                                 name="keahlian"
                                                 value={formData.keahlian}
                                                 onChange={handleChange}
-                                                placeholder="Contoh: S1 Matematika Murni"
+                                                placeholder={t('apply_pakar.education_placeholder') !== 'apply_pakar.education_placeholder' ? t('apply_pakar.education_placeholder') : "Contoh: S1 Matematika Murni"}
                                                 className="w-full px-4 py-3 bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-gray-100 rounded-xl focus:border-primary focus:bg-white dark:focus:bg-[#13111C] focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
                                                 required
                                                 disabled={isSubmitting}
@@ -185,12 +208,12 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
 
                                         <div>
                                             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 font-['Manrope']">
-                                                Unggah Bukti Dokumen
-                                                (Sertifikat/Ijazah)
+                                                {t('apply_pakar.upload_document') !== 'apply_pakar.upload_document' ? t('apply_pakar.upload_document') : 'Unggah Bukti Dokumen (Sertifikat/Ijazah)'}
                                             </label>
                                             <div className="mt-1 border-2 border-dashed border-gray-300 dark:border-white/20 rounded-xl px-6 pt-5 pb-6 flex justify-center hover:border-primary dark:hover:border-primary transition-colors hover:bg-primary/5 dark:hover:bg-primary/10 cursor-pointer relative bg-gray-50/50 dark:bg-black/10">
                                                 <input
                                                     type="file"
+                                                    ref={fileInputRef}
                                                     accept=".pdf,.jpg,.jpeg"
                                                     onChange={handleFileChange}
                                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -203,11 +226,11 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
                                                         <span className="relative rounded-md font-medium text-primary hover:text-primary/80 focus-within:outline-none">
                                                             {file
                                                                 ? file.name
-                                                                : "Pilih File PDF/JPG"}
+                                                                : (t('apply_pakar.choose_file') !== 'apply_pakar.choose_file' ? t('apply_pakar.choose_file') : "Pilih File PDF/JPG")}
                                                         </span>
                                                     </div>
                                                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                        Maks. ukuran 5MB
+                                                        {t('apply_pakar.max_size') !== 'apply_pakar.max_size' ? t('apply_pakar.max_size') : 'Maks. ukuran 5MB'}
                                                     </p>
                                                 </div>
                                             </div>
@@ -223,7 +246,7 @@ export function ApplyPakarModal({ isOpen, onClose }: ApplyPakarModalProps) {
                                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                                 ) : (
                                                     <>
-                                                        Kirim Pengajuan
+                                                        {t('apply_pakar.submit') !== 'apply_pakar.submit' ? t('apply_pakar.submit') : 'Kirim Pengajuan'}
                                                         <FileText className="w-4 h-4" />
                                                     </>
                                                 )}

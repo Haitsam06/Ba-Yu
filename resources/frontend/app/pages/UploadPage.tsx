@@ -61,6 +61,7 @@ import { SideToolbar } from '../components/editor/SideToolbar';
 import { FormulaModal } from '../components/editor/FormulaModal';
 import { AltTextModal } from '../components/editor/AltTextModal';
 import { PublishPreviewModal } from '../components/editor/PublishPreviewModal';
+import { useTranslation } from '../hooks/useTranslation';
 
 
 
@@ -79,6 +80,7 @@ export default function UploadPage() {
   const initialDraftId = searchParams.get('id');
   const [draftId, setDraftId] = useState<string | null>(initialDraftId);
   const { showToast } = useToast();
+  const { t } = useTranslation();
   
   const quillRef = useRef<ReactQuill>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -140,7 +142,7 @@ export default function UploadPage() {
           }
         } catch (error) {
           console.error('Failed to load draft:', error);
-          showToast('Gagal memuat draf', 'error');
+          showToast(t('upload.error_load_draft'), 'error');
         } finally {
           setIsLoadingDraft(false);
         }
@@ -257,7 +259,7 @@ export default function UploadPage() {
         setIsCropping(false);
       } catch (e) {
         console.error('Failed to crop image', e);
-        showToast('Gagal menerapkan crop gambar. Pastikan format gambar valid.', 'error');
+        showToast(t('upload.error_crop'), 'error');
       }
     }
   };
@@ -293,11 +295,11 @@ export default function UploadPage() {
           try { await axios.post(`/api/v1/posts/${newPostId}/ajukan`); } catch (e) { /* silent */ }
         }
       }
-      showToast(meta.ajukanPakar ? 'Catatan dipublikasikan & diajukan ke Pakar!' : 'Catatan berhasil dipublikasikan!', 'success');
+      showToast(meta.ajukanPakar ? t('upload.success_publish_expert') : t('upload.success_publish'), 'success');
       navigate(-1);
     } catch (error) {
       console.error('Gagal mempublikasikan catatan:', error);
-      showToast('Terjadi kesalahan saat menyimpan catatan.', 'error');
+      showToast(t('upload.error_save'), 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -305,7 +307,7 @@ export default function UploadPage() {
 
   const handleSaveDraft = async () => {
     if (!title.trim()) {
-      showToast('Judul draf harus diisi', 'warning');
+      showToast(t('upload.draft_title_required'), 'warning');
       return;
     }
     setIsSavingDraft(true);
@@ -327,18 +329,18 @@ export default function UploadPage() {
 
       if (draftId) {
         await axios.put(`/api/v1/posts/${draftId}`, payload);
-        showToast('Draf berhasil diperbarui!', 'success');
+        showToast(t('upload.draft_updated'), 'success');
       } else {
         const res = await axios.post('/api/v1/posts', payload);
         const newDraftId = res.data.data._id || res.data.data.id;
         setDraftId(newDraftId);
-        showToast('Draf berhasil disimpan!', 'success');
+        showToast(t('upload.draft_saved'), 'success');
       }
       setShowPreviewModal(false);
       navigate('/home');
     } catch (error) {
       console.error('Gagal menyimpan draf:', error);
-      showToast('Terjadi kesalahan saat menyimpan draf.', 'error');
+      showToast(t('upload.draft_error'), 'error');
     } finally {
       setIsSavingDraft(false);
     }
@@ -357,10 +359,10 @@ export default function UploadPage() {
             </div>
           </div>
           <h3 className="mt-6 font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 text-lg">
-            Menyiapkan Draf...
+            {t('upload.preparing_draft')}
           </h3>
           <p className="mt-2 font-['Manrope'] text-gray-700 font-medium text-sm">
-            Tunggu sebentar, kami sedang mengambil catatan Anda.
+            {t('upload.wait_draft')}
           </p>
         </div>
       )}
@@ -381,7 +383,7 @@ export default function UploadPage() {
                 <div className="hidden sm:flex items-center gap-2.5 min-w-0">
                   <div className="w-2 h-2 rounded-full bg-indigo-500 shrink-0 shadow-[0_0_8px_rgba(99,102,241,0.4)] animate-pulse"></div>
                   <span className="text-[14px] font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 truncate max-w-[200px]">
-                    {title.trim() ? title : 'Draf Baru'}
+                    {title.trim() ? title : t('upload.new_draft')}
                   </span>
                 </div>
               </div>
@@ -392,7 +394,7 @@ export default function UploadPage() {
                   disabled={!canOpenPreview}
                   className="flex items-center gap-1.5 bg-primary text-white px-5 py-2.5 rounded-full text-[13px] font-['Lexend_Deca'] font-extrabold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary/90 hover:shadow-[0_4px_12px_rgba(79,70,229,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] transition-all duration-200"
                 >
-                  Publish
+                  {t('upload.publish')}
                 </button>
               </div>
             </div>
@@ -456,7 +458,7 @@ export default function UploadPage() {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Judul Catatan..."
+            placeholder={t('upload.title_placeholder')}
             className="w-full text-[40px] md:text-[48px] font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 placeholder:text-gray-300 dark:placeholder:text-gray-600 focus:outline-none mt-12 mb-2 leading-[1.1] tracking-[-0.03em] transition-all bg-transparent"
             maxLength={200}
           />
@@ -464,7 +466,7 @@ export default function UploadPage() {
             <div className="h-1 w-12 bg-primary/20 rounded-full overflow-hidden">
                <div className="h-full bg-primary transition-all duration-300" style={{ width: `${(title.length / 200) * 100}%` }}></div>
             </div>
-            <p className="text-[11px] font-['Lexend_Deca'] font-extrabold text-gray-600 uppercase tracking-widest">({title.length}/200 Karakter)</p>
+            <p className="text-[11px] font-['Lexend_Deca'] font-extrabold text-gray-600 uppercase tracking-widest">({title.length}/200 {t('upload.characters')})</p>
           </div>
 
           {/* Editor */}
@@ -530,7 +532,7 @@ export default function UploadPage() {
               onChange={setContent}
               modules={modules}
               formats={formats}
-              placeholder="Mulai menulis ceritamu di sini..."
+              placeholder={t('upload.write_placeholder')}
             />
           </div>
 
@@ -561,7 +563,7 @@ export default function UploadPage() {
         {!canOpenPreview && (
           <div className="sticky bottom-0 bg-white/90 dark:bg-[#13111C]/90 backdrop-blur-md border-t border-gray-100 dark:border-white/5 py-3 z-10 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <p className="text-sm font-['Manrope'] text-gray-600 font-bold text-center px-4">
-              {!title.trim() ? '✏️  Mulai dengan menulis judul' : !hasContent ? '📝  Tulis isi catatan' : ''}
+              {!title.trim() ? t('upload.hint_title') : !hasContent ? t('upload.hint_content') : ''}
             </p>
           </div>
         )}

@@ -1,10 +1,12 @@
 import { Home, Search, Plus, BarChart2, User, LayoutGrid } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from '../hooks/useTranslation';
 
 export function BottomNav() {
   const location = useLocation();
   const { user } = useAuth();
+  const { t } = useTranslation();
   
   const isActive = (path: string) => {
     if (path === '/home' && (location.pathname === '/' || location.pathname === '/home')) return true;
@@ -17,15 +19,15 @@ export function BottomNav() {
 
     // Role-based navigation config
     const items = [
-      { path: '/home', icon: Home, label: 'Beranda' },
-      { path: '/explore', icon: Search, label: 'Eksplor' },
-      { path: '/upload', icon: Plus, label: 'Tulis', isSpecial: true },
+      { path: '/home', icon: Home, label: t('nav.home') },
+      { path: '/explore', icon: Search, label: t('nav.explore_short') },
+      { path: '/upload', icon: Plus, label: t('nav.upload_short'), isSpecial: true },
       isAdmin 
-          ? { path: '/admin', icon: LayoutGrid, label: 'Workspace' }
+          ? { path: '/admin', icon: LayoutGrid, label: t('nav.workspace') }
           : isPakar
-            ? { path: '/pakar', icon: LayoutGrid, label: 'Workspace' }
-            : { path: '/stats', icon: BarChart2, label: 'Statistik' },
-      { path: '/profile', icon: User, label: 'Profil' },
+            ? { path: '/pakar', icon: LayoutGrid, label: t('nav.workspace') }
+            : { path: '/stats', icon: BarChart2, label: t('nav.statistics') },
+      { path: '/profile', icon: User, label: t('nav.profile_short') },
     ].filter(Boolean) as any[];
 
     return items.map((item, idx) => {

@@ -25,6 +25,7 @@ import {
     UserMinus,
     Loader2,
     Lock,
+    Share2,
 } from "lucide-react";
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { useAuth } from "../contexts/AuthContext";
@@ -37,6 +38,7 @@ import {
     DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
+import { useTranslation } from '../hooks/useTranslation';
 
 export default function PublicProfilePage() {
     const { id } = useParams(); // Mengambil ID dari URL
@@ -78,6 +80,7 @@ export default function PublicProfilePage() {
         }
     }, [showFollowers, showFollowing]);
     const { showToast } = useToast();
+    const { t } = useTranslation();
 
     const [profileUser, setProfileUser] = useState<any>(null);
     const [isLoadingProfile, setIsLoadingProfile] = useState(true);
@@ -412,13 +415,20 @@ export default function PublicProfilePage() {
         const p = profileUser?.profesi;
         const j = profileUser?.jenjang_pendidikan;
         const s = profileUser?.school;
+        const profesiLabel = p === "Pelajar" ? (t('edit_profile.profesi_pelajar') || p)
+            : p === "Mahasiswa" ? (t('edit_profile.profesi_mahasiswa') || p)
+            : p === "Pengajar" ? (t('edit_profile.profesi_pengajar') || p)
+            : p === "Umum" ? (t('edit_profile.profesi_umum') || p)
+            : p;
+        const jenjangLabel = j ? (t(`edu_levels.${j}`) || j) : j;
         if (s) {
-            return p === "Umum" ? s : (p ? `${p} di ${s}` : s);
+            return p === "Umum" ? s : (profesiLabel ? `${profesiLabel} di ${s}` : s);
         }
-        if (p === "Umum") return "Umum";
-        if (p === "Pelajar" && j && j !== "Umum" && j !== "Kuliah") return `Pelajar ${j}`;
-        return p || (j ? `Pelajar ${j}` : "Pelajar EduPlatform");
+        if (p === "Umum") return t('edit_profile.profesi_umum') || "Umum";
+        if (p === "Pelajar" && j && j !== "Umum" && j !== "Kuliah") return `${t('edit_profile.profesi_pelajar') || 'Pelajar'} ${jenjangLabel}`;
+        return profesiLabel || (j ? `${t('edit_profile.profesi_pelajar') || 'Pelajar'} ${jenjangLabel}` : (t('edit_profile.profesi_pelajar') || 'Pelajar'));
     })();
+
 
     return (
         <MobileLayout>
@@ -448,30 +458,40 @@ export default function PublicProfilePage() {
                                 className={`flex items-center gap-1.5 px-5 py-1.5 sm:px-6 sm:py-2 rounded-full font-bold text-[13px] sm:text-[14px] transition-all ${
                                     isFollowing 
                                     ? "bg-white dark:bg-[#1C1A29] text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-white/10 hover:border-red-300 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 group" 
-                                    : isPending
-                                        ? "bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-white/10 cursor-default"
-                                        : "bg-gray-900 text-white border border-gray-900 hover:bg-black dark:bg-primary dark:border-primary dark:hover:bg-indigo-700"
+                                    : isPending 
+                                    ? "bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 cursor-default" 
+                                    : "bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100"
                                 }`}
-                            >
-                                {isTogglingFollow ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : isFollowing ? (
-                                    <>
-                                        <UserCheck className="w-4 h-4 group-hover:hidden" />
-                                        <UserMinus className="w-4 h-4 hidden group-hover:block" />
-                                        <span className="group-hover:hidden">Mengikuti</span>
-                                        <span className="hidden group-hover:block">Batal Ikuti</span>
-                                    </>
-                                ) : isPending ? (
-                                    <>
-                                        <Clock className="w-4 h-4" /> Diminta
-                                    </>
-                                ) : (
-                                    <>
-                                        <UserPlus className="w-4 h-4" /> Ikuti
-                                    </>
-                                )}
-                            </button>
+                             >
+                                 {isTogglingFollow ? <Loader2 size={16} className="animate-spin" /> : 
+                                  isFollowing ? (
+                                     <>
+                                         <span className="group-hover:hidden flex items-center gap-1.5"><UserCheck size={16} /> {t('public_profile.following')}</span>
+                                         <span className="hidden group-hover:flex items-center gap-1.5"><UserMinus size={16} /> {t('public_profile.unfollow')}</span>
+                                     </>
+                                  ) : isPending ? (
+                                      <><Clock size={16} /> {t('public_profile.requested')}</>
+                                  ) : (
+                                      <><UserPlus size={16} /> {t('public_profile.follow')}</>
+                                  )}
+                             </button>
+
+                             <DropdownMenu>
+                                <DropdownMenuTrigger className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors outline-none">
+                                    <MoreHorizontal className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-48 bg-white dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-xl shadow-lg font-['Manrope'] p-2">
+                                    <DropdownMenuItem onClick={() => {
+                                        navigator.clipboard.writeText(window.location.href);
+                                        showToast("Link disalin", "success");
+                                    }} className="text-[13px] font-bold text-gray-700 dark:text-gray-300 p-2 cursor-pointer focus:bg-gray-50 dark:focus:bg-white/5 rounded-lg">
+                                        <Share2 size={16} className="mr-2.5 text-gray-400" /> {t('public_profile.share_profile')}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => document.getElementById('report-user-modal')?.classList.remove('hidden')} className="text-[13px] font-bold text-red-600 dark:text-red-400 p-2 cursor-pointer focus:bg-red-50 dark:focus:bg-red-500/10 rounded-lg">
+                                        <Shield size={16} className="mr-2.5" /> {t('public_profile.report_user')}
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                             </DropdownMenu>
                         </div>
                     </div>
 
@@ -537,7 +557,7 @@ export default function PublicProfilePage() {
                                 onClick={() => setShowFollowers(true)}
                                 className="hover:underline outline-none text-gray-500 transition-colors"
                             >
-                                <strong className="text-gray-900 dark:text-gray-100 font-bold">{profileUser?.followers_count ?? profileUser?.followers ?? 0}</strong> Pengikut
+                                <strong className="text-gray-900 dark:text-gray-100 font-bold">{profileUser?.followers_count ?? profileUser?.followers ?? 0}</strong> {t('public_profile.followers')}
                             </button>
                         </div>
                     </div>
@@ -551,8 +571,8 @@ export default function PublicProfilePage() {
                     <div className="max-w-4xl mx-auto px-4 sm:px-6">
                         <div className="flex gap-8 overflow-x-auto scrollbar-hide px-1">
                             {[
-                                { id: "catatan", label: "Catatan Rilisan", count: userNotes.length },
-                                { id: "aktivitas", label: "Aktivitas Diskusi", count: activities.length },
+                                { id: "catatan", label: t('public_profile.tab_notes'), count: userNotes.length },
+                                { id: "aktivitas", label: t('public_profile.tab_about'), count: activities.length },
                             ].map((tab) => (
                                 <button
                                     key={tab.id}
@@ -588,9 +608,9 @@ export default function PublicProfilePage() {
                         <div className="w-20 h-20 bg-slate-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-5 border border-slate-100 dark:border-white/10">
                             <Lock className="w-8 h-8 text-slate-400 dark:text-slate-500" />
                         </div>
-                        <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-xl mb-2">Akun ini bersifat Privat</h3>
+                        <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-xl mb-2">{t('public_profile.private_account')}</h3>
                         <p className="font-['Manrope'] text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
-                            Ikuti akun ini untuk melihat catatan, aktivitas, dan siapa saja yang ia ikuti.
+                            {t('public_profile.private_desc')}
                         </p>
                     </div>
                 ) : (
@@ -618,10 +638,10 @@ export default function PublicProfilePage() {
                                         <FileText className="w-8 h-8 text-gray-400" />
                                     </div>
                                     <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[18px] mb-2">
-                                        Belum Terdapat Rilisan
+                                        {t('public_profile.no_notes')}
                                     </h3>
                                     <p className="font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400 mb-6 max-w-sm mx-auto">
-                                        {profileUser?.name} belum mempublikasikan catatan apa pun.
+                                        {t('public_profile.no_notes_desc')}
                                     </p>
                                 </div>
                             )}

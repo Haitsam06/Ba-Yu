@@ -22,11 +22,13 @@ import { useToast } from "../contexts/ToastContext";
 import { TagList } from "../components/ui/TagList";
 import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
 import { NoteCard } from "../components/NoteCard";
+import { useTranslation } from "../hooks/useTranslation";
 
 export default function HomePage() {
     const { user } = useAuth();
     const { isBookmarked, toggleBookmark } = useBookmarks();
     const { showToast } = useToast();
+    const { t, language } = useTranslation();
     const [notes, setNotes] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [page, setPage] = useState(1);
@@ -37,7 +39,7 @@ export default function HomePage() {
     const handleLikePost = async (postId: string) => {
         if (!user)
             return showToast(
-                "Silakan masuk (login) terlebih dahulu untuk menyukai tulisan.",
+                t('home.login_to_like'),
                 "warning",
             );
 
@@ -167,7 +169,7 @@ export default function HomePage() {
         rating: note.rating || 5,
         description: note.content
             ? note.content.replace(/<[^>]*>?/gm, "").substring(0, 150) + "..."
-            : "Tidak ada deskripsi",
+            : t('home.no_description'),
         mataPelajaran: note.mapel || "Lainnya",
         jenjang: note.jenjang || "-",
         kelas: note.kelas || "-",
@@ -241,7 +243,7 @@ export default function HomePage() {
                         <div className="mb-6 overflow-hidden relative">
                             <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-3 snap-x">
                                 <button className="shrink-0 px-5 py-2.5 rounded-full bg-primary text-white text-[13px] font-['Lexend_Deca'] font-bold shadow-sm shadow-primary/30 transition-colors snap-start shrink-0">
-                                    ✨ Untuk Anda
+                                    {t('home.for_you')}
                                 </button>
                                 {mataPelajaran.map((mapel) => (
                                     <Link
@@ -249,7 +251,7 @@ export default function HomePage() {
                                         to={`/explore?subject=${mapel.id}`}
                                         className="shrink-0 px-5 py-2.5 bg-white dark:bg-[#1C1A29] hover:bg-primary/5 hover:text-primary hover:border-primary/20 rounded-full text-[13px] font-['Manrope'] font-bold text-gray-600 dark:text-gray-400 transition-colors duration-300 border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none snap-start"
                                     >
-                                        {mapel.name}
+                                        {t('subjects.' + mapel.id) !== 'subjects.' + mapel.id ? t('subjects.' + mapel.id) : mapel.name}
                                     </Link>
                                 ))}
                             </div>
@@ -285,7 +287,7 @@ export default function HomePage() {
                                 <div className="flex-1 flex flex-col justify-center z-10 w-full md:w-1/2">
                                     <div className="flex items-center gap-2 mb-4">
                                         <span className="bg-primary/10 text-primary text-[11px] font-['Lexend_Deca'] font-bold px-2 py-1 rounded-[6px] uppercase tracking-wider">
-                                            Fokus Utama
+                                            {t('home.main_focus')}
                                         </span>
                                         <span className="text-gray-600 dark:text-gray-400 text-[12px] font-semibold flex items-center gap-1.5">
                                             • <Clock className="w-3 h-3 text-gray-700 dark:text-gray-400" strokeWidth={2.5} /> {heroNote.read_time || 1} min
@@ -358,7 +360,7 @@ export default function HomePage() {
                                                                 {hAuthor?.name}
                                                             </span>
                                                             <span className="text-[12px] font-['Manrope'] text-gray-700 dark:text-gray-400 font-bold">
-                                                                {heroNote.createdAt ? new Date(heroNote.createdAt).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' }) : "Baru saja"}
+                                                                {heroNote.createdAt ? new Date(heroNote.createdAt).toLocaleDateString(language === 'id' ? 'id-ID' : language, { day: 'numeric', month: 'short', year: 'numeric' }) : t('notifications.time_just_now')}
                                                             </span>
                                                         </div>
                                                     </Link>
@@ -426,14 +428,14 @@ export default function HomePage() {
                         {/* VERTICAL FEED SECTION */}
                         <div className="mb-4 flex items-center justify-between px-2">
                             <h3 className="font-['Lexend_Deca'] font-extrabold text-[18px] text-gray-900 dark:text-gray-100 tracking-tight flex items-center gap-2">
-                                Catatan{" "}
+                                {t('home.notes')}{" "}
                                 <div className="w-2 h-2 rounded-full bg-green-500"></div>
                             </h3>
                             <Link 
                                 to="/explore?tab=terbaru"
                                 className="text-[13px] font-['Lexend_Deca'] font-bold text-primary hover:text-indigo-800 transition-colors"
                             >
-                                Lihat Semua
+                                {t('home.view_all')}
                             </Link>
                         </div>
 
@@ -456,7 +458,7 @@ export default function HomePage() {
                             
                             {!hasMore && feedNotes.length > 0 && (
                                 <div className="py-8 text-center">
-                                    <p className="text-gray-400 dark:text-gray-500 font-['Manrope'] text-[13px] font-medium">Anda sudah melihat semua catatan terbaru.</p>
+                                    <p className="text-gray-400 dark:text-gray-500 font-['Manrope'] text-[13px] font-medium">{t('home.all_caught_up')}</p>
                                 </div>
                             )}
                         </div>
@@ -491,7 +493,7 @@ export default function HomePage() {
                                         </svg>
                                     </span>
                                     <h3 className="font-['Lexend_Deca'] font-extrabold text-[18px] text-gray-900 dark:text-gray-100 tracking-tight">
-                                        Sedang Populer
+                                        {t('home.trending')}
                                     </h3>
                                 </div>
 
@@ -516,13 +518,16 @@ export default function HomePage() {
                                                         className="flex items-center gap-1.5 mb-2 hover:opacity-80 transition-opacity"
                                                     >
                                                         <AvatarImage
-                                                            src={tAuth?.avatar}
-                                                            alt={tAuth?.name}
+                                                            src={trend.author?.avatar}
+                                                            alt={trend.author?.name}
                                                             size={20}
                                                             className="rounded-[6px]"
                                                         />
-                                                        <span className="font-['Lexend_Deca'] font-bold text-[13px] text-gray-700 dark:text-gray-400 truncate tracking-tight">
-                                                            {tAuth?.name}
+                                                        <span className="text-[12px] font-['Lexend_Deca'] font-bold text-gray-700 dark:text-gray-400 group-hover/tauth:underline truncate max-w-[120px]">
+                                                            {trend.author?.name}
+                                                        </span>
+                                                        <span className="text-[12px] font-['Manrope'] text-gray-500 font-medium">
+                                                            {trend.createdAt ? new Date(trend.createdAt).toLocaleDateString(language === 'id' ? 'id-ID' : language, { day: 'numeric', month: 'short' }) : t('notifications.time_just_now')}
                                                         </span>
                                                     </Link>
                                                     <Link
@@ -537,7 +542,7 @@ export default function HomePage() {
                                                         {new Date(
                                                             trend.createdAt,
                                                         ).toLocaleDateString(
-                                                            "id-ID",
+                                                            language === 'id' ? 'id-ID' : language,
                                                             {
                                                                 month: "long",
                                                                 year: "numeric",
@@ -554,14 +559,14 @@ export default function HomePage() {
                                     to="/explore?tab=populer"
                                     className="block w-full mt-6 bg-gray-50 dark:bg-white/5 hover:bg-primary/10 text-gray-600 dark:text-gray-400 hover:text-primary rounded-2xl py-3 text-[14px] font-['Lexend_Deca'] font-bold transition-colors text-center"
                                 >
-                                    Lihat Semua
+                                    {t('home.view_all') !== 'home.view_all' ? t('home.view_all') : 'Lihat Semua'}
                                 </Link>
                             </div>
 
                             {/* Discover Topics Section */}
                             <div className="py-8 border-b border-gray-100 dark:border-white/5">
                                 <h3 className="font-['Lexend_Deca'] font-bold text-[16px] text-gray-900 dark:text-gray-100 tracking-tight mb-4">
-                                    Jelajahi Topik Belajar
+                                    {t('home.explore_topics') !== 'home.explore_topics' ? t('home.explore_topics') : 'Jelajahi Topik Belajar'}
                                 </h3>
                                 <div className="flex flex-wrap gap-2">
                                     {mataPelajaran.map((tag) => (
@@ -570,7 +575,7 @@ export default function HomePage() {
                                             to={`/explore?subject=${tag.id}`}
                                             className="px-4 py-2 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full text-[13px] font-['Manrope'] font-medium text-gray-700 dark:text-gray-400 transition-all border border-gray-100 dark:border-white/5"
                                         >
-                                            {tag.name}
+                                            {t('subjects.' + tag.id) !== 'subjects.' + tag.id ? t('subjects.' + tag.id) : tag.name}
                                         </Link>
                                     ))}
                                 </div>
@@ -582,37 +587,37 @@ export default function HomePage() {
                                     to="/settings/help"
                                     className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
-                                    Bantuan
+                                    {t('footer.help') !== 'footer.help' ? t('footer.help') : 'Bantuan'}
                                 </Link>
                                 <Link
                                     to="/status"
                                     className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
-                                    Status
+                                    {t('footer.status') !== 'footer.status' ? t('footer.status') : 'Status'}
                                 </Link>
                                 <Link
                                     to="/about"
                                     className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
-                                    Tentang Kami
+                                    {t('footer.about_us') !== 'footer.about_us' ? t('footer.about_us') : 'Tentang Kami'}
                                 </Link>
                                 <Link
                                     to="/careers"
                                     className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
-                                    Karir
+                                    {t('footer.careers') !== 'footer.careers' ? t('footer.careers') : 'Karir'}
                                 </Link>
                                 <Link
                                     to="/terms"
                                     className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
-                                    Ketentuan
+                                    {t('footer.terms') !== 'footer.terms' ? t('footer.terms') : 'Ketentuan'}
                                 </Link>
                                 <Link
                                     to="/privacy"
                                     className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors"
                                 >
-                                    Privasi
+                                    {t('footer.privacy') !== 'footer.privacy' ? t('footer.privacy') : 'Privasi'}
                                 </Link>
                             </div>
                         </div>

@@ -32,6 +32,7 @@ import StatusPage from './pages/StatusPage';
 import CareersPage from './pages/CareersPage';
 import BlogPage from './pages/BlogPage';
 import CommunityGuidelinesPage from './pages/CommunityGuidelinesPage';
+import LanguagePage from './pages/LanguagePage';
 
 export const router = createBrowserRouter([
   {
@@ -145,6 +146,10 @@ export const router = createBrowserRouter([
           {
             path: 'settings/follow-requests',
             element: <FollowRequestsPage />,
+          },
+          {
+            path: 'settings/language',
+            element: <LanguagePage />,
           },
           {
             path: 'settings/help',

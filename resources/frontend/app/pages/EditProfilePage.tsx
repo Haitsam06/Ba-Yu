@@ -22,12 +22,14 @@ import axios from "axios";
 import { useToast } from "../contexts/ToastContext";
 import { AvatarImage } from "../components/ui/DefaultImages";
 import { CustomSelect } from "../components/ui/CustomSelect";
+import { useTranslation } from "../hooks/useTranslation";
 
 export default function EditProfilePage() {
     const { user, updateUserSession } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const { showToast } = useToast();
+    const { t } = useTranslation();
 
     // Local state for the form, pre-filled with actual active user data
     const [formData, setFormData] = useState({
@@ -76,7 +78,7 @@ export default function EditProfilePage() {
             } catch (err) {
                 console.error("Camera error:", err);
                 setCameraError(
-                    "Gagal mengakses kamera. Pastikan browser memberikan izin kamera.",
+                    t('edit_profile.camera_error') || "Gagal mengakses kamera. Pastikan browser memberikan izin kamera."
                 );
             }
         };
@@ -272,7 +274,7 @@ export default function EditProfilePage() {
 
     const handleSave = async () => {
         if (!formData.name.trim()) {
-            showToast("Nama lengkap tidak boleh kosong", "error");
+            showToast(t('edit_profile.full_name_required') || "Nama lengkap tidak boleh kosong", "error");
             return;
         }
 
@@ -315,12 +317,12 @@ export default function EditProfilePage() {
                 updateUserSession(formData);
             }
 
-            showToast("Profil berhasil diperbarui!", "success");
+            showToast(t('edit_profile.save_success') || "Profil berhasil diperbarui!", "success");
             navigate("/profile");
         } catch (error: any) {
             console.error("Failed to update profile", error);
             showToast(
-                error.response?.data?.message || "Gagal menyimpan perubahan. Silakan coba lagi.",
+                error.response?.data?.message || (t('edit_profile.save_error') || "Gagal menyimpan perubahan. Silakan coba lagi."),
                 "error"
             );
         } finally {
@@ -366,7 +368,7 @@ export default function EditProfilePage() {
                         <ArrowLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                     </button>
                     <h1 className="text-gray-900 dark:text-gray-100 font-['Lexend_Deca'] font-bold text-lg">
-                        Edit Profil
+                        {t('edit_profile.title') || 'Edit Profil'}
                     </h1>
                     <div className="w-10"></div>{" "}
                     {/* Spacer for perfect centering */}
@@ -404,7 +406,7 @@ export default function EditProfilePage() {
                             onClick={() => setShowSourceSelector(true)}
                             className="font-['Manrope'] text-sm font-semibold text-primary cursor-pointer hover:underline"
                         >
-                            Ganti Foto
+                            {t('edit_profile.change_photo') || 'Ganti Foto'}
                         </p>
                     </div>
 
@@ -414,13 +416,13 @@ export default function EditProfilePage() {
                             <div className="flex items-center gap-2 mb-2">
                                 <User className="w-4 h-4 text-primary" />
                                 <h2 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100">
-                                    Informasi Pribadi
+                                    {t('edit_profile.section_personal') || 'Informasi Pribadi'}
                                 </h2>
                             </div>
 
                             <div>
                                 <label className="block text-sm font-['Manrope'] font-black text-gray-900 dark:text-gray-200 mb-2">
-                                    Nama Lengkap{" "}
+                                    {t('edit_profile.full_name') || 'Nama Lengkap'}{" "}
                                     <span className="text-red-600 font-black">*</span>
                                 </label>
                                 <input
@@ -433,14 +435,14 @@ export default function EditProfilePage() {
                                         })
                                     }
                                     className="w-full px-4 py-3.5 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                                    placeholder="Masukkan nama lengkap"
+                                    placeholder={t('edit_profile.full_name_placeholder') || "Masukkan nama lengkap"}
                                     disabled={loading}
                                 />
                             </div>
 
                             <div>
                                 <label className="block text-sm font-['Manrope'] font-black text-gray-900 dark:text-gray-200 mb-2">
-                                    Username
+                                    {t('edit_profile.username') || 'Username'}
                                 </label>
                                 <div className="relative group">
                                     <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500 group-focus-within:text-primary transition-colors">@</span>
@@ -452,18 +454,16 @@ export default function EditProfilePage() {
                                             setFormData({ ...formData, username: val });
                                         }}
                                         className="w-full pl-10 pr-4 py-3.5 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                                        placeholder="usernameanda"
+                                        placeholder={t('edit_profile.username_placeholder') || "usernameanda"}
                                         disabled={loading}
                                     />
                                 </div>
-                                <p className="font-['Manrope'] text-xs text-gray-500 mt-2">
-                                    Hanya boleh diubah <strong className="text-primary">1x setiap 15 hari</strong>.
-                                </p>
+                                <p className="font-['Manrope'] text-xs text-gray-500 mt-2" dangerouslySetInnerHTML={{ __html: t('edit_profile.username_hint') || 'Hanya boleh diubah <strong>1x setiap 15 hari</strong>.' }} />
                             </div>
 
                             <div>
                                 <label className="block text-sm font-['Manrope'] font-black text-gray-900 dark:text-gray-200 mb-2">
-                                    Bio Singkat
+                                    {t('edit_profile.bio') || 'Bio Singkat'}
                                 </label>
                                 <textarea
                                     value={formData.bio}
@@ -475,11 +475,11 @@ export default function EditProfilePage() {
                                     }
                                     rows={3}
                                     className="w-full px-4 py-3.5 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
-                                    placeholder="Ceritakan minat belajarmu atau tujuanmu..."
+                                    placeholder={t('edit_profile.bio_placeholder') || "Ceritakan minat belajarmu atau tujuanmu..."}
                                     disabled={loading}
                                 />
                                 <p className="font-['Manrope'] text-xs text-gray-600 font-bold mt-2 text-right">
-                                    {formData.bio.length}/255 karakter
+                                    {formData.bio.length}/255 {t('edit_profile.bio_char_count') || 'karakter'}
                                 </p>
                             </div>
                         </div>
@@ -489,24 +489,24 @@ export default function EditProfilePage() {
                             <div className="flex items-center gap-2 mb-2">
                                 <BookOpen className="w-4 h-4 text-emerald-500" />
                                 <h2 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100">
-                                    Detail Akademik
+                                    {t('edit_profile.section_academic') || 'Detail Akademik'}
                                 </h2>
                             </div>
 
                             <div>
                                 <label className="block text-sm font-['Manrope'] font-black text-gray-900 dark:text-gray-200 mb-2">
-                                    Jenjang Pendidikan Terkini
+                                    {t('edit_profile.edu_level') || 'Jenjang Pendidikan Terkini'}
                                 </label>
                                 <div className="relative">
                                     <CustomSelect
                                         value={formData.jenjang_pendidikan}
                                         onChange={(val) => setFormData({ ...formData, jenjang_pendidikan: val as string })}
                                         options={[
-                                            { value: "SD", label: "Sekolah Dasar (SD)" },
-                                            { value: "SMP", label: "Menengah Pertama (SMP)" },
-                                            { value: "SMA", label: "Menengah Atas (SMA/SMK)" },
-                                            { value: "Kuliah", label: "Perguruan Tinggi (Kuliah)" },
-                                            { value: "Umum", label: "Umum" },
+                                            { value: "SD", label: t('edu_levels.SD') || "Sekolah Dasar (SD)" },
+                                            { value: "SMP", label: t('edu_levels.SMP') || "Menengah Pertama (SMP)" },
+                                            { value: "SMA", label: t('edu_levels.SMA') || "Menengah Atas (SMA/SMK)" },
+                                            { value: "Kuliah", label: t('edu_levels.Kuliah') || "Perguruan Tinggi (Kuliah)" },
+                                            { value: "Umum", label: t('edu_levels.Umum') || t('edit_profile.profesi_umum') || "Umum" },
                                         ]}
                                     />
                                 </div>
@@ -514,17 +514,17 @@ export default function EditProfilePage() {
 
                             <div>
                                 <label className="block text-sm font-['Manrope'] font-black text-gray-900 dark:text-gray-200 mb-2">
-                                    Profesi / Peran
+                                    {t('edit_profile.profession') || 'Profesi / Peran'}
                                 </label>
                                 <div className="relative">
                                     <CustomSelect
                                         value={formData.profesi}
                                         onChange={(val) => setFormData({ ...formData, profesi: val as string })}
                                         options={[
-                                            { value: "Pelajar", label: "Pelajar" },
-                                            { value: "Mahasiswa", label: "Mahasiswa" },
-                                            { value: "Pengajar", label: "Pengajar (Guru/Dosen)" },
-                                            { value: "Umum", label: "Umum / Profesional" },
+                                            { value: "Pelajar", label: t('edit_profile.profesi_pelajar') || "Pelajar" },
+                                            { value: "Mahasiswa", label: t('edit_profile.profesi_mahasiswa') || "Mahasiswa" },
+                                            { value: "Pengajar", label: t('edit_profile.profesi_pengajar') || "Pengajar (Guru/Dosen)" },
+                                            { value: "Umum", label: t('edit_profile.profesi_umum') || "Umum / Profesional" },
                                         ]}
                                     />
                                 </div>
@@ -532,7 +532,7 @@ export default function EditProfilePage() {
 
                             <div>
                                 <label className="block text-sm font-['Manrope'] font-black text-gray-900 dark:text-gray-200 mb-2">
-                                    Asal Sekolah / Universitas / Instansi
+                                    {t('edit_profile.institution') || 'Asal Sekolah / Universitas / Instansi'}
                                 </label>
                                 <input
                                     type="text"
@@ -544,7 +544,7 @@ export default function EditProfilePage() {
                                         })
                                     }
                                     className="w-full px-4 py-3.5 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                                    placeholder="Misal: SMAN 1 Jakarta"
+                                    placeholder={t('edit_profile.institution_placeholder') || "Misal: SMAN 1 Jakarta"}
                                     disabled={loading}
                                 />
                             </div>
@@ -555,13 +555,13 @@ export default function EditProfilePage() {
                             <div className="flex items-center gap-2 mb-2">
                                 <Phone className="w-4 h-4 text-purple-500" />
                                 <h2 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100">
-                                    Kontak
+                                    {t('edit_profile.section_contact') || 'Kontak'}
                                 </h2>
                             </div>
 
                             <div>
                                 <label className="block text-sm font-['Manrope'] font-bold text-gray-900 dark:text-gray-200 mb-2">
-                                    Alamat Email
+                                    {t('edit_profile.email') || 'Alamat Email'}
                                 </label>
                                 <input
                                     type="email"
@@ -570,14 +570,13 @@ export default function EditProfilePage() {
                                     className="w-full px-4 py-3.5 bg-gray-100/70 dark:bg-white/5 border border-transparent text-gray-500 dark:text-gray-500 rounded-2xl font-['Manrope'] text-[15px] cursor-not-allowed"
                                 />
                                 <p className="font-['Manrope'] text-xs text-gray-600 font-bold mt-2">
-                                    Email utama tidak dapat diubah dari panel
-                                    ini.
+                                    {t('edit_profile.email_hint') || 'Email utama tidak dapat diubah dari panel ini.'}
                                 </p>
                             </div>
 
                             <div>
                                 <label className="block text-sm font-['Manrope'] font-bold text-gray-900 dark:text-gray-200 mb-2">
-                                    Nomor Handphone (Opsional)
+                                    {t('edit_profile.phone') || 'Nomor Handphone (Opsional)'}
                                 </label>
                                 <input
                                     type="tel"
@@ -589,7 +588,7 @@ export default function EditProfilePage() {
                                         })
                                     }
                                     className="w-full px-4 py-3.5 bg-gray-50/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 focus:outline-none focus:bg-white dark:focus:bg-[#252336] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                                    placeholder="Contoh: 0812xxxx"
+                                    placeholder={t('edit_profile.phone_placeholder') || "Contoh: 0812xxxx"}
                                     disabled={loading}
                                 />
                             </div>
@@ -606,10 +605,10 @@ export default function EditProfilePage() {
                             {loading ? (
                                 <>
                                     <Loader2 className="w-5 h-5 animate-spin" />{" "}
-                                    Menyimpan...
+                                    {t('edit_profile.saving') || 'Menyimpan...'}
                                 </>
                             ) : (
-                                "Simpan Perubahan Profil"
+                                t('edit_profile.save_button') || "Simpan Perubahan Profil"
                             )}
                         </button>
                     </div>
@@ -628,7 +627,7 @@ export default function EditProfilePage() {
                     >
                         <div className="p-6 border-b border-gray-100 dark:border-white/5 flex items-center justify-between">
                             <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-lg">
-                                Ganti Foto Profil
+                                {t('edit_profile.photo_modal_title') || 'Ganti Foto Profil'}
                             </h3>
                             <button
                                 onClick={() => setShowSourceSelector(false)}
@@ -648,10 +647,10 @@ export default function EditProfilePage() {
                                 </div>
                                 <div>
                                     <h4 className="font-['Manrope'] font-bold text-gray-900 dark:text-gray-100 leading-tight">
-                                        Ambil dari Kamera
+                                        {t('edit_profile.camera_option_title') || 'Ambil dari Kamera'}
                                     </h4>
                                     <p className="font-['Manrope'] text-sm text-gray-500">
-                                        Foto langsung dari kamera perangkatmu
+                                        {t('edit_profile.camera_option_desc') || 'Foto langsung dari kamera perangkatmu'}
                                     </p>
                                 </div>
                             </button>
@@ -668,10 +667,10 @@ export default function EditProfilePage() {
                                 </div>
                                 <div>
                                     <h4 className="font-['Manrope'] font-bold text-gray-900 dark:text-gray-100 leading-tight">
-                                        Pilih dari Galeri / File
+                                        {t('edit_profile.gallery_option_title') || 'Pilih dari Galeri / File'}
                                     </h4>
                                     <p className="font-['Manrope'] text-sm text-gray-500">
-                                        Pilih file foto dari perangkatmu
+                                        {t('edit_profile.gallery_option_desc') || 'Pilih file foto dari perangkatmu'}
                                     </p>
                                 </div>
                             </button>
@@ -693,7 +692,7 @@ export default function EditProfilePage() {
                                 <ArrowLeft className="w-5 h-5" />
                             </button>
                             <span className="font-['Lexend_Deca'] font-bold text-white text-sm tracking-wide">
-                                Ambil Foto
+                                {t('edit_profile.camera_title') || 'Ambil Foto'}
                             </span>
                             <div className="w-9"></div>
                         </div>
@@ -710,7 +709,7 @@ export default function EditProfilePage() {
                                         onClick={closeCamera}
                                         className="mt-2 bg-white/10 hover:bg-white/20 text-white px-5 py-2 rounded-full font-['Manrope'] font-semibold text-sm transition-colors"
                                     >
-                                        Kembali
+                                        {t('edit_profile.camera_back') || 'Kembali'}
                                     </button>
                                 </div>
                             ) : (
@@ -762,16 +761,16 @@ export default function EditProfilePage() {
                             onClick={handleCropCancel}
                             className="flex items-center gap-2 text-white/80 hover:text-white font-['Manrope'] font-semibold text-sm transition-colors"
                         >
-                            <X className="w-5 h-5" /> Batal
+                            <X className="w-5 h-5" /> {t('edit_profile.crop_cancel') || 'Batal'}
                         </button>
                         <h3 className="font-['Lexend_Deca'] font-bold text-white text-base">
-                            Sesuaikan Foto
+                            {t('edit_profile.crop_title') || 'Sesuaikan Foto'}
                         </h3>
                         <button
                             onClick={handleCropConfirm}
                             className="flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-full font-['Lexend_Deca'] font-bold text-sm transition-all hover:scale-105 shadow-lg"
                         >
-                            <Check className="w-4 h-4" /> Gunakan
+                            <Check className="w-4 h-4" /> {t('edit_profile.crop_use') || 'Gunakan'}
                         </button>
                     </div>
 
@@ -834,8 +833,7 @@ export default function EditProfilePage() {
 
                         {/* Drag hint */}
                         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/60 backdrop-blur-md text-white/70 px-4 py-2 rounded-full font-['Manrope'] text-xs pointer-events-none">
-                            <Move className="w-3.5 h-3.5" /> Geser untuk
-                            mengatur posisi
+                            <Move className="w-3.5 h-3.5" /> {t('edit_profile.crop_drag_hint') || 'Geser untuk mengatur posisi'}
                         </div>
                     </div>
 
@@ -891,7 +889,7 @@ export default function EditProfilePage() {
                                 }}
                                 className="flex items-center gap-1.5 text-white/50 hover:text-white/80 font-['Manrope'] text-xs transition-colors"
                             >
-                                <RotateCcw className="w-3.5 h-3.5" /> Reset
+                                <RotateCcw className="w-3.5 h-3.5" /> {t('edit_profile.crop_reset') || 'Reset'}
                             </button>
                         </div>
                     </div>

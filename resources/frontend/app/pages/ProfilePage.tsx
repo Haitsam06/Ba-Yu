@@ -37,6 +37,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
+import { useTranslation } from "../hooks/useTranslation";
 
 export default function ProfilePage() {
     const navigate = useNavigate();
@@ -96,6 +97,7 @@ export default function ProfilePage() {
     }, [showFollowers, showFollowing]);
     const { bookmarkedIds, isBookmarked, toggleBookmark } = useBookmarks();
     const { showToast } = useToast();
+    const { t, language } = useTranslation();
 
     // Sync state if URL changes
     useEffect(() => {
@@ -382,7 +384,9 @@ export default function ProfilePage() {
         ...note,
         id: note._id || note.id,
         title: note.title,
-        description: String(note.description || note.plain_content || "").replace(/&nbsp;/g, ' '),
+        description: note.content 
+            ? note.content.replace(/<[^>]*>?/gm, "").substring(0, 150) + "..."
+            : String(note.description || note.plain_content || "").replace(/&nbsp;/g, ' ').substring(0, 150),
         createdAt: note.created_at || "",
         thumbnail: note.thumbnail || null,
         mataPelajaran: note.mapel || note.mataPelajaran || note.mata_pelajaran || "Umum",
@@ -419,14 +423,16 @@ export default function ProfilePage() {
             setIsLoadingBookmarks(true);
             try {
                 const idsParam = Array.from(bookmarkedIds).join(',');
-                const response = await axios.get(`/api/v1/posts?ids=${idsParam}`);
+                const response = await axios.get(`/api/v1/posts?ids=${idsParam}&sort=terbaru&limit=100`);
                 const allPosts = response.data.data || [];
                 setBookmarkedNotes(
                     allPosts.map((n: any) => ({
                         ...n,
                         id: n._id || n.id,
                         title: n.title,
-                        description: String(n.description || n.plain_content || "").replace(/&nbsp;/g, ' '),
+                        description: n.content 
+                            ? n.content.replace(/<[^>]*>?/gm, "").substring(0, 150) + "..."
+                            : String(n.description || n.plain_content || "").replace(/&nbsp;/g, ' ').substring(0, 150),
                         createdAt: n.created_at || "",
                         thumbnail: n.thumbnail || null,
                         mataPelajaran: n.mapel || n.mataPelajaran || n.mata_pelajaran || "Umum",
@@ -500,7 +506,7 @@ export default function ProfilePage() {
                                 to="/edit-profile"
                                 className="px-4 py-1.5 sm:px-5 sm:py-2 rounded-full border border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-100 font-bold text-[13px] sm:text-[14px] hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                             >
-                                Edit profil
+                                {t('profile.edit_profile')}
                             </Link>
                         </div>
                     </div>
@@ -514,7 +520,7 @@ export default function ProfilePage() {
                                 </h1>
                                 {currentUser.role === "pakar" && (
                                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[12px] border border-emerald-100 dark:border-emerald-500/20">
-                                        <ShieldCheck className="w-3.5 h-3.5" /> Pakar
+                                        <ShieldCheck className="w-3.5 h-3.5" /> {t('profile.expert_badge')}
                                     </span>
                                 )}
                                 {currentUser.role === "admin" && (
@@ -538,18 +544,24 @@ export default function ProfilePage() {
                                         const p = currentUser.profesi;
                                         const j = currentUser.jenjang;
                                         const s = currentUser.school;
+                                        const profesiLabel = p === "Pelajar" ? (t('edit_profile.profesi_pelajar') || p)
+                                            : p === "Mahasiswa" ? (t('edit_profile.profesi_mahasiswa') || p)
+                                            : p === "Pengajar" ? (t('edit_profile.profesi_pengajar') || p)
+                                            : p === "Umum" ? (t('edit_profile.profesi_umum') || p)
+                                            : p;
+                                        const jenjangLabel = j ? (t(`edu_levels.${j}`) || j) : j;
                                         if (s) {
-                                            return p === "Umum" ? s : (p ? `${p} di ${s}` : s);
+                                            return p === "Umum" ? s : (profesiLabel ? `${profesiLabel} di ${s}` : s);
                                         }
-                                        if (p === "Umum") return "Umum";
-                                        if (p === "Pelajar" && j && j !== "Umum" && j !== "Kuliah") return `Pelajar ${j}`;
-                                        return p || (j ? `Pelajar ${j}` : "Pelajar EduPlatform");
+                                        if (p === "Umum") return t('edit_profile.profesi_umum') || "Umum";
+                                        if (p === "Pelajar" && j && j !== "Umum" && j !== "Kuliah") return `${t('edit_profile.profesi_pelajar') || 'Pelajar'} ${jenjangLabel}`;
+                                        return profesiLabel || (j ? `${t('edit_profile.profesi_pelajar') || 'Pelajar'} ${jenjangLabel}` : (t('edit_profile.profesi_pelajar') || 'Pelajar'));
                                     })()}
                                 </span>
                             )}
                             
                             <span className="flex items-center gap-1.5 mt-0.5">
-                                <Calendar className="w-4 h-4" /> Bergabung {currentUser.created_at ? new Date(currentUser.created_at).toLocaleDateString("id-ID", { month: "long", year: "numeric" }) : "Baru saja"}
+                                <Calendar className="w-4 h-4" /> {t('profile.joined')} {currentUser.created_at ? new Date(currentUser.created_at).toLocaleDateString(language, { month: "long", year: "numeric" }) : t('profile.recently')}
                             </span>
                         </div>
 
@@ -565,14 +577,14 @@ export default function ProfilePage() {
                                 onClick={() => setShowFollowing(true)}
                                 className="hover:underline outline-none text-gray-500 dark:text-gray-400 transition-colors"
                             >
-                                <strong className="text-gray-900 dark:text-gray-100 font-bold">{currentUser.following}</strong> Mengikuti
+                                <strong className="text-gray-900 dark:text-gray-100 font-bold">{currentUser.following}</strong> {t('profile.following_count')}
                             </button>
                             
                             <button 
                                 onClick={() => setShowFollowers(true)}
                                 className="hover:underline outline-none text-gray-500 dark:text-gray-400 transition-colors"
                             >
-                                <strong className="text-gray-900 dark:text-gray-100 font-bold">{currentUser.followers}</strong> Pengikut
+                                <strong className="text-gray-900 dark:text-gray-100 font-bold">{currentUser.followers}</strong> {t('profile.followers_count')}
                             </button>
                         </div>
                     </div>
@@ -585,16 +597,16 @@ export default function ProfilePage() {
                                     </div>
                                     <div className="text-left">
                                         <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[14px]">
-                                            Daftar Pakar
+                                            {t('profile.register_expert')}
                                         </h3>
-                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium font-['Manrope']">Jadilah kontributor terverifikasi Ba-Yu</p>
+                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium font-['Manrope']">{t('profile.register_expert_sub')}</p>
                                     </div>
                                 </div>
                                 <button
                                     onClick={() => setApplyModalOpen(true)}
                                     className="w-full sm:w-auto bg-slate-900 dark:bg-indigo-600 hover:bg-black dark:hover:bg-indigo-700 text-white font-bold text-[13px] px-6 py-2 rounded-full transition-all shadow-sm dark:shadow-none"
                                 >
-                                    Daftar
+                                    {t('profile.register')}
                                 </button>
                             </div>
                         )}
@@ -608,10 +620,10 @@ export default function ProfilePage() {
                     <div className="max-w-4xl mx-auto px-4 sm:px-6">
                         <div className="flex gap-8 overflow-x-auto scrollbar-hide px-1">
                             {[
-                                { id: "catatan", label: "Catatan", count: totalNotesCount },
-                                { id: "draf", label: "Draf", count: drafts.length },
-                                { id: "bookmarks", label: "Tersimpan", count: bookmarkedIds.size },
-                                { id: "aktivitas", label: "Aktivitas", count: activities.length },
+                                { id: "catatan", label: t('profile.tab_notes'), count: totalNotesCount },
+                                { id: "draf", label: t('profile.tab_drafts'), count: drafts.length },
+                                { id: "bookmarks", label: t('profile.tab_saved'), count: bookmarkedIds.size },
+                                { id: "aktivitas", label: t('profile.tab_activity'), count: activities.length },
                             ].map((tab) => (
                                 <button
                                     key={tab.id}
@@ -671,7 +683,7 @@ export default function ProfilePage() {
                                     
                                     {!hasMore && userNotes.length > 0 && (
                                         <div className="py-8 text-center">
-                                            <p className="text-gray-400 dark:text-gray-500 font-['Manrope'] text-[13px] font-medium">Semua catatan telah dimuat.</p>
+                                            <p className="text-gray-400 dark:text-gray-500 font-['Manrope'] text-[13px] font-medium">{t('profile.all_notes_loaded')}</p>
                                         </div>
                                     )}
                                 </>
@@ -681,10 +693,10 @@ export default function ProfilePage() {
                                         <FileText className="w-8 h-8 text-gray-400 dark:text-gray-600" />
                                     </div>
                                     <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[18px] mb-2">
-                                        Belum Terdapat Rilisan
+                                        {t('profile.no_releases')}
                                     </h3>
                                     <p className="font-['Manrope'] text-[14px] text-gray-500 mb-6 max-w-sm mx-auto">
-                                        Bagikan pengetahuanmu dan bantu pelajar lainnya.
+                                        {t('profile.no_releases_sub')}
                                     </p>
                                 </div>
                             )}
@@ -712,8 +724,8 @@ export default function ProfilePage() {
                                     <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
                                         <Bookmark className="w-8 h-8 text-gray-400 dark:text-gray-600" />
                                     </div>
-                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[18px] mb-2">Simpanan Kosong</h3>
-                                    <p className="font-['Manrope'] text-[14px] text-gray-500 mb-6">Catatan yang kamu simpan akan muncul di sini.</p>
+                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[18px] mb-2">{t('profile.empty_saved')}</h3>
+                                    <p className="font-['Manrope'] text-[14px] text-gray-500 mb-6">{t('profile.empty_saved_sub')}</p>
                                 </div>
                             )}
                         </div>
@@ -760,8 +772,8 @@ export default function ProfilePage() {
                                     <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
                                         <FileText className="w-8 h-8 text-gray-400 dark:text-gray-600" />
                                     </div>
-                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[18px] mb-2">Belum Ada Draf</h3>
-                                    <p className="font-['Manrope'] text-[14px] text-gray-500 mb-6">Semua catatan yang kamu simpan sebagai draf akan muncul di sini.</p>
+                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[18px] mb-2">{t('profile.no_drafts')}</h3>
+                                    <p className="font-['Manrope'] text-[14px] text-gray-500 mb-6">{t('profile.no_drafts_sub')}</p>
                                 </div>
                             )}
                         </div>
@@ -806,14 +818,14 @@ export default function ProfilePage() {
                                                     />
                                                 )}
                                                 <div className="absolute top-2 left-2 bg-white/90 dark:bg-[#13111C]/90 backdrop-blur-md text-gray-800 dark:text-gray-200 text-[10px] font-['Lexend_Deca'] font-bold px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1.5 border border-white/20">
-                                                    <MessageCircle className="w-3 h-3 text-indigo-500" /> Diskusi
+                                                    <MessageCircle className="w-3 h-3 text-indigo-500" /> {t('profile.discussion_label')}
                                                 </div>
                                             </div>
 
                                             <div className="flex-1 min-w-0 flex flex-col h-full text-left py-1 w-full">
                                                 <div className="flex items-center gap-1.5 mb-2.5 text-[12.5px] font-['Manrope'] text-slate-500 dark:text-slate-400 font-medium line-clamp-1">
-                                                    <span>{activity.parent_comment_id ? "Membalas obrolan di" : "Ikut berdiskusi di"}</span>
-                                                    <span className="font-['Lexend_Deca'] font-bold text-slate-900 dark:text-gray-100">{activity.post?.title || "Catatan"}</span>
+                                                    <span>{activity.parent_comment_id ? t('profile.activity_reply') : t('profile.activity_discuss')}</span>
+                                                    <span className="font-['Lexend_Deca'] font-bold text-slate-900 dark:text-gray-100">{activity.post?.title || t('profile.activity_note')}</span>
                                                 </div>
 
                                                 <div className="mb-4 bg-slate-50/80 dark:bg-white/5 rounded-2xl p-4 border border-slate-100 dark:border-white/5 relative">
@@ -828,7 +840,7 @@ export default function ProfilePage() {
                                                         <div className="flex items-center gap-1.5 text-gray-500">
                                                             <Clock className="w-3.5 h-3.5" />
                                                             <span className="text-[12px] font-['Manrope'] font-bold">
-                                                                {activity.created_at ? new Date(activity.created_at).toLocaleDateString("id-ID", { month: "short", day: "numeric", year: "numeric" }) : "Baru saja"}
+                                                                {activity.created_at ? new Date(activity.created_at).toLocaleDateString(language, { month: "short", day: "numeric", year: "numeric" }) : t('profile.recently')}
                                                             </span>
                                                         </div>
                                                         <div className="flex items-center gap-1.5 text-gray-500 group-hover:text-pink-500 transition-colors">
@@ -852,16 +864,16 @@ export default function ProfilePage() {
                                                                         navigate(`/note/${activity.post_id}?edit_comment=${activity.id}#comment-${activity.id}`);
                                                                     }}
                                                                 >
-                                                                    <Pencil className="w-4 h-4 mr-2.5" /> Edit
+                                                                    <Pencil className="w-4 h-4 mr-2.5" /> {t('profile.edit')}
                                                                 </DropdownMenuItem>
                                                                 <DropdownMenuItem 
                                                                     className="cursor-pointer text-red-600 dark:text-red-400 font-semibold focus:bg-red-50 focus:text-red-700 dark:focus:bg-red-500/10 dark:focus:text-red-300 rounded-xl py-2.5"
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
-                                                                        showToast("Fitur hapus komentar segera hadir", "info");
+                                                                        showToast(t('profile.delete_comment_soon'), "info");
                                                                     }}
                                                                 >
-                                                                    <Trash2 className="w-4 h-4 mr-2.5" /> Hapus
+                                                                    <Trash2 className="w-4 h-4 mr-2.5" /> {t('profile.delete')}
                                                                 </DropdownMenuItem>
                                                             </DropdownMenuContent>
                                                         </DropdownMenu>
@@ -876,8 +888,8 @@ export default function ProfilePage() {
                                     <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
                                         <MessageCircle className="w-8 h-8 text-gray-400 dark:text-gray-600" />
                                     </div>
-                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[18px] mb-2">Belum Ada Riwayat</h3>
-                                    <p className="font-['Manrope'] text-[14px] text-gray-500 max-w-sm mx-auto">Ruang ini akan dipenuhi dengan jejak diskusi dan ulasanmu.</p>
+                                    <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[18px] mb-2">{t('profile.no_history')}</h3>
+                                    <p className="font-['Manrope'] text-[14px] text-gray-500 max-w-sm mx-auto">{t('profile.no_history_sub')}</p>
                                 </div>
                             )}
                         </div>
@@ -890,7 +902,7 @@ export default function ProfilePage() {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/20 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowFollowers(false)}>
                     <div className="bg-white dark:bg-[#1C1A29] w-full max-w-sm rounded-2xl shadow-xl dark:shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/5">
-                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[16px]">Pengikut</h3>
+                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[16px]">{t('profile.followers_modal')}</h3>
                             <button onClick={() => setShowFollowers(false)} className="text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
@@ -924,10 +936,10 @@ export default function ProfilePage() {
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <span className="text-[14px] font-bold text-gray-900 dark:text-gray-100 leading-tight">
-                                                        Permintaan Mengikuti
+                                                        {t('profile.follow_requests')}
                                                     </span>
                                                     <span className="text-[12px] text-primary font-semibold">
-                                                        {pendingRequests.length} orang menunggu
+                                                        {pendingRequests.length} {t('profile.people_waiting')}
                                                     </span>
                                                 </div>
                                             </div>
@@ -964,7 +976,7 @@ export default function ProfilePage() {
                                                         }
                                                     }}
                                                 >
-                                                    {f.is_followed_by_me ? 'Mengikuti' : f.is_follow_pending ? 'Diminta' : 'Ikuti'}
+                                                    {f.is_followed_by_me ? t('profile.following') : f.is_follow_pending ? t('profile.requested') : t('profile.follow')}
                                                 </button>
                                             )}
                                         </div>
@@ -973,8 +985,8 @@ export default function ProfilePage() {
                             ) : (
                                 <div className="flex flex-col items-center justify-center py-8 text-center">
                                     <Users className="w-10 h-10 text-gray-200 mb-3" />
-                                    <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 dark:text-gray-100 text-[15px] mb-1">Belum ada pengikut</h4>
-                                    <p className="font-['Manrope'] text-[14px] text-gray-500">Terus berkarya dan bagikan catatanmu!</p>
+                                    <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 dark:text-gray-100 text-[15px] mb-1">{t('profile.no_followers')}</h4>
+                                    <p className="font-['Manrope'] text-[14px] text-gray-500">{t('profile.no_followers_sub')}</p>
                                 </div>
                             )}
                         </div>
@@ -987,7 +999,7 @@ export default function ProfilePage() {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/20 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowFollowing(false)}>
                     <div className="bg-white dark:bg-[#1C1A29] w-full max-w-sm rounded-2xl shadow-xl dark:shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/5">
-                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[16px]">Mengikuti</h3>
+                            <h3 className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[16px]">{t('profile.following_modal')}</h3>
                             <button onClick={() => setShowFollowing(false)} className="text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
@@ -1027,7 +1039,7 @@ export default function ProfilePage() {
                                                         }
                                                     }}
                                                 >
-                                                    {f.is_followed_by_me ? 'Mengikuti' : f.is_follow_pending ? 'Diminta' : 'Ikuti'}
+                                                    {f.is_followed_by_me ? t('profile.following') : f.is_follow_pending ? t('profile.requested') : t('profile.follow')}
                                                 </button>
                                             )}
                                         </div>
@@ -1036,10 +1048,10 @@ export default function ProfilePage() {
                             ) : (
                                 <div className="flex flex-col items-center justify-center py-8 text-center">
                                     <Users className="w-10 h-10 text-gray-200 mb-3" />
-                                    <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 dark:text-gray-100 text-[15px] mb-1">Masih Kosong</h4>
-                                    <p className="font-['Manrope'] text-[14px] text-gray-500 mb-5">Temukan kreator favoritmu di halaman Jelajah.</p>
+                                    <h4 className="font-['Lexend_Deca'] font-semibold text-gray-900 dark:text-gray-100 text-[15px] mb-1">{t('profile.empty_following')}</h4>
+                                    <p className="font-['Manrope'] text-[14px] text-gray-500 mb-5">{t('profile.empty_following_sub')}</p>
                                     <button onClick={() => {setShowFollowing(false); navigate("/explore")}} className="px-5 py-2 bg-gray-900 text-white rounded-full font-medium text-[13px] hover:bg-black transition-colors">
-                                        Cari Kreator
+                                        {t('profile.find_creator')}
                                     </button>
                                 </div>
                             )}
@@ -1055,12 +1067,12 @@ export default function ProfilePage() {
                     if (!open) setUnfollowTarget(null);
                 }}
                 onConfirm={() => handleFollowToggle(unfollowTarget?.id!)}
-                title={`Batal ikuti ${unfollowTarget?.name}?`}
+                title={`${t('profile.unfollow_title')} ${unfollowTarget?.name}?`}
                 description={unfollowTarget?.is_private 
-                    ? `Akun ini bersifat privat. Jika kamu berhenti mengikuti, kamu harus mengirim permintaan mengikuti lagi untuk melihat catatan dan aktivitasnya.` 
-                    : `Kamu tidak akan lagi melihat catatan dan aktivitas dari ${unfollowTarget?.name} di berandamu.`}
-                confirmText={isTogglingFollow ? "Memproses..." : "Ya, Batal Ikuti"}
-                cancelText="Tidak"
+                    ? t('profile.unfollow_private_desc')
+                    : `${t('profile.unfollow_public_desc')} ${unfollowTarget?.name} ${t('profile.unfollow_public_desc_end')}`}
+                confirmText={isTogglingFollow ? t('profile.processing') : t('profile.confirm_unfollow')}
+                cancelText={t('profile.cancel')}
                 variant="danger"
             />
 
