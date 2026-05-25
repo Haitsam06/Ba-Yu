@@ -203,7 +203,7 @@ const LearningStatisticsPage = () => {
 
 
   return (
-    <MobileLayout>
+    <MobileLayout hideMobileTopNav={true}>
       <div className="min-h-screen bg-white dark:bg-[#13111C] font-['Manrope'] pb-20">
         
         {/* HEADER (X STYLE) */}

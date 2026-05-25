@@ -252,7 +252,8 @@
         "report": "Report",
         "saved": "Saved",
         "view": "View",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "read_time_badge": "m"
     },
     "home": {
         "login_to_like": "Please log in first to like posts.",
@@ -448,6 +449,7 @@
         "following": "Following",
         "pending": "Pending",
         "minutes_read": "min read",
+        "read_time": "min read",
         "expert_review": "Expert Review",
         "restricted_access": "Restricted Access",
         "restricted_desc": "The author has restricted full access to this note. Follow the author to unlock the complete material.",

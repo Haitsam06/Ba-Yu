@@ -252,7 +252,8 @@
         "report": "Melden",
         "saved": "Gespeichert",
         "view": "Ansehen",
-        "cancel": "Abbrechen"
+        "cancel": "Abbrechen",
+        "read_time_badge": "Min"
     },
     "home": {
         "login_to_like": "Bitte melden Sie sich zuerst an, um zu liken.",
@@ -555,7 +556,8 @@
         "unverify_title": "Verifizierung aufheben?",
         "unverify_desc": "Möchten Sie den Verifizierungsstatus dieser Notiz wirklich aufheben?",
         "verify_title": "Notiz verifizieren",
-        "verify_desc": "Diese Notiz als genaues und qualitativ hochwertiges Material verifizieren?"
+        "verify_desc": "Diese Notiz als genaues und qualitativ hochwertiges Material verifizieren?",
+        "read_time": "Min. Lesezeit"
     },
     "public_profile": {
         "title": "Benutzerprofil",

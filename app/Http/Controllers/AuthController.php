@@ -157,7 +157,9 @@ class AuthController extends Controller
             return response()->json(['message' => 'Provider tidak didukung'], 400);
         }
 
-        return Socialite::driver($provider)->stateless()->redirect();
+        /** @var \Laravel\Socialite\Two\AbstractProvider $driver */
+        $driver = Socialite::driver($provider);
+        return $driver->stateless()->redirect();
     }
 
     /**
@@ -170,7 +172,9 @@ class AuthController extends Controller
         }
 
         try {
-            $socialUser = Socialite::driver($provider)->stateless()->user();
+            /** @var \Laravel\Socialite\Two\AbstractProvider $driver */
+            $driver = Socialite::driver($provider);
+            $socialUser = $driver->stateless()->user();
         } catch (\Exception $e) {
             return redirect(config('app.url') . '/app/login?error=oauth_failed');
         }

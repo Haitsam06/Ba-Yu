@@ -912,7 +912,7 @@ export default function NoteDetailPage() {
 
     const SkeletonContainer = isAuthenticated
         ? ({ children }: { children: React.ReactNode }) => (
-              <MobileLayout showBottomNav={false}>{children}</MobileLayout>
+              <MobileLayout showBottomNav={false} hideMobileTopNav={true}>{children}</MobileLayout>
           )
         : ({ children }: { children: React.ReactNode }) => (
               <div className="min-h-screen bg-white dark:bg-[#13111C]">
@@ -1497,7 +1497,7 @@ export default function NoteDetailPage() {
                                     className="w-3.5 h-3.5"
                                     strokeWidth={2.5}
                                 />
-                                <span>5 mnt baca</span>
+                                <span>{note.read_time || 1} {t('note_detail.read_time') !== 'note_detail.read_time' ? t('note_detail.read_time') : 'mnt baca'}</span>
                             </div>
                             {author.role === "pakar" && (
                                 <>

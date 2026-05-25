@@ -54,6 +54,19 @@ class Post extends Model
         'submitted_for_review' => 'boolean',
     ];
 
+    protected $appends = ['read_time'];
+
+    public function getReadTimeAttribute()
+    {
+        $text = strip_tags($this->plain_content ?? $this->content ?? '');
+        $wordCount = str_word_count($text);
+        if ($wordCount == 0 && $text !== '') {
+            $wordCount = count(preg_split('~[^\p{L}\p{N}\']+~u', $text, -1, PREG_SPLIT_NO_EMPTY));
+        }
+        $minutes = ceil($wordCount / 200);
+        return max(1, (int) $minutes);
+    }
+
     // Relationships
     public function user()
     {

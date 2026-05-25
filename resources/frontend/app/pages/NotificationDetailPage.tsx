@@ -91,7 +91,7 @@ export default function NotificationDetailPage() {
 
     if (isLoading) {
         return (
-            <MobileLayout>
+            <MobileLayout hideMobileTopNav={true}>
                 <div className="min-h-screen bg-slate-50 dark:bg-[#13111C] flex flex-col animate-pulse">
                     {/* Header Navbar Skeleton */}
                     <div className="bg-white/80 dark:bg-[#1C1A29]/80 border-b border-gray-200 dark:border-white/5 sticky top-0 z-30">

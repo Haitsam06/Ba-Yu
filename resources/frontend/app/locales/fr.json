@@ -252,7 +252,8 @@
         "report": "Signaler",
         "saved": "Enregistré",
         "view": "Voir",
-        "cancel": "Annuler"
+        "cancel": "Annuler",
+        "read_time_badge": "min"
     },
     "home": {
         "login_to_like": "Veuillez d'abord vous connecter pour aimer.",
@@ -555,7 +556,8 @@
         "unverify_title": "Annuler la vérification ?",
         "unverify_desc": "Êtes-vous sûr de vouloir annuler le statut de vérification de cette note ?",
         "verify_title": "Vérifier la note",
-        "verify_desc": "Vérifier cette note comme étant un document précis et de haute qualité ?"
+        "verify_desc": "Vérifier cette note comme étant un document précis et de haute qualité ?",
+        "read_time": "min de lecture"
     },
     "public_profile": {
         "title": "Profil utilisateur",

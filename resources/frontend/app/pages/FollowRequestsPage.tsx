@@ -83,7 +83,7 @@ export default function FollowRequestsPage() {
     };
 
     return (
-        <MobileLayout showBottomNav={false}>
+        <MobileLayout showBottomNav={false} hideMobileTopNav={true}>
             <div className="min-h-screen pb-10 bg-slate-50/50 dark:bg-[#13111C]">
                 {/* Header */}
                 <div className="sticky top-0 bg-slate-50/80 dark:bg-[#13111C]/80 backdrop-blur-xl z-20 px-5 pt-10 pb-5 border-b border-slate-200/60 dark:border-white/5">

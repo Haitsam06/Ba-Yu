@@ -252,7 +252,8 @@
         "report": "報告する",
         "saved": "保存済み",
         "view": "表示",
-        "cancel": "キャンセル"
+        "cancel": "キャンセル",
+        "read_time_badge": "分"
     },
     "home": {
         "login_to_like": "投稿に「いいね」するにはログインしてください。",
@@ -555,7 +556,8 @@
         "unverify_title": "認証をキャンセルしますか？",
         "unverify_desc": "このノートの認証ステータスをキャンセルしてもよろしいですか？",
         "verify_title": "ノートを認証",
-        "verify_desc": "このノートを正確で高品質な資料として認証しますか？"
+        "verify_desc": "このノートを正確で高品質な資料として認証しますか？",
+        "read_time": "分で読める"
     },
     "public_profile": {
         "title": "ユーザープロフィール",

@@ -398,7 +398,7 @@ export default function PublicProfilePage() {
 
     if (isLoadingProfile) {
         return (
-            <MobileLayout>
+            <MobileLayout hideMobileTopNav={true}>
                 <div className="pb-16 bg-white dark:bg-[#13111C] min-h-screen animate-pulse">
                     {/* Cover Banner Skeleton */}
                     <Skeleton className="w-full h-32 sm:h-48 rounded-none" />

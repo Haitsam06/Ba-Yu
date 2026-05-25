@@ -252,7 +252,8 @@
         "report": "Laporkan",
         "saved": "Tersimpan",
         "view": "Lihat",
-        "cancel": "Batal"
+        "cancel": "Batal",
+        "read_time_badge": "m"
     },
     "home": {
         "login_to_like": "Silakan masuk (login) terlebih dahulu untuk menyukai tulisan.",
@@ -448,6 +449,7 @@
         "following": "Mengikuti",
         "pending": "Menunggu",
         "minutes_read": "mnt baca",
+        "read_time": "mnt baca",
         "expert_review": "Review Pakar",
         "restricted_access": "Akses Dibatasi",
         "restricted_desc": "Penulis membatasi akses penuh untuk catatan ini. Ikuti untuk membuka keseluruhan materi.",

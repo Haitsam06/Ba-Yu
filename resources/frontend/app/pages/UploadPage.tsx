@@ -347,7 +347,7 @@ export default function UploadPage() {
   };
 
   return (
-    <MobileLayout showBottomNav={false} hideTopNav={true}>
+    <MobileLayout showBottomNav={false} hideMobileTopNav={true}>
       {isLoadingDraft && (
         <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-[100] flex flex-col items-center justify-center animate-in fade-in duration-300">
           <div className="relative">

@@ -252,7 +252,8 @@
         "report": "신고",
         "saved": "저장됨",
         "view": "보기",
-        "cancel": "취소"
+        "cancel": "취소",
+        "read_time_badge": "분"
     },
     "home": {
         "login_to_like": "게시물에 좋아요를 누르려면 먼저 로그인하세요.",
@@ -555,7 +556,8 @@
         "unverify_title": "인증 취소?",
         "unverify_desc": "이 노트의 인증 상태를 취소하시겠습니까?",
         "verify_title": "노트 인증",
-        "verify_desc": "이 노트를 정확하고 고품질의 자료로 인증하시겠습니까?"
+        "verify_desc": "이 노트를 정확하고 고품질의 자료로 인증하시겠습니까?",
+        "read_time": "분 읽기"
     },
     "public_profile": {
         "title": "사용자 프로필",

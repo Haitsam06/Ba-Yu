@@ -12,9 +12,10 @@ interface MobileLayoutProps {
   children: ReactNode;
   showBottomNav?: boolean;
   hideTopNav?: boolean;
+  hideMobileTopNav?: boolean;
 }
 
-export function MobileLayout({ children, showBottomNav = true, hideTopNav = false }: MobileLayoutProps) {
+export function MobileLayout({ children, showBottomNav = true, hideTopNav = false, hideMobileTopNav = false }: MobileLayoutProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -58,7 +59,7 @@ export function MobileLayout({ children, showBottomNav = true, hideTopNav = fals
       )}
 
       {/* 2. MOBILE TOP BAR */}
-      {!hideTopNav && (
+      {!hideTopNav && !hideMobileTopNav && (
         <div className="md:hidden w-full bg-white/90 dark:bg-[#13111C]/90 backdrop-blur-md pt-[env(safe-area-inset-top)] border-b border-slate-100 dark:border-white/5 z-40 shadow-sm dark:shadow-none shrink-0">
            <div className="flex items-center justify-between px-5 h-[60px]">
                <div className="flex items-center">

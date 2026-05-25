@@ -252,7 +252,8 @@
         "report": "举报",
         "saved": "已保存",
         "view": "查看",
-        "cancel": "取消"
+        "cancel": "取消",
+        "read_time_badge": "分钟"
     },
     "home": {
         "login_to_like": "请先登录才能点赞。",
@@ -555,7 +556,8 @@
         "unverify_title": "取消认证？",
         "unverify_desc": "您确定要取消此笔记的认证状态吗？",
         "verify_title": "认证笔记",
-        "verify_desc": "将此笔记认证为准确且高质量的资料？"
+        "verify_desc": "将此笔记认证为准确且高质量的资料？",
+        "read_time": "分钟阅读"
     },
     "public_profile": {
         "title": "用户个人资料",

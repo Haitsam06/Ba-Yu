@@ -290,7 +290,7 @@ export default function HomePage() {
                                             {t('home.main_focus')}
                                         </span>
                                         <span className="text-gray-600 dark:text-gray-400 text-[12px] font-semibold flex items-center gap-1.5">
-                                            • <Clock className="w-3 h-3 text-gray-700 dark:text-gray-400" strokeWidth={2.5} /> {heroNote.read_time || 1} min
+                                            • <Clock className="w-3 h-3 text-gray-700 dark:text-gray-400" strokeWidth={2.5} /> {heroNote.read_time || 1} {t('notecard.read_time_badge') !== 'notecard.read_time_badge' ? t('notecard.read_time_badge') : 'm'}
                                         </span>
 
                                         {/*Badge Verifikasi*/}
@@ -335,7 +335,7 @@ export default function HomePage() {
                                             )}
                                             {/* Floating badge */}
                                             <div className="absolute top-3 right-3 bg-white/90 dark:bg-black/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 text-[11px] font-['Lexend_Deca'] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1.5 z-20">
-                                                <Clock className="w-3.5 h-3.5" /> {heroNote.read_time || 1}m
+                                                <Clock className="w-3.5 h-3.5" /> {heroNote.read_time || 1}{t('notecard.read_time_badge') !== 'notecard.read_time_badge' ? t('notecard.read_time_badge') : 'm'}
                                             </div>
                                         </Link>
                                     </div>

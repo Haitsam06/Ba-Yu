@@ -99,7 +99,7 @@ export default function LanguagePage() {
   };
 
   return (
-    <MobileLayout>
+    <MobileLayout hideMobileTopNav={true}>
       <div className="min-h-screen bg-slate-50 dark:bg-black/20 flex justify-center font-['Manrope']">
         <div className="w-full max-w-[800px] min-h-screen border-x border-slate-200 dark:border-white/5 bg-white dark:bg-[#13111C]">
           {/* Top Navigation */}

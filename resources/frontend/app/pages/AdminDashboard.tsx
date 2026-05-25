@@ -20,6 +20,7 @@ import {
     Activity,
     ArrowUpRight,
     Check,
+    Clock,
 } from "lucide-react";
 import { mataPelajaran } from "../data/mockData";
 import { Link, useLocation } from "react-router";
@@ -720,6 +721,8 @@ export default function AdminDashboard() {
                                                                         )}
                                                                         <span className="text-[10px] text-slate-400 mx-0.5 font-bold">•</span>
                                                                         <span className="text-[12px] text-slate-500 dark:text-slate-400 font-bold">{new Date(note.createdAt || note.created_at || Date.now()).toLocaleDateString(language === 'id' ? 'id-ID' : language, { day: 'numeric', month: 'short' })}</span>
+                                                                        <span className="text-[10px] text-slate-400 mx-0.5 font-bold">•</span>
+                                                                        <span className="text-[12px] text-slate-500 dark:text-slate-400 font-bold flex items-center gap-1"><Clock className="w-3 h-3" /> {note.read_time || 1}{t('notecard.read_time_badge') !== 'notecard.read_time_badge' ? t('notecard.read_time_badge') : 'm'}</span>
                                                                     </div>
 
                                                                     {/* Title */}

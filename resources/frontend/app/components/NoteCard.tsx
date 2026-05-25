@@ -385,7 +385,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                         {isDraft ? (
                             <><FileText className="w-3 h-3" /> {t('noteCard.draft_badge') !== 'noteCard.draft_badge' ? t('noteCard.draft_badge') : 'DRAF'}</>
                         ) : (
-                            <><Clock className="w-3 h-3" /> {note.read_time || 1}m</>
+                            <><Clock className="w-3 h-3" /> {note.read_time || 1}{t('notecard.read_time_badge') !== 'notecard.read_time_badge' ? t('notecard.read_time_badge') : 'm'}</>
                         )}
                     </div>
                 </Link>
