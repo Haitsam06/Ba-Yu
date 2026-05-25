@@ -39,7 +39,7 @@ import { NoteCard } from "../components/NoteCard";
 import { NoteCardSkeleton } from "../components/ui/skeletons";
 import { useTranslation } from "../hooks/useTranslation";
 
-type VerificationStatus = "pending" | "approved" | "all";
+type VerificationStatus = "pending" | "approved" | "rejected" | "all";
 
 interface FeedbackModalProps {
     isOpen: boolean;
@@ -180,12 +180,22 @@ export default function PakarDashboard() {
 
     const sparkData = [{ v: 40 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 55 }, { v: 85 }, { v: 75 }];
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchPosts(searchQuery);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
     useEffect(() => { fetchPosts(); }, []);
 
-    const fetchPosts = async () => {
+    const fetchPosts = async (search = "") => {
         setIsLoading(true);
         try {
-            const response = await axios.get("/api/v1/posts?sort=terbaru&submitted_for_review=true");
+            const url = search 
+                ? `/api/v1/posts?sort=terbaru&submitted_for_review=true&limit=100&search=${encodeURIComponent(search)}`
+                : `/api/v1/posts?sort=terbaru&submitted_for_review=true&limit=100`;
+            const response = await axios.get(url);
             const formattedNotes = (response.data.data || []).map((note: any) => ({
                 ...note,
                 id: note._id || note.id,
@@ -239,14 +249,16 @@ export default function PakarDashboard() {
 
     const pendingNotes = notes.filter((n) => !n.isValidated && !n.isRejected);
     const verifiedNotes = notes.filter((n) => n.isValidated);
+    const rejectedNotes = notes.filter((n) => n.isRejected);
 
     const stats = [
         { label: t('pakar_dashboard.waiting_validation'), value: pendingNotes.length, color: "text-amber-600", icon: Clock, sparkColor: "#f59e0b" },
         { label: t('pakar_dashboard.approved'), value: verifiedNotes.length, color: "text-indigo-600", icon: CheckCircle, sparkColor: "#6366f1" },
+        { label: t('pakar_dashboard.rejected_stats'), value: rejectedNotes.length, color: "text-rose-600", icon: XCircle, sparkColor: "#e11d48" },
         { label: t('pakar_dashboard.total_control'), value: notes.length, color: "text-slate-600", icon: Activity, sparkColor: "#64748b" },
     ];
 
-    const filteredNotes = (filter === "all" ? notes.filter(n => !n.isRejected) : filter === "pending" ? pendingNotes : verifiedNotes)
+    const filteredNotes = (filter === "all" ? notes : filter === "pending" ? pendingNotes : filter === "rejected" ? rejectedNotes : verifiedNotes)
         .filter(n => {
             const q = searchQuery.toLowerCase();
             return n.title?.toLowerCase().includes(q) || n.mataPelajaran?.toLowerCase().includes(q) || n.author?.name?.toLowerCase().includes(q);
@@ -271,7 +283,7 @@ export default function PakarDashboard() {
                     <div className="flex-1 w-full lg:max-w-[640px] xl:max-w-[700px] min-w-0">
                         
                         {/* Minimalist Pakar Header */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 pb-6 border-b border-gray-200 dark:border-white/10">
+                        <div className="flex flex-row items-center justify-between gap-6 mb-8 pb-6 border-b border-gray-200 dark:border-white/10">
                             <div className="flex items-center gap-4">
                                 <div className="relative shrink-0">
                                     <AvatarImage src={user?.avatar} alt={user?.name} size={64} className="rounded-full border border-gray-200 dark:border-white/10" />
@@ -286,7 +298,7 @@ export default function PakarDashboard() {
                                     <p className="text-[14px] text-gray-500 dark:text-gray-400">{t('pakar_dashboard.subtitle')}</p>
                                 </div>
                             </div>
-                            <Link to="/explore" className="px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-full font-bold text-[13px] hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center gap-2">
+                            <Link to="/explore" className="hidden sm:flex px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-full font-bold text-[13px] hover:bg-gray-50 dark:hover:bg-white/10 transition-colors items-center gap-2 shrink-0">
                                 <BookOpen size={16} />
                                 {t('pakar_dashboard.explore')}
                             </Link>
@@ -299,7 +311,7 @@ export default function PakarDashboard() {
                                 <h3 className="font-['Lexend_Deca'] font-extrabold text-[14px] text-gray-900 dark:text-gray-100 tracking-tight mb-4">
                                     {t('pakar_dashboard.stats_title')}
                                 </h3>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
                                     {stats.map((stat, index) => {
                                         const Icon = stat.icon;
                                         return (
@@ -319,6 +331,10 @@ export default function PakarDashboard() {
                                         );
                                     })}
                                 </div>
+                                <Link to="/explore" className="sm:hidden w-full px-4 py-3 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-2xl font-bold text-[13px] hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center justify-center gap-2 shadow-sm">
+                                    <BookOpen size={16} />
+                                    {t('pakar_dashboard.explore')}
+                                </Link>
                             </div>
 
                             <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
@@ -330,6 +346,7 @@ export default function PakarDashboard() {
                                     {[
                                         { id: "pending", label: t('pakar_dashboard.tab_queue') },
                                         { id: "approved", label: t('pakar_dashboard.tab_verified') },
+                                        { id: "rejected", label: t('pakar_dashboard.rejected_stats') },
                                         { id: "all", label: t('pakar_dashboard.tab_all') },
                                     ].map((tab) => {
                                         const active = filter === tab.id;
@@ -371,6 +388,10 @@ export default function PakarDashboard() {
                                                                     <div className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full px-3 py-1.5 border border-emerald-100 dark:border-emerald-500/20 font-['Lexend_Deca'] font-bold text-[10px] flex items-center gap-1.5 uppercase tracking-widest"><ShieldCheck size={14} /> {t('pakar_dashboard.verified')}</div>
                                                                     <button onClick={() => handleActionClick(n, "cancel")} className="px-3 py-1.5 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full font-['Lexend_Deca'] font-bold text-[10px] flex items-center gap-1.5 uppercase tracking-widest hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-all border border-transparent hover:border-rose-200 dark:hover:border-rose-500/30">{t('pakar_dashboard.cancel_verification')}</button>
                                                                 </>
+                                                            ) : n.isRejected ? (
+                                                                <div className="bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-full px-3 py-1.5 border border-rose-100 dark:border-rose-500/20 font-['Lexend_Deca'] font-bold text-[10px] flex items-center gap-1.5 uppercase tracking-widest">
+                                                                    <XCircle size={14} /> {t('pakar_dashboard.rejected_stats')}
+                                                                </div>
                                                             ) : (
                                                                 <>
                                                                     <button onClick={() => handleActionClick(n, "approve")} className="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-full font-['Lexend_Deca'] font-bold text-[10px] hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all flex items-center gap-1.5 uppercase tracking-widest border border-indigo-100 dark:border-indigo-500/20"><CheckCircle size={14} /> {t('pakar_dashboard.approve')}</button>

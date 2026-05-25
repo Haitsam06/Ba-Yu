@@ -292,9 +292,9 @@ export default function NoteDetailPage() {
                     <div class="header">
                         <h1>${note?.title || "Materi Catatan"}</h1>
                         <div class="meta">
-                            <span>Ditulis oleh: {author?.name || author?.username || "Penulis"}</span>
+                            <span>${t("note_detail.written_by") || "Ditulis oleh:"} ${author?.name || author?.username || "Penulis"}</span>
                             <span>&bull;</span>
-                            <span>Diunduh: ${dateStr}</span>
+                            <span>${t("note_detail.downloaded_at") || "Diunduh:"} ${dateStr}</span>
                         </div>
                     </div>
                     
@@ -304,15 +304,15 @@ export default function NoteDetailPage() {
 
                     ${note?.is_restricted ? `
                     <div style="margin-top: 40px; padding: 25px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center;">
-                        <h4 style="margin: 0 0 8px 0; color: #0f172a; font-family: 'Lexend Deca', sans-serif; font-size: 14pt;">Materi Terproteksi</h4>
+                        <h4 style="margin: 0 0 8px 0; color: #0f172a; font-family: 'Lexend Deca', sans-serif; font-size: 14pt;">${t("note_detail.pdf_restricted_title") || "Materi Terproteksi"}</h4>
                         <p style="margin: 0; color: #475569; font-size: 10.5pt; font-family: 'Manrope', sans-serif;">
-                            Versi PDF ini hanya memuat sebagian materi. Ikuti penulis <b>@${author?.username || 'penulis'}</b> di aplikasi Ba-Yu untuk mengunduh versi lengkapnya.
+                            ${(t("note_detail.pdf_restricted_desc") || "Versi PDF ini hanya memuat sebagian materi. Ikuti penulis <b>@{author}</b> di aplikasi Ba-Yu untuk mengunduh versi lengkapnya.").replace('{author}', author?.username || 'penulis')}
                         </p>
                     </div>
                     ` : ''}
 
                     <div class="footer">
-                        Dokumen ini diunduh dari <span class="footer-brand">Ba-Yu</span> - Platform Belajar Masa Depan
+                        ${t("note_detail.pdf_footer") || 'Dokumen ini diunduh dari <span class="footer-brand">Ba-Yu</span> - Platform Belajar Masa Depan'}
                     </div>
                     
                     <script>
@@ -1343,7 +1343,10 @@ export default function NoteDetailPage() {
         .notion-reader .ql-editor blockquote { border-left: 4px solid #4f46e5; padding-left: 1em; margin: 1.5em 0; font-style: italic; color: #4b5563; background: #fafafa; padding: 1em 1em 1em 1.5em; border-radius: 0 8px 8px 0; }
         .notion-reader .ql-editor code { background: #f3f4f6; padding: 0.2em 0.4em; border-radius: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.85em; color: #ef4444; }
         .notion-reader .ql-editor pre { background: #1f2937; color: #f3f4f6; padding: 1em; border-radius: 12px; overflow-x: auto; margin-bottom: 1.2em; }
-        .notion-reader .ql-editor .ql-formula { padding: 4px 8px; background: #faf5ff; border-radius: 6px; border: 1px solid #e9d5ff; color: #7c3aed; display: inline-block; font-size: 0.9em; margin: 0 0.2em; }
+        .notion-editor ul, .notion-editor ol { padding-left: 1.5em; margin: 1em 0; }
+        .notion-editor li { margin-bottom: 0.3em; }
+        .notion-editor ol.ql-alpha-list > li::before { content: counter(list-0, lower-alpha) ". " !important; }
+        .notion-editor .ql-formula { padding: 3px 8px; background: #faf5ff; border-radius: 6px; border: 1px solid #e9d5ff; color: #7c3aed; display: inline-block; font-size: 0.9em; margin: 0 0.2em; }
         .notion-reader .ql-editor iframe { width: 100% !important; aspect-ratio: 16 / 9; height: auto !important; border-radius: 12px; margin: 2em 0; box-shadow: 0 4px 20px rgba(0,0,0,0.08);}
         .notion-reader .ql-editor .ql-video { display: block; max-width: 100%;}
         `,
@@ -2466,7 +2469,7 @@ export default function NoteDetailPage() {
                                 className="flex items-center gap-1.5 px-2 py-1 text-[13px] font-['Lexend_Deca'] font-bold hover:text-primary transition-colors hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg"
                             >
                                 <MessageSquare className="w-3.5 h-3.5" strokeWidth={2.5} />
-                                RESPOND
+                                {t("note_detail.respond_btn") || "RESPOND"}
                             </button>
                             <div className="w-[1px] h-4 bg-gray-200 dark:bg-white/10 mx-1"></div>
                             <button

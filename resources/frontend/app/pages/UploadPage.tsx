@@ -511,6 +511,7 @@ export default function UploadPage() {
               }
               .notion-editor .ql-editor ul, .notion-editor .ql-editor ol { padding-left: 1.5em; }
               .notion-editor .ql-editor li { margin-bottom: 0.3em; }
+              .notion-editor .ql-editor ol.ql-alpha-list > li::before { content: counter(list-0, lower-alpha) ". " !important; }
               .notion-editor .ql-editor .ql-formula { padding: 3px 8px; background: #faf5ff; border-radius: 6px; border: 1px solid #e9d5ff; color: #7c3aed; }
               .notion-editor .ql-editor hr { border: none; border-top: 2px solid #e5e7eb; margin: 2em 0; }
               .notion-editor .ql-editor blockquote { border-left: 4px solid #4f46e5; margin: 1.2em 0; padding: 0.8em 1.2em; color: #4b5563; background: #f8fafc; border-radius: 0 12px 12px 0; font-style: italic; font-size: 1.05em; }

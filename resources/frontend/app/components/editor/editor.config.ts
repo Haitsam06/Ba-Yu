@@ -8,6 +8,28 @@ export function registerQuillExtensions(QuillInstance: any) {
     (window as any).katex = katex;
   }
 
+  // Override Quill's default List to support 'alpha'
+  const ListContainer = QuillInstance.import('list') || QuillInstance.import('formats/list');
+  if (ListContainer && ListContainer.blotName === 'list') {
+    class CustomList extends ListContainer {
+      static create(value: any) {
+        if (value === 'alpha') {
+          const node = super.create('ordered');
+          node.classList.add('ql-alpha-list');
+          return node;
+        }
+        return super.create(value);
+      }
+      static formats(domNode: Element) {
+        if (domNode.tagName === 'OL' && domNode.classList.contains('ql-alpha-list')) {
+          return 'alpha';
+        }
+        return super.formats(domNode);
+      }
+    }
+    QuillInstance.register(CustomList, true);
+  }
+
   // Register custom Divider Blot (BlockEmbed)
   const BlockEmbed = QuillInstance.import('blots/block/embed') as any;
   class DividerBlot extends BlockEmbed {

@@ -6,6 +6,39 @@ use MongoDB\Laravel\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property string $_id
+ * @property string $id
+ * @property string $name
+ * @property string $email
+ * @property string $avatar
+ * @property string $password
+ * @property string $role
+ * @property string $jenjang_pendidikan
+ * @property string $profesi
+ * @property string $username
+ * @property string $display_name
+ * @property string $phone
+ * @property string $bio
+ * @property string $school
+ * @property boolean $is_verified
+ * @property boolean $is_private
+ * @property boolean $is_dormant
+ * @property \Illuminate\Support\Carbon|null $deactivated_at
+ * @property \Illuminate\Support\Carbon|null $username_updated_at
+ * @property string $provider
+ * @property string $provider_id
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property boolean $profile_completed
+ * @property int|null $target_belajar
+ * 
+ * @property boolean $is_followed_by_me
+ * @property boolean $is_follow_pending
+ * @property boolean $follows_me
+ * @property int $followers_count
+ * @property int $following_count
+ * @property int $posts_count
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
@@ -63,6 +96,11 @@ class User extends Authenticatable
     ];
 
     // Relationships
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new \App\Notifications\CustomResetPassword($token));
+    }
+
     public function posts()
     {
         return $this->hasMany(Post::class, 'user_id');

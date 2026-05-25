@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router';
 import { MobileLayout } from '../components/MobileLayout';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { useTranslation } from '../hooks/useTranslation';
+import ApplicationLogo from '../components/ApplicationLogo';
 import { User, Building, GraduationCap, ArrowRight } from 'lucide-react';
 import { CustomSelect } from '../components/ui/CustomSelect';
 import axios from 'axios';
@@ -11,6 +13,7 @@ export default function CompleteProfilePage() {
     const { user, updateUserSession } = useAuth();
     const navigate = useNavigate();
     const { showToast } = useToast();
+    const { t } = useTranslation();
     
     const [formData, setFormData] = useState({
         name: user?.name || '',
@@ -33,7 +36,7 @@ export default function CompleteProfilePage() {
         e.preventDefault();
         
         if (!formData.username.match(/^[a-zA-Z0-9_]+$/)) {
-            showToast("Username hanya boleh mengandung huruf, angka, dan underscore (_)", "error");
+            showToast(t('complete_profile.username_error'), "error");
             return;
         }
 
@@ -48,11 +51,11 @@ export default function CompleteProfilePage() {
                 profile_completed: true
             });
             
-            showToast("Profil berhasil dilengkapi! Selamat datang di Ba-Yu", "success");
+            showToast(t('complete_profile.success_msg'), "success");
             navigate('/home', { replace: true });
         } catch (error: any) {
             console.error("Gagal update profil:", error);
-            const msg = error.response?.data?.message || "Terjadi kesalahan saat menyimpan profil";
+            const msg = error.response?.data?.message || t('complete_profile.error_msg');
             showToast(msg, "error");
         } finally {
             setIsSubmitting(false);
@@ -60,37 +63,36 @@ export default function CompleteProfilePage() {
     };
 
     return (
-        <MobileLayout showBottomNav={false}>
-            <div className="min-h-screen bg-white dark:bg-[#13111C] px-6 py-12 flex flex-col justify-center relative overflow-hidden">
+        <div className="min-h-screen w-full bg-white dark:bg-[#13111C] px-6 py-12 flex flex-col justify-center relative overflow-hidden">
                 {/* Background Decor */}
                 <div className="absolute top-[-10%] right-[-10%] w-72 h-72 bg-indigo-50 dark:bg-indigo-500/10 rounded-full blur-3xl -z-10 opacity-70"></div>
                 <div className="absolute bottom-[-10%] left-[-10%] w-64 h-64 bg-purple-50 dark:bg-fuchsia-500/10 rounded-full blur-3xl -z-10 opacity-70"></div>
 
                 <div className="w-full max-w-md mx-auto">
                     <div className="text-center mb-10">
-                        <div className="inline-flex items-center justify-center w-14 h-14 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 rounded-2xl mb-5 shadow-sm border border-indigo-200 dark:border-indigo-500/30">
-                            <User className="w-7 h-7" strokeWidth={2.5} />
+                        <div className="flex justify-center mb-6">
+                            <ApplicationLogo className="w-16 h-16 drop-shadow-md" />
                         </div>
                         <h1 className="font-['Lexend_Deca'] text-[28px] sm:text-3xl font-extrabold text-gray-900 dark:text-gray-100 mb-2 leading-tight tracking-tight">
-                            Lengkapi Profilmu
+                            {t('complete_profile.title')}
                         </h1>
                         <p className="font-['Manrope'] text-[15px] text-gray-500 dark:text-gray-400 font-medium">
-                            Satu langkah lagi untuk mulai membagikan catatan belajarmu.
+                            {t('complete_profile.subtitle')}
                         </p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="space-y-1.5">
                             <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 pl-1">
-                                Nama Lengkap
+                                {t('complete_profile.full_name_label')}
                             </label>
                             <div className="relative group">
-                                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors" strokeWidth={2.5} />
+                                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-500 dark:text-slate-400 group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors" strokeWidth={2.5} />
                                 <input
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 transition-all focus:bg-white dark:focus:bg-[#252336] focus:outline-none focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-500/10 focus:border-indigo-500 placeholder:text-gray-400"
+                                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 transition-all focus:bg-white dark:focus:bg-[#252336] focus:outline-none focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-500/10 focus:border-indigo-500 placeholder:text-slate-500 dark:placeholder:text-slate-400"
                                     placeholder="John Doe"
                                     required
                                 />
@@ -99,15 +101,15 @@ export default function CompleteProfilePage() {
 
                         <div className="space-y-1.5">
                             <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 pl-1">
-                                Username <span className="text-gray-400 font-normal">(Tanpa spasi)</span>
+                                {t('complete_profile.username_label')} <span className="text-slate-500 dark:text-slate-400 font-normal">{t('complete_profile.username_hint')}</span>
                             </label>
                             <div className="relative group">
-                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors">@</span>
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 font-bold group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors">@</span>
                                 <input
                                     type="text"
                                     value={formData.username}
                                     onChange={(e) => setFormData({ ...formData, username: e.target.value.toLowerCase() })}
-                                    className="w-full pl-9 pr-4 py-3.5 bg-gray-50 dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 transition-all focus:bg-white dark:focus:bg-[#252336] focus:outline-none focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-500/10 focus:border-indigo-500 placeholder:text-gray-400"
+                                    className="w-full pl-9 pr-4 py-3.5 bg-gray-50 dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 transition-all focus:bg-white dark:focus:bg-[#252336] focus:outline-none focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-500/10 focus:border-indigo-500 placeholder:text-slate-500 dark:placeholder:text-slate-400"
                                     placeholder="johndoe"
                                     required
                                 />
@@ -116,22 +118,20 @@ export default function CompleteProfilePage() {
 
                         <div className="space-y-1.5">
                             <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 pl-1">
-                                Jenjang Pendidikan
+                                {t('complete_profile.education_label')}
                             </label>
                             <div className="relative group z-20">
-                                <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
-                                    <GraduationCap className="w-[18px] h-[18px] text-gray-400 group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors pointer-events-none" strokeWidth={2.5} />
-                                </div>
                                 <CustomSelect
                                     value={formData.jenjang_pendidikan}
                                     onChange={(val) => setFormData({ ...formData, jenjang_pendidikan: val as string })}
-                                    className="pl-8"
+                                    icon={<GraduationCap className="w-[18px] h-[18px]" strokeWidth={2.5} />}
+                                    buttonClassName="bg-gray-50 dark:bg-[#1C1A29] rounded-2xl pl-11 pr-4 py-3.5"
                                     options={[
-                                        { value: "SD", label: "Sekolah Dasar (SD)" },
-                                        { value: "SMP", label: "Menengah Pertama (SMP)" },
-                                        { value: "SMA", label: "Menengah Atas (SMA/SMK)" },
-                                        { value: "Kuliah", label: "Perguruan Tinggi (Kuliah)" },
-                                        { value: "Umum", label: "Umum" },
+                                        { value: "SD", label: t('complete_profile.edu_sd') || "Sekolah Dasar (SD)" },
+                                        { value: "SMP", label: t('complete_profile.edu_smp') || "Menengah Pertama (SMP)" },
+                                        { value: "SMA", label: t('complete_profile.edu_sma') || "Menengah Atas (SMA/SMK)" },
+                                        { value: "Kuliah", label: t('complete_profile.edu_college') || "Perguruan Tinggi (Kuliah)" },
+                                        { value: "Umum", label: t('complete_profile.edu_general') || "Umum" },
                                     ]}
                                 />
                             </div>
@@ -139,21 +139,19 @@ export default function CompleteProfilePage() {
 
                         <div className="space-y-1.5">
                             <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 pl-1">
-                                Profesi / Peran
+                                {t('complete_profile.profession_label')}
                             </label>
                             <div className="relative group z-10">
-                                <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
-                                    <User className="w-[18px] h-[18px] text-gray-400 group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors pointer-events-none" strokeWidth={2.5} />
-                                </div>
                                 <CustomSelect
                                     value={formData.profesi}
                                     onChange={(val) => setFormData({ ...formData, profesi: val as string })}
-                                    className="pl-8"
+                                    icon={<User className="w-[18px] h-[18px]" strokeWidth={2.5} />}
+                                    buttonClassName="bg-gray-50 dark:bg-[#1C1A29] rounded-2xl pl-11 pr-4 py-3.5"
                                     options={[
-                                        { value: "Pelajar", label: "Pelajar" },
-                                        { value: "Mahasiswa", label: "Mahasiswa" },
-                                        { value: "Pengajar", label: "Pengajar (Guru/Dosen)" },
-                                        { value: "Umum", label: "Umum / Profesional" },
+                                        { value: "Pelajar", label: t('complete_profile.prof_student') || "Pelajar" },
+                                        { value: "Mahasiswa", label: t('complete_profile.prof_college_student') || "Mahasiswa" },
+                                        { value: "Pengajar", label: t('complete_profile.prof_teacher') || "Pengajar (Guru/Dosen)" },
+                                        { value: "Umum", label: t('complete_profile.prof_general') || "Umum / Profesional" },
                                     ]}
                                 />
                             </div>
@@ -161,16 +159,16 @@ export default function CompleteProfilePage() {
 
                         <div className="space-y-1.5">
                             <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 pl-1">
-                                Instansi / Sekolah
+                                {t('complete_profile.school_label')}
                             </label>
                             <div className="relative group z-10">
-                                <Building className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors" strokeWidth={2.5} />
+                                <Building className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-500 dark:text-slate-400 group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors" strokeWidth={2.5} />
                                 <input
                                     type="text"
                                     value={formData.school}
                                     onChange={(e) => setFormData({ ...formData, school: e.target.value })}
-                                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 transition-all focus:bg-white dark:focus:bg-[#252336] focus:outline-none focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-500/10 focus:border-indigo-500 placeholder:text-gray-400"
-                                    placeholder="Contoh: SMAN 1 Jakarta"
+                                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 transition-all focus:bg-white dark:focus:bg-[#252336] focus:outline-none focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-500/10 focus:border-indigo-500 placeholder:text-slate-500 dark:placeholder:text-slate-400"
+                                    placeholder={t('complete_profile.school_placeholder')}
                                     required
                                 />
                             </div>
@@ -179,16 +177,16 @@ export default function CompleteProfilePage() {
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className={`w-full bg-slate-900 dark:bg-indigo-600 hover:bg-black dark:hover:bg-indigo-700 text-white py-4 rounded-full font-['Lexend_Deca'] font-bold text-[15px] shadow-lg shadow-slate-900/20 dark:shadow-indigo-600/20 hover:shadow-xl hover:shadow-slate-900/30 dark:hover:shadow-indigo-600/30 hover:-translate-y-0.5 transition-all active:scale-[0.98] mt-8 flex items-center justify-center gap-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            className={`w-full bg-primary hover:bg-indigo-700 text-white py-4 rounded-full font-['Lexend_Deca'] font-bold text-[15px] shadow-lg shadow-indigo-600/20 hover:shadow-xl hover:shadow-indigo-600/30 hover:-translate-y-0.5 transition-all active:scale-[0.98] mt-8 flex items-center justify-center gap-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
                             {isSubmitting ? (
                                 <>
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    <span>Menyimpan...</span>
+                                    <span>{t('complete_profile.submitting')}</span>
                                 </>
                             ) : (
                                 <>
-                                    <span>Simpan & Lanjutkan</span>
+                                    <span>{t('complete_profile.submit_button')}</span>
                                     <ArrowRight className="w-5 h-5" />
                                 </>
                             )}
@@ -196,6 +194,5 @@ export default function CompleteProfilePage() {
                     </form>
                 </div>
             </div>
-        </MobileLayout>
     );
 }

@@ -93,6 +93,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/v1/users/me', [UserController::class, 'updateProfile']);
     Route::put('/v1/users/privacy', [UserController::class, 'updatePrivacy']);
     Route::post('/v1/users/deactivate', [UserController::class, 'deactivate']);
+    Route::post('/v1/users/change-password', [UserController::class, 'changePassword']);
 
     //Following
     Route::post('/v1/users/{id}/follow', [\App\Http\Controllers\FollowController::class, 'toggleFollow']);

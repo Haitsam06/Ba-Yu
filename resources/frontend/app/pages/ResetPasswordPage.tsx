@@ -2,6 +2,9 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useToast } from '../contexts/ToastContext';
 import { useNavigate } from 'react-router';
+import ApplicationLogo from '../components/ApplicationLogo';
+import { Lock, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { useTranslation } from '../hooks/useTranslation';
 
 export default function ResetPasswordPage() {
     const pathname = window.location.pathname;
@@ -13,10 +16,12 @@ export default function ResetPasswordPage() {
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
     const [loading, setLoading] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
     const { showToast } = useToast();
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
-    const handleSubmit = async (e: any) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
@@ -28,56 +33,109 @@ export default function ResetPasswordPage() {
                 password_confirmation: passwordConfirmation
             });
 
-            showToast('Password berhasil diubah! Silakan login.', 'success');
-            navigate('/app');
+            setIsSuccess(true);
+            setTimeout(() => {
+                navigate('/login', { replace: true });
+            }, 2000);
             
         } catch (error: any) {
-            showToast(error.response?.data?.message || 'Link kadaluarsa atau terjadi kesalahan.', 'error');
+            const errorMsg = error.response?.data?.message || "";
+            let translatedError = errorMsg;
+            if (errorMsg === "passwords.token" || errorMsg.includes("invalid") || errorMsg.includes("expired")) {
+                translatedError = t("reset_password.error_token") || "Link reset tidak valid atau sudah kadaluarsa.";
+            } else if (errorMsg === "passwords.user" || errorMsg.includes("not found")) {
+                translatedError = t("reset_password.error_user") || "Pengguna dengan email ini tidak ditemukan.";
+            } else if (!translatedError) {
+                translatedError = t("reset_password.error_generic") || "Terjadi kesalahan saat mengatur ulang kata sandi.";
+            }
+            showToast(translatedError, 'error');
         } finally {
             setLoading(false);
         }
     };
 
+    if (isSuccess) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-[#13111C]">
+                <div className="w-16 h-16 bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mb-4 animate-in zoom-in">
+                    <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <h2 className="text-xl font-bold font-['Lexend_Deca'] text-gray-900 dark:text-white mb-2">{t('reset_password.success_title')}</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-['Manrope']">{t('reset_password.success_message')}</p>
+            </div>
+        );
+    }
+
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 font-['Manrope']">
-            <div className="bg-white p-8 rounded-2xl shadow-sm w-full max-w-md border border-gray-100">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">Buat Password Baru 🔐</h2>
-                <p className="text-gray-500 text-sm text-center mb-6">
-                    Akun: <span className="font-semibold text-blue-600">{email}</span>
-                </p>
-
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Password Baru</label>
-                        <input 
-                            type="password" 
-                            required
-                            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                            placeholder="Minimal 8 karakter"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password Baru</label>
-                        <input 
-                            type="password" 
-                            required
-                            className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                            placeholder="Ketik ulang password baru"
-                            value={passwordConfirmation}
-                            onChange={(e) => setPasswordConfirmation(e.target.value)}
-                        />
+        <div className="min-h-screen flex flex-col justify-center px-6 py-12 bg-white dark:bg-[#13111C] relative overflow-hidden">
+                <div className="w-full max-w-md mx-auto">
+                    <div className="text-center mb-10">
+                        <div className="flex justify-center mb-6">
+                            <ApplicationLogo className="w-16 h-16 drop-shadow-md" />
+                        </div>
+                        <h1 className="font-['Lexend_Deca'] text-[28px] sm:text-3xl font-extrabold text-gray-900 dark:text-gray-100 mb-2 leading-tight tracking-tight">
+                            {t('reset_password.title')}
+                        </h1>
+                        <p className="text-[15px] text-gray-500 dark:text-gray-400 font-['Manrope'] leading-relaxed max-w-sm mx-auto">
+                            {t('reset_password.description_start')} <span className="font-semibold text-gray-800 dark:text-gray-200">{email}</span>.
+                        </p>
                     </div>
 
-                    <button 
-                        type="submit" 
-                        disabled={loading}
-                        className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all disabled:opacity-50"
-                    >
-                        {loading ? 'Menyimpan...' : 'Simpan Password Baru'}
-                    </button>
-                </form>
+                    <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
+                        <div className="space-y-1.5">
+                            <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 pl-1">
+                                {t('reset_password.new_password_label')}
+                            </label>
+                            <div className="relative group">
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-500 dark:text-slate-400 group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors" strokeWidth={2.5} />
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 transition-all focus:bg-white dark:focus:bg-[#252336] focus:outline-none focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-500/10 focus:border-indigo-500 placeholder:text-slate-500 dark:placeholder:text-slate-400"
+                                    placeholder={t('reset_password.new_password_placeholder')}
+                                    required
+                                    minLength={8}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 pl-1">
+                                {t('reset_password.confirm_password_label')}
+                            </label>
+                            <div className="relative group">
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-500 dark:text-slate-400 group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors" strokeWidth={2.5} />
+                                <input
+                                    type="password"
+                                    value={passwordConfirmation}
+                                    onChange={(e) => setPasswordConfirmation(e.target.value)}
+                                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-[#1C1A29] border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 transition-all focus:bg-white dark:focus:bg-[#252336] focus:outline-none focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-500/10 focus:border-indigo-500 placeholder:text-slate-500 dark:placeholder:text-slate-400"
+                                    placeholder={t('reset_password.confirm_password_placeholder')}
+                                    required
+                                    minLength={8}
+                                />
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className={`w-full bg-primary hover:bg-indigo-700 text-white py-4 rounded-full font-['Lexend_Deca'] font-bold text-[15px] shadow-lg shadow-indigo-600/20 hover:shadow-xl hover:-translate-y-0.5 transition-all mt-8 flex items-center justify-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                        >
+                            {loading ? (
+                                <>
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    <span>{t('reset_password.submit_loading')}</span>
+                                </>
+                            ) : (
+                                <>
+                                    <span>{t('reset_password.submit_button')}</span>
+                                    <ArrowRight className="w-5 h-5" />
+                                </>
+                            )}
+                        </button>
+                    </form>
             </div>
         </div>
     );

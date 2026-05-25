@@ -38,18 +38,11 @@ export default function SecurityPage() {
             setLoading(true);
             const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
 
-            // Assuming we will create a change-password endpoint later in Phase 3
-            // For now, we will mock the success to match the UI flow
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            
-            // Uncomment when backend is ready
-            /*
             await axios.post("/api/v1/users/change-password", passwords, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            */
 
             showToast(t("security.password_updated"), "success");
             setPasswords({

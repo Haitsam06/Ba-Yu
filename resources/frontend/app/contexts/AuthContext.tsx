@@ -128,10 +128,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const socialLogin = (token: string) => {
+    const socialLogin = async (token: string) => {
         localStorage.setItem("bayu-token", token);
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        loadUser(); // Muat ulang data user dengan token baru
+        await loadUser(); // Muat ulang data user dengan token baru dan tunggu sampai selesai
     };
 
     const register = async (

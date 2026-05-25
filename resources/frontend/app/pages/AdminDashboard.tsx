@@ -58,6 +58,7 @@ export default function AdminDashboard() {
     const [sortBy, setSortBy] = useState<"terbaru" | "terlama">("terbaru");
     const [visibleItemsCount, setVisibleItemsCount] = useState(15);
     const [showFilterPopup, setShowFilterPopup] = useState(false);
+    const [systemStatus, setSystemStatus] = useState<any>(null);
     const [promptConfig, setPromptConfig] = useState<{
         isOpen: boolean;
         title: string;
@@ -125,12 +126,32 @@ export default function AdminDashboard() {
     }, [activeTab, statusFilter, sortBy, searchQuery]);
 
     useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchNotes(searchQuery);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    useEffect(() => {
         // Tarik semua data di awal biar kotak statistiknya langsung akurat!
         fetchPendingCertifications();
         fetchReports();
         fetchUsers();
-        fetchNotes();
+        fetchSystemStatus();
     }, []);
+
+    const fetchSystemStatus = async () => {
+        if (user?.role !== "admin") return;
+        try {
+            const token = localStorage.getItem("bayu-token") || sessionStorage.getItem("bayu-token");
+            const res = await axios.get("/api/v1/admin/system-status", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setSystemStatus(res.data);
+        } catch (e) {
+            console.error("Failed to fetch system status", e);
+        }
+    };
 
     const fetchReports = async () => {
         if (user?.role !== "admin") return;
@@ -147,10 +168,12 @@ export default function AdminDashboard() {
         }
     };
 
-    const fetchNotes = async () => {
+    const fetchNotes = async (search = "") => {
         try {
-            // Kita nembak API posts yang kemaren lu bikin di Backend!
-            const res = await axios.get("/api/v1/posts");
+            const url = search 
+                ? `/api/v1/posts?limit=100&search=${encodeURIComponent(search)}` 
+                : `/api/v1/posts?limit=100`;
+            const res = await axios.get(url);
             setNotesList(res.data.data || []);
             setTotalNotes(res.data.meta?.total || (res.data.data ? res.data.data.length : 0));
         } catch (e) {
@@ -431,7 +454,7 @@ export default function AdminDashboard() {
                     <div className="flex-1 w-full lg:max-w-[640px] xl:max-w-[700px] min-w-0">
                         
                         {/* Minimalist Admin Header */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 pb-6 border-b border-gray-200 dark:border-white/10">
+                        <div className="flex flex-row items-center justify-between gap-6 mb-8 pb-6 border-b border-gray-200 dark:border-white/10">
                             <div className="flex items-center gap-4">
                                 <AvatarImage
                                     src={user?.avatar}
@@ -448,7 +471,7 @@ export default function AdminDashboard() {
                             </div>
                             <button 
                                 onClick={() => setIsExportModalOpen(true)}
-                                className="px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-full font-bold text-[13px] hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
+                                className="hidden sm:flex px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-full font-bold text-[13px] hover:bg-gray-50 dark:hover:bg-white/10 transition-colors items-center justify-center gap-2 shrink-0"
                             >
                                 <DownloadCloud className="w-4 h-4 text-gray-500" /> {t('admin_dashboard.export_data')}
                             </button>
@@ -460,7 +483,7 @@ export default function AdminDashboard() {
                                 <h3 className="font-bold text-[14px] text-gray-900 dark:text-gray-100 tracking-tight mb-4">
                                     {t('admin_dashboard.platform_summary')}
                                 </h3>
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
                                     {stats.map((stat, index) => {
                                         const Icon = stat.icon;
                                         return (
@@ -480,6 +503,12 @@ export default function AdminDashboard() {
                                         );
                                     })}
                                 </div>
+                                <button 
+                                    onClick={() => setIsExportModalOpen(true)}
+                                    className="sm:hidden w-full px-4 py-3 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 rounded-2xl font-bold text-[13px] hover:bg-gray-50 dark:hover:bg-white/10 transition-colors flex items-center justify-center gap-2 shadow-sm"
+                                >
+                                    <DownloadCloud className="w-4 h-4 text-gray-500" /> {t('admin_dashboard.export_data')}
+                                </button>
                             </div>
 
                             {/* Minimalist Search & Tabs Controls */}
@@ -1009,8 +1038,8 @@ export default function AdminDashboard() {
                                             API Gateway
                                         </div>
                                         <div className="flex items-center gap-1.5">
-                                            <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                                            <span className="text-[12px] text-gray-500">Normal</span>
+                                            <div className={`w-2 h-2 rounded-full ${systemStatus?.server?.api_gateway === 'Normal' ? 'bg-emerald-500' : 'bg-red-500 animate-pulse'}`}></div>
+                                            <span className="text-[12px] text-gray-500">{systemStatus?.server?.api_gateway || 'Memuat...'}</span>
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-between">
@@ -1019,8 +1048,8 @@ export default function AdminDashboard() {
                                             Database Server
                                         </div>
                                         <div className="flex items-center gap-1.5">
-                                            <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                                            <span className="text-[12px] text-gray-500">Normal</span>
+                                            <div className={`w-2 h-2 rounded-full ${systemStatus?.server?.database === 'Normal' ? 'bg-emerald-500' : 'bg-red-500 animate-pulse'}`}></div>
+                                            <span className="text-[12px] text-gray-500">{systemStatus?.server?.database || 'Memuat...'}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1032,23 +1061,23 @@ export default function AdminDashboard() {
                                     {t('admin_dashboard.recent_activity')}
                                 </h3>
                                 <div className="space-y-4">
-                                    {[
-                                        { action: "Sistem Reboot", time: "12m ago" },
-                                        { action: "Catatan Dihapus", time: "1h ago" },
-                                        { action: "User Registrasi", time: "3h ago" },
-                                    ].map((log, i) => (
-                                        <div key={i} className="flex gap-3">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600 mt-1.5 shrink-0" />
-                                            <div>
-                                                <p className="text-[13px] font-bold text-gray-800 dark:text-gray-200 leading-none mb-0.5">
-                                                    {log.action}
-                                                </p>
-                                                <span className="text-[12px] text-gray-500">
-                                                    {log.time}
-                                                </span>
+                                    {systemStatus?.activities?.length > 0 ? (
+                                        systemStatus.activities.map((log: any, i: number) => (
+                                            <div key={i} className="flex gap-3">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600 mt-1.5 shrink-0" />
+                                                <div>
+                                                    <p className="text-[13px] font-bold text-gray-800 dark:text-gray-200 leading-none mb-0.5 line-clamp-2">
+                                                        {log.action}
+                                                    </p>
+                                                    <span className="text-[11px] text-gray-500 font-medium">
+                                                        {log.time}
+                                                    </span>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))
+                                    ) : (
+                                        <p className="text-[12px] text-gray-500 italic">Memuat aktivitas...</p>
+                                    )}
                                 </div>
                             </div>
 

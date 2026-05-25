@@ -386,25 +386,19 @@ export default function NotificationsPage() {
 
                                             {/* Content */}
                                             <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5 pt-0.5">
-                                                <div className="flex items-center justify-between gap-3 mb-0.5">
-                                                    <div className="flex items-center gap-2">
-                                                        {!notif.is_read && (
-                                                            <div className="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
-                                                        )}
-                                                        <span className="font-medium">
-                                                            {timeAgo(notif.created_at, t, language)}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                
                                                 <div className="flex flex-col gap-1 pr-4">
                                                     {notif.title && (
-                                                        <h4 className={cn(
-                                                            "text-[15px]",
-                                                            !notif.is_read ? "font-bold text-gray-900 dark:text-gray-100" : "font-semibold text-gray-700 dark:text-gray-300"
-                                                        )}>
-                                                            {notif.title}
-                                                        </h4>
+                                                        <div className="flex items-center gap-2">
+                                                            {!notif.is_read && (
+                                                                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"></div>
+                                                            )}
+                                                            <h4 className={cn(
+                                                                "text-[15px]",
+                                                                !notif.is_read ? "font-bold text-gray-900 dark:text-gray-100" : "font-semibold text-gray-700 dark:text-gray-300"
+                                                            )}>
+                                                                {notif.title}
+                                                            </h4>
+                                                        </div>
                                                     )}
                                                     <p className={cn(
                                                         "leading-relaxed line-clamp-2 text-[14px]",
@@ -412,6 +406,9 @@ export default function NotificationsPage() {
                                                     )}>
                                                         {notif.message}
                                                     </p>
+                                                    <span className="text-[12px] font-medium text-gray-500 dark:text-gray-400 mt-0.5">
+                                                        {timeAgo(notif.created_at, t, language)}
+                                                    </span>
                                                 </div>
 
                                                 {notif.link && (

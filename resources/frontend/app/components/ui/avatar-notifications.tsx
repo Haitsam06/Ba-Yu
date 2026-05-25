@@ -291,17 +291,19 @@ export default function AvatarNotifications() {
                                                 {!item.is_read && (
                                                     <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0"></div>
                                                 )}
-                                                <p className={cn(
-                                                    "text-[13px] leading-relaxed line-clamp-2",
-                                                    !item.is_read ? "text-gray-900 dark:text-gray-100 font-bold" : "text-gray-600 dark:text-gray-400"
-                                                )}>
-                                                    {item.message}
-                                                </p>
+                                                <div className="flex flex-col gap-1 min-w-0">
+                                                    <p className={cn(
+                                                        "text-[13px] leading-relaxed line-clamp-2",
+                                                        !item.is_read ? "text-gray-900 dark:text-gray-100 font-bold" : "text-gray-600 dark:text-gray-400"
+                                                    )}>
+                                                        {item.message}
+                                                    </p>
+                                                    <span className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">
+                                                        {timeAgo(item.created_at)}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                        <span className="text-[11px] text-gray-500 dark:text-gray-400 font-medium pl-3.5">
-                                            {timeAgo(item.created_at)}
-                                        </span>
                                     </div>
                                 </div>
                             ))}

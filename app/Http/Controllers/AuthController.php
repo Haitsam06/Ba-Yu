@@ -99,9 +99,14 @@ class AuthController extends Controller
         // 1. Validasi: Pastiin emailnya diisi dan emang ada di database lu
         $request->validate([
             'email' => 'required|email|exists:user,email',
+            'lang' => 'nullable|string'
         ], [
             'email.exists' => 'Email belum terdaftar!'
         ]);
+
+        if ($request->has('lang')) {
+            \Illuminate\Support\Facades\App::setLocale($request->lang);
+        }
 
         // 2. Suruh Laravel bikin token dan "ngirim" email
         $status = Password::sendResetLink(
@@ -111,12 +116,12 @@ class AuthController extends Controller
         // 3. Cek apakah berhasil dikirim
         if ($status === Password::RESET_LINK_SENT) {
             return response()->json([
-                'message' => 'Mantap! Link reset password udah dikirim ke email lu.'
+                'message' => 'passwords.sent'
             ], 200);
         }
 
         return response()->json([
-            'message' => 'Gagal ngirim email nih, coba lagi ntar ya.'
+            'message' => 'passwords.throttled'
         ], 500);
     }
 
@@ -203,10 +208,13 @@ class AuthController extends Controller
         }
 
         // Create new user from social login
-        $username = Str::slug($socialUser->getName(), '_') . '_' . Str::random(4);
+        $baseUsername = strtolower(Str::slug($socialUser->getName(), '_'));
+        $username = $baseUsername;
+        $counter = 1;
         // Ensure username is unique
         while (User::where('username', $username)->exists()) {
-            $username = Str::slug($socialUser->getName(), '_') . '_' . Str::random(4);
+            $username = $baseUsername . '_' . $counter;
+            $counter++;
         }
 
         $newUser = User::create([

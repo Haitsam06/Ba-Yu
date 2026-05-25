@@ -57,7 +57,8 @@ class UserController extends Controller
         $users->each(function (User $u) use ($viewer) {
             $u->setAttribute('followers_count', $u->followers()->count());
             $u->setAttribute('posts_count', $u->posts()->count());
-            $u->is_followed_by_me = $viewer ? $viewer->isFollowing($u->id) : false;
+            // @phpstan-ignore-next-line
+            $u->setAttribute('is_followed_by_me', $viewer ? $viewer->isFollowing($u->getKey()) : false);
             $u->makeHidden(['email', 'phone', 'password', 'remember_token', 'deactivated_at']);
         });
 
@@ -127,6 +128,29 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Profil berhasil diperbarui',
             'user' => $user
+        ], 200);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = auth()->user();
+
+        if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'message' => 'Password saat ini salah.'
+            ], 400);
+        }
+
+        $user->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
+        $user->save();
+
+        return response()->json([
+            'message' => 'Password berhasil diperbarui.'
         ], 200);
     }
 
@@ -249,7 +273,7 @@ class UserController extends Controller
 
         $experts->each(function (User $expert) use ($loggedInUser) {
             $expert->setAttribute('followers_count', $expert->followers()->count());
-            $expert->is_followed_by_me = $loggedInUser ? $loggedInUser->isFollowing($expert->id) : false;
+            $expert->setAttribute('is_followed_by_me', $loggedInUser ? $loggedInUser->isFollowing($expert->getKey()) : false);
             $expert->makeHidden(['email', 'phone', 'password', 'remember_token']);
         });
 

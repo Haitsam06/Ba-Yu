@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Home, Search, Bookmark, User, LayoutDashboard, ChevronLeft, Hash, Star, FileText, Settings, Plus } from 'lucide-react';
+import { Home, Search, Bookmark, User, LayoutDashboard, ChevronLeft, Hash, Star, FileText, Settings, Plus, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -12,7 +12,7 @@ interface SideNavProps {
 
 export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { t } = useTranslation();
   
   const isActive = (path: string) => location.pathname === path;
@@ -133,7 +133,7 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
       </div>
 
       {/* Bottom Actions */}
-      <div className="mt-auto border-t border-slate-100 dark:border-white/5 p-3">
+      <div className="mt-auto border-t border-slate-100 dark:border-white/5 p-3 flex flex-col gap-1">
          <Link
            to="/settings"
            className={`flex items-center gap-3 px-3 py-[9px] rounded-xl transition-all duration-200 w-full group ${
@@ -145,6 +145,17 @@ export function SideNav({ isExpanded, toggleSidebar }: SideNavProps) {
              {t('nav.settings')}
            </span>
          </Link>
+
+         {/* Mobile Logout Button */}
+         <button
+           onClick={() => { logout(); }}
+           className="md:hidden flex items-center gap-3 px-3 py-[9px] rounded-xl transition-all duration-200 w-full group text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-left"
+         >
+           <LogOut className="w-[20px] h-[20px] shrink-0" strokeWidth={2} />
+           <span className="font-['Manrope'] text-[14px] truncate mt-[1px] font-medium">
+             {t('topnav.logout')}
+           </span>
+         </button>
       </div>
 
     </aside>

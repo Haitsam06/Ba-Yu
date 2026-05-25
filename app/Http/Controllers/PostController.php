@@ -296,6 +296,11 @@ class PostController extends Controller
             return response()->json(['message' => 'Post tidak ditemukan'], 404);
         }
 
+        // Hide post if author is dormant
+        if ($post->user && $post->user->is_dormant) {
+            return response()->json(['message' => 'Post tidak ditemukan'], 404);
+        }
+
         $realLikes = $post->likes ? $post->likes->count() : 0;
         $realComments = $post->comments ? $post->comments->count() : 0;
 
@@ -319,6 +324,11 @@ class PostController extends Controller
         }
 
         if ($post->comments) {
+            // Filter out comments from dormant users
+            $post->setRelation('comments', $post->comments->filter(function ($comment) {
+                return !$comment->user || !$comment->user->is_dormant;
+            })->values());
+
             $post->comments->each(function ($comment) use ($userIdStr) {
                 $commentIdStr = (string) $comment->id;
                 $comment->likes_count = Like::where('comment_id', $commentIdStr)->count();

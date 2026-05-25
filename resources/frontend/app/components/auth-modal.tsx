@@ -17,7 +17,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
   const [activeTab, setActiveTab] = useState<'login' | 'register' | 'forgot'>(defaultTab);
   const [showPassword, setShowPassword] = useState(false);
   const { showToast } = useToast();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -373,17 +373,33 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         setIsSubmitting(true);
                         try {
                           const response = await axios.post('/api/forgot-password', { 
-                            email: formData.email 
+                            email: formData.email,
+                            lang: language || 'id'
+                          }, {
+                            headers: {
+                              'Accept': 'application/json'
+                            }
                           });
                           
                           if (response.status === 200) {
-                            showToast("SUKSES: " + response.data.message, "success");
+                            const successMsg = response.data.message === "passwords.sent" || response.data.message.includes("emailed")
+                                ? (t("forgot_password.reset_sent") || "Link reset password telah dikirim ke email Anda.")
+                                : response.data.message;
+                            showToast(successMsg, "success");
                             setActiveTab('login');
                           } else {
                             showToast(response.data.message, "error");
                           }
                         } catch (error: any) {
-                          const errorMsg = error.response?.data?.message || (t("auth_modal.connection_failed") || "Koneksi gagal");
+                          const rawErrorMsg = error.response?.data?.message || "";
+                          let errorMsg = rawErrorMsg;
+                          if (rawErrorMsg === "passwords.user" || rawErrorMsg.includes("not found")) {
+                              errorMsg = t("reset_password.error_user") || "Pengguna dengan email ini tidak ditemukan.";
+                          } else if (rawErrorMsg === "passwords.throttled" || rawErrorMsg === "Please wait before retrying.") {
+                              errorMsg = t("forgot_password.reset_throttled") || "Silakan tunggu beberapa saat (60 detik) sebelum mencoba lagi.";
+                          } else {
+                              errorMsg = rawErrorMsg || (t("auth_modal.connection_failed") || "Koneksi gagal");
+                          }
                           showToast(errorMsg, "error");
                         } finally {
                           setIsSubmitting(false);

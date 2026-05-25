@@ -12,6 +12,8 @@ interface CustomSelectProps {
     options: SelectOption[];
     placeholder?: string;
     className?: string;
+    buttonClassName?: string;
+    icon?: React.ReactNode;
     disabled?: boolean;
 }
 
@@ -21,6 +23,8 @@ export function CustomSelect({
     options,
     placeholder = "Pilih salah satu...",
     className = "",
+    buttonClassName = "",
+    icon,
     disabled = false,
 }: CustomSelectProps) {
     const [isOpen, setIsOpen] = useState(false);
@@ -42,21 +46,26 @@ export function CustomSelect({
 
     return (
         <div className={`relative w-full ${className}`} ref={dropdownRef}>
+            {icon && (
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 pointer-events-none text-slate-500 dark:text-slate-400 group-focus-within:text-slate-900 dark:group-focus-within:text-slate-100 transition-colors">
+                    {icon}
+                </div>
+            )}
             <button
                 type="button"
                 onClick={() => !disabled && setIsOpen(!isOpen)}
-                className={`w-full bg-slate-50 dark:bg-[#13111C] border ${
+                className={`w-full ${buttonClassName || "bg-slate-50 dark:bg-[#13111C] rounded-xl py-3"} ${icon && !buttonClassName ? 'pl-11 pr-4' : (buttonClassName ? '' : 'px-4')} border ${
                     isOpen ? "border-indigo-500 ring-2 ring-indigo-500/20" : "border-slate-200 dark:border-white/10"
-                } rounded-xl px-4 py-3 font-['Manrope'] font-bold text-[13px] text-left transition-all flex items-center justify-between shadow-sm dark:shadow-none ${
+                } font-['Manrope'] font-bold text-[13px] text-left transition-all flex items-center justify-between shadow-sm dark:shadow-none ${
                     disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:border-indigo-300 dark:hover:border-white/20"
                 }`}
                 disabled={disabled}
             >
-                <span className={selectedOption ? "text-slate-800 dark:text-slate-200" : "text-slate-400 dark:text-slate-500"}>
+                <span className={selectedOption ? "text-slate-800 dark:text-slate-200" : "text-slate-500 dark:text-slate-400"}>
                     {selectedOption ? selectedOption.label : placeholder}
                 </span>
                 <ChevronDown
-                    className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isOpen ? "rotate-180 text-indigo-500" : ""}`}
+                    className={`w-4 h-4 text-slate-500 dark:text-slate-400 transition-transform duration-200 ${isOpen ? "rotate-180 text-indigo-500" : ""}`}
                 />
             </button>
 
