@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router';
 import { Menu, Search, Edit3, Bell, Settings, HelpCircle, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import axios from 'axios';
 import AvatarNotifications from './ui/avatar-notifications';
 import ApplicationLogo from './ApplicationLogo';
@@ -122,60 +123,68 @@ export function TopNav({ isSidebarExpanded, toggleSidebar }: TopNavProps) {
            </button>
 
            {/* Dropdown Menu */}
-           {isProfileOpen && (
-             <div className="absolute right-0 top-[48px] w-[260px] bg-white dark:bg-[#1C1A29] rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-white/5 py-3 z-50 animate-in fade-in zoom-in-95 duration-200">
-                {/* Header (Profile Info) */}
-                <Link to="/profile" className="flex items-center gap-3 px-5 py-2 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors mb-2 group">
-                   <AvatarImage 
-                      src={user?.avatar} 
-                      alt="Profile" 
-                      size={40}
-                      className="shadow-sm group-hover:scale-105 transition-transform"
-                   />
-                   <div className="flex flex-col overflow-hidden">
-                      <span className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[15px] truncate">{user?.name}</span>
-                      <span className="text-[13px] font-['Manrope'] text-gray-500 dark:text-gray-400 group-hover:text-primary transition-colors">{t('topnav.view_profile')}</span>
-                   </div>
-                </Link>
-
-                <div className="h-px bg-gray-100 dark:bg-white/5 my-2 mx-4"></div>
-
-                {/* Main Action Links */}
-                <div className="flex flex-col py-1">
-                    <Link to="/settings" className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 group transition-colors">
-                      <div className="w-8 h-8 rounded-lg bg-gray-50 dark:bg-white/5 group-hover:bg-white dark:group-hover:bg-white/10 border border-transparent group-hover:border-gray-200 dark:group-hover:border-white/10 flex items-center justify-center transition-all">
-                        <Settings className="w-[18px] h-[18px] text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors" strokeWidth={1.5} />
-                      </div>
-                      <span className="font-['Manrope'] text-[14px] font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors">{t('topnav.settings')}</span>
-                    </Link>
-                   <Link to="/settings/help" className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 group transition-colors">
-                      <div className="w-8 h-8 rounded-lg bg-gray-50 dark:bg-white/5 group-hover:bg-white dark:group-hover:bg-white/10 border border-transparent group-hover:border-gray-200 dark:group-hover:border-white/10 flex items-center justify-center transition-all">
-                        <HelpCircle className="w-[18px] h-[18px] text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors" strokeWidth={1.5} />
-                      </div>
-                      <span className="font-['Manrope'] text-[14px] font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors">{t('topnav.help_center')}</span>
-                   </Link>
-                </div>
-
-                {/* Sign Out */}
-                <div className="flex flex-col py-1 border-t border-gray-100 dark:border-white/5">
-                   <button onClick={() => { logout(); navigate('/'); }} className="w-full flex items-center justify-between px-4 py-3 bg-red-50/50 dark:bg-red-500/5 hover:bg-red-50 dark:hover:bg-red-500/10 group transition-colors text-left rounded-b-2xl">
-                     <div>
-                       <span className="block text-[13px] font-bold text-rose-600 dark:text-rose-400 font-['Lexend_Deca']">{t('topnav.logout')}</span>
-                       <span className="text-[11px] font-['Manrope'] text-gray-500 dark:text-gray-400 group-hover:text-rose-400 transition-colors truncate max-w-[190px]">{user?.email || 'user@example.com'}</span>
+           <AnimatePresence>
+             {isProfileOpen && (
+               <motion.div 
+                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                 animate={{ opacity: 1, y: 0, scale: 1 }}
+                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                 transition={{ duration: 0.2, ease: "easeOut" }}
+                 className="absolute right-0 top-[48px] w-[260px] bg-white dark:bg-[#1C1A29] rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-white/5 py-3 z-50"
+               >
+                  {/* Header (Profile Info) */}
+                  <Link to="/profile" className="flex items-center gap-3 px-5 py-2 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors mb-2 group">
+                     <AvatarImage 
+                        src={user?.avatar} 
+                        alt="Profile" 
+                        size={40}
+                        className="shadow-sm group-hover:scale-105 transition-transform"
+                     />
+                     <div className="flex flex-col overflow-hidden">
+                        <span className="font-['Lexend_Deca'] font-bold text-gray-900 dark:text-gray-100 text-[15px] truncate">{user?.name}</span>
+                        <span className="text-[13px] font-['Manrope'] text-gray-500 dark:text-gray-400 group-hover:text-primary transition-colors">{t('topnav.view_profile')}</span>
                      </div>
-                     <LogOut className="w-[18px] h-[18px] text-gray-500 dark:text-gray-400 group-hover:text-rose-500 dark:group-hover:text-rose-400 transition-colors" strokeWidth={1.5} />
-                  </button>
-                </div>
-
-                {/* Footer Links (Mini) */}
-                <div className="px-5 pt-3 mt-1 pb-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-['Manrope'] text-gray-500 dark:text-gray-500">
-                    <Link to="/about" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">{t('topnav.about')}</Link>
-                    <Link to="/blog" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">{t('topnav.blog')}</Link>
-                    <Link to="/terms" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">{t('topnav.terms')}</Link>
-                    <Link to="/privacy" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">{t('topnav.privacy')}</Link>
-                </div>
-             </div>
-           )}
+                  </Link>
+  
+                  <div className="h-px bg-gray-100 dark:bg-white/5 my-2 mx-4"></div>
+  
+                  {/* Main Action Links */}
+                  <div className="flex flex-col py-1">
+                      <Link to="/settings" className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 group transition-colors">
+                        <div className="w-8 h-8 rounded-lg bg-gray-50 dark:bg-white/5 group-hover:bg-white dark:group-hover:bg-white/10 border border-transparent group-hover:border-gray-200 dark:group-hover:border-white/10 flex items-center justify-center transition-all">
+                          <Settings className="w-[18px] h-[18px] text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors" strokeWidth={1.5} />
+                        </div>
+                        <span className="font-['Manrope'] text-[14px] font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors">{t('topnav.settings')}</span>
+                      </Link>
+                     <Link to="/settings/help" className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 group transition-colors">
+                        <div className="w-8 h-8 rounded-lg bg-gray-50 dark:bg-white/5 group-hover:bg-white dark:group-hover:bg-white/10 border border-transparent group-hover:border-gray-200 dark:group-hover:border-white/10 flex items-center justify-center transition-all">
+                          <HelpCircle className="w-[18px] h-[18px] text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors" strokeWidth={1.5} />
+                        </div>
+                        <span className="font-['Manrope'] text-[14px] font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors">{t('topnav.help_center')}</span>
+                     </Link>
+                  </div>
+  
+                  {/* Sign Out */}
+                  <div className="flex flex-col py-1 border-t border-gray-100 dark:border-white/5">
+                     <button onClick={() => { logout(); navigate('/'); }} className="w-full flex items-center justify-between px-4 py-3 bg-red-50/50 dark:bg-red-500/5 hover:bg-red-50 dark:hover:bg-red-500/10 group transition-colors text-left rounded-b-2xl">
+                       <div>
+                         <span className="block text-[13px] font-bold text-rose-600 dark:text-rose-400 font-['Lexend_Deca']">{t('topnav.logout')}</span>
+                         <span className="text-[11px] font-['Manrope'] text-gray-500 dark:text-gray-400 group-hover:text-rose-400 transition-colors truncate max-w-[190px]">{user?.email || 'user@example.com'}</span>
+                       </div>
+                       <LogOut className="w-[18px] h-[18px] text-gray-500 dark:text-gray-400 group-hover:text-rose-500 dark:group-hover:text-rose-400 transition-colors" strokeWidth={1.5} />
+                    </button>
+                  </div>
+  
+                  {/* Footer Links (Mini) */}
+                  <div className="px-5 pt-3 mt-1 pb-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-['Manrope'] text-gray-500 dark:text-gray-500">
+                      <Link to="/about" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">{t('topnav.about')}</Link>
+                      <Link to="/blog" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">{t('topnav.blog')}</Link>
+                      <Link to="/terms" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">{t('topnav.terms')}</Link>
+                      <Link to="/privacy" className="hover:text-gray-900 dark:hover:text-gray-300 transition-colors">{t('topnav.privacy')}</Link>
+                  </div>
+               </motion.div>
+             )}
+           </AnimatePresence>
         </div>
 
       </div>

@@ -375,11 +375,11 @@ export default function UploadPage() {
           try { await axios.post(`/api/v1/posts/${newPostId}/ajukan`); } catch (e) { /* silent */ }
         }
       }
-      showToast(meta.ajukanPakar ? t('upload.success_publish_expert') : t('upload.success_publish'), 'success');
+      showToast(meta.ajukanPakar ? (t('upload.success_publish_expert') || 'Catatan berhasil dipublikasikan dan diajukan ke pakar') : (t('upload.success_publish') || 'Catatan berhasil dipublikasikan'), 'success');
       navigate(-1);
     } catch (error) {
       console.error('Gagal mempublikasikan catatan:', error);
-      showToast(t('upload.error_save'), 'error');
+      showToast(t('upload.error_save') || 'Gagal menyimpan catatan', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -387,7 +387,7 @@ export default function UploadPage() {
 
   const handleSaveDraft = async () => {
     if (!title.trim()) {
-      showToast(t('upload.draft_title_required'), 'warning');
+      showToast(t('upload.draft_title_required') || 'Judul diperlukan untuk menyimpan draf', 'warning');
       return;
     }
     setIsSavingDraft(true);
@@ -409,18 +409,18 @@ export default function UploadPage() {
 
       if (draftId) {
         await axios.put(`/api/v1/posts/${draftId}`, payload);
-        showToast(t('upload.draft_updated'), 'success');
+        showToast(t('upload.draft_updated') || 'Draf berhasil diperbarui', 'success');
       } else {
         const res = await axios.post('/api/v1/posts', payload);
         const newDraftId = res.data.data._id || res.data.data.id;
         setDraftId(newDraftId);
-        showToast(t('upload.draft_saved'), 'success');
+        showToast(t('upload.draft_saved') || 'Draf berhasil disimpan', 'success');
       }
       setShowPreviewModal(false);
       navigate('/home');
     } catch (error) {
       console.error('Gagal menyimpan draf:', error);
-      showToast(t('upload.draft_error'), 'error');
+      showToast(t('upload.draft_error') || 'Gagal menyimpan draf', 'error');
     } finally {
       setIsSavingDraft(false);
     }

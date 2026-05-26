@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Mail, Lock, User, Eye, EyeOff, ArrowRight, GraduationCap, Loader2, Sparkles, CheckCircle, ChevronRight } from 'lucide-react';
+import { X, Mail, Lock, User, Eye, EyeOff, ArrowRight, GraduationCap, Loader2, Sparkles, CheckCircle, ChevronRight, ChevronDown, Check } from 'lucide-react';
 import { useNavigate, Link } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -13,6 +13,82 @@ interface AuthModalProps {
   onClose: () => void;
   defaultTab?: 'login' | 'register';
 }
+
+interface AuthModalSelectProps {
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  icon: React.ReactNode;
+  inputClass: string;
+}
+
+function AuthModalSelect({ value, onChange, options, icon, inputClass }: AuthModalSelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  return (
+    <div className={`relative ${isOpen ? 'z-50' : 'z-10'}`} ref={ref}>
+      <div className="relative group">
+        {icon}
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className={`${inputClass} !pl-10 !text-[13px] font-bold text-left flex items-center justify-between cursor-pointer ${isOpen ? 'ring-4 ring-primary/10 border-primary/50 dark:ring-primary/20 dark:border-primary/40 bg-white dark:bg-[#1a1a1a]' : ''}`}
+        >
+          <span className="truncate">{selectedOption?.label || (t("auth_modal.select_placeholder") !== "auth_modal.select_placeholder" ? t("auth_modal.select_placeholder") : "Pilih...")}</span>
+          <ChevronDown className={`w-4 h-4 text-slate-500 dark:text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute z-50 w-full mt-2 bg-white dark:bg-[#1a1a1a] border border-gray-100 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden"
+          >
+            <div className="max-h-52 overflow-y-auto p-1.5 no-scrollbar space-y-0.5">
+              {options.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => {
+                    onChange(option.value);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2.5 rounded-xl font-['Manrope'] text-[13px] font-bold transition-colors flex items-center justify-between ${
+                    value === option.value 
+                      ? 'bg-primary/10 text-primary dark:bg-primary/20' 
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5'
+                  }`}
+                >
+                  {option.label}
+                  {value === option.value && <Check className="w-4 h-4" />}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 
 export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalProps) {
   const [activeTab, setActiveTab] = useState<'login' | 'register' | 'forgot'>(defaultTab);
@@ -85,7 +161,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
   // PREMIUM INPUT STYLING (Apple / Chronicle Aesthetic)
   const inputClass = "w-full pl-12 pr-4 py-3.5 bg-gray-50/50 dark:bg-[#111] border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 transition-all focus:outline-none focus:ring-4 focus:ring-primary/10 dark:focus:ring-primary/20 focus:border-primary/50 dark:focus:border-primary/40 placeholder:text-gray-400 hover:bg-white dark:hover:bg-[#1a1a1a]";
   const labelClass = "block text-[13px] font-['Lexend_Deca'] font-bold text-gray-800 dark:text-gray-300 pl-1 mb-2 tracking-wide";
-  const iconClass = "absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 dark:text-gray-500 group-focus-within:text-primary transition-colors duration-300";
+  const iconClass = "absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-500 dark:text-slate-400 group-focus-within:text-primary transition-colors duration-300";
 
   return (
     <AnimatePresence>
@@ -139,12 +215,12 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                           <ApplicationLogo className="w-12 h-12" />
                         </div>
                         <h2 className="font-['Lexend_Deca'] text-3xl font-extrabold text-gray-900 dark:text-white mb-2 tracking-tight">
-                          {activeTab === 'login' ? t("auth_modal.welcome") || 'Selamat Datang' : t("auth_modal.create_account") || 'Mulai Perjalananmu'}
+                          {activeTab === 'login' ? t("auth_modal.welcome") !== "auth_modal.welcome" ? t("auth_modal.welcome") : 'Selamat Datang' : t("auth_modal.create_account") !== "auth_modal.create_account" ? t("auth_modal.create_account") : 'Mulai Perjalananmu'}
                         </h2>
                         <p className="font-['Manrope'] text-[15px] text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
                           {activeTab === 'login' 
-                            ? t("auth_modal.login_desc") || "Masuk untuk mengakses semua fitur cerdas Ba-Yu." 
-                            : t("auth_modal.register_desc") || "Daftar sekarang dan nikmati ekosistem catatan modern."}
+                            ? t("auth_modal.login_desc") !== "auth_modal.login_desc" ? t("auth_modal.login_desc") : "Masuk untuk mengakses semua fitur cerdas Ba-Yu." 
+                            : t("auth_modal.register_desc") !== "auth_modal.register_desc" ? t("auth_modal.register_desc") : "Daftar sekarang dan nikmati ekosistem catatan modern."}
                         </p>
                       </div>
 
@@ -156,7 +232,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                             activeTab === 'login' ? "text-gray-900 dark:text-white" : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
                           }`}
                         >
-                          {t("auth_modal.login") || "Masuk"}
+                          {t("auth_modal.login") !== "auth_modal.login" ? t("auth_modal.login") : "Masuk"}
                         </button>
                         <button
                           onClick={() => setActiveTab('register')}
@@ -164,7 +240,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                             activeTab === 'register' ? "text-gray-900 dark:text-white" : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
                           }`}
                         >
-                          {t("auth_modal.register") || "Daftar Baru"}
+                          {t("auth_modal.register") !== "auth_modal.register" ? t("auth_modal.register") : "Daftar Baru"}
                         </button>
                         {/* Tab Active Background indicator */}
                         <div 
@@ -177,60 +253,64 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         <AnimatePresence>
                           {activeTab === 'register' && (
                             <motion.div 
-                              initial={{ opacity: 0, height: 0 }} 
-                              animate={{ opacity: 1, height: 'auto' }} 
-                              exit={{ opacity: 0, height: 0 }}
-                              className="space-y-5 overflow-hidden"
+                              initial={{ opacity: 0, height: 0, overflow: 'hidden' }} 
+                              animate={{ opacity: 1, height: 'auto', transitionEnd: { overflow: 'visible' } }} 
+                              exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
+                              className="space-y-5 relative z-20"
                             >
                               <div className="space-y-1.5">
-                                <label className={labelClass}>{t("auth_modal.fullname") || "Nama Lengkap (Display Name)"}</label>
+                                <label className={labelClass}>{t("auth_modal.fullname") !== "auth_modal.fullname" ? t("auth_modal.fullname") : "Nama Lengkap (Display Name)"}</label>
                                 <div className="relative group">
                                   <User className={iconClass} strokeWidth={2.5} />
                                   <input
                                     type="text" name="name" value={formData.name} onChange={handleChange}
-                                    placeholder="John Doe" className={inputClass} required
+                                    placeholder={t("auth_modal.placeholder_name") !== "auth_modal.placeholder_name" ? t("auth_modal.placeholder_name") : "John Doe"} className={inputClass} required
                                   />
                                 </div>
                               </div>
                               <div className="space-y-1.5">
-                                <label className={labelClass}>{t("auth_modal.username") || "Username"}</label>
+                                <label className={labelClass}>{t("auth_modal.username") !== "auth_modal.username" ? t("auth_modal.username") : "Username"}</label>
                                 <div className="relative group">
-                                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400 group-focus-within:text-primary transition-colors">@</span>
+                                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-500 dark:text-slate-400 group-focus-within:text-primary transition-colors">@</span>
                                   <input
                                     type="text" name="username" value={formData.username}
                                     onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') }))}
-                                    placeholder="johndoe123" className={inputClass} required
+                                    placeholder={t("auth_modal.placeholder_username") !== "auth_modal.placeholder_username" ? t("auth_modal.placeholder_username") : "johndoe123"} className={inputClass} required
                                   />
                                 </div>
                               </div>
                               
                               <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                  <label className={labelClass}>{t("auth_modal.role") || "Profesi"}</label>
-                                  <div className="relative group">
-                                    <User className={`${iconClass} !w-4 !h-4`} strokeWidth={2.5} />
-                                    <select name="profesi" value={formData.profesi} onChange={handleChange} className={`${inputClass} !pl-10 !text-[13px] font-bold appearance-none cursor-pointer`} required>
-                                      <option value="Pelajar">{t("auth_modal.role_pelajar") !== "auth_modal.role_pelajar" ? t("auth_modal.role_pelajar") : "Pelajar"}</option>
-                                      <option value="Mahasiswa">{t("auth_modal.role_mahasiswa") !== "auth_modal.role_mahasiswa" ? t("auth_modal.role_mahasiswa") : "Mahasiswa"}</option>
-                                      <option value="Pengajar">{t("auth_modal.role_pengajar") !== "auth_modal.role_pengajar" ? t("auth_modal.role_pengajar") : "Pengajar"}</option>
-                                      <option value="Umum">{t("auth_modal.role_umum") !== "auth_modal.role_umum" ? t("auth_modal.role_umum") : "Umum"}</option>
-                                    </select>
-                                    <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none transform rotate-90" />
-                                  </div>
+                                  <label className={labelClass}>{t("auth_modal.role") !== "auth_modal.role" ? t("auth_modal.role") : "Profesi"}</label>
+                                  <AuthModalSelect
+                                    value={formData.profesi}
+                                    onChange={(val) => setFormData(prev => ({ ...prev, profesi: val }))}
+                                    icon={<User className={`${iconClass} !w-4 !h-4 z-10 pointer-events-none`} strokeWidth={2.5} />}
+                                    inputClass={inputClass}
+                                    options={[
+                                      { value: "Pelajar", label: t("auth_modal.role_pelajar") !== "auth_modal.role_pelajar" ? t("auth_modal.role_pelajar") : "Pelajar" },
+                                      { value: "Mahasiswa", label: t("auth_modal.role_mahasiswa") !== "auth_modal.role_mahasiswa" ? t("auth_modal.role_mahasiswa") : "Mahasiswa" },
+                                      { value: "Pengajar", label: t("auth_modal.role_pengajar") !== "auth_modal.role_pengajar" ? t("auth_modal.role_pengajar") : "Pengajar" },
+                                      { value: "Umum", label: t("auth_modal.role_umum") !== "auth_modal.role_umum" ? t("auth_modal.role_umum") : "Umum" }
+                                    ]}
+                                  />
                                 </div>
                                 <div className="space-y-1.5">
-                                  <label className={labelClass}>{t("auth_modal.level") || "Jenjang"}</label>
-                                  <div className="relative group">
-                                    <GraduationCap className={`${iconClass} !w-4 !h-4`} strokeWidth={2.5} />
-                                    <select name="jenjang" value={formData.jenjang} onChange={handleChange} className={`${inputClass} !pl-10 !text-[13px] font-bold appearance-none cursor-pointer`} required>
-                                      <option value="SD">{t('edu_levels.SD') !== 'edu_levels.SD' ? t('edu_levels.SD') : "SD"}</option>
-                                      <option value="SMP">{t('edu_levels.SMP') !== 'edu_levels.SMP' ? t('edu_levels.SMP') : "SMP"}</option>
-                                      <option value="SMA">{t('edu_levels.SMA') !== 'edu_levels.SMA' ? t('edu_levels.SMA') : "SMA/SMK"}</option>
-                                      <option value="Kuliah">{t('edu_levels.Kuliah') !== 'edu_levels.Kuliah' ? t('edu_levels.Kuliah') : "Kuliah"}</option>
-                                      <option value="Umum">{t('edu_levels.Umum') !== 'edu_levels.Umum' ? t('edu_levels.Umum') : "Umum"}</option>
-                                    </select>
-                                    <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none transform rotate-90" />
-                                  </div>
+                                  <label className={labelClass}>{t("auth_modal.level") !== "auth_modal.level" ? t("auth_modal.level") : "Jenjang"}</label>
+                                  <AuthModalSelect
+                                    value={formData.jenjang}
+                                    onChange={(val) => setFormData(prev => ({ ...prev, jenjang: val }))}
+                                    icon={<GraduationCap className={`${iconClass} !w-4 !h-4 z-10 pointer-events-none`} strokeWidth={2.5} />}
+                                    inputClass={inputClass}
+                                    options={[
+                                      { value: "SD", label: t('edu_levels.SD') !== 'edu_levels.SD' ? t('edu_levels.SD') : "SD" },
+                                      { value: "SMP", label: t('edu_levels.SMP') !== 'edu_levels.SMP' ? t('edu_levels.SMP') : "SMP" },
+                                      { value: "SMA", label: t('edu_levels.SMA') !== 'edu_levels.SMA' ? t('edu_levels.SMA') : "SMA/SMK" },
+                                      { value: "Kuliah", label: t('edu_levels.Kuliah') !== 'edu_levels.Kuliah' ? t('edu_levels.Kuliah') : "Kuliah" },
+                                      { value: "Umum", label: t('edu_levels.Umum') !== 'edu_levels.Umum' ? t('edu_levels.Umum') : "Umum" }
+                                    ]}
+                                  />
                                 </div>
                               </div>
                             </motion.div>
@@ -239,31 +319,31 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
 
                         {/* EMAIL & PASSWORD (ALWAYS PRESENT) */}
                         <div className="space-y-1.5">
-                          <label className={labelClass}>{activeTab === 'login' ? (t("auth_modal.email_or_username") || 'Email atau Username') : (t("auth_modal.email") || 'Alamat Email')}</label>
+                          <label className={labelClass}>{activeTab === 'login' ? (t("auth_modal.email_or_username") !== "auth_modal.email_or_username" ? t("auth_modal.email_or_username") : 'Email atau Username') : (t("auth_modal.email") !== "auth_modal.email" ? t("auth_modal.email") : 'Alamat Email')}</label>
                           <div className="relative group">
                             <Mail className={iconClass} strokeWidth={2.5} />
                             <input
                               type={activeTab === 'login' ? 'text' : 'email'}
                               name="email" value={formData.email} onChange={handleChange}
-                              placeholder={activeTab === 'login' ? 'nama@email.com / username_anda' : 'nama@email.com'}
+                              placeholder={activeTab === 'login' ? (t("auth_modal.placeholder_email_username") !== "auth_modal.placeholder_email_username" ? t("auth_modal.placeholder_email_username") : 'nama@email.com / username_anda') : (t("auth_modal.placeholder_email") !== "auth_modal.placeholder_email" ? t("auth_modal.placeholder_email") : 'nama@email.com')}
                               className={inputClass} required
                             />
                           </div>
                         </div>
 
                         <div className="space-y-1.5">
-                          <label className={labelClass}>{t("auth_modal.password") || "Password"}</label>
+                          <label className={labelClass}>{t("auth_modal.password") !== "auth_modal.password" ? t("auth_modal.password") : "Password"}</label>
                           <div className="relative group">
                             <Lock className={iconClass} strokeWidth={2.5} />
                             <input
                               type={showPassword ? 'text' : 'password'}
                               name="password" value={formData.password} onChange={handleChange}
-                              placeholder="••••••••" className={`${inputClass} !pr-12`} required
+                              placeholder={t("auth_modal.placeholder_password") !== "auth_modal.placeholder_password" ? t("auth_modal.placeholder_password") : "••••••••"} className={`${inputClass} !pr-12`} required
                             />
                             <button
                               type="button"
                               onClick={() => setShowPassword(!showPassword)}
-                              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors focus:outline-none"
+                              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors focus:outline-none"
                             >
                               {showPassword ? <EyeOff className="w-[18px] h-[18px]" strokeWidth={2.5} /> : <Eye className="w-[18px] h-[18px]" strokeWidth={2.5} />}
                             </button>
@@ -281,14 +361,14 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                                 </div>
                               </div>
                               <span className="ml-3 text-[14px] text-gray-600 dark:text-gray-400 font-medium group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors">
-                                {t("auth_modal.remember_me") || "Ingat saya"}
+                                {t("auth_modal.remember_me") !== "auth_modal.remember_me" ? t("auth_modal.remember_me") : "Ingat saya"}
                               </span>
                             </label>
                             <button 
                               type="button" onClick={() => setActiveTab('forgot')} 
                               className="text-[13px] text-primary hover:text-primary/80 font-bold transition-colors"
                             >
-                              {t("auth_modal.forgot_password") || "Lupa Password?"}
+                              {t("auth_modal.forgot_password") !== "auth_modal.forgot_password" ? t("auth_modal.forgot_password") : "Lupa Password?"}
                             </button>
                           </div>
                         )}
@@ -303,7 +383,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                               <Loader2 className="w-5 h-5 animate-spin" />
                             ) : (
                               <>
-                                {activeTab === 'login' ? (t("auth_modal.login_btn") || 'Masuk') : (t("auth_modal.register_btn") || 'Daftar')}
+                                {activeTab === 'login' ? (t("auth_modal.login_btn") !== "auth_modal.login_btn" ? t("auth_modal.login_btn") : 'Masuk') : (t("auth_modal.register_btn") !== "auth_modal.register_btn" ? t("auth_modal.register_btn") : 'Daftar')}
                                 <ArrowRight className="w-4 h-4" />
                               </>
                             )}
@@ -315,8 +395,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                               <div className="w-full border-t border-gray-200 dark:border-white/10"></div>
                             </div>
                             <div className="relative flex justify-center text-[12px]">
-                              <span className="px-4 bg-white dark:bg-[#0a0a0a] text-gray-400 font-['Lexend_Deca'] font-semibold">
-                                {t("auth_modal.or_continue_with") || "atau dengan"}
+                              <span className="px-4 bg-white dark:bg-[#0a0a0a] text-slate-500 dark:text-slate-400 font-['Lexend_Deca'] font-semibold">
+                                {t("auth_modal.or_continue_with") !== "auth_modal.or_continue_with" ? t("auth_modal.or_continue_with") : "atau dengan"}
                               </span>
                             </div>
                           </div>
@@ -328,20 +408,20 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                               className="flex items-center justify-center gap-3 py-3.5 bg-gray-50 dark:bg-[#111] border border-gray-200 dark:border-white/5 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 transition-colors active:scale-95 group w-full"
                             >
                               <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                              <span className="font-['Lexend_Deca'] font-bold text-gray-700 dark:text-gray-300">Lanjutkan dengan Google</span>
+                              <span className="font-['Lexend_Deca'] font-bold text-gray-700 dark:text-gray-300">{t("auth_modal.continue_with_google") !== "auth_modal.continue_with_google" ? t("auth_modal.continue_with_google") : "Lanjutkan dengan Google"}</span>
                             </button>
                           </div>
                           
-                          {activeTab === 'register' && (
-                            <div className="mt-8 text-center">
-                              <p className="text-[12px] text-gray-500 font-medium font-['Manrope']">
-                                {t("auth_modal.terms_prefix") || "Dengan mendaftar, Anda menyetujui"}{' '}
-                                <Link to="/terms" target="_blank" className="text-gray-800 dark:text-gray-300 font-bold hover:underline">{t("auth_modal.terms") || "Syarat & Ketentuan"}</Link>
-                                {' '}{t("auth_modal.terms_and") || "serta"}{' '}
-                                <Link to="/privacy" target="_blank" className="text-gray-800 dark:text-gray-300 font-bold hover:underline">{t("auth_modal.privacy") || "Kebijakan Privasi"}</Link>
-                              </p>
-                            </div>
-                          )}
+                          <div className="text-center text-[12px] text-gray-500 dark:text-gray-400 mt-6 leading-relaxed">
+                            {t("auth_modal.terms_prefix") !== "auth_modal.terms_prefix" ? t("auth_modal.terms_prefix") : "Dengan melanjutkan, Anda menyetujui"}{' '}
+                            <Link to="/terms" onClick={onClose} className="font-semibold text-primary hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline transition-colors">
+                              {t("auth_modal.terms") !== "auth_modal.terms" ? t("auth_modal.terms") : "Syarat & Ketentuan"}
+                            </Link>
+                            {' '}{t("auth_modal.terms_and") !== "auth_modal.terms_and" ? t("auth_modal.terms_and") : "serta"}{' '}
+                            <Link to="/privacy" onClick={onClose} className="font-semibold text-primary hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline transition-colors">
+                              {t("auth_modal.privacy") !== "auth_modal.privacy" ? t("auth_modal.privacy") : "Kebijakan Privasi"}
+                            </Link>
+                          </div>
                         </div>
                       </form>
                     </motion.div>
@@ -359,15 +439,15 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-full mb-6 border border-gray-100 dark:border-white/10">
                           <Sparkles className="w-8 h-8 text-primary" />
                         </div>
-                        <h3 className="font-['Lexend_Deca'] text-3xl font-extrabold text-gray-900 dark:text-white mb-3">{t("auth_modal.forgot_password") || "Lupa Password?"}</h3>
+                        <h3 className="font-['Lexend_Deca'] text-3xl font-extrabold text-gray-900 dark:text-white mb-3">{t("auth_modal.forgot_password") !== "auth_modal.forgot_password" ? t("auth_modal.forgot_password") : "Lupa Password?"}</h3>
                         <p className="font-['Manrope'] text-[15px] text-gray-500 dark:text-gray-400 font-medium leading-relaxed max-w-sm mx-auto">
-                          {t("auth_modal.forgot_desc") || "Jangan khawatir. Masukkan email terdaftar Anda untuk menerima tautan reset."}
+                          {t("auth_modal.forgot_desc") !== "auth_modal.forgot_desc" ? t("auth_modal.forgot_desc") : "Jangan khawatir. Masukkan email terdaftar Anda untuk menerima tautan reset."}
                         </p>
                       </div>
                       
                       <div className="space-y-6">
                         <div className="space-y-1.5">
-                          <label className={labelClass}>{t("auth_modal.email") || "Alamat Email"}</label>
+                          <label className={labelClass}>{t("auth_modal.email") !== "auth_modal.email" ? t("auth_modal.email") : "Alamat Email"}</label>
                           <div className="relative">
                             <Mail className={iconClass} strokeWidth={2.5} />
                             <input
@@ -380,12 +460,12 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         <button
                           type="button" disabled={isSubmitting}
                           onClick={async () => {
-                            if (!formData.email) { showToast(t("auth_modal.email_required") || "Isi email terlebih dahulu!", "error"); return; }
+                            if (!formData.email) { showToast(t("auth_modal.email_required") !== "auth_modal.email_required" ? t("auth_modal.email_required") : "Isi email terlebih dahulu!", "error"); return; }
                             setIsSubmitting(true);
                             try {
                               const response = await axios.post('/api/forgot-password', { email: formData.email, lang: language || 'id' });
                               if (response.status === 200) {
-                                showToast(t("forgot_password.reset_sent") || "Link reset password telah dikirim ke email Anda.", "success");
+                                showToast(t("forgot_password.reset_sent") !== "forgot_password.reset_sent" ? t("forgot_password.reset_sent") : "Link reset password telah dikirim ke email Anda.", "success");
                                 setActiveTab('login');
                               }
                             } catch (error: any) {
@@ -396,7 +476,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                           }}
                           className="w-full bg-black dark:bg-white text-white dark:text-black py-4 rounded-2xl font-['Lexend_Deca'] font-extrabold text-[15px] shadow-xl hover:shadow-2xl transition-all active:scale-[0.98]"
                         >
-                          {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (t("auth_modal.send_reset_link") || "Kirim Tautan Reset")}
+                          {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (t("auth_modal.send_reset_link") !== "auth_modal.send_reset_link" ? t("auth_modal.send_reset_link") : "Kirim Tautan Reset")}
                         </button>
 
                         <div className="text-center pt-2">
@@ -404,7 +484,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                             type="button" onClick={() => setActiveTab('login')}
                             className="text-[14px] font-bold text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors font-['Lexend_Deca']"
                           >
-                            {t("auth_modal.back_to_login") || "Kembali ke Login"}
+                            {t("auth_modal.back_to_login") !== "auth_modal.back_to_login" ? t("auth_modal.back_to_login") : "Kembali ke Login"}
                           </button>
                         </div>
                       </div>

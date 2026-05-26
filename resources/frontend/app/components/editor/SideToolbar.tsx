@@ -9,6 +9,7 @@ import {
 import { HIGHLIGHT_COLORS } from './editor.constants';
 import { PromptDialog } from '../ui/PromptDialog';
 import { useTranslation } from '../../hooks/useTranslation';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface SideToolbarProps {
   quillRef: React.RefObject<ReactQuill | null>;
@@ -39,11 +40,23 @@ function PortalDropdown({ anchorRef, children, isOpen, portalRef }: {
     }
   }, [isOpen, anchorRef]);
 
-  if (!isOpen) return null;
   return ReactDOM.createPortal(
-    <div ref={portalRef} style={style} onMouseDown={e => e.preventDefault()}>
-      {children}
-    </div>,
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          ref={portalRef}
+          style={style}
+          onMouseDown={e => e.preventDefault()}
+          initial={{ opacity: 0, scale: 0.95, y: -5 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: -5 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="origin-top-left"
+        >
+          {children}
+        </motion.div>
+      )}
+    </AnimatePresence>,
     document.body
   );
 }
@@ -309,7 +322,7 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
     <div className="w-px h-5 bg-slate-200 dark:bg-white/10 shrink-0 mx-1" />
   );
 
-  const dropdownBase = 'bg-white dark:bg-[#1C1A29] rounded-2xl shadow-[0_16px_48px_-8px_rgba(0,0,0,0.18)] dark:shadow-[0_16px_48px_-8px_rgba(0,0,0,0.55)] border border-slate-200/70 dark:border-white/10 animate-in fade-in zoom-in-95 duration-150 origin-top-left';
+  const dropdownBase = 'bg-white dark:bg-[#1C1A29] rounded-2xl shadow-[0_16px_48px_-8px_rgba(0,0,0,0.18)] dark:shadow-[0_16px_48px_-8px_rgba(0,0,0,0.55)] border border-slate-200/70 dark:border-white/10';
 
   return (
     <>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, ChevronDown, Trash2, Crop, Maximize, Check, Loader2 } from 'lucide-react';
 import Cropper from 'react-easy-crop';
@@ -6,6 +6,7 @@ import { jenjangOptions } from './editor.constants';
 import { useTranslation } from '../../hooks/useTranslation';
 import { formatClassOption, formatSemesterOption } from '../../utils/formatEducationLevel';
 import { mataPelajaran } from '../../data/mockData';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface PublishPreviewModalProps {
   isOpen: boolean;
@@ -67,6 +68,24 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
     isSubmitting, isSavingDraft, canPublishFinal, mapelDropdownRef,
     onFullView, isGeneratingFullView, isFullViewMode
   } = props;
+
+  const [isKelasDropdownOpen, setIsKelasDropdownOpen] = useState(false);
+  const [isSemesterDropdownOpen, setIsSemesterDropdownOpen] = useState(false);
+  const kelasDropdownRef = useRef<HTMLDivElement>(null);
+  const semesterDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (kelasDropdownRef.current && !kelasDropdownRef.current.contains(e.target as Node)) {
+        setIsKelasDropdownOpen(false);
+      }
+      if (semesterDropdownRef.current && !semesterDropdownRef.current.contains(e.target as Node)) {
+        setIsSemesterDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
 
   const { t, language } = useTranslation();
 
@@ -219,8 +238,15 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                      <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${isMapelDropdownOpen ? 'rotate-180' : ''}`} strokeWidth={2.5} />
                   </div>
 
+                  <AnimatePresence>
                   {isMapelDropdownOpen && (
-                     <div className="absolute z-10 w-full mt-2 bg-white dark:bg-[#1C1A29] border border-gray-100 dark:border-white/5 rounded-xl shadow-lg dark:shadow-2xl max-h-60 overflow-y-auto no-scrollbar animate-in fade-in zoom-in-95 duration-200">
+                     <motion.div 
+                        initial={{ opacity: 0, scale: 0.95, y: -5 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: -5 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="absolute z-10 w-full mt-2 bg-white dark:bg-[#1C1A29] border border-gray-100 dark:border-white/5 rounded-xl shadow-lg dark:shadow-2xl max-h-60 overflow-y-auto no-scrollbar origin-top"
+                     >
                         {filteredMapel.length > 0 ? (
                            (Object.entries(filteredMapel.reduce((acc, current) => {
                                const category = current.category || 'Lainnya';
@@ -258,8 +284,9 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                               <p className="text-[12px] text-gray-500 font-['Manrope'] mt-1 font-medium">{t('upload.no_category_desc')}</p>
                            </div>
                         )}
-                     </div>
+                     </motion.div>
                   )}
+                  </AnimatePresence>
                </div>
             </div>
 
@@ -285,31 +312,38 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                </div>
 
                <div className="flex gap-3">
-                  <div className="flex-1 relative">
+                  <div className="flex-1 relative" ref={kelasDropdownRef}>
                       <div 
                          className="flex items-center justify-between w-full px-4 py-3 bg-gray-50 dark:bg-[#1C1A29] border border-transparent hover:border-gray-200 dark:hover:border-white/10 rounded-lg transition-all cursor-pointer"
                          onClick={(e) => {
                              e.stopPropagation();
-                             const currentStatus = document.getElementById('kelas-dropdown')?.classList.contains('hidden');
-                             document.getElementById('kelas-dropdown')?.classList.toggle('hidden', !currentStatus);
-                             document.getElementById('semester-dropdown')?.classList.add('hidden');
+                             setIsKelasDropdownOpen(prev => !prev);
+                             setIsSemesterDropdownOpen(false);
                          }}
                       >
                          <span className="text-[14px] font-['Manrope'] text-gray-950 dark:text-gray-100 font-bold">
                              {meta.kelas ? formatClassOption(meta.jenjang, meta.kelas, language, t) : t('upload.choose_class')}
                          </span>
-                         <ChevronDown className="w-5 h-5 text-gray-500" strokeWidth={2.5} />
+                         <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${isKelasDropdownOpen ? 'rotate-180' : ''}`} strokeWidth={2.5} />
                       </div>
                       
                       {/* Kelas Dropdown List */}
-                      <div id="kelas-dropdown" className="hidden absolute z-20 w-full mt-2 bg-white dark:bg-[#1C1A29] border border-gray-100 dark:border-white/5 rounded-xl shadow-lg dark:shadow-2xl max-h-60 overflow-y-auto no-scrollbar animate-in fade-in zoom-in-95 duration-200">
+                      <AnimatePresence>
+                      {isKelasDropdownOpen && (
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95, y: -5 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: -5 }}
+                            transition={{ duration: 0.2, ease: "easeOut" }}
+                            className="absolute z-20 w-full mt-2 bg-white dark:bg-[#1C1A29] border border-gray-100 dark:border-white/5 rounded-xl shadow-lg dark:shadow-2xl max-h-60 overflow-y-auto no-scrollbar origin-top"
+                        >
                           <div className="py-1">
                               {kelasOptions.map((k: string) => (
                                  <div
                                     key={k}
                                     onClick={() => {
                                         setMeta({ ...meta, kelas: k });
-                                        document.getElementById('kelas-dropdown')?.classList.add('hidden');
+                                        setIsKelasDropdownOpen(false);
                                     }}
                                     className={`px-4 py-2.5 cursor-pointer transition-colors ${meta.kelas === k ? 'bg-primary/5 text-primary font-bold' : 'hover:bg-gray-50 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300 font-medium'} text-[14px] font-['Manrope']`}
                                  >
@@ -317,34 +351,43 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                                  </div>
                               ))}
                           </div>
-                      </div>
+                        </motion.div>
+                      )}
+                      </AnimatePresence>
                   </div>
 
-                  <div className="flex-1 relative">
+                  <div className="flex-1 relative" ref={semesterDropdownRef}>
                       <div 
                          className="flex items-center justify-between w-full px-4 py-3 bg-gray-50 dark:bg-[#1C1A29] border border-transparent hover:border-gray-200 dark:hover:border-white/10 rounded-lg transition-all cursor-pointer"
                          onClick={(e) => {
                              e.stopPropagation();
-                             const currentStatus = document.getElementById('semester-dropdown')?.classList.contains('hidden');
-                             document.getElementById('semester-dropdown')?.classList.toggle('hidden', !currentStatus);
-                             document.getElementById('kelas-dropdown')?.classList.add('hidden');
+                             setIsSemesterDropdownOpen(prev => !prev);
+                             setIsKelasDropdownOpen(false);
                          }}
                       >
                          <span className="text-[14px] font-['Manrope'] text-gray-950 dark:text-gray-100 font-bold">
                              {meta.semester ? formatSemesterOption(meta.semester, language, t) : t('upload.choose_semester')}
                          </span>
-                         <ChevronDown className="w-5 h-5 text-gray-500" strokeWidth={2.5} />
+                         <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${isSemesterDropdownOpen ? 'rotate-180' : ''}`} strokeWidth={2.5} />
                       </div>
 
                       {/* Semester Dropdown List */}
-                      <div id="semester-dropdown" className="hidden absolute z-20 w-full mt-2 bg-white dark:bg-[#1C1A29] border border-gray-100 dark:border-white/5 rounded-xl shadow-lg dark:shadow-2xl max-h-60 overflow-y-auto no-scrollbar animate-in fade-in zoom-in-95 duration-200">
+                      <AnimatePresence>
+                      {isSemesterDropdownOpen && (
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95, y: -5 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: -5 }}
+                            transition={{ duration: 0.2, ease: "easeOut" }}
+                            className="absolute z-20 w-full mt-2 bg-white dark:bg-[#1C1A29] border border-gray-100 dark:border-white/5 rounded-xl shadow-lg dark:shadow-2xl max-h-60 overflow-y-auto no-scrollbar origin-top"
+                        >
                           <div className="py-1">
                               {Array.from({ length: maxSemester }, (_, i) => i + 1).map((s) => (
                                  <div
                                     key={s}
                                     onClick={() => {
                                         setMeta({ ...meta, semester: s });
-                                        document.getElementById('semester-dropdown')?.classList.add('hidden');
+                                        setIsSemesterDropdownOpen(false);
                                     }}
                                     className={`px-4 py-2.5 cursor-pointer transition-colors ${meta.semester === s ? 'bg-primary/5 text-primary font-bold' : 'hover:bg-gray-50 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300 font-medium'} text-[14px] font-['Manrope']`}
                                  >
@@ -352,7 +395,9 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                                  </div>
                               ))}
                           </div>
-                      </div>
+                        </motion.div>
+                      )}
+                      </AnimatePresence>
                   </div>
                </div>
             </div>

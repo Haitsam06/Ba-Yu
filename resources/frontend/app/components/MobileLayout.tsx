@@ -1,4 +1,5 @@
 import { ReactNode, useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { BottomNav } from './BottomNav';
 import { SideNav } from './SideNav';
 import { TopNav } from './TopNav';
@@ -13,9 +14,10 @@ interface MobileLayoutProps {
   showBottomNav?: boolean;
   hideTopNav?: boolean;
   hideMobileTopNav?: boolean;
+  hideSidebar?: boolean;
 }
 
-export function MobileLayout({ children, showBottomNav = true, hideTopNav = false, hideMobileTopNav = false }: MobileLayoutProps) {
+export function MobileLayout({ children, showBottomNav = true, hideTopNav = false, hideMobileTopNav = false, hideSidebar = false }: MobileLayoutProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -89,15 +91,23 @@ export function MobileLayout({ children, showBottomNav = true, hideTopNav = fals
       <div className="flex-1 flex overflow-hidden relative">
         
         {/* SIDEBAR (Only desktop/tablet) */}
-        <div 
-          style={{ width: isSidebarExpanded ? '240px' : '0px', minWidth: isSidebarExpanded ? '240px' : '0px' }}
-          className={`hidden md:flex flex-col flex-shrink-0 z-20 bg-white dark:bg-[#13111C] border-r transition-all duration-300 ease-in-out h-full overflow-hidden ${isSidebarExpanded ? 'border-slate-100/100 dark:border-white/5 opacity-100' : 'border-slate-100/0 opacity-0'}`}
-        >
-           <SideNav 
-             isExpanded={isSidebarExpanded} 
-             toggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)} 
-           />
-        </div>
+        {!hideSidebar && (
+          <motion.div 
+            initial={false}
+            animate={{ 
+              width: isSidebarExpanded ? 240 : 0, 
+              minWidth: isSidebarExpanded ? 240 : 0,
+              opacity: isSidebarExpanded ? 1 : 0
+            }}
+            transition={{ type: "spring", damping: 25, stiffness: 250 }}
+            className={`hidden md:flex flex-col flex-shrink-0 z-20 bg-white dark:bg-[#13111C] border-r h-full overflow-hidden ${isSidebarExpanded ? 'border-slate-100/100 dark:border-white/5' : 'border-transparent dark:border-transparent'}`}
+          >
+             <SideNav 
+               isExpanded={isSidebarExpanded} 
+               toggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)} 
+             />
+          </motion.div>
+        )}
 
         {/* MAIN SCROLLABLE CONTENT */}
         <div id="main-scroll-container" className="flex-1 overflow-y-auto overflow-x-hidden w-full h-full bg-white dark:bg-[#13111C] scroll-smooth">
@@ -117,25 +127,40 @@ export function MobileLayout({ children, showBottomNav = true, hideTopNav = fals
       )}
 
       {/* MOBILE SLIDE-OUT SIDEBAR */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-[100] flex">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setIsMobileMenuOpen(false)}></div>
-          <div className="relative bg-white dark:bg-[#13111C] w-[260px] h-full shadow-2xl flex flex-col animate-in slide-in-from-left duration-300 pt-[env(safe-area-inset-top)]">
-             <div className="p-4 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
-               <div className="flex items-center gap-2">
-                   <ApplicationLogo className="w-6 h-6" style={{ overflow: 'visible' }} />
-                   <span className="font-['Lexend_Deca'] font-extrabold text-[18px] tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-800 dark:from-[#7B7BFF] dark:to-[#A78BFA]">Ba-Yu</span>
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <div className="md:hidden fixed inset-0 z-[100] flex">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            <motion.div 
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 250 }}
+              className="relative bg-white dark:bg-[#13111C] w-[260px] h-full shadow-2xl flex flex-col pt-[env(safe-area-inset-top)]"
+            >
+               <div className="p-4 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
+                 <div className="flex items-center gap-2">
+                     <ApplicationLogo className="w-6 h-6" style={{ overflow: 'visible' }} />
+                     <span className="font-['Lexend_Deca'] font-extrabold text-[18px] tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-800 dark:from-[#7B7BFF] dark:to-[#A78BFA]">Ba-Yu</span>
+                 </div>
+                 <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-slate-50 dark:bg-white/5 rounded-full text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">
+                   <X className="w-4 h-4" />
+                 </button>
                </div>
-               <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-slate-50 dark:bg-white/5 rounded-full text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">
-                 <X className="w-4 h-4" />
-               </button>
-             </div>
-             <div className="flex-1 overflow-y-auto">
-               <SideNav isExpanded={true} toggleSidebar={() => setIsMobileMenuOpen(false)} />
-             </div>
+               <div className="flex-1 overflow-y-auto">
+                 <SideNav isExpanded={true} toggleSidebar={() => setIsMobileMenuOpen(false)} />
+               </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
     </div>
   );

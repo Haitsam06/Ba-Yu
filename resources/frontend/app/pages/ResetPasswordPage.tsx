@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useToast } from '../contexts/ToastContext';
 import { useNavigate } from 'react-router';
 import ApplicationLogo from '../components/ApplicationLogo';
-import { Lock, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Lock, ArrowRight, CheckCircle2, X } from 'lucide-react';
 import { useTranslation } from '../hooks/useTranslation';
 
 export default function ResetPasswordPage() {
@@ -68,6 +68,13 @@ export default function ResetPasswordPage() {
 
     return (
         <div className="min-h-screen flex flex-col justify-center px-6 py-12 bg-white dark:bg-[#13111C] relative overflow-hidden">
+                <button
+                    onClick={() => navigate('/login')}
+                    className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded-full transition-all z-50"
+                    aria-label="Tutup"
+                >
+                    <X className="w-5 h-5" />
+                </button>
                 <div className="w-full max-w-md mx-auto">
                     <div className="text-center mb-10">
                         <div className="flex justify-center mb-6">

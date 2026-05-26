@@ -6,14 +6,14 @@ import {
     Shield,
     AlertCircle,
     CheckCheck,
-    Heart,
-    MessageCircle,
-    UserPlus,
+    Heart, 
+    MessageCircle, 
+    UserPlus 
 } from "lucide-react";
-import { Popover, PopoverTrigger, PopoverContent } from "./popover";
 import { Avatar, AvatarFallback } from "./avatar";
 import { Button } from "./button";
 import { cn } from "../../lib/utils";
+import { motion, AnimatePresence } from "motion/react";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
@@ -39,12 +39,11 @@ interface NotificationItem {
 }
 
 export default function AvatarNotifications() {
-    const [notifications, setNotifications] = React.useState<
-        NotificationItem[]
-    >([]);
+    const [notifications, setNotifications] = React.useState<NotificationItem[]>([]);
     const { user } = useAuth();
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(false);
+    const containerRef = React.useRef<HTMLDivElement>(null);
     const { t, language } = useTranslation();
     const { translateNotification } = useNotificationTranslator();
 
@@ -66,11 +65,19 @@ export default function AvatarNotifications() {
         if (user && open) {
             fetchNotifications();
         } else if (user && !open && notifications.length === 0) {
-            // Fetch once initially even if closed to show the badge
             fetchNotifications();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, open]);
+
+    React.useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+                setOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const clearAll = async () => {
         try {
@@ -173,29 +180,28 @@ export default function AvatarNotifications() {
     };
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <button className="relative inline-flex items-center justify-center rounded-full p-[6px] hover:bg-gray-100 dark:hover:bg-white/5 transition-colors focus:outline-none">
-                    <Bell
-                        className="h-[22px] w-[22px] text-gray-700 dark:text-gray-300"
-                        strokeWidth={1.5}
-                    />
-                    <span
-                        className={cn(
-                            "absolute top-1 right-1 h-2.5 w-2.5 rounded-full border-2 border-white dark:border-[#13111C]",
-                            hasNotifications
-                                ? "bg-red-500 animate-pulse"
-                                : "hidden",
-                        )}
-                    />
-                </button>
-            </PopoverTrigger>
-            <PopoverContent
-                className="w-[320px] p-0 rounded-2xl shadow-xl dark:shadow-none overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1C1A29]"
-                side="bottom"
-                align="end"
-                sideOffset={8}
+        <div className="relative" ref={containerRef}>
+            <button 
+                onClick={() => setOpen(!open)}
+                className="relative inline-flex items-center justify-center rounded-full p-[6px] hover:bg-gray-100 dark:hover:bg-white/5 transition-colors focus:outline-none"
             >
+                <Bell className="h-[22px] w-[22px] text-gray-700 dark:text-gray-300" strokeWidth={1.5} />
+                <span
+                    className={cn(
+                        "absolute top-1 right-1 h-2.5 w-2.5 rounded-full border-2 border-white dark:border-[#13111C]",
+                        hasNotifications ? "bg-red-500 animate-pulse" : "hidden"
+                    )}
+                />
+            </button>
+            <AnimatePresence>
+                {open && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="absolute right-0 top-[48px] w-[320px] p-0 rounded-2xl shadow-xl dark:shadow-none overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1C1A29] z-50"
+                    >
                 <div className="max-h-[350px] overflow-y-auto scrollbar-hide bg-white dark:bg-[#1C1A29]">
                     <div className="flex justify-between items-center px-5 py-4 bg-white dark:bg-[#1C1A29] sticky top-0 z-10 border-b border-gray-200 dark:border-white/10">
                         <div className="flex items-center gap-2">
@@ -325,7 +331,9 @@ export default function AvatarNotifications() {
                         {t('notifications.view_all_notifications') !== 'notifications.view_all_notifications' ? t('notifications.view_all_notifications') : 'Lihat Semua Notifikasi'}
                     </button>
                 </div>
-            </PopoverContent>
-        </Popover>
+            </motion.div>
+            )}
+            </AnimatePresence>
+        </div>
     );
 }
