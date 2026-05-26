@@ -14,6 +14,8 @@ import {
   Shuffle
 } from 'lucide-react';
 import { mataPelajaran } from '../data/mockData';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 /* ===================================================
    DATA: Multilingual "Education" words
    =================================================== */
@@ -1160,9 +1162,15 @@ export function LandingPage() {
                 <p className="text-gray-300 mt-0.5 font-semibold">{"$$\\int_{-\\infty}^{\\infty} e^{-x^2} \\, dx = \\sqrt{\\pi}$$"}</p>
                 
                 <p className="text-emerald-400 font-bold mt-3">// Output Rendered:</p>
-                <div className="mt-2 p-3.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white text-base font-display font-black">
-                  {"$$\\int_{-\\infty}^{\\infty} e^{-x^2} \\, dx = \\sqrt{\\pi}$$"}
-                </div>
+                <div 
+                  className="dark mt-2 p-3.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white text-base font-display overflow-x-auto"
+                  dangerouslySetInnerHTML={{
+                    __html: katex.renderToString("\\int_{-\\infty}^{\\infty} e^{-x^2} \\, dx = \\sqrt{\\pi}", {
+                      throwOnError: false,
+                      displayMode: true
+                    })
+                  }}
+                />
               </div>
             </div>
 
