@@ -226,7 +226,7 @@ function ScrollRevealText() {
   const words = text.split(" ");
 
   return (
-    <div ref={containerRef} className="relative py-28 md:py-40 bg-[#080616] overflow-hidden flex items-center justify-center">
+    <div ref={containerRef} id="visi-misi" className="relative py-28 md:py-40 bg-[#080616] overflow-hidden flex items-center justify-center">
       {/* Decorative radial lighting behind text */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] rounded-full blur-[120px] opacity-[0.05] pointer-events-none"
            style={{ background: 'radial-gradient(circle, #5D5CE6 0%, transparent 60%)' }} />
@@ -482,6 +482,20 @@ export function LandingPage() {
   const [activeWord, setActiveWord] = useState(0);
   const [activeSubject, setActiveSubject] = useState(0);
   const [activeCockpitTab, setActiveCockpitTab] = useState('latex');
+
+  // Smooth scroll to hash on load or redirection
+  useEffect(() => {
+    if (window.location.hash) {
+      const id = window.location.hash.substring(1);
+      const element = document.getElementById(id);
+      if (element) {
+        const timer = setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 400);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, []);
   
   // Custom cursor tracker coordinates for Hero glowing orb
   const mouseX = useMotionValue(0);
@@ -956,7 +970,7 @@ export function LandingPage() {
         <GrainNoise />
 
         {/* Section 4: Interactive Subject Rotator (Transparent seamless background) */}
-        <section className="relative py-24 bg-transparent">
+        <section id="eksplorasi-topik" className="relative py-24 bg-transparent">
           {/* Ambient neon backdrop glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[50vw] rounded-full blur-[130px] opacity-[0.05] pointer-events-none"
                style={{ background: 'radial-gradient(circle, #8B5CF6 0%, transparent 60%)' }} />

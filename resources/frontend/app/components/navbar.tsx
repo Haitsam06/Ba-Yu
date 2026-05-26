@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { Button } from './ui/button';
 import ApplicationLogo from './ApplicationLogo'; // Logo
 import { useState, useEffect } from 'react';
@@ -18,6 +18,18 @@ export function Navbar({ variant = 'default', theme = 'light' }: NavbarProps) {
   const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
   const [isScrolled, setIsScrolled] = useState(false);
   const { t } = useTranslation();
+  const location = useLocation();
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    if (location.pathname === '/') {
+      e.preventDefault();
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        window.history.pushState(null, '', `#${targetId}`);
+      }
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -85,12 +97,20 @@ export function Navbar({ variant = 'default', theme = 'light' }: NavbarProps) {
             <Link to="/" className={getLinkClass()}>
               {t("navbar.home") || "Beranda"}
             </Link>
-            <a href="#tentang" className={getLinkClass()}>
+            <a 
+              href="/#visi-misi" 
+              onClick={(e) => handleNavClick(e, 'visi-misi')} 
+              className={getLinkClass()}
+            >
               {t("navbar.about") || "Tentang"}
             </a>
-            <Link to="/katalog" className={getLinkClass()}>
+            <a 
+              href="/#eksplorasi-topik" 
+              onClick={(e) => handleNavClick(e, 'eksplorasi-topik')} 
+              className={getLinkClass()}
+            >
               {t("navbar.explore") || "Jelajahi"}
-            </Link>
+            </a>
           </div>
 
           {/* Auth Actions */}
