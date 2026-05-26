@@ -397,7 +397,14 @@
     "desc_placeholder": "Deskripsi Singkat...",
     "saving_draft": "Menyimpan...",
     "editor_placeholder": "Tulis materi atau penjelasanmu di sini...",
-    "confirm": "Konfirmasi"
+    "confirm": "Konfirmasi",
+    "alt_text_title": "Teks Alternatif",
+    "alt_text_desc": "Deskripsikan gambar untuk pembaca dengan gangguan penglihatan...",
+    "alt_text_button": "Alt text",
+    "layout_inline": "Standar / Tengah",
+    "layout_wide": "Lebar (Wide)",
+    "layout_full": "Penuh (Full Bleed)",
+    "delete_block": "Hapus Blok"
   },
   "calendar": {
     "days": [
@@ -575,7 +582,10 @@
     "downloaded_at": "Diunduh:",
     "pdf_restricted_title": "Materi Terproteksi",
     "pdf_restricted_desc": "Versi PDF ini hanya memuat sebagian materi. Ikuti penulis <b>@{author}</b> di aplikasi Ba-Yu untuk mengunduh versi lengkapnya.",
-    "pdf_footer": "Dokumen ini diunduh dari <span class=\"footer-brand\">Ba-Yu</span> - Platform Belajar Masa Depan"
+    "pdf_footer": "Dokumen ini diunduh dari <span class=\"footer-brand\">Ba-Yu</span> - Platform Belajar Masa Depan",
+    "sort_newest": "Terbaru",
+    "sort_oldest": "Terlama",
+    "sort_top": "Terpopuler"
   },
   "public_profile": {
     "title": "Profil Pengguna",
@@ -914,7 +924,9 @@
     "SMP": "SMP",
     "SMA": "SMA/SMK",
     "Kuliah": "Kuliah",
-    "Umum": "Umum"
+    "Umum": "Umum",
+    "class_format": "Kelas {{num}}",
+    "semester_format": "Semester {{num}}"
   },
   "subject_categories": {
     "Umum & Wajib": "Umum & Wajib",
@@ -1082,7 +1094,8 @@
     "careers": "Karir",
     "contact": "Kontak",
     "privacy": "Kebijakan Privasi",
-    "terms": "Syarat & Ketentuan"
+    "terms": "Syarat & Ketentuan",
+    "status": "Status"
   },
   "apply_pakar": {
     "title": "Sertifikasi Pakar",
@@ -1546,5 +1559,57 @@
     "submit_button": "Kirim Link Reset",
     "reset_sent": "Tautan atur ulang kata sandi telah dikirim ke email Anda.",
     "reset_throttled": "Silakan tunggu beberapa saat (60 detik) sebelum mencoba lagi."
+  },
+  "notif": {
+    "like_note_title": "Ada yang menyukai Catatan Anda!",
+    "like_comment_title": "Ada yang menyukai Komentar Anda!",
+    "like_note_msg": "{{name}} menyukai catatan Anda: {{note}}",
+    "like_comment_msg": "{{name}} menyukai komentar Anda",
+    "reply_title": "Seseorang membalas komentarmu",
+    "comment_title": "Komentar Baru di Catatanmu",
+    "respond_title": "Respons Baru di Catatanmu",
+    "reply_msg": "{{name}} membalas: \"{{content}}\"",
+    "comment_msg": "{{name}} berkomentar: \"{{content}}\"",
+    "respond_msg": "{{name}} merespons catatan anda",
+    "follow_new_title": "Pengikut Baru",
+    "follow_req_title": "Permintaan Mengikuti",
+    "follow_acc_title": "Permintaan Diterima",
+    "follow_new_msg": "{{username}} mulai mengikuti kamu.",
+    "follow_req_msg": "{{username}} ingin mengikuti kamu.",
+    "follow_acc_msg": "{{username}} menerima permintaan mengikutimu.",
+    "cert_acc_title": "Sertifikasi Diterima!",
+    "cert_rej_title": "Sertifikasi Ditolak",
+    "cert_new_title": "Pengajuan Pakar Baru",
+    "cert_new_msg": "{{name}} mengajukan diri sebagai pakar di bidang {{field}}.",
+    "cert_acc_msg": "Selamat! Kamu kini resmi jadi pakar.",
+    "report_recv_title": "Laporan Diterima",
+    "report_warn_note_title": "Peringatan: Catatan Dilaporkan",
+    "report_warn_comment_title": "Peringatan: Komentar Dilaporkan",
+    "report_del_note_title": "Catatan Dihapus (Takedown)",
+    "report_del_comment_title": "Komentar Dihapus (Takedown)",
+    "report_banned_title": "Akun Diblokir (Banned)",
+    "report_rejected_title": "Laporan Ditolak",
+    "like_note_title_alt": "Seseorang Menyukai Catatanmu",
+    "post_needs_work_title": "Catatan Perlu Perbaikan",
+    "post_needs_work_msg": "Catatanmu \"{{title}}\" memerlukan perbaikan berdasarkan tinjauan pakar.",
+    "post_approved_title": "Catatan Disetujui Pakar! 🎉",
+    "post_approved_msg": "Selamat! Catatan \"{{title}}\" telah diverifikasi. Rating: {{rating}} Bintang. Pesan: \"{{feedback}}\"",
+    "cert_acc_msg_2": "Selamat! Pengajuan sertifikasi pakarmu untuk bidang {{field}} telah disetujui Admin.",
+    "cert_rej_msg_2": "Mohon maaf, pengajuan sertifikasi pakarmu untuk bidang {{field}} belum dapat disetujui saat ini.",
+    "report_del_note_msg": "Catatan kamu \"{{title}}\" telah dihapus oleh Admin karena melanggar panduan komunitas kami. Alasan admin: {{reason}}",
+    "report_del_comment_msg": "Komentar kamu telah dihapus oleh Admin karena melanggar panduan komunitas kami. Alasan admin: {{reason}}",
+    "report_warn_note_msg": "Catatan kamu \"{{title}}\" dilaporkan karena: {{reason}}. Tim pakar/admin akan mereviewnya.",
+    "report_recv_note_msg": "Laporan kamu untuk catatan \"{{title}}\" sedang direview oleh tim kami.",
+    "report_recv_user_msg": "Laporan kamu untuk pengguna @{{username}} sedang direview oleh admin.",
+    "report_rej_msg": "Laporan kamu ditolak oleh admin dengan alasan: {{reason}}"
+  },
+  "notif_detail": {
+    "title": "Detail Pesan",
+    "not_found_title": "Pesan Tidak Ditemukan",
+    "not_found_desc": "Pesan ini mungkin sudah dihapus atau tidak tersedia lagi.",
+    "back": "Kembali",
+    "system": "Sistem Ba-Yu",
+    "regards": "Salam,",
+    "team": "Tim EduPlatform Ba-Yu"
   }
 }

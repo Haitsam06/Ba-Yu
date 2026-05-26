@@ -27,10 +27,17 @@ export default function LanguagePage() {
     },
     {
       id: 'en',
-      nativeName: 'English',
-      englishName: 'English',
+      nativeName: 'English (US)',
+      englishName: 'English (US)',
+      flag: '🇺🇸',
+      description: 'All text will be displayed in English (US).'
+    },
+    {
+      id: 'en-GB',
+      nativeName: 'English (UK)',
+      englishName: 'English (UK)',
       flag: '🇬🇧',
-      description: 'All text will be displayed in English.'
+      description: 'All text will be displayed in English (UK).'
     },
     {
       id: 'ja',
@@ -52,6 +59,13 @@ export default function LanguagePage() {
       englishName: 'Chinese (Simplified)',
       flag: '🇨🇳',
       description: '所有文本将以简体中文显示。'
+    },
+    {
+      id: 'zh-TW',
+      nativeName: '繁體中文',
+      englishName: 'Chinese (Traditional)',
+      flag: '🇹🇼',
+      description: '所有文本將以繁體中文顯示。'
     },
     {
       id: 'es',
@@ -87,6 +101,230 @@ export default function LanguagePage() {
       englishName: 'Russian',
       flag: '🇷🇺',
       description: 'Весь текст будет отображаться на русском языке.'
+    },
+    {
+      id: 'ar',
+      nativeName: 'العربية',
+      englishName: 'Arabic',
+      flag: '🇸🇦',
+      description: 'سيتم عرض جميع النصوص باللغة العربية.'
+    },
+    {
+      id: 'ur',
+      nativeName: 'اردو',
+      englishName: 'Urdu',
+      flag: '🇵🇰',
+      description: 'تمام متن اردو میں دکھایا جائے گا۔'
+    },
+    {
+      id: 'hi',
+      nativeName: 'हिन्दी',
+      englishName: 'Hindi',
+      flag: '🇮🇳',
+      description: 'सभी टेक्स्ट हिन्दी में प्रदर्शित होंगे।'
+    },
+    {
+      id: 'tr',
+      nativeName: 'Türkçe',
+      englishName: 'Turkish',
+      flag: '🇹🇷',
+      description: 'Tüm metinler Türkçe olarak görüntülenecektir.'
+    },
+    {
+      id: 'ms',
+      nativeName: 'Bahasa Melayu',
+      englishName: 'Malay',
+      flag: '🇲🇾',
+      description: 'Semua teks akan dipaparkan dalam Bahasa Melayu.'
+    },
+    {
+      id: 'bn',
+      nativeName: 'বাংলা',
+      englishName: 'Bengali',
+      flag: '🇧🇩',
+      description: 'সমস্ত টেক্সট বাংলায় প্রদর্শित হবে।'
+    },
+    {
+      id: 'vi',
+      nativeName: 'Tiếng Việt',
+      englishName: 'Vietnamese',
+      flag: '🇻🇳',
+      description: 'Tất cả văn bản sẽ được hiển thị bằng tiếng Việt.'
+    },
+    {
+      id: 'fa',
+      nativeName: 'فارسی',
+      englishName: 'Persian',
+      flag: '🇮🇷',
+      description: 'تمام متون به زبان فارسی نمایش داده خواهند شد.'
+    },
+    {
+      id: 'it',
+      nativeName: 'Italiano',
+      englishName: 'Italian',
+      flag: '🇮🇹',
+      description: 'Tutti i testi saranno visualizzati in italiano.'
+    },
+    {
+      id: 'th',
+      nativeName: 'ไทย',
+      englishName: 'Thai',
+      flag: '🇹🇭',
+      description: 'ข้อความทั้งหมดจะแสดงเป็นภาษาไทย'
+    },
+    {
+      id: 'pa',
+      nativeName: 'ਪੰਜਾਬੀ',
+      englishName: 'Punjabi',
+      flag: '🇮🇳',
+      description: 'ਸਾਰਾ ਟੈਕਸਟ ਪੰਜਾਬੀ ਵਿੱਚ ਪ੍ਰਦਰਸ਼ਿਤ ਕੀਤਾ ਜਾਵੇਗਾ।'
+    },
+    {
+      id: 'sw',
+      nativeName: 'Kiswahili',
+      englishName: 'Swahili',
+      flag: '🇹🇿',
+      description: 'Maandishi yote yataonyeshwa kwa Kiswahili.'
+    },
+    {
+      id: 'nl',
+      nativeName: 'Nederlands',
+      englishName: 'Dutch',
+      flag: '🇳🇱',
+      description: 'Alle tekst wordt in het Nederlands weergegeven.'
+    },
+    {
+      id: 'pl',
+      nativeName: 'Polski',
+      englishName: 'Polish',
+      flag: '🇵🇱',
+      description: 'Cały tekst będzie wyświetlany w języku polskim.'
+    },
+    {
+      id: 'uk',
+      nativeName: 'Українська',
+      englishName: 'Ukrainian',
+      flag: '🇺🇦',
+      description: 'Увесь текст відображатиметься українською мовою.'
+    },
+    {
+      id: 'ro',
+      nativeName: 'Română',
+      englishName: 'Romanian',
+      flag: '🇷🇴',
+      description: 'Tot textul va fi afișat în limba română.'
+    },
+    {
+      id: 'cs',
+      nativeName: 'Čeština',
+      englishName: 'Czech',
+      flag: '🇨🇿',
+      description: 'Veškerý text se bude zobrazovat v češtině.'
+    },
+    {
+      id: 'el',
+      nativeName: 'Ελληνικά',
+      englishName: 'Greek',
+      flag: '🇬🇷',
+      description: 'Όλο το κείμενο θα εμφανίζεται στα Ελληνικά.'
+    },
+    {
+      id: 'hu',
+      nativeName: 'Magyar',
+      englishName: 'Hungarian',
+      flag: '🇭🇺',
+      description: 'Minden szöveg magyarul jelenik meg.'
+    },
+    {
+      id: 'sv',
+      nativeName: 'Svenska',
+      englishName: 'Swedish',
+      flag: '🇸🇪',
+      description: 'All text kommer att visas på svenska.'
+    },
+    {
+      id: 'fi',
+      nativeName: 'Suomi',
+      englishName: 'Finnish',
+      flag: '🇫🇮',
+      description: 'Kaikki teksti näytetään suomeksi.'
+    },
+    {
+      id: 'da',
+      nativeName: 'Dansk',
+      englishName: 'Danish',
+      flag: '🇩🇰',
+      description: 'Al tekst vises på dansk.'
+    },
+    {
+      id: 'tl',
+      nativeName: 'Filipino',
+      englishName: 'Tagalog',
+      flag: '🇵🇭',
+      description: 'Ang lahat ng teksto ay ipapakita sa Filipino.'
+    },
+    {
+      id: 'my',
+      nativeName: 'မြန်မာ',
+      englishName: 'Burmese',
+      flag: '🇲🇲',
+      description: 'စာသားအားလုံးကို မြန်မာဘာသာဖြင့် ပြသပါမည်။'
+    },
+    {
+      id: 'km',
+      nativeName: 'ខ្មែរ',
+      englishName: 'Khmer',
+      flag: '🇰🇭',
+      description: 'អត្ថបទទាំងអស់នឹងត្រូវបានបង្ហាញជាភាសាខ្មែរ។'
+    },
+    {
+      id: 'lo',
+      nativeName: 'ລາວ',
+      englishName: 'Lao',
+      flag: '🇱🇦',
+      description: 'ຂໍ້ຄວາມທັງໝົດຈະຖືກສະແດງເປັນພາສາລາວ.'
+    },
+    {
+      id: 'ne',
+      nativeName: 'नेपाली',
+      englishName: 'Nepali',
+      flag: '🇳🇵',
+      description: 'सबै पाठ नेपालीमा प्रदर्शित हुनेछ।'
+    },
+    {
+      id: 'si',
+      nativeName: 'සිංහල',
+      englishName: 'Sinhala',
+      flag: '🇱🇰',
+      description: 'සියලුම පෙළ සිංහලෙන් දර්ශනය වේ.'
+    },
+    {
+      id: 'he',
+      nativeName: 'עברית',
+      englishName: 'Hebrew',
+      flag: '🇮🇱',
+      description: 'כל הטקסט יוצג בעברית.'
+    },
+    {
+      id: 'am',
+      nativeName: 'አማርኛ',
+      englishName: 'Amharic',
+      flag: '🇪🇹',
+      description: 'ሁሉም ጽሑፍ በአማርኛ ይታያል።'
+    },
+    {
+      id: 'zu',
+      nativeName: 'isiZulu',
+      englishName: 'Zulu',
+      flag: '🇿🇦',
+      description: 'Wonke umbhalo uzoboniswa ngesiZulu.'
+    },
+    {
+      id: 'af',
+      nativeName: 'Afrikaans',
+      englishName: 'Afrikaans',
+      flag: '🇿🇦',
+      description: 'Alle teks sal in Afrikaans vertoon word.'
     },
   ];
 
@@ -170,7 +408,9 @@ export default function LanguagePage() {
 
             {/* Language Options */}
             <div className="space-y-3">
-              {languageOptions.map((option) => {
+              {[...languageOptions]
+                .sort((a, b) => a.englishName.localeCompare(b.englishName))
+                .map((option) => {
                 const isActive = language === option.id;
 
                 return (
@@ -184,10 +424,7 @@ export default function LanguagePage() {
                       }
                     `}
                   >
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center text-2xl shrink-0">
-                      {option.flag}
-                    </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 py-1">
                       <div className="flex items-center gap-2 mb-0.5">
                         <h3 className={`text-[15px] font-bold transition-colors truncate ${isActive ? 'text-indigo-700 dark:text-indigo-400' : 'text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400'}`}>
                           {option.nativeName}

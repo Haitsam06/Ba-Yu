@@ -133,3 +133,9 @@ h1, h2, h3, h4, h5, h6, button {
   0%, 100% { transform: scale(1); opacity: 0.1; }
   50% { transform: scale(1.4); opacity: 0.2; }
 }
+
+/* Enable automatic RTL/LTR detection based on typed content */
+input, textarea, [contenteditable="true"], .ql-editor {
+  unicode-bidi: plaintext;
+  text-align: start;
+}

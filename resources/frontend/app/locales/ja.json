@@ -397,7 +397,14 @@
     "desc_placeholder": "簡単な説明...",
     "saving_draft": "保存中...",
     "editor_placeholder": "ここに資料や説明を書いてください...",
-    "confirm": "確認"
+    "confirm": "確認",
+    "alt_text_title": "代替テキスト",
+    "alt_text_desc": "視覚障害のある読者のために画像を説明してください...",
+    "alt_text_button": "代替テキスト",
+    "layout_inline": "スタンダード / センター",
+    "layout_wide": "広い",
+    "layout_full": "フルブリード",
+    "delete_block": "ブロックの削除"
   },
   "calendar": {
     "days": [
@@ -575,7 +582,10 @@
     "downloaded_at": "ダウンロード：",
     "pdf_restricted_title": "保護された資料",
     "pdf_restricted_desc": "この PDF 版には資料の一部のみが含まれています。完全版をダウンロードするには、Ba-Yu アプリで著者 <b>@{author}</b> をフォローしてください。",
-    "pdf_footer": "このドキュメントは未来の学習プラットフォーム <span class=\"footer-brand\">Ba-Yu</span> からダウンロードされました"
+    "pdf_footer": "このドキュメントは未来の学習プラットフォーム <span class=\"footer-brand\">Ba-Yu</span> からダウンロードされました",
+    "sort_newest": "最新",
+    "sort_oldest": "最古",
+    "sort_top": "トップコメント"
   },
   "public_profile": {
     "title": "ユーザープロフィール",
@@ -912,7 +922,9 @@
     "SMP": "中学校",
     "SMA": "高校",
     "Kuliah": "大学",
-    "Umum": "一般"
+    "Umum": "一般",
+    "class_format": "クラス{{num}}",
+    "semester_format": "学期{{num}}"
   },
   "subject_categories": {
     "Umum & Wajib": "一般・必修",
@@ -1075,7 +1087,8 @@
     "careers": "キャリア",
     "contact": "連絡先",
     "privacy": "プライバシーポリシー",
-    "terms": "利用規約"
+    "terms": "利用規約",
+    "status": "Status"
   },
   "edit_profile": {
     "title": "プロフィール編集",
@@ -1523,5 +1536,57 @@
     "submit_button": "リセットリンクを送信",
     "reset_sent": "パスワードリセットリンクがメールに送信されました。",
     "reset_throttled": "再試行する前に少し(60秒)お待ちください。"
+  },
+  "notif": {
+    "like_note_title": "あなたのノートにいいねが付きました！",
+    "like_comment_title": "あなたのコメントにいいねが付きました！",
+    "like_note_msg": "{{name}}さんがあなたのノート「{{note}}」にいいねしました",
+    "like_comment_msg": "{{name}}さんがあなたのコメントにいいねしました",
+    "reply_title": "あなたのコメントに返信がありました",
+    "comment_title": "ノートに新しいコメントがあります",
+    "respond_title": "ノートに新しい反応があります",
+    "reply_msg": "{{name}}さんからの返信: \"{{content}}\"",
+    "comment_msg": "{{name}}さんのコメント: \"{{content}}\"",
+    "respond_msg": "{{name}}さんがあなたのノートに反応しました",
+    "follow_new_title": "新しいフォロワー",
+    "follow_req_title": "フォローリクエスト",
+    "follow_acc_title": "リクエストが承認されました",
+    "follow_new_msg": "{{username}}さんがあなたをフォローし始めました。",
+    "follow_req_msg": "{{username}}さんがあなたをフォローしたがっています。",
+    "follow_acc_msg": "{{username}}さんがフォローリクエストを承認しました。",
+    "cert_acc_title": "認定が承認されました！",
+    "cert_rej_title": "認定が拒否されました",
+    "cert_new_title": "新しい専門家の申請",
+    "cert_new_msg": "{{name}}さんが{{field}}の専門家として申請しました。",
+    "cert_acc_msg": "おめでとうございます！正式に専門家として認定されました。",
+    "report_recv_title": "報告を受け付けました",
+    "report_warn_note_title": "警告: ノートが報告されました",
+    "report_warn_comment_title": "警告: コメントが報告されました",
+    "report_del_note_title": "ノートが削除されました（テイクダウン）",
+    "report_del_comment_title": "コメントが削除されました（テイクダウン）",
+    "report_banned_title": "アカウントが停止されました",
+    "report_rejected_title": "報告が却下されました",
+    "like_note_title_alt": "あなたのノートにいいねが付きました",
+    "post_needs_work_title": "ノートに改善が必要です",
+    "post_needs_work_msg": "ノート「{{title}}」は専門家のレビューに基づき改善が必要です。",
+    "post_approved_title": "専門家によってノートが承認されました！ 🎉",
+    "post_approved_msg": "おめでとうございます！ノート「{{title}}」が承認されました。評価: {{rating}}星。フィードバック: \"{{feedback}}\"",
+    "cert_acc_msg_2": "おめでとうございます！{{field}}の専門家認定申請が管理者に承認されました。",
+    "cert_rej_msg_2": "申し訳ありませんが、{{field}}の専門家認定申請は現在承認できません。",
+    "report_del_note_msg": "あなたのノート「{{title}}」はコミュニティガイドライン違反のため管理者に削除されました。管理者の理由: {{reason}}",
+    "report_del_comment_msg": "あなたのコメントはコミュニティガイドライン違反のため管理者に削除されました。管理者の理由: {{reason}}",
+    "report_warn_note_msg": "あなたのノート「{{title}}」が「{{reason}}」の理由で報告されました。専門家/管理者チームが確認します。",
+    "report_recv_note_msg": "ノート「{{title}}」に関するあなたの報告は現在チームで確認中です。",
+    "report_recv_user_msg": "ユーザー @{{username}} に関するあなたの報告は現在管理者が確認中です。",
+    "report_rej_msg": "あなたの報告は次の理由で管理者により却下されました: {{reason}}"
+  },
+  "notif_detail": {
+    "title": "メッセージの詳細",
+    "not_found_title": "メッセージが見つかりません",
+    "not_found_desc": "このメッセージは削除されたか、利用できなくなっている可能性があります。",
+    "back": "戻る",
+    "system": "Ba-Yu システム",
+    "regards": "よろしくお願いします、",
+    "team": "Ba-Yu EduPlatform チーム"
   }
 }

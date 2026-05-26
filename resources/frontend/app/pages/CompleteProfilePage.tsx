@@ -127,11 +127,11 @@ export default function CompleteProfilePage() {
                                     icon={<GraduationCap className="w-[18px] h-[18px]" strokeWidth={2.5} />}
                                     buttonClassName="bg-gray-50 dark:bg-[#1C1A29] rounded-2xl pl-11 pr-4 py-3.5"
                                     options={[
-                                        { value: "SD", label: t('complete_profile.edu_sd') || "Sekolah Dasar (SD)" },
-                                        { value: "SMP", label: t('complete_profile.edu_smp') || "Menengah Pertama (SMP)" },
-                                        { value: "SMA", label: t('complete_profile.edu_sma') || "Menengah Atas (SMA/SMK)" },
-                                        { value: "Kuliah", label: t('complete_profile.edu_college') || "Perguruan Tinggi (Kuliah)" },
-                                        { value: "Umum", label: t('complete_profile.edu_general') || "Umum" },
+                                        { value: "SD", label: t('edu_levels.SD') !== 'edu_levels.SD' ? t('edu_levels.SD') : "Sekolah Dasar (SD)" },
+                                        { value: "SMP", label: t('edu_levels.SMP') !== 'edu_levels.SMP' ? t('edu_levels.SMP') : "Menengah Pertama (SMP)" },
+                                        { value: "SMA", label: t('edu_levels.SMA') !== 'edu_levels.SMA' ? t('edu_levels.SMA') : "Menengah Atas (SMA/SMK)" },
+                                        { value: "Kuliah", label: t('edu_levels.Kuliah') !== 'edu_levels.Kuliah' ? t('edu_levels.Kuliah') : "Perguruan Tinggi (Kuliah)" },
+                                        { value: "Umum", label: t('edu_levels.Umum') !== 'edu_levels.Umum' ? t('edu_levels.Umum') : "Umum" },
                                     ]}
                                 />
                             </div>
@@ -148,10 +148,10 @@ export default function CompleteProfilePage() {
                                     icon={<User className="w-[18px] h-[18px]" strokeWidth={2.5} />}
                                     buttonClassName="bg-gray-50 dark:bg-[#1C1A29] rounded-2xl pl-11 pr-4 py-3.5"
                                     options={[
-                                        { value: "Pelajar", label: t('complete_profile.prof_student') || "Pelajar" },
-                                        { value: "Mahasiswa", label: t('complete_profile.prof_college_student') || "Mahasiswa" },
-                                        { value: "Pengajar", label: t('complete_profile.prof_teacher') || "Pengajar (Guru/Dosen)" },
-                                        { value: "Umum", label: t('complete_profile.prof_general') || "Umum / Profesional" },
+                                        { value: "Pelajar", label: t('complete_profile.prof_student') !== 'complete_profile.prof_student' ? t('complete_profile.prof_student') : "Pelajar" },
+                                        { value: "Mahasiswa", label: t('complete_profile.prof_college') !== 'complete_profile.prof_college' ? t('complete_profile.prof_college') : "Mahasiswa" },
+                                        { value: "Pengajar", label: t('complete_profile.prof_teacher') !== 'complete_profile.prof_teacher' ? t('complete_profile.prof_teacher') : "Pengajar (Guru/Dosen)" },
+                                        { value: "Umum", label: t('complete_profile.prof_general') !== 'complete_profile.prof_general' ? t('complete_profile.prof_general') : "Umum / Profesional" },
                                     ]}
                                 />
                             </div>

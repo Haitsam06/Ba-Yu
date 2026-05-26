@@ -94,6 +94,7 @@ export default function NoteDetailPage() {
     const [selectionRect, setSelectionRect] = useState<DOMRect | null>(null);
     const [showHighlightMenu, setShowHighlightMenu] = useState(false);
     const [quoteContext, setQuoteContext] = useState("");
+    const [expandedQuotes, setExpandedQuotes] = useState<Record<string, boolean>>({});
 
     // Phase 4: Personal Highlight State
     const [highlights, setHighlights] = useState<any[]>([]);
@@ -107,6 +108,7 @@ export default function NoteDetailPage() {
         red:    { bg: "var(--hl-red)", darkBg: "var(--hl-red)", label: "Merah" },
         purple: { bg: "var(--hl-purple)", darkBg: "var(--hl-purple)", label: "Ungu" },
     };
+
     const handleDownloadPDF = () => {
         const contentContainer = document.getElementById("area-materi-pdf");
         if (!contentContainer) return;
@@ -133,7 +135,7 @@ export default function NoteDetailPage() {
             return;
         }
 
-        const dateStr = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+        const dateStr = new Date().toLocaleDateString((language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language), { year: 'numeric', month: 'long', day: 'numeric' });
 
         printWindow.document.write(`
             <!DOCTYPE html>
@@ -286,9 +288,16 @@ export default function NoteDetailPage() {
 
                         /* Remove tooltip UI from print */
                         .highlight-tooltip { display: none !important; }
+                        
+                        /* RTL Support */
+                        body[dir="rtl"] { text-align: right; }
+                        body[dir="rtl"] .header h1, body[dir="rtl"] h2, body[dir="rtl"] h3, body[dir="rtl"] h4, body[dir="rtl"] p { text-align: right; }
+                        body[dir="rtl"] ul, body[dir="rtl"] ol { padding-left: 0; padding-right: 1.5em; }
+                        body[dir="rtl"] blockquote { border-left: none; border-right: 4px solid var(--primary); border-radius: 8px 0 0 8px; }
+                        body[dir="rtl"] pre, body[dir="rtl"] code { direction: ltr !important; text-align: left !important; }
                     </style>
                 </head>
-                <body>
+                <body dir="${isContentRtl ? 'rtl' : 'ltr'}">
                     <div class="header">
                         <h1>${note?.title || "Materi Catatan"}</h1>
                         <div class="meta">
@@ -612,6 +621,35 @@ export default function NoteDetailPage() {
     const [comments, setComments] = useState<any[]>([]);
     const [validator, setValidator] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [commentSort, setCommentSort] = useState<"newest" | "oldest" | "top">("newest");
+
+    // Auto-detect RTL based on note content
+    const isContentRtl = note ? /[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F]/.test((note.title || "") + " " + (note.content || "")) : false;
+
+    // Handle comment hash scrolling from notifications
+    useEffect(() => {
+        if (location.hash && location.hash.startsWith('#comment-')) {
+            // Buka drawer komentar
+            setIsCommentDrawerOpen(true);
+            
+            // Tunggu drawer kebuka & komentar ke-render, baru scroll
+            const timer = setTimeout(() => {
+                const commentId = location.hash.substring(1);
+                const element = document.getElementById(commentId);
+                if (element) {
+                    element.scrollIntoView({ behavior: "smooth", block: "center" });
+                    
+                    // Highlight the comment briefly
+                    element.classList.add("ring-2", "ring-indigo-500", "ring-offset-2", "bg-indigo-50", "dark:bg-indigo-500/10");
+                    setTimeout(() => {
+                        element.classList.remove("ring-2", "ring-indigo-500", "ring-offset-2", "bg-indigo-50", "dark:bg-indigo-500/10");
+                    }, 2500);
+                }
+            }, 600); // Waktu cukup untuk animasi drawer
+            
+            return () => clearTimeout(timer);
+        }
+    }, [location.hash, comments.length]);
 
     const [recommendedNotes, setRecommendedNotes] = useState<any[]>([]);
     const [moreFromAuthor, setMoreFromAuthor] = useState<any[]>([]);
@@ -803,11 +841,13 @@ export default function NoteDetailPage() {
                     title: n.title,
                     content: n.content,
                     createdAt: n.created_at
-                        ? new Date(n.created_at).toLocaleDateString("id-ID", {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                          })
+                        ? (() => {
+                              let d = new Date(n.created_at);
+                              if (isNaN(d.getTime()) && typeof n.created_at === 'string') {
+                                  d = new Date(n.created_at.replace(' ', 'T'));
+                              }
+                              return isNaN(d.getTime()) ? "" : d.toISOString();
+                          })()
                         : "",
                     thumbnail: n.thumbnail || null,
                     mataPelajaran: n.mapel || "Umum",
@@ -1349,6 +1389,13 @@ export default function NoteDetailPage() {
         .notion-editor .ql-formula { padding: 3px 8px; background: #faf5ff; border-radius: 6px; border: 1px solid #e9d5ff; color: #7c3aed; display: inline-block; font-size: 0.9em; margin: 0 0.2em; }
         .notion-reader .ql-editor iframe { width: 100% !important; aspect-ratio: 16 / 9; height: auto !important; border-radius: 12px; margin: 2em 0; box-shadow: 0 4px 20px rgba(0,0,0,0.08);}
         .notion-reader .ql-editor .ql-video { display: block; max-width: 100%;}
+        
+        /* RTL Overrides for Reader */
+        .notion-reader[dir="rtl"] .ql-editor { text-align: right; }
+        .notion-reader[dir="rtl"] .ql-editor h1, .notion-reader[dir="rtl"] .ql-editor h2, .notion-reader[dir="rtl"] .ql-editor h3, .notion-reader[dir="rtl"] .ql-editor p { text-align: right; }
+        .notion-reader[dir="rtl"] .ql-editor ul, .notion-reader[dir="rtl"] .ql-editor ol { padding-left: 0; padding-right: 1.5em; }
+        .notion-reader[dir="rtl"] .ql-editor blockquote { border-left: none; border-right: 4px solid #4f46e5; border-radius: 8px 0 0 8px; }
+        .notion-reader[dir="rtl"] .ql-editor pre, .notion-reader[dir="rtl"] .ql-editor code { direction: ltr !important; text-align: left !important; }
         `,
                 }}
             />
@@ -1492,7 +1539,7 @@ export default function NoteDetailPage() {
                         </div>
                         <div className="flex items-center gap-3 text-[13px] font-['Manrope'] text-gray-600 dark:text-gray-400 mt-0.5 font-bold">
                             <div className="flex items-center gap-1.5">
-                                <span>{new Date(note.createdAt).toLocaleDateString(language, { year: "numeric", month: "long", day: "numeric" })}</span>
+                                <span>{new Date(note.createdAt).toLocaleDateString((language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language), { year: "numeric", month: "long", day: "numeric" })}</span>
                             </div>
                             <span className="w-1 h-1 rounded-full bg-gray-400"></span>
                             <div className="flex items-center gap-1.5">
@@ -1570,10 +1617,10 @@ export default function NoteDetailPage() {
                     </div>
                 </div>
 
-                {/* Editor Content Area (Borderless Notion / Substack View) */}
                 <div className="mb-16 relative">
                     <div
                         id="area-materi-pdf"
+                        dir={isContentRtl ? 'rtl' : 'ltr'}
                         className={`notion-reader ql-snow note-content-container relative ${note.is_restricted ? "max-h-[750px] overflow-hidden select-none" : ""}`}
                     >
                         <div
@@ -1624,22 +1671,32 @@ export default function NoteDetailPage() {
                     )}
                 </div>
 
-                {/* PREMIUM DOWNLOAD CARD */}
-                <div className="mt-16 mb-16 bg-gradient-to-br from-indigo-50/40 via-white to-white dark:from-[#1C1A29] dark:via-[#1C1A29] dark:to-[#1C1A29] rounded-[40px] p-10 md:p-14 text-center border border-indigo-50 dark:border-white/5 shadow-[0_10px_30px_rgba(0,0,0,0.02)] dark:shadow-none relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-100/20 dark:bg-indigo-500/10 rounded-bl-[100px] pointer-events-none transition-transform duration-700" />
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-violet-100/10 dark:bg-primary/10 rounded-tr-[80px] pointer-events-none" />
-
-                    <div className="relative z-10">
-                        <div className="w-16 h-16 bg-white dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-md dark:shadow-none border border-indigo-50 dark:border-white/10 transition-transform">
-                            <Download className="w-8 h-8 text-indigo-600 dark:text-primary" />
+                {/* CLEAN DOWNLOAD CARD */}
+                <div className="mt-16 mb-16 relative w-full rounded-[32px] overflow-hidden border border-gray-200/50 dark:border-white/5 bg-white dark:bg-[#1C1A29] shadow-sm">
+                    {/* Background Accents for Dark/Light Mode */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50/50 dark:bg-indigo-500/5 rounded-full blur-[80px] pointer-events-none -translate-y-1/2 translate-x-1/4" />
+                    <div className="absolute bottom-0 left-0 w-40 h-40 bg-violet-50/50 dark:bg-primary/5 rounded-full blur-[60px] pointer-events-none translate-y-1/3 -translate-x-1/3" />
+                    
+                    <div className="relative z-10 p-10 sm:p-14 text-center flex flex-col items-center">
+                        <div className="w-14 h-14 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-2xl flex items-center justify-center mb-6">
+                            <Download className="w-6 h-6 text-indigo-500 dark:text-indigo-400" strokeWidth={2} />
                         </div>
-                        <h3 className="font-['Lexend_Deca'] font-extrabold text-2xl text-slate-900 dark:text-slate-100 mb-4">{t("note_detail.full_material")}</h3>
-                        <p className="font-['Manrope'] text-[16px] text-slate-500 dark:text-slate-400 mb-10 max-w-md mx-auto leading-relaxed font-medium">{t("note_detail.download_desc")}</p>
+                        
+                        <h3 className="font-['Lexend_Deca'] font-bold text-2xl text-gray-900 dark:text-white mb-3 tracking-tight">
+                            {t("note_detail.full_material")}
+                        </h3>
+                        
+                        <p className="font-['Manrope'] text-[15px] text-gray-500 dark:text-gray-400 mb-8 max-w-sm mx-auto leading-relaxed">
+                            {t("note_detail.download_desc")}
+                        </p>
+                        
                         <button
                             onClick={handleDownloadPDF}
-                            className="mx-auto flex items-center justify-center gap-3 px-10 py-5 bg-slate-900 dark:bg-primary hover:bg-slate-800 dark:hover:bg-primary/90 text-white rounded-2xl text-[13px] font-['Lexend_Deca'] font-black uppercase tracking-widest transition-all shadow-xl shadow-slate-900/10 dark:shadow-none active:scale-95"
+                            className="flex items-center justify-center gap-2.5 px-8 py-4 bg-indigo-500 hover:bg-indigo-600 dark:bg-[#706BFF] dark:hover:bg-[#5C57FF] text-white rounded-2xl text-[13px] font-['Lexend_Deca'] font-bold uppercase tracking-wider transition-all active:scale-95 shadow-md shadow-indigo-500/20 dark:shadow-none"
                         >
-                            <FileText className="w-5 h-5 opacity-50" />{t("note_detail.download_pdf")}</button>
+                            <FileText className="w-4 h-4 opacity-80" />
+                            {t("note_detail.download_pdf")}
+                        </button>
                     </div>
                 </div>
 
@@ -1921,7 +1978,7 @@ export default function NoteDetailPage() {
                                                     <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl rounded-tl-none">
                                                         <div className="flex justify-between items-start mb-2">
                                                             <h5 className="font-['Lexend_Deca'] font-bold text-[14px] text-gray-900 dark:text-gray-100">{cAuth.name || cAuth.username || "Anonim"}</h5>
-                                                            <span className="font-['Manrope'] text-[11px] font-bold text-gray-500 dark:text-gray-500">{comment.created_at ? new Date(comment.created_at).toLocaleDateString(language === 'id' ? 'id-ID' : language) : t("note_detail.date_just_now")}</span>
+                                                            <span className="font-['Manrope'] text-[11px] font-bold text-gray-500 dark:text-gray-500">{comment.created_at ? new Date(comment.created_at).toLocaleDateString((language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language)) : t("note_detail.date_just_now")}</span>
                                                         </div>
                                                         {comment.quote_context && (
                                                             <div className="mb-2 pl-3 border-l-[3px] border-indigo-200 dark:border-indigo-500/50 bg-indigo-50/50 dark:bg-indigo-500/10 py-1.5 pr-2 rounded-r-lg">
@@ -2032,7 +2089,7 @@ export default function NoteDetailPage() {
                                                                         <div className="flex-1 bg-gray-50/50 dark:bg-white/5 p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-white/5">
                                                                             <div className="flex justify-between items-start mb-1">
                                                                                 <h5 className="font-['Lexend_Deca'] font-bold text-[12px] text-gray-900 dark:text-gray-100">{rAuth.name || rAuth.username || "Anonim"}</h5>
-                                                                                <span className="font-['Manrope'] text-[10px] font-bold text-gray-500 dark:text-gray-500">{reply.created_at ? new Date(reply.created_at).toLocaleDateString(language === 'id' ? 'id-ID' : language) : t("note_detail.date_just_now")}</span>
+                                                                                <span className="font-['Manrope'] text-[10px] font-bold text-gray-500 dark:text-gray-500">{reply.created_at ? new Date(reply.created_at).toLocaleDateString((language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language)) : t("note_detail.date_just_now")}</span>
                                                                             </div>
                                                                             <p className="font-['Manrope'] text-[13px] text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
                                                                                 {reply.content}
@@ -2146,15 +2203,23 @@ export default function NoteDetailPage() {
                     isCommentDrawerOpen ? "translate-x-0" : "translate-x-[110%]"
                 } flex flex-col`}
             >
-                <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-white/5">
-                    <h4 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">{t("note_detail.discussion")} ({comments.length})
-                    </h4>
-                    <button
-                        onClick={() => setIsCommentDrawerOpen(false)}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors"
-                    >
-                        <X className="w-6 h-6 text-gray-500" />
-                    </button>
+                <div className="flex flex-col border-b border-gray-100 dark:border-white/5">
+                    <div className="flex items-center justify-between p-6 pb-4">
+                        <h4 className="font-['Lexend_Deca'] font-bold text-xl text-gray-900 dark:text-gray-100">{t("note_detail.discussion")} ({comments.length})
+                        </h4>
+                        <button
+                            onClick={() => setIsCommentDrawerOpen(false)}
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors"
+                        >
+                            <X className="w-6 h-6 text-gray-500" />
+                        </button>
+                    </div>
+                    {/* Sort Filter UI */}
+                    <div className="flex items-center gap-3 px-6 pb-4 overflow-x-auto custom-scrollbar">
+                        <button onClick={() => setCommentSort("newest")} className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-['Manrope'] font-bold transition-all ${commentSort === "newest" ? "bg-indigo-600 dark:bg-indigo-500 text-white shadow-md shadow-indigo-500/20" : "bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10"}`}>{t("note_detail.sort_newest") || "Terbaru"}</button>
+                        <button onClick={() => setCommentSort("top")} className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-['Manrope'] font-bold transition-all ${commentSort === "top" ? "bg-indigo-600 dark:bg-indigo-500 text-white shadow-md shadow-indigo-500/20" : "bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10"}`}>{t("note_detail.sort_top") || "Terpopuler"}</button>
+                        <button onClick={() => setCommentSort("oldest")} className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-['Manrope'] font-bold transition-all ${commentSort === "oldest" ? "bg-indigo-600 dark:bg-indigo-500 text-white shadow-md shadow-indigo-500/20" : "bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10"}`}>{t("note_detail.sort_oldest") || "Terlama"}</button>
+                    </div>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar">
@@ -2165,8 +2230,21 @@ export default function NoteDetailPage() {
                                 <p className="font-['Manrope'] text-base text-gray-600 dark:text-gray-400 font-bold">{t("note_detail.no_comments_yet")}</p>
                             </div>
                         ) : (
-                            comments
+                            [...comments]
                                 .filter((c) => !c.parent_comment_id)
+                                .sort((a, b) => {
+                                    if (commentSort === "top") {
+                                        const likesA = a.likes_count || 0;
+                                        const likesB = b.likes_count || 0;
+                                        if (likesB !== likesA) return likesB - likesA;
+                                        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+                                    } else if (commentSort === "oldest") {
+                                        return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
+                                    } else {
+                                        // newest
+                                        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+                                    }
+                                })
                                 .map((root) => {
                                     const rootId = root._id || root.id;
                                     const childReplies = comments.filter(
@@ -2228,7 +2306,7 @@ export default function NoteDetailPage() {
                                                                     comment.created_at ||
                                                                         Date.now(),
                                                                 ).toLocaleDateString(
-                                                                    language === 'id' ? 'id-ID' : language,
+                                                                    (language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language),
                                                                 )}
                                                             </span>
                                                         </div>
@@ -2287,10 +2365,18 @@ export default function NoteDetailPage() {
                                                     </div>
                                                     {/* Render Quote Context jika ada */}
                                                     {comment.quote_context && (
-                                                        <div className="mb-2 pl-3 border-l-[3px] border-indigo-200 dark:border-indigo-500/50 bg-indigo-50/50 dark:bg-indigo-500/10 py-1.5 pr-2 rounded-r-lg">
-                                                            <p className="font-['Manrope'] text-[13px] text-gray-600 dark:text-gray-400 italic line-clamp-2 font-medium">
+                                                        <div className="mb-2 pl-3 border-l-[3px] border-indigo-200 dark:border-indigo-500/50 bg-indigo-50/50 dark:bg-indigo-500/10 py-1.5 pr-2 rounded-r-lg relative group">
+                                                            <p className={`font-['Manrope'] text-[13px] text-gray-600 dark:text-gray-400 italic font-medium transition-all duration-300 pr-6 ${expandedQuotes[cid] ? '' : 'line-clamp-2'}`}>
                                                                 "{comment.quote_context}"
                                                             </p>
+                                                            {comment.quote_context.length > 90 && (
+                                                                <button 
+                                                                    onClick={() => setExpandedQuotes(prev => ({ ...prev, [cid]: !prev[cid] }))}
+                                                                    className={`absolute bottom-1 right-2 p-1 bg-white dark:bg-[#1C1A29] rounded-full shadow-sm hover:text-indigo-500 transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100 flex items-center justify-center border border-gray-100 dark:border-white/5 ${expandedQuotes[cid] ? 'text-indigo-500' : 'text-gray-400'}`}
+                                                                >
+                                                                    <MoreHorizontal className="w-3 h-3" />
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     )}
                                                     {editingCommentId === cid ? (

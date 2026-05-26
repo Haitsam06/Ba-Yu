@@ -20,7 +20,9 @@ import {
   Share2,
   MoreHorizontal,
   Flame,
-  Award
+  Award,
+  ChevronUp,
+  ChevronDown
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -143,25 +145,15 @@ const LearningStatisticsPage = () => {
         // 3. Ubah format grafik dari Backend biar cocok sama Recharts Frontend
         // Backend ngirim: { Sen: 4, Sel: 0, ... }
         // Frontend butuh: [{ label: 'Sen', value: 4 }, ...]
-        const dayMap: Record<string, number> = {
-            'Min': 0, 'Sen': 1, 'Sel': 2, 'Rab': 3, 'Kam': 4, 'Jum': 5, 'Sab': 6,
-            'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6
-        };
-        const calendarDays = t('calendar.days', { returnObjects: true }) as string[];
-
-        const formattedWeeklyChart = Object.keys(apiData.weekly_chart).map(key => {
-            const dayIndex = dayMap[key];
-            const localizedLabel = dayIndex !== undefined && calendarDays ? calendarDays[dayIndex] : key;
-            return {
-                label: localizedLabel,
-                value: apiData.weekly_chart[key] // Ini dalam menit ya!
-            };
-        });
+        const formattedWeeklyChart = Object.keys(apiData.weekly_chart).map(key => ({
+            originalLabel: key,
+            value: apiData.weekly_chart[key] // Ini dalam menit ya!
+        }));
         setDynamicWeeklyData(formattedWeeklyChart);
 
         if (apiData.monthly_chart) {
             const formattedMonthlyChart = Object.keys(apiData.monthly_chart).map(key => ({
-                label: key.replace(/Minggu|Week/i, t('stats.week') || 'Minggu'),
+                originalLabel: key,
                 value: apiData.monthly_chart[key] // Durasi dalam menit per minggu
             }));
             setDynamicMonthlyData(formattedMonthlyChart);
@@ -186,8 +178,35 @@ const LearningStatisticsPage = () => {
     fetchStatistics();
   }, []);
 
-  // Kalo view-nya weekly, pake data dari API, monthly juga pake API
-  const activeChartData = chartView === 'weekly' ? dynamicWeeklyData : dynamicMonthlyData;
+  const activeLocale = language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language;
+  
+  const shortDays = React.useMemo(() => {
+    return [...Array(7)].map((_, i) => new Intl.DateTimeFormat(activeLocale, { weekday: 'short' }).format(new Date(2023, 0, i + 1)));
+  }, [activeLocale]);
+  
+  const narrowDays = React.useMemo(() => {
+    return [...Array(7)].map((_, i) => new Intl.DateTimeFormat(activeLocale, { weekday: 'narrow' }).format(new Date(2023, 0, i + 1)));
+  }, [activeLocale]);
+
+  const dayMap: Record<string, number> = {
+      'Min': 0, 'Sen': 1, 'Sel': 2, 'Rab': 3, 'Kam': 4, 'Jum': 5, 'Sab': 6,
+      'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6
+  };
+
+  const localizedWeeklyData = dynamicWeeklyData.map(d => {
+      const dIndex = dayMap[d.originalLabel];
+      return {
+         ...d,
+         label: dIndex !== undefined ? shortDays[dIndex] : d.originalLabel
+      };
+  });
+
+  const localizedMonthlyData = dynamicMonthlyData.map(d => ({
+      ...d,
+      label: d.originalLabel.replace(/Minggu|Week/i, t('stats.week') || 'Minggu')
+  }));
+
+  const activeChartData = chartView === 'weekly' ? localizedWeeklyData : localizedMonthlyData;
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -327,8 +346,8 @@ const LearningStatisticsPage = () => {
                                  </div>
                               </div>
                               <div className="grid grid-cols-7 gap-1 text-center mb-1">
-                                 {((t('calendar.days', { returnObjects: true }) || ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"]) as string[]).map((d, i) => (
-                                    <span key={i} className="text-[9px] font-bold text-white/60">{d.charAt(0).toUpperCase()}</span>
+                                 {narrowDays.map((d, i) => (
+                                    <span key={i} className="text-[10px] font-bold text-white/70 uppercase">{d}</span>
                                  ))}
                               </div>
                               <div className="grid grid-cols-7 gap-1">
@@ -507,8 +526,8 @@ const LearningStatisticsPage = () => {
                     </div>
                  </div>
                  <div className="grid grid-cols-7 gap-1.5 text-center mb-2">
-                    {((t('calendar.days', { returnObjects: true }) || ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"]) as string[]).map((d, i) => (
-                       <span key={i} className="text-[10px] font-bold text-slate-400">{d.charAt(0).toUpperCase()}</span>
+                    {narrowDays.map((d, i) => (
+                       <span key={i} className="text-[11px] font-bold text-slate-400 uppercase">{d}</span>
                     ))}
                  </div>
                  <div className="grid grid-cols-7 gap-1.5">
@@ -573,16 +592,16 @@ const LearningStatisticsPage = () => {
               
               <div className="w-full">
                 {/* DIGITAL CLOCK INPUT */}
-                <div className="flex items-center justify-center gap-4 sm:gap-6 mb-12">
+                <div className="flex items-center justify-center gap-4 sm:gap-6 mb-12" dir="ltr">
                   {/* HOURS COLUMN */}
                   <div className="flex flex-col items-center gap-3">
                     <button 
                       onClick={() => setTempHours((prev: number) => (prev + 1) % 24)}
                       className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-primary transition-all"
                     >
-                      <ChevronRight className="rotate-[-90deg]" size={20} />
+                      <ChevronUp size={20} />
                     </button>
-                    <div className="w-20 h-24 sm:w-24 sm:h-28 bg-indigo-50/50 dark:bg-indigo-500/5 rounded-[28px] border-2 border-indigo-100/50 dark:border-indigo-500/20 flex items-center justify-center relative overflow-hidden group focus-within:border-indigo-400 transition-colors">
+                    <div className="w-20 h-24 sm:w-24 sm:h-28 bg-indigo-50/50 dark:bg-indigo-500/5 rounded-[28px] border-2 border-indigo-100/50 dark:border-indigo-500/20 relative overflow-hidden group focus-within:border-indigo-400 transition-colors flex flex-col items-center justify-center">
                        <input 
                          type="text"
                          value={tempHours.toString().padStart(2, '0')}
@@ -590,20 +609,21 @@ const LearningStatisticsPage = () => {
                            const val = parseInt(e.target.value.replace(/\D/g, '')) || 0;
                            setTempHours(Math.min(val, 23));
                          }}
-                         className="w-full h-full bg-transparent text-center text-4xl sm:text-5xl font-['Lexend_Deca'] font-bold text-indigo-600 tracking-tighter tabular-nums focus:outline-none relative z-10"
+                         style={{ textAlign: 'center' }}
+                         className="w-full bg-transparent text-4xl sm:text-5xl font-['Lexend_Deca'] font-bold text-indigo-600 tabular-nums focus:outline-none leading-none mt-1 px-0 tracking-normal"
                        />
-                       <div className="absolute bottom-2 text-[9px] font-bold text-indigo-300 uppercase tracking-[0.2em]">{t('stats.hours')}</div>
+                       <div className="text-[9px] font-bold text-indigo-300 uppercase tracking-[0.2em] pointer-events-none mt-1">{t('stats.hours')}</div>
                     </div>
                     <button 
                       onClick={() => setTempHours((prev: number) => (prev - 1 + 24) % 24)}
                       className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-primary transition-all"
                     >
-                      <ChevronRight className="rotate-[90deg]" size={20} />
+                      <ChevronDown size={20} />
                     </button>
                   </div>
 
                   {/* SEPARATOR */}
-                  <div className="flex flex-col gap-2 py-8">
+                  <div className="flex flex-col gap-2 relative z-10">
                     <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
                     <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
                   </div>
@@ -614,9 +634,9 @@ const LearningStatisticsPage = () => {
                       onClick={() => setTempMinutes((prev: number) => (prev + 5) % 60)}
                       className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-primary transition-all"
                     >
-                      <ChevronRight className="rotate-[-90deg]" size={20} />
+                      <ChevronUp size={20} />
                     </button>
-                    <div className="w-20 h-24 sm:w-24 sm:h-28 bg-indigo-50/50 dark:bg-indigo-500/5 rounded-[28px] border-2 border-indigo-100/50 dark:border-indigo-500/20 flex items-center justify-center relative overflow-hidden focus-within:border-indigo-400 transition-colors">
+                    <div className="w-20 h-24 sm:w-24 sm:h-28 bg-indigo-50/50 dark:bg-indigo-500/5 rounded-[28px] border-2 border-indigo-100/50 dark:border-indigo-500/20 relative overflow-hidden focus-within:border-indigo-400 transition-colors flex flex-col items-center justify-center">
                        <input 
                          type="text"
                          value={tempMinutes.toString().padStart(2, '0')}
@@ -624,15 +644,16 @@ const LearningStatisticsPage = () => {
                            const val = parseInt(e.target.value.replace(/\D/g, '')) || 0;
                            setTempMinutes(Math.min(val, 59));
                          }}
-                         className="w-full h-full bg-transparent text-center text-4xl sm:text-5xl font-['Lexend_Deca'] font-bold text-indigo-600 tracking-tighter tabular-nums focus:outline-none relative z-10"
+                         style={{ textAlign: 'center' }}
+                         className="w-full bg-transparent text-4xl sm:text-5xl font-['Lexend_Deca'] font-bold text-indigo-600 tabular-nums focus:outline-none leading-none mt-1 px-0 tracking-normal"
                        />
-                       <div className="absolute bottom-2 text-[9px] font-bold text-indigo-300 uppercase tracking-[0.2em]">{t('stats.mins')}</div>
+                       <div className="text-[9px] font-bold text-indigo-300 uppercase tracking-[0.2em] pointer-events-none mt-1">{t('stats.mins')}</div>
                     </div>
                     <button 
                       onClick={() => setTempMinutes((prev: number) => (prev - 5 + 60) % 60)}
                       className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-primary transition-all"
                     >
-                      <ChevronRight className="rotate-[90deg]" size={20} />
+                      <ChevronDown size={20} />
                     </button>
                   </div>
                 </div>

@@ -14,6 +14,8 @@ import {
     Trash2
 } from "lucide-react";
 import { MobileLayout } from "../components/MobileLayout";
+import { useTranslation } from "../hooks/useTranslation";
+import { useNotificationTranslator } from "../hooks/useNotificationTranslator";
 
 interface NotificationDetail {
     _id: string;
@@ -33,6 +35,8 @@ export default function NotificationDetailPage() {
     const [notif, setNotif] = useState<NotificationDetail | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const { t, language } = useTranslation();
+    const { translateNotification } = useNotificationTranslator();
 
     useEffect(() => {
         const fetchDetail = async () => {
@@ -51,7 +55,7 @@ export default function NotificationDetailPage() {
                     console.warn("Gagal mark as read:", putErr);
                 }
 
-                setNotif(res.data.data);
+                setNotif(translateNotification(res.data.data));
             } catch (err: any) {
                 console.error("Gagal mengambil detail notifikasi:", err);
                 setError(err.response?.data?.message || err.message || "Unknown error");
@@ -65,7 +69,7 @@ export default function NotificationDetailPage() {
 
     const formatDate = (dateStr: string) => {
         const d = new Date(dateStr);
-        return d.toLocaleDateString('id-ID', {
+        return d.toLocaleDateString((language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language), {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
@@ -146,16 +150,16 @@ export default function NotificationDetailPage() {
             <MobileLayout>
                 <div className="min-h-screen bg-slate-50 dark:bg-[#13111C] flex flex-col items-center justify-center p-6 text-center">
                     <Trash2 className="w-16 h-16 text-slate-300 dark:text-slate-600 mb-4" strokeWidth={1.5} />
-                    <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200 font-['Lexend_Deca'] mb-2">Pesan Tidak Ditemukan</h2>
+                    <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200 font-['Lexend_Deca'] mb-2">{t("notif_detail.not_found_title")}</h2>
                     <p className="text-slate-500 dark:text-slate-400 font-['Manrope'] mb-6">
-                        Pesan ini mungkin sudah dihapus atau tidak tersedia lagi.<br/>
+                        {t("notif_detail.not_found_desc")}<br/>
                         {error && <span className="text-red-500 text-sm mt-2 block">Error: {error}</span>}
                     </p>
                     <button 
                         onClick={() => navigate(-1)}
                         className="px-6 py-2.5 bg-indigo-600 text-white rounded-full font-bold text-sm hover:bg-indigo-700 transition-colors"
                     >
-                        Kembali
+                        {t("notif_detail.back")}
                     </button>
                 </div>
             </MobileLayout>
@@ -175,7 +179,7 @@ export default function NotificationDetailPage() {
                             <ArrowLeft className="w-5 h-5 text-slate-700 dark:text-slate-300" />
                         </button>
                         <h1 className="font-['Lexend_Deca'] font-bold text-lg text-slate-900 dark:text-white truncate">
-                            Detail Pesan
+                            {t("notif_detail.title")}
                         </h1>
                     </div>
                 </div>
@@ -192,7 +196,7 @@ export default function NotificationDetailPage() {
                                 </div>
                                 <div>
                                     <h2 className="font-['Lexend_Deca'] text-xl sm:text-2xl font-bold text-slate-900 dark:text-white leading-tight mb-2">
-                                        {notif.title}
+                                        {(notif as any).translatedTitle || notif.title}
                                     </h2>
                                     <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
                                         <Clock className="w-4 h-4" />
@@ -213,7 +217,7 @@ export default function NotificationDetailPage() {
                                     </div>
                                     <div>
                                         <p className="font-bold text-sm text-slate-900 dark:text-white">
-                                            {notif.actor?.name || "Sistem Ba-Yu"}
+                                            {notif.actor?.name || t("notif_detail.system")}
                                         </p>
                                         <p className="text-xs text-slate-500 dark:text-slate-400">
                                             noreply@bayu.edu
@@ -227,15 +231,15 @@ export default function NotificationDetailPage() {
                         <div className="p-6 sm:p-8">
                             <div className="prose prose-slate dark:prose-invert max-w-none">
                                 <div className="font-['Manrope'] text-[15px] leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
-                                    {notif.message}
+                                    {(notif as any).translatedMessage || notif.message}
                                 </div>
                             </div>
                             
                             {/* Signature */}
                             <div className="mt-12 pt-6 border-t border-slate-100 dark:border-white/5 font-['Manrope']">
                                 <p className="text-[14px] text-slate-500 dark:text-slate-400">
-                                    Salam,<br />
-                                    <strong className="text-slate-700 dark:text-slate-300">Tim EduPlatform Ba-Yu</strong>
+                                    {t("notif_detail.regards")}<br />
+                                    <strong className="text-slate-700 dark:text-slate-300">{t("notif_detail.team")}</strong>
                                 </p>
                             </div>
                         </div>

@@ -90,7 +90,7 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
         if (!dateValue) return t('notifications.time_just_now') !== 'notifications.time_just_now' ? t('notifications.time_just_now') : "Baru saja";
         const d = new Date(dateValue);
         if (isNaN(d.getTime())) return t('notifications.time_just_now') !== 'notifications.time_just_now' ? t('notifications.time_just_now') : "Baru saja";
-        return d.toLocaleDateString(language === 'id' ? 'id-ID' : language, {
+        return d.toLocaleDateString((language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language), {
             day: "numeric",
             month: "short",
             year: "numeric",
@@ -134,8 +134,8 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                         {t('noteCard.in') !== 'noteCard.in' ? t('noteCard.in') : 'di'}
                     </span>
                     <span className="text-gray-800 dark:text-gray-400 font-bold tracking-tight">
-                        {t(`subjects.${note.mataPelajaran.toLowerCase().replace(/ /g, '-')}`) !== `subjects.${note.mataPelajaran.toLowerCase().replace(/ /g, '-')}` 
-                          ? t(`subjects.${note.mataPelajaran.toLowerCase().replace(/ /g, '-')}`) 
+                        {t(`subjects.${note.mataPelajaran.trim().toLowerCase().replace(/\s+/g, '-')}`) !== `subjects.${note.mataPelajaran.trim().toLowerCase().replace(/\s+/g, '-')}` 
+                          ? t(`subjects.${note.mataPelajaran.trim().toLowerCase().replace(/\s+/g, '-')}`) 
                           : note.mataPelajaran}
                     </span>
                     {note.jenjang && note.jenjang !== "Umum" && note.jenjang !== "-" && (
@@ -145,10 +145,10 @@ export function NoteCard({ note, onLike, onDelete, className = "", showBookmark 
                             </span>
                             <span className="text-gray-800 dark:text-gray-400 font-bold tracking-tight">
                                 {note.jenjang && note.kelas && note.semester 
-                                    ? formatEducationLevel(note.jenjang, note.kelas, Number(note.semester), language)
+                                    ? formatEducationLevel(note.jenjang, note.kelas, Number(note.semester), language, t)
                                     : note.jenjang === "Kuliah"
-                                        ? `${note.kelas || "S1/D4"} Semester ${note.semester || 1}`
-                                        : (note.kelas && note.kelas !== "Semua" && note.kelas !== "-" ? `${note.jenjang} Kelas ${note.kelas}` : note.jenjang)}
+                                        ? formatEducationLevel("Kuliah", note.kelas || "S1/D4", Number(note.semester) || 1, language, t)
+                                        : formatEducationLevel(note.jenjang, note.kelas || "Semua", Number(note.semester) || 1, language, t)}
                             </span>
                         </>
                     )}
@@ -476,7 +476,7 @@ const downloadNoteAsPDF = (fullNote: any, showToast: any, t: any, language: stri
         return;
     }
     const authorName = fullNote.user?.name || fullNote.user?.username || "Penulis";
-    const dateStr = new Date().toLocaleDateString(language === 'id' ? 'id-ID' : language, { year: 'numeric', month: 'long', day: 'numeric' });
+    const dateStr = new Date().toLocaleDateString((language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language), { year: 'numeric', month: 'long', day: 'numeric' });
 
     printWindow.document.write(`
         <!DOCTYPE html>

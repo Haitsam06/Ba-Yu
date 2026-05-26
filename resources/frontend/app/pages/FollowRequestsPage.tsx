@@ -28,7 +28,7 @@ export default function FollowRequestsPage() {
     const navigate = useNavigate();
     const { user } = useAuth();
     const { showToast } = useToast();
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     const [requests, setRequests] = useState<FollowRequest[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
@@ -41,7 +41,7 @@ export default function FollowRequestsPage() {
         if (diff < 3600) return (t("follow_requests.minutes_ago") || "{{minutes}} menit lalu").replace("{{minutes}}", Math.floor(diff / 60).toString());
         if (diff < 86400) return (t("follow_requests.hours_ago") || "{{hours}} jam lalu").replace("{{hours}}", Math.floor(diff / 3600).toString());
         if (diff < 604800) return (t("follow_requests.days_ago") || "{{days}} hari lalu").replace("{{days}}", Math.floor(diff / 86400).toString());
-        return date.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+        return date.toLocaleDateString((language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language), { day: "numeric", month: "short", year: "numeric" });
     }
 
     useEffect(() => {

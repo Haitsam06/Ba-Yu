@@ -397,7 +397,14 @@
     "desc_placeholder": "简短描述...",
     "saving_draft": "保存中...",
     "editor_placeholder": "在这里写下您的材料或解释...",
-    "confirm": "确认"
+    "confirm": "确认",
+    "alt_text_title": "替代文本",
+    "alt_text_desc": "为有视觉障碍的读者描述图像...",
+    "alt_text_button": "替代文本",
+    "layout_inline": "标准/中心",
+    "layout_wide": "宽的",
+    "layout_full": "全出血",
+    "delete_block": "删除块"
   },
   "calendar": {
     "days": [
@@ -575,7 +582,10 @@
     "downloaded_at": "下载：",
     "pdf_restricted_title": "受保护材料",
     "pdf_restricted_desc": "此 PDF 版本仅包含部分材料。在 Ba-Yu 应用程序上关注作者 <b>@{author}</b> 即可下载完整版本。",
-    "pdf_footer": "此文档下载自 <span class=\"footer-brand\">Ba-Yu</span> - 未来学习平台"
+    "pdf_footer": "此文档下载自 <span class=\"footer-brand\">Ba-Yu</span> - 未来学习平台",
+    "sort_newest": "最新",
+    "sort_oldest": "最旧",
+    "sort_top": "热门评论"
   },
   "public_profile": {
     "title": "用户个人资料",
@@ -912,7 +922,9 @@
     "SMP": "初中",
     "SMA": "高中/职高",
     "Kuliah": "大学",
-    "Umum": "通用"
+    "Umum": "通用",
+    "class_format": "类 {{num}}",
+    "semester_format": "学期{{num}}"
   },
   "subject_categories": {
     "Umum & Wajib": "通用与必修",
@@ -1080,7 +1092,8 @@
     "careers": "职业",
     "contact": "联系",
     "privacy": "隐私",
-    "terms": "条款"
+    "terms": "条款",
+    "status": "Status"
   },
   "apply_pakar": {
     "title": "专家认证",
@@ -1544,5 +1557,57 @@
     "submit_button": "发送重置链接",
     "reset_sent": "密码重置链接已发送至您的电子邮箱。",
     "reset_throttled": "请稍等（60秒）后再试。"
+  },
+  "notif": {
+    "like_note_title": "有人赞了你的笔记！",
+    "like_comment_title": "有人赞了你的评论！",
+    "like_note_msg": "{{name}} 赞了你的笔记：{{note}}",
+    "like_comment_msg": "{{name}} 赞了你的评论",
+    "reply_title": "有人回复了你的评论",
+    "comment_title": "你的笔记有新评论",
+    "respond_title": "你的笔记有新回应",
+    "reply_msg": "{{name}} 回复了：“{{content}}”",
+    "comment_msg": "{{name}} 评论说：“{{content}}”",
+    "respond_msg": "{{name}} 回应了你的笔记",
+    "follow_new_title": "新粉丝",
+    "follow_req_title": "关注请求",
+    "follow_acc_title": "请求已接受",
+    "follow_new_msg": "{{username}} 开始关注你了。",
+    "follow_req_msg": "{{username}} 想要关注你。",
+    "follow_acc_msg": "{{username}} 接受了你的关注请求。",
+    "cert_acc_title": "认证已通过！",
+    "cert_rej_title": "认证被拒绝",
+    "cert_new_title": "新专家申请",
+    "cert_new_msg": "{{name}} 申请成为 {{field}} 领域的专家。",
+    "cert_acc_msg": "恭喜！你现在正式成为专家了。",
+    "report_recv_title": "举报已收到",
+    "report_warn_note_title": "警告：笔记被举报",
+    "report_warn_comment_title": "警告：评论被举报",
+    "report_del_note_title": "笔记已删除 (Takedown)",
+    "report_del_comment_title": "评论已删除 (Takedown)",
+    "report_banned_title": "账号已被封禁",
+    "report_rejected_title": "举报已被驳回",
+    "like_note_title_alt": "有人赞了你的笔记",
+    "post_needs_work_title": "笔记需要改进",
+    "post_needs_work_msg": "根据专家的审核，您的笔记“{{title}}”需要改进。",
+    "post_approved_title": "笔记已获专家批准！ 🎉",
+    "post_approved_msg": "恭喜！笔记“{{title}}”已验证。 评分：{{rating}}星。 反馈：“{{feedback}}”",
+    "cert_acc_msg_2": "恭喜！您在 {{field}} 领域的专家认证申请已获得管理员的批准。",
+    "cert_rej_msg_2": "很抱歉，您在 {{field}} 领域的专家认证申请目前无法批准。",
+    "report_del_note_msg": "由于违反我们的社区准则，您的笔记“{{title}}”已被管理员删除。管理员理由：{{reason}}",
+    "report_del_comment_msg": "由于违反我们的社区准则，您的评论已被管理员删除。管理员理由：{{reason}}",
+    "report_warn_note_msg": "您的笔记“{{title}}”因以下原因被举报：{{reason}}。 我们的专家/管理团队将对其进行审查。",
+    "report_recv_note_msg": "您对笔记“{{title}}”的举报目前正在由我们的团队进行审查。",
+    "report_recv_user_msg": "您对用户 @{{username}} 的举报目前正在由管理员进行审查。",
+    "report_rej_msg": "由于以下原因，管理员拒绝了您的举报：{{reason}}"
+  },
+  "notif_detail": {
+    "title": "消息详情",
+    "not_found_title": "未找到消息",
+    "not_found_desc": "此消息可能已被删除或不再可用。",
+    "back": "返回",
+    "system": "Ba-Yu 系统",
+    "regards": "此致，",
+    "team": "Ba-Yu EduPlatform 团队"
   }
 }

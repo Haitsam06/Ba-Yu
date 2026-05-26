@@ -19,6 +19,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
 import { AvatarImage } from "./DefaultImages";
 import { useTranslation } from "../../hooks/useTranslation";
+import { useNotificationTranslator } from "../../hooks/useNotificationTranslator";
 
 interface NotificationItem {
     id?: string;
@@ -45,6 +46,7 @@ export default function AvatarNotifications() {
     const navigate = useNavigate();
     const [open, setOpen] = React.useState(false);
     const { t, language } = useTranslation();
+    const { translateNotification } = useNotificationTranslator();
 
     const fetchNotifications = async () => {
         try {
@@ -149,7 +151,7 @@ export default function AvatarNotifications() {
         const diffHr = Math.floor(diffMin / 60);
         if (diffHr < 24) return `${diffHr}${t('notifications.time_short_h') !== 'notifications.time_short_h' ? t('notifications.time_short_h') : 'j'}`;
         if (diffHr < 48) return t('notifications.time_yesterday') !== 'notifications.time_yesterday' ? t('notifications.time_yesterday') : "Kemarin";
-        return new Date(dateStr).toLocaleDateString(language === 'id' ? 'id-ID' : language, {
+        return new Date(dateStr).toLocaleDateString((language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language), {
             day: "numeric",
             month: "short",
         });
@@ -225,7 +227,9 @@ export default function AvatarNotifications() {
                         </div>
                     ) : (
                         <div className="flex flex-col">
-                            {notifications.slice(0, 8).map((item) => (
+                            {notifications.slice(0, 8).map((rawItem) => {
+                                const item = translateNotification(rawItem);
+                                return (
                                 <div
                                     key={item._id || item.id}
                                     onClick={() =>
@@ -296,7 +300,7 @@ export default function AvatarNotifications() {
                                                         "text-[13px] leading-relaxed line-clamp-2",
                                                         !item.is_read ? "text-gray-900 dark:text-gray-100 font-bold" : "text-gray-600 dark:text-gray-400"
                                                     )}>
-                                                        {item.message}
+                                                        {item.translatedMessage}
                                                     </p>
                                                     <span className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">
                                                         {timeAgo(item.created_at)}
@@ -306,7 +310,7 @@ export default function AvatarNotifications() {
                                         </div>
                                     </div>
                                 </div>
-                            ))}
+                            )})}
                         </div>
                     )}
                 </div>

@@ -54,6 +54,64 @@ async function getCroppedImg(imageSrc: string, pixelCrop: any): Promise<string> 
   return canvas.toDataURL('image/jpeg', 0.8);
 }
 
+async function getFullViewImg(imageSrc: string): Promise<string> {
+  const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = document.createElement('img');
+    img.addEventListener('load', () => resolve(img));
+    img.addEventListener('error', (err: any) => reject(err));
+    if (imageSrc.startsWith('http')) {
+      img.setAttribute('crossOrigin', 'anonymous');
+    }
+    img.src = imageSrc;
+  });
+
+  const CANVAS_W = 1200;
+  const CANVAS_H = 675; // 16:9
+
+  const canvas = document.createElement('canvas');
+  canvas.width = CANVAS_W;
+  canvas.height = CANVAS_H;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return '';
+
+  // --- Step 1: Draw blurred background (cover-fill) ---
+  const imgRatio = image.width / image.height;
+  const canvasRatio = CANVAS_W / CANVAS_H;
+  let sx = 0, sy = 0, sw = image.width, sh = image.height;
+  if (imgRatio > canvasRatio) {
+    // Image is wider → crop sides
+    sw = image.height * canvasRatio;
+    sx = (image.width - sw) / 2;
+  } else {
+    // Image is taller → crop top/bottom
+    sh = image.width / canvasRatio;
+    sy = (image.height - sh) / 2;
+  }
+
+  ctx.filter = 'blur(30px) brightness(0.5)';
+  // Draw slightly larger to avoid blur edge artifacts
+  ctx.drawImage(image, sx, sy, sw, sh, -40, -40, CANVAS_W + 80, CANVAS_H + 80);
+  ctx.filter = 'none';
+
+  // --- Step 2: Draw original image centered (contain-fit) ---
+  let drawW, drawH;
+  if (imgRatio > canvasRatio) {
+    // Image is wider → fit to width
+    drawW = CANVAS_W;
+    drawH = CANVAS_W / imgRatio;
+  } else {
+    // Image is taller → fit to height
+    drawH = CANVAS_H;
+    drawW = CANVAS_H * imgRatio;
+  }
+  const drawX = (CANVAS_W - drawW) / 2;
+  const drawY = (CANVAS_H - drawH) / 2;
+
+  ctx.drawImage(image, drawX, drawY, drawW, drawH);
+
+  return canvas.toDataURL('image/jpeg', 0.85);
+}
+
 import { registerQuillExtensions } from '../components/editor/editor.config';
 import { HIGHLIGHT_COLORS, jenjangOptions } from '../components/editor/editor.constants';
 import { FloatingBlockToolbar } from '../components/editor/FloatingBlockToolbar';
@@ -62,6 +120,7 @@ import { FormulaModal } from '../components/editor/FormulaModal';
 import { AltTextModal } from '../components/editor/AltTextModal';
 import { PublishPreviewModal } from '../components/editor/PublishPreviewModal';
 import { useTranslation } from '../hooks/useTranslation';
+import { useLanguage } from '../contexts/LanguageContext';
 
 
 
@@ -81,6 +140,7 @@ export default function UploadPage() {
   const [draftId, setDraftId] = useState<string | null>(initialDraftId);
   const { showToast } = useToast();
   const { t } = useTranslation();
+  const { resolvedLanguage } = useLanguage();
   
   const quillRef = useRef<ReactQuill>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -104,6 +164,8 @@ export default function UploadPage() {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [altModalParams, setAltModalParams] = useState<{ index: number; text: string } | null>(null);
+  const [isGeneratingFullView, setIsGeneratingFullView] = useState(false);
+  const [isFullViewMode, setIsFullViewMode] = useState(false);
 
   const [meta, setMeta] = useState({
     mataPelajaran: '',
@@ -212,6 +274,7 @@ export default function UploadPage() {
     setExtractedThumbnail(newThumb);
     setFinalThumbnail(newThumb);
     setThumbnailFit('cover');
+    setIsFullViewMode(false);
     setIsCropping(false);
   };
 
@@ -256,11 +319,28 @@ export default function UploadPage() {
         const croppedImage = await getCroppedImg(extractedThumbnail, croppedAreaPixels);
         setFinalThumbnail(croppedImage);
         setThumbnailFit('cover');
+        setIsFullViewMode(false);
         setIsCropping(false);
       } catch (e) {
         console.error('Failed to crop image', e);
         showToast(t('upload.error_crop'), 'error');
       }
+    }
+  };
+
+  const handleFullView = async () => {
+    if (!extractedThumbnail) return;
+    setIsGeneratingFullView(true);
+    try {
+      const fullViewImage = await getFullViewImg(extractedThumbnail);
+      setFinalThumbnail(fullViewImage);
+      setThumbnailFit('cover');
+      setIsFullViewMode(true);
+    } catch (e) {
+      console.error('Failed to generate full view', e);
+      showToast(t('upload.error_crop'), 'error');
+    } finally {
+      setIsGeneratingFullView(false);
     }
   };
 
@@ -447,6 +527,9 @@ export default function UploadPage() {
           isSavingDraft={isSavingDraft}
           canPublishFinal={canPublishFinal}
           mapelDropdownRef={mapelDropdownRef}
+          onFullView={handleFullView}
+          isGeneratingFullView={isGeneratingFullView}
+          isFullViewMode={isFullViewMode}
         />
 
 
@@ -470,7 +553,7 @@ export default function UploadPage() {
           </div>
 
           {/* Editor */}
-          <div className="notion-editor pb-32">
+          <div className="notion-editor pb-32" dir={/[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F]/.test(content) ? 'rtl' : 'ltr'}>
             <style dangerouslySetInnerHTML={{ __html: `
               .notion-editor .ql-container.ql-snow { border: none !important; font-family: 'Manrope', sans-serif; font-size: 17px; }
               .notion-editor .ql-editor { padding: 0 !important; min-height: 500px; line-height: 1.9; color: #1f2937; }
@@ -525,6 +608,20 @@ export default function UploadPage() {
               .notion-editor .ql-snow .ql-tooltip a.ql-action::after { content: 'Edit'; border-right: 1px solid #e5e7eb; padding-right: 8px; margin-left: 8px; color: #6366f1; font-weight: 600; }
               .notion-editor .ql-snow .ql-tooltip a.ql-remove::before { content: 'Hapus'; margin-left: 8px; color: #ef4444; font-weight: 600; }
               .notion-editor .ql-snow .ql-tooltip input[type=text] { border-radius: 8px; border: 1px solid #d1d5db; padding: 6px 10px; font-family: 'Manrope', sans-serif; font-size: 13px; }
+              /* RTL Overrides for Editor */
+              .notion-editor[dir="rtl"] .ql-editor { text-align: right; }
+              .notion-editor[dir="rtl"] .ql-editor p, 
+              .notion-editor[dir="rtl"] .ql-editor h1, 
+              .notion-editor[dir="rtl"] .ql-editor h2, 
+              .notion-editor[dir="rtl"] .ql-editor h3 { text-align: right; }
+              .notion-editor[dir="rtl"] .ql-editor ul, 
+              .notion-editor[dir="rtl"] .ql-editor ol { padding-left: 0 !important; padding-right: 1.5em !important; }
+              .notion-editor[dir="rtl"] .ql-editor li::before { margin-left: 0.3em !important; margin-right: -1.5em !important; text-align: left !important; }
+              .notion-editor[dir="rtl"] .ql-editor blockquote { border-left: none !important; border-right: 4px solid #4f46e5 !important; border-radius: 12px 0 0 12px !important; }
+              
+              /* Always LTR for Code Blocks */
+              pre.ql-syntax, code { direction: ltr !important; text-align: left !important; }
+              .notion-editor[dir="rtl"] pre.ql-syntax { text-align: left !important; }
             `}} />
             <ReactQuill
               ref={quillRef}

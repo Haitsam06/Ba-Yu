@@ -539,7 +539,6 @@ export default function ProfilePage() {
                         </div>
 
                         <div className="flex flex-row flex-wrap items-center gap-3 sm:gap-4 mt-3 font-['Manrope'] text-[14px] text-gray-500 dark:text-gray-400">
-                            {currentUser.role !== "pakar" && currentUser.role !== "admin" && (
                                 <span className="flex items-center gap-1.5">
                                     <MapPin className="w-4 h-4" /> 
                                 {(() => {
@@ -563,10 +562,9 @@ export default function ProfilePage() {
                                     );
                                 })()}
                                 </span>
-                            )}
                             
                             <span className="flex items-center gap-1.5 mt-0.5">
-                                <Calendar className="w-4 h-4" /> {t('profile.joined')} {currentUser.created_at ? new Date(currentUser.created_at).toLocaleDateString(language, { month: "long", year: "numeric" }) : t('profile.recently')}
+                                <Calendar className="w-4 h-4" /> {t('profile.joined')} {currentUser.created_at ? new Date(currentUser.created_at).toLocaleDateString((language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language), { month: "long", year: "numeric" }) : t('profile.recently')}
                             </span>
                         </div>
 
@@ -845,7 +843,7 @@ export default function ProfilePage() {
                                                         <div className="flex items-center gap-1.5 text-gray-500">
                                                             <Clock className="w-3.5 h-3.5" />
                                                             <span className="text-[12px] font-['Manrope'] font-bold">
-                                                                {activity.created_at ? new Date(activity.created_at).toLocaleDateString(language, { month: "short", day: "numeric", year: "numeric" }) : t('profile.recently')}
+                                                                {activity.created_at ? new Date(activity.created_at).toLocaleDateString((language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language), { month: "short", day: "numeric", year: "numeric" }) : t('profile.recently')}
                                                             </span>
                                                         </div>
                                                         <div className="flex items-center gap-1.5 text-gray-500 group-hover:text-pink-500 transition-colors">

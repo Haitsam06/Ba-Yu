@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import { Trash2 } from 'lucide-react';
+import { useTranslation } from '../../hooks/useTranslation';
 
 interface FloatingBlockToolbarProps {
   quillRef: React.RefObject<ReactQuill | null>;
@@ -12,6 +13,7 @@ export function FloatingBlockToolbar({ quillRef, onEditAlt }: FloatingBlockToolb
   const [activeBlot, setActiveBlot] = useState<{ index: number; type: string } | null>(null);
   const [currentLayout, setCurrentLayout] = useState('inline');
   const toolbarRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const quill = quillRef.current?.getEditor();
@@ -151,7 +153,7 @@ export function FloatingBlockToolbar({ quillRef, onEditAlt }: FloatingBlockToolb
   };
 
   const btnClass = (active: boolean) =>
-    `w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-200 ${active ? 'bg-primary text-white shadow-sm' : 'text-gray-600 hover:text-white hover:bg-white/10'}`;
+    `w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-200 ${active ? 'bg-primary text-white shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10'}`;
 
   return (
     <div
@@ -160,34 +162,34 @@ export function FloatingBlockToolbar({ quillRef, onEditAlt }: FloatingBlockToolb
       style={{ top: position.top, left: position.left }}
       onMouseDown={(e) => e.preventDefault()}
     >
-      <div className="bg-gray-900/95 backdrop-blur-md rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] px-1.5 py-1.5 flex items-center gap-1 border border-white/10 relative">
+      <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] dark:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] px-1.5 py-1.5 flex items-center gap-1 border border-gray-200/80 dark:border-white/10 relative">
         {activeBlot.type === 'image' && (
           <>
-            <button className={btnClass(currentLayout === 'inline')} onClick={() => setLayout('inline')} title="Standard / Center">
+            <button className={btnClass(currentLayout === 'inline')} onClick={() => setLayout('inline')} title={t('upload.layout_inline') || "Standard / Center"}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-80"><rect x="7" y="5" width="10" height="14" rx="2"/><line x1="10" y1="9" x2="14" y2="9"/><line x1="10" y1="13" x2="14" y2="13"/></svg>
             </button>
-            <button className={btnClass(currentLayout === 'wide')} onClick={() => setLayout('wide')} title="Lebar (Wide)">
+            <button className={btnClass(currentLayout === 'wide')} onClick={() => setLayout('wide')} title={t('upload.layout_wide') || "Lebar (Wide)"}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-90"><rect x="4" y="5" width="16" height="14" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="17" y2="13"/></svg>
             </button>
-            <button className={btnClass(currentLayout === 'fullBleed')} onClick={() => setLayout('fullBleed')} title="Penuh (Full Bleed)">
+            <button className={btnClass(currentLayout === 'fullBleed')} onClick={() => setLayout('fullBleed')} title={t('upload.layout_full') || "Penuh (Full Bleed)"}>
                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="5" width="22" height="14" rx="2"/><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="13" x2="20" y2="13"/></svg>
             </button>
             
-            <div className="w-px h-5 bg-white/20 mx-1.5"></div>
+            <div className="w-px h-5 bg-gray-200 dark:bg-white/20 mx-1.5"></div>
             
-            <button onClick={handleAltClick} className="px-3 h-8 text-[12px] font-semibold text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
-              Alt text
+            <button onClick={handleAltClick} className="px-3 h-8 text-[12px] font-semibold text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors">
+              {t('upload.alt_text_button') || 'Alt text'}
             </button>
 
-            <div className="w-px h-5 bg-white/20 mx-1.5"></div>
+            <div className="w-px h-5 bg-gray-200 dark:bg-white/20 mx-1.5"></div>
           </>
         )}
         
-        <button onClick={handleDelete} className="w-8 h-8 flex items-center justify-center rounded-lg text-rose-400 hover:text-white hover:bg-rose-500 transition-colors" title="Hapus Blok">
+        <button onClick={handleDelete} className="w-8 h-8 flex items-center justify-center rounded-lg text-rose-500 dark:text-rose-400 hover:text-white hover:bg-rose-500 transition-colors" title={t('upload.delete_block') || "Hapus Blok"}>
            <Trash2 className="w-4 h-4" strokeWidth={2.5} />
         </button>
         
-        <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-gray-900/95 border-b border-r border-white/10 rotate-45" />
+        <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white/95 dark:bg-gray-900/95 border-b border-r border-gray-200/80 dark:border-white/10 rotate-45" />
       </div>
     </div>
   );

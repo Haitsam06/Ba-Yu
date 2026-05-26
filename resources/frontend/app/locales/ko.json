@@ -397,7 +397,14 @@
     "desc_placeholder": "짧은 설명...",
     "saving_draft": "저장 중...",
     "editor_placeholder": "여기에 자료나 설명을 작성하세요...",
-    "confirm": "확인"
+    "confirm": "확인",
+    "alt_text_title": "대체 텍스트",
+    "alt_text_desc": "시각 장애가 있는 독자를 위해 이미지를 설명합니다.",
+    "alt_text_button": "대체 텍스트",
+    "layout_inline": "표준 / 센터",
+    "layout_wide": "넓은",
+    "layout_full": "풀 블리드",
+    "delete_block": "블록 삭제"
   },
   "calendar": {
     "days": [
@@ -575,7 +582,10 @@
     "downloaded_at": "다운로드:",
     "pdf_restricted_title": "보호된 자료",
     "pdf_restricted_desc": "이 PDF 버전은 자료의 일부만 포함하고 있습니다. 전체 버전을 다운로드하려면 Ba-Yu 앱에서 <b>@{author}</b> 작가를 팔로우하세요.",
-    "pdf_footer": "이 문서는 미래 학습 플랫폼 <span class=\"footer-brand\">Ba-Yu</span>에서 다운로드되었습니다"
+    "pdf_footer": "이 문서는 미래 학습 플랫폼 <span class=\"footer-brand\">Ba-Yu</span>에서 다운로드되었습니다",
+    "sort_newest": "최신순",
+    "sort_oldest": "오래된순",
+    "sort_top": "인기 댓글"
   },
   "public_profile": {
     "title": "사용자 프로필",
@@ -912,7 +922,9 @@
     "SMP": "중학교",
     "SMA": "고등학교",
     "Kuliah": "대학교",
-    "Umum": "일반"
+    "Umum": "일반",
+    "class_format": "클래스 {{num}}",
+    "semester_format": "학기 {{num}}"
   },
   "subject_categories": {
     "Umum & Wajib": "일반 및 필수",
@@ -1075,7 +1087,8 @@
     "careers": "채용",
     "contact": "연락처",
     "privacy": "개인정보 보호",
-    "terms": "이용 약관"
+    "terms": "이용 약관",
+    "status": "Status"
   },
   "edit_profile": {
     "title": "프로필 편집",
@@ -1524,5 +1537,57 @@
     "submit_button": "재설정 링크 보내기",
     "reset_sent": "비밀번호 재설정 링크가 이메일로 전송되었습니다.",
     "reset_throttled": "다시 시도하기 전에 잠시(60초) 기다려 주십시오."
+  },
+  "notif": {
+    "like_note_title": "누군가 당신의 노트를 좋아합니다!",
+    "like_comment_title": "누군가 당신의 댓글을 좋아합니다!",
+    "like_note_msg": "{{name}}님이 당신의 노트를 좋아합니다: {{note}}",
+    "like_comment_msg": "{{name}}님이 당신의 댓글을 좋아합니다",
+    "reply_title": "누군가 당신의 댓글에 답글을 남겼습니다",
+    "comment_title": "노트에 새로운 댓글이 있습니다",
+    "respond_title": "노트에 새로운 반응이 있습니다",
+    "reply_msg": "{{name}}님의 답글: \"{{content}}\"",
+    "comment_msg": "{{name}}님의 댓글: \"{{content}}\"",
+    "respond_msg": "{{name}}님이 당신의 노트에 반응했습니다",
+    "follow_new_title": "새 팔로워",
+    "follow_req_title": "팔로우 요청",
+    "follow_acc_title": "요청이 수락되었습니다",
+    "follow_new_msg": "{{username}}님이 당신을 팔로우하기 시작했습니다.",
+    "follow_req_msg": "{{username}}님이 당신을 팔로우하고 싶어합니다.",
+    "follow_acc_msg": "{{username}}님이 당신의 팔로우 요청을 수락했습니다.",
+    "cert_acc_title": "인증 승인됨!",
+    "cert_rej_title": "인증 거부됨",
+    "cert_new_title": "새로운 전문가 신청",
+    "cert_new_msg": "{{name}}님이 {{field}} 분야의 전문가로 신청했습니다.",
+    "cert_acc_msg": "축하합니다! 이제 공식적으로 전문가가 되었습니다.",
+    "report_recv_title": "신고 접수됨",
+    "report_warn_note_title": "경고: 노트가 신고됨",
+    "report_warn_comment_title": "경고: 댓글이 신고됨",
+    "report_del_note_title": "노트 삭제됨 (테이크다운)",
+    "report_del_comment_title": "댓글 삭제됨 (테이크다운)",
+    "report_banned_title": "계정 정지됨",
+    "report_rejected_title": "신고 거부됨",
+    "like_note_title_alt": "누군가 당신의 노트를 좋아합니다",
+    "post_needs_work_title": "노트에 개선이 필요합니다",
+    "post_needs_work_msg": "전문가의 검토에 따라 \"{{title}}\" 노트에 개선이 필요합니다.",
+    "post_approved_title": "전문가가 노트를 승인했습니다! 🎉",
+    "post_approved_msg": "축하합니다! \"{{title}}\" 노트가 확인되었습니다. 평점: {{rating}}별. 피드백: \"{{feedback}}\"",
+    "cert_acc_msg_2": "축하합니다! {{field}} 분야의 전문가 인증 신청이 관리자에 의해 승인되었습니다.",
+    "cert_rej_msg_2": "죄송하지만, {{field}} 분야의 전문가 인증 신청은 현재 승인될 수 없습니다.",
+    "report_del_note_msg": "당신의 노트 \"{{title}}\"이(가) 커뮤니티 가이드라인 위반으로 관리자에 의해 삭제되었습니다. 관리자 사유: {{reason}}",
+    "report_del_comment_msg": "당신의 댓글이 커뮤니티 가이드라인 위반으로 관리자에 의해 삭제되었습니다. 관리자 사유: {{reason}}",
+    "report_warn_note_msg": "당신의 노트 \"{{title}}\"이(가) 다음 사유로 신고되었습니다: {{reason}}. 전문가/관리자 팀이 검토할 것입니다.",
+    "report_recv_note_msg": "노트 \"{{title}}\"에 대한 귀하의 신고를 팀에서 검토 중입니다.",
+    "report_recv_user_msg": "사용자 @{{username}}에 대한 귀하의 신고를 관리자가 검토 중입니다.",
+    "report_rej_msg": "귀하의 신고가 다음 사유로 관리자에 의해 거부되었습니다: {{reason}}"
+  },
+  "notif_detail": {
+    "title": "메시지 세부 정보",
+    "not_found_title": "메시지를 찾을 수 없음",
+    "not_found_desc": "이 메시지는 삭제되었거나 더 이상 사용할 수 없습니다.",
+    "back": "뒤로",
+    "system": "Ba-Yu 시스템",
+    "regards": "감사합니다,",
+    "team": "Ba-Yu EduPlatform 팀"
   }
 }

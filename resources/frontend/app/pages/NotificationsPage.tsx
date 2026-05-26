@@ -19,6 +19,7 @@ import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 import { cn } from "../lib/utils";
 import { useTranslation } from "../hooks/useTranslation";
+import { useNotificationTranslator } from "../hooks/useNotificationTranslator";
 
 interface Notification {
     id?: string;
@@ -88,7 +89,7 @@ function timeAgo(dateStr: string, t: (key: string) => string, lang: string) {
     const diffDay = Math.floor(diffHr / 24);
     if (diffDay === 1) return t('notifications.time_yesterday');
     if (diffDay < 30) return `${diffDay} ${t('notifications.time_days')}`;
-    return date.toLocaleDateString(lang === 'id' ? 'id-ID' : lang, {
+    return date.toLocaleDateString((lang === 'ar' ? 'ar-EG' : lang === 'fa' ? 'fa-IR' : lang === 'id' ? 'id-ID' : lang), {
         day: "numeric",
         month: "long",
         year: "numeric",
@@ -99,6 +100,7 @@ export default function NotificationsPage() {
     const { user } = useAuth();
     const navigate = useNavigate();
     const { t, language } = useTranslation();
+    const { translateNotification } = useNotificationTranslator();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -314,7 +316,9 @@ export default function NotificationsPage() {
                         !error &&
                         displayedNotifications.length > 0 && (
                             <div className="flex flex-col gap-3">
-                                {displayedNotifications.map((notif, index) => (
+                                {displayedNotifications.map((rawNotif, index) => {
+                                    const notif = translateNotification(rawNotif);
+                                    return (
                                     <div
                                         key={notif._id || notif.id}
                                         onClick={() =>
@@ -396,7 +400,7 @@ export default function NotificationsPage() {
                                                                 "text-[15px]",
                                                                 !notif.is_read ? "font-bold text-gray-900 dark:text-gray-100" : "font-semibold text-gray-700 dark:text-gray-300"
                                                             )}>
-                                                                {notif.title}
+                                                                {notif.translatedTitle}
                                                             </h4>
                                                         </div>
                                                     )}
@@ -404,7 +408,7 @@ export default function NotificationsPage() {
                                                         "leading-relaxed line-clamp-2 text-[14px]",
                                                         !notif.is_read ? "text-gray-700 dark:text-gray-300 font-medium" : "text-gray-500 dark:text-gray-400"
                                                     )}>
-                                                        {notif.message}
+                                                        {notif.translatedMessage}
                                                     </p>
                                                     <span className="text-[12px] font-medium text-gray-500 dark:text-gray-400 mt-0.5">
                                                         {timeAgo(notif.created_at, t, language)}
@@ -430,7 +434,7 @@ export default function NotificationsPage() {
                                             )}
                                         </div>
                                     </div>
-                                ))}
+                                )})}
                             </div>
                         )}
 

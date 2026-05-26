@@ -1,10 +1,11 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { X, ChevronDown, Trash2, Crop, Maximize, Check } from 'lucide-react';
+import { X, ChevronDown, Trash2, Crop, Maximize, Check, Loader2 } from 'lucide-react';
 import Cropper from 'react-easy-crop';
 import { jenjangOptions } from './editor.constants';
 import { useTranslation } from '../../hooks/useTranslation';
 import { formatClassOption, formatSemesterOption } from '../../utils/formatEducationLevel';
+import { mataPelajaran } from '../../data/mockData';
 
 interface PublishPreviewModalProps {
   isOpen: boolean;
@@ -49,6 +50,9 @@ interface PublishPreviewModalProps {
   isSavingDraft: boolean;
   canPublishFinal: boolean;
   mapelDropdownRef: React.RefObject<HTMLDivElement>;
+  onFullView: () => void;
+  isGeneratingFullView: boolean;
+  isFullViewMode: boolean;
 }
 
 export function PublishPreviewModal(props: PublishPreviewModalProps) {
@@ -60,7 +64,8 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
     selectedImageIndex, handleSelectImage, meta, setMeta, tagInput, setTagInput,
     handleAddTag, handleRemoveTag, mapelSearch, setMapelSearch, isMapelDropdownOpen,
     setIsMapelDropdownOpen, filteredMapel, handleSubmit, handleSaveDraft,
-    isSubmitting, isSavingDraft, canPublishFinal, mapelDropdownRef
+    isSubmitting, isSavingDraft, canPublishFinal, mapelDropdownRef,
+    onFullView, isGeneratingFullView, isFullViewMode
   } = props;
 
   const { t, language } = useTranslation();
@@ -113,7 +118,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                   </div>
                 </div>
               ) : finalThumbnail || extractedThumbnail ? (
-                <img src={finalThumbnail || extractedThumbnail!} alt="Thumbnail" className={`absolute inset-0 w-full h-full ${thumbnailFit === 'cover' ? 'object-cover' : 'object-contain'}`} />
+                <img src={finalThumbnail || extractedThumbnail!} alt="Thumbnail" className="absolute inset-0 w-full h-full object-cover" />
               ) : (
                 <>
                   <h4 className="font-['Manrope'] font-bold text-gray-600 mb-2">{t('upload.no_image_title')}</h4>
@@ -124,8 +129,8 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
               {!isCropping && extractedThumbnail && (
                 <div className="absolute top-3 right-3 z-10">
                    <div className="bg-white/95 dark:bg-[#1C1A29]/95 backdrop-blur-md rounded-full shadow-md border border-gray-200/80 dark:border-white/10 p-1.5 flex gap-1.5">
-                      <button onClick={() => { setFinalThumbnail(extractedThumbnail); setThumbnailFit('contain'); }} className={`w-9 h-9 flex items-center justify-center rounded-full transition-all ${thumbnailFit==='contain' && finalThumbnail === extractedThumbnail ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5'}`} title={t('upload.full_view')}>
-                          <Maximize className="w-4 h-4" strokeWidth={2.5} />
+                      <button onClick={onFullView} disabled={isGeneratingFullView} className={`w-9 h-9 flex items-center justify-center rounded-full transition-all ${isFullViewMode ? 'bg-primary/10 text-primary' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5'} ${isGeneratingFullView ? 'opacity-50 cursor-wait' : ''}`} title={t('upload.full_view')}>
+                          {isGeneratingFullView ? <Loader2 className="w-4 h-4 animate-spin" /> : <Maximize className="w-4 h-4" strokeWidth={2.5} />}
                       </button>
                       <button onClick={() => setIsCropping(true)} className="w-9 h-9 flex items-center justify-center rounded-full bg-white dark:bg-[#252336] text-gray-950 dark:text-gray-100 border border-gray-200 dark:border-white/10 shadow-sm hover:bg-gray-50 dark:hover:bg-white/10 transition-all" title={t('upload.crop_photo')}>
                           <Crop className="w-4 h-4" strokeWidth={2.5} />
@@ -195,13 +200,21 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                   >
                      <input
                         type="text"
-                        value={isMapelDropdownOpen ? mapelSearch : (meta.mataPelajaran || '')}
+                        value={isMapelDropdownOpen ? mapelSearch : (() => {
+                           if (!meta.mataPelajaran) return '';
+                           const mapel = mataPelajaran.find(m => m.name === meta.mataPelajaran);
+                           if (mapel) {
+                              const translated = t(`subjects.${mapel.id}`);
+                              return translated !== `subjects.${mapel.id}` ? translated : mapel.name;
+                           }
+                           return meta.mataPelajaran;
+                        })()}
                         onChange={(e) => {
                            setMapelSearch(e.target.value);
                            setIsMapelDropdownOpen(true);
                         }}
                         placeholder={t('upload.search_category')}
-                        className="w-full bg-transparent border-none outline-none text-[14px] font-['Manrope'] text-gray-950 placeholder:text-gray-500 font-bold"
+                        className="w-full bg-transparent border-none outline-none text-[14px] font-['Manrope'] text-gray-950 dark:text-gray-100 placeholder:text-gray-500 font-bold"
                      />
                      <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${isMapelDropdownOpen ? 'rotate-180' : ''}`} strokeWidth={2.5} />
                   </div>
@@ -283,7 +296,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                          }}
                       >
                          <span className="text-[14px] font-['Manrope'] text-gray-950 dark:text-gray-100 font-bold">
-                             {meta.kelas ? formatClassOption(meta.jenjang, meta.kelas, language) : t('upload.choose_class')}
+                             {meta.kelas ? formatClassOption(meta.jenjang, meta.kelas, language, t) : t('upload.choose_class')}
                          </span>
                          <ChevronDown className="w-5 h-5 text-gray-500" strokeWidth={2.5} />
                       </div>
@@ -300,7 +313,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                                     }}
                                     className={`px-4 py-2.5 cursor-pointer transition-colors ${meta.kelas === k ? 'bg-primary/5 text-primary font-bold' : 'hover:bg-gray-50 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300 font-medium'} text-[14px] font-['Manrope']`}
                                  >
-                                     {formatClassOption(meta.jenjang, k, language)}
+                                     {formatClassOption(meta.jenjang, k, language, t)}
                                  </div>
                               ))}
                           </div>
@@ -318,7 +331,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                          }}
                       >
                          <span className="text-[14px] font-['Manrope'] text-gray-950 dark:text-gray-100 font-bold">
-                             {meta.semester ? formatSemesterOption(meta.semester, language) : t('upload.choose_semester')}
+                             {meta.semester ? formatSemesterOption(meta.semester, language, t) : t('upload.choose_semester')}
                          </span>
                          <ChevronDown className="w-5 h-5 text-gray-500" strokeWidth={2.5} />
                       </div>
@@ -335,7 +348,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
                                     }}
                                     className={`px-4 py-2.5 cursor-pointer transition-colors ${meta.semester === s ? 'bg-primary/5 text-primary font-bold' : 'hover:bg-gray-50 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300 font-medium'} text-[14px] font-['Manrope']`}
                                  >
-                                     {formatSemesterOption(s, language)}
+                                     {formatSemesterOption(s, language, t)}
                                  </div>
                               ))}
                           </div>
@@ -360,7 +373,7 @@ export function PublishPreviewModal(props: PublishPreviewModalProps) {
               
               <div className="flex flex-wrap gap-2">
                  {meta.tags.map((tag: string) => (
-                  <span key={tag} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 text-gray-700 rounded text-[12px] font-['Manrope'] font-bold shrink-0">
+                  <span key={tag} dir="auto" className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-[#252336] text-gray-700 dark:text-gray-200 rounded text-[12px] font-['Manrope'] font-bold shrink-0">
                     {tag}
                     <button onClick={() => handleRemoveTag(tag)} className="hover:text-red-500 transition-colors">
                       <X className="w-3.5 h-3.5" strokeWidth={3} />

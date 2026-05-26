@@ -30,6 +30,7 @@ import axios from "axios";
 import { Link, useLocation } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import { CustomSelect } from "../components/ui/CustomSelect";
+import { formatClassOption } from '../utils/formatEducationLevel';
 import { useBookmarks } from "../contexts/BookmarkContext";
 import { AuthModal } from "../components/auth-modal";
 import { NoteCardSkeleton } from "../components/ui/skeletons";
@@ -43,7 +44,7 @@ export default function ExplorePage() {
     const { isAuthenticated } = useAuth();
     const { isBookmarked, toggleBookmark } = useBookmarks();
     const { showToast } = useToast();
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const tabFromUrl = queryParams.get("tab") as "kategori" | "populer" | "terbaru" | "pengguna" | null;
@@ -878,7 +879,7 @@ export default function ExplorePage() {
                                         <div className="hidden sm:block w-[140px]">
                                         <CustomSelect
                                             value={sortOrder}
-                                            onChange={(val) => setSortOrder(val as "desc" | "asc")}
+                                            onChange={(val: any) => setSortOrder(val as "desc" | "asc")}
                                             options={[
                                                 { value: "desc", label: t('explore.newest') },
                                                 { value: "asc", label: t('explore.oldest') },
@@ -1270,7 +1271,7 @@ export default function ExplorePage() {
                                                 : "bg-white dark:bg-[#252336] text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10 hover:border-primary/40 hover:text-primary hover:bg-primary/5 hover:shadow-sm"
                                             }`}
                                     >
-                                        {selectedJenjang === "Perguruan Tinggi" ? kelas : `Kelas ${kelas}`}
+                                        {formatClassOption(selectedJenjang === "Perguruan Tinggi" ? "Kuliah" : selectedJenjang, kelas, language, t)}
                                     </button>
                                 ))}
                             </div>

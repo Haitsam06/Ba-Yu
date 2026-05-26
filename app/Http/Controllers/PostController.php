@@ -537,63 +537,73 @@ class PostController extends Controller
     {
         $limit = (int) $request->query('limit', 5);
 
-        // Ambil semua post yang sudah diverifikasi pakar
-        $dormantUserIds = User::where('is_dormant', true)->pluck('_id')->toArray();
+        // Kunci cache unik berdasarkan limit
+        $cacheKey = "pakar_choice_top_{$limit}";
 
-        $query = Post::with(['user'])
-            ->where('visibility', 'public')
-            ->where('is_verified', true);
+        // Simpan hasil perhitungan ke dalam cache selama 60 menit (1 jam)
+        $top = \Illuminate\Support\Facades\Cache::remember($cacheKey, now()->addMinutes(60), function () use ($limit) {
+            // Ambil semua post yang sudah diverifikasi pakar
+            $dormantUserIds = User::where('is_dormant', true)->pluck('_id')->toArray();
 
-        if (!empty($dormantUserIds)) {
-            $query->whereNotIn('user_id', $dormantUserIds);
-        }
+            $query = Post::with(['user'])
+                ->where('visibility', 'public')
+                ->where('is_verified', true);
 
-        $verifiedPosts = $query->get();
+            if (!empty($dormantUserIds)) {
+                $query->whereNotIn('user_id', $dormantUserIds);
+            }
 
-        if ($verifiedPosts->isEmpty()) {
+            $verifiedPosts = $query->get();
+
+            if ($verifiedPosts->isEmpty()) {
+                return collect([]);
+            }
+
+            // Hitung nilai max untuk normalisasi
+            $maxLikes    = max($verifiedPosts->max('likes_count'), 1);
+            $maxViews    = max($verifiedPosts->max('views'), 1);
+            $maxComments = max($verifiedPosts->max('comments_count'), 1);
+
+            // Skor tiap post
+            $scored = $verifiedPosts->map(function ($post) use ($maxLikes, $maxViews, $maxComments) {
+                $rating   = $post->expert_rating ?? 3;         // default 3/5
+                $likes    = $post->likes_count ?? 0;
+                $views    = $post->views ?? 0;
+                $comments = $post->comments_count ?? 0;
+
+                // Recency: semakin baru semakin tinggi (0-1, decay 30 hari)
+                $daysAgo  = now()->diffInDays($post->created_at);
+                $recency  = max(0, 1 - ($daysAgo / 30));
+
+                // Normalized scores (0-1)
+                $normRating   = $rating / 5;
+                $normLikes    = $likes / $maxLikes;
+                $normViews    = $views / $maxViews;
+                $normComments = $comments / $maxComments;
+
+                // Weighted final score
+                $score = ($normRating   * 0.40)
+                       + ($normLikes    * 0.25)
+                       + ($normViews    * 0.15)
+                       + ($normComments * 0.10)
+                       + ($recency      * 0.10);
+
+                $post->recommendation_score = round($score, 4);
+                return $post;
+            });
+
+            // Sort descending by score, take top N
+            return $scored->sortByDesc('recommendation_score')->take($limit)->values();
+        });
+
+        if ($top->isEmpty()) {
             return response()->json([
                 'message' => 'Belum ada catatan terverifikasi',
                 'data' => []
             ]);
         }
 
-        // Hitung nilai max untuk normalisasi
-        $maxLikes    = max($verifiedPosts->max('likes_count'), 1);
-        $maxViews    = max($verifiedPosts->max('views'), 1);
-        $maxComments = max($verifiedPosts->max('comments_count'), 1);
-
-        // Skor tiap post
-        $scored = $verifiedPosts->map(function ($post) use ($maxLikes, $maxViews, $maxComments) {
-            $rating   = $post->expert_rating ?? 3;         // default 3/5
-            $likes    = $post->likes_count ?? 0;
-            $views    = $post->views ?? 0;
-            $comments = $post->comments_count ?? 0;
-
-            // Recency: semakin baru semakin tinggi (0-1, decay 30 hari)
-            $daysAgo  = now()->diffInDays($post->created_at);
-            $recency  = max(0, 1 - ($daysAgo / 30));
-
-            // Normalized scores (0-1)
-            $normRating   = $rating / 5;
-            $normLikes    = $likes / $maxLikes;
-            $normViews    = $views / $maxViews;
-            $normComments = $comments / $maxComments;
-
-            // Weighted final score
-            $score = ($normRating   * 0.40)
-                   + ($normLikes    * 0.25)
-                   + ($normViews    * 0.15)
-                   + ($normComments * 0.10)
-                   + ($recency      * 0.10);
-
-            $post->recommendation_score = round($score, 4);
-            return $post;
-        });
-
-        // Sort descending by score, take top N
-        $top = $scored->sortByDesc('recommendation_score')->take($limit)->values();
-
-        // Attach is_liked for authenticated user
+        // Attach is_liked for authenticated user (Ini tidak di-cache karena tiap user beda-beda)
         $userId = Auth::id();
         $top->each(function ($post) use ($userId) {
             $post->is_liked = $userId
@@ -602,7 +612,7 @@ class PostController extends Controller
         });
 
         return response()->json([
-            'message' => 'Pakar Choice berhasil diambil',
+            'message' => 'Pakar Choice berhasil diambil (dari ' . (\Illuminate\Support\Facades\Cache::has($cacheKey) ? 'cache' : 'database') . ')',
             'data' => $top,
         ]);
     }

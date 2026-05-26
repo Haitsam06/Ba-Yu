@@ -397,7 +397,14 @@
     "desc_placeholder": "Kurze Beschreibung...",
     "saving_draft": "Speichern...",
     "editor_placeholder": "Schreiben Sie hier Ihr Material oder Ihre Erklärung...",
-    "confirm": "Bestätigen"
+    "confirm": "Bestätigen",
+    "alt_text_title": "Alternativer Text",
+    "alt_text_desc": "Beschreiben Sie das Bild für Leser mit Sehbehinderungen ...",
+    "alt_text_button": "Alt-Text",
+    "layout_inline": "Standard / Mitte",
+    "layout_wide": "Breit",
+    "layout_full": "Vollblut",
+    "delete_block": "Block löschen"
   },
   "calendar": {
     "days": [
@@ -575,7 +582,10 @@
     "downloaded_at": "Heruntergeladen:",
     "pdf_restricted_title": "Geschütztes Material",
     "pdf_restricted_desc": "Diese PDF-Version enthält nur teilweises Material. Folgen Sie dem Autor <b>@{author}</b> in der Ba-Yu App, um die vollständige Version herunterzuladen.",
-    "pdf_footer": "Dieses Dokument wurde von <span class=\"footer-brand\">Ba-Yu</span> heruntergeladen - Die Lernplattform der Zukunft"
+    "pdf_footer": "Dieses Dokument wurde von <span class=\"footer-brand\">Ba-Yu</span> heruntergeladen - Die Lernplattform der Zukunft",
+    "sort_newest": "Neueste",
+    "sort_oldest": "Älteste",
+    "sort_top": "Top-Kommentare"
   },
   "public_profile": {
     "title": "Benutzerprofil",
@@ -914,7 +924,9 @@
     "SMP": "Hauptschule",
     "SMA": "Gymnasium",
     "Kuliah": "Universität",
-    "Umum": "Allgemein"
+    "Umum": "Allgemein",
+    "class_format": "Klasse {{num}}",
+    "semester_format": "Semester {{num}}"
   },
   "subject_categories": {
     "Umum & Wajib": "Allgemein & Pflicht",
@@ -1077,7 +1089,8 @@
     "careers": "Karriere",
     "contact": "Kontakt",
     "privacy": "Datenschutz",
-    "terms": "Nutzungsbedingungen"
+    "terms": "Nutzungsbedingungen",
+    "status": "Status"
   },
   "edit_profile": {
     "title": "Profil Bearbeiten",
@@ -1525,5 +1538,57 @@
     "submit_button": "Link zum Zurücksetzen senden",
     "reset_sent": "Der Link zum Zurücksetzen des Passworts wurde an Ihre E-Mail gesendet.",
     "reset_throttled": "Bitte warten Sie einen Moment (60 Sekunden), bevor Sie es erneut versuchen."
+  },
+  "notif": {
+    "like_note_title": "Jemandem gefällt deine Notiz!",
+    "like_comment_title": "Jemandem gefällt dein Kommentar!",
+    "like_note_msg": "{{name}} gefällt deine Notiz: {{note}}",
+    "like_comment_msg": "{{name}} gefällt dein Kommentar",
+    "reply_title": "Jemand hat auf deinen Kommentar geantwortet",
+    "comment_title": "Neuer Kommentar zu deiner Notiz",
+    "respond_title": "Neue Reaktion auf deine Notiz",
+    "reply_msg": "{{name}} hat geantwortet: \"{{content}}\"",
+    "comment_msg": "{{name}} hat kommentiert: \"{{content}}\"",
+    "respond_msg": "{{name}} hat auf deine Notiz reagiert",
+    "follow_new_title": "Neuer Follower",
+    "follow_req_title": "Follower-Anfrage",
+    "follow_acc_title": "Anfrage akzeptiert",
+    "follow_new_msg": "{{username}} folgt dir jetzt.",
+    "follow_req_msg": "{{username}} möchte dir folgen.",
+    "follow_acc_msg": "{{username}} hat deine Follower-Anfrage akzeptiert.",
+    "cert_acc_title": "Zertifizierung genehmigt!",
+    "cert_rej_title": "Zertifizierung abgelehnt",
+    "cert_new_title": "Neuer Experten-Antrag",
+    "cert_new_msg": "{{name}} hat sich als Experte für {{field}} beworben.",
+    "cert_acc_msg": "Herzlichen Glückwunsch! Du bist jetzt offiziell ein Experte.",
+    "report_recv_title": "Meldung erhalten",
+    "report_warn_note_title": "Warnung: Notiz gemeldet",
+    "report_warn_comment_title": "Warnung: Kommentar gemeldet",
+    "report_del_note_title": "Notiz entfernt (Takedown)",
+    "report_del_comment_title": "Kommentar entfernt (Takedown)",
+    "report_banned_title": "Konto gesperrt",
+    "report_rejected_title": "Meldung abgelehnt",
+    "like_note_title_alt": "Jemandem gefällt deine Notiz",
+    "post_needs_work_title": "Notiz benötigt Verbesserung",
+    "post_needs_work_msg": "Deine Notiz \"{{title}}\" erfordert basierend auf der Expertenprüfung Verbesserungen.",
+    "post_approved_title": "Notiz vom Experten genehmigt! 🎉",
+    "post_approved_msg": "Herzlichen Glückwunsch! Die Notiz \"{{title}}\" wurde verifiziert. Bewertung: {{rating}} Sterne. Feedback: \"{{feedback}}\"",
+    "cert_acc_msg_2": "Herzlichen Glückwunsch! Dein Experten-Antrag für {{field}} wurde vom Administrator genehmigt.",
+    "cert_rej_msg_2": "Es tut uns leid, dein Experten-Antrag für {{field}} kann derzeit nicht genehmigt werden.",
+    "report_del_note_msg": "Deine Notiz \"{{title}}\" wurde vom Administrator entfernt, da sie gegen unsere Community-Richtlinien verstößt. Grund des Administrators: {{reason}}",
+    "report_del_comment_msg": "Dein Kommentar wurde vom Administrator entfernt, da er gegen unsere Community-Richtlinien verstößt. Grund des Administrators: {{reason}}",
+    "report_warn_note_msg": "Deine Notiz \"{{title}}\" wurde gemeldet wegen: {{reason}}. Unser Experten-/Admin-Team wird dies überprüfen.",
+    "report_recv_note_msg": "Deine Meldung für die Notiz \"{{title}}\" wird derzeit von unserem Team geprüft.",
+    "report_recv_user_msg": "Deine Meldung für den Benutzer @{{username}} wird derzeit vom Administrator geprüft.",
+    "report_rej_msg": "Deine Meldung wurde vom Administrator aus folgendem Grund abgelehnt: {{reason}}"
+  },
+  "notif_detail": {
+    "title": "Nachrichtendetails",
+    "not_found_title": "Nachricht nicht gefunden",
+    "not_found_desc": "Diese Nachricht wurde möglicherweise gelöscht oder ist nicht mehr verfügbar.",
+    "back": "Zurück",
+    "system": "Ba-Yu System",
+    "regards": "Viele Grüße,",
+    "team": "Ba-Yu EduPlatform Team"
   }
 }

@@ -502,11 +502,11 @@ export default function EditProfilePage() {
                                         value={formData.jenjang_pendidikan}
                                         onChange={(val) => setFormData({ ...formData, jenjang_pendidikan: val as string })}
                                         options={[
-                                            { value: "SD", label: t('edu_levels.SD') || "Sekolah Dasar (SD)" },
-                                            { value: "SMP", label: t('edu_levels.SMP') || "Menengah Pertama (SMP)" },
-                                            { value: "SMA", label: t('edu_levels.SMA') || "Menengah Atas (SMA/SMK)" },
-                                            { value: "Kuliah", label: t('edu_levels.Kuliah') || "Perguruan Tinggi (Kuliah)" },
-                                            { value: "Umum", label: t('edu_levels.Umum') || t('edit_profile.profesi_umum') || "Umum" },
+                                            { value: "SD", label: t('edu_levels.SD') !== 'edu_levels.SD' ? t('edu_levels.SD') : "Sekolah Dasar (SD)" },
+                                            { value: "SMP", label: t('edu_levels.SMP') !== 'edu_levels.SMP' ? t('edu_levels.SMP') : "Menengah Pertama (SMP)" },
+                                            { value: "SMA", label: t('edu_levels.SMA') !== 'edu_levels.SMA' ? t('edu_levels.SMA') : "Menengah Atas (SMA/SMK)" },
+                                            { value: "Kuliah", label: t('edu_levels.Kuliah') !== 'edu_levels.Kuliah' ? t('edu_levels.Kuliah') : "Perguruan Tinggi (Kuliah)" },
+                                            { value: "Umum", label: t('edu_levels.Umum') !== 'edu_levels.Umum' ? t('edu_levels.Umum') : "Umum" },
                                         ]}
                                     />
                                 </div>
@@ -521,10 +521,10 @@ export default function EditProfilePage() {
                                         value={formData.profesi}
                                         onChange={(val) => setFormData({ ...formData, profesi: val as string })}
                                         options={[
-                                            { value: "Pelajar", label: t('edit_profile.profesi_pelajar') || "Pelajar" },
-                                            { value: "Mahasiswa", label: t('edit_profile.profesi_mahasiswa') || "Mahasiswa" },
-                                            { value: "Pengajar", label: t('edit_profile.profesi_pengajar') || "Pengajar (Guru/Dosen)" },
-                                            { value: "Umum", label: t('edit_profile.profesi_umum') || "Umum / Profesional" },
+                                            { value: "Pelajar", label: t('edit_profile.profesi_pelajar') !== 'edit_profile.profesi_pelajar' ? t('edit_profile.profesi_pelajar') : "Pelajar" },
+                                            { value: "Mahasiswa", label: t('edit_profile.profesi_mahasiswa') !== 'edit_profile.profesi_mahasiswa' ? t('edit_profile.profesi_mahasiswa') : "Mahasiswa" },
+                                            { value: "Pengajar", label: t('edit_profile.profesi_pengajar') !== 'edit_profile.profesi_pengajar' ? t('edit_profile.profesi_pengajar') : "Pengajar (Guru/Dosen)" },
+                                            { value: "Umum", label: t('edit_profile.profesi_umum') !== 'edit_profile.profesi_umum' ? t('edit_profile.profesi_umum') : "Umum / Profesional" },
                                         ]}
                                     />
                                 </div>

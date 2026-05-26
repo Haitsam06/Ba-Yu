@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export type LanguageCode = 'id' | 'en' | 'ja' | 'ko' | 'zh' | 'es' | 'fr' | 'de' | 'pt' | 'ru';
+export type LanguageCode = 'id' | 'en' | 'en-GB' | 'ja' | 'ko' | 'zh' | 'zh-TW' | 'es' | 'fr' | 'de' | 'pt' | 'ru' | 'ur' | 'hi' | 'tr' | 'ar' | 'ms' | 'bn' | 'vi' | 'fa' | 'it' | 'th' | 'pa' | 'sw' | 'nl' | 'pl' | 'uk' | 'ro' | 'cs' | 'el' | 'hu' | 'sv' | 'fi' | 'da' | 'tl' | 'my' | 'km' | 'lo' | 'ne' | 'si' | 'he' | 'am' | 'zu' | 'af';
 export type LanguagePreference = LanguageCode | 'system';
 
 interface LanguageContextType {
@@ -9,7 +9,7 @@ interface LanguageContextType {
   setLanguage: (lang: LanguagePreference) => void;
 }
 
-const SUPPORTED_LANGUAGES: LanguageCode[] = ['id', 'en', 'ja', 'ko', 'zh', 'es', 'fr', 'de', 'pt', 'ru'];
+const SUPPORTED_LANGUAGES: LanguageCode[] = ['id', 'en', 'en-GB', 'ja', 'ko', 'zh', 'zh-TW', 'es', 'fr', 'de', 'pt', 'ru', 'ur', 'hi', 'tr', 'ar', 'ms', 'bn', 'vi', 'fa', 'it', 'th', 'pa', 'sw', 'nl', 'pl', 'uk', 'ro', 'cs', 'el', 'hu', 'sv', 'fi', 'da', 'tl', 'my', 'km', 'lo', 'ne', 'si', 'he', 'am', 'zu', 'af'];
 
 function detectSystemLanguage(): LanguageCode {
   const browserLang = navigator.language?.toLowerCase() || 'id';
@@ -47,6 +47,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setResolvedLanguage(resolved);
     localStorage.setItem('bayu-lang', language);
     document.documentElement.setAttribute('lang', resolved);
+    
+    // Set global UI direction to LTR so the layout never breaks.
+    // Text rendering and input direction will be handled by CSS/Unicode bidirectionality.
+    document.documentElement.dir = 'ltr';
   }, [language]);
 
   // Listen for system language changes when set to 'system'

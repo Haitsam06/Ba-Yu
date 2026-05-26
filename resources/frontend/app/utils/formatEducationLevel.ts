@@ -2,8 +2,16 @@ export const formatEducationLevel = (
   jenjang: string, 
   kelas: string | number, 
   semester: number, 
-  lang: string
+  lang: string,
+  t?: any
 ): string => {
+  if (t) {
+      const jLevel = t(`edu_levels.${jenjang}`) !== `edu_levels.${jenjang}` ? t(`edu_levels.${jenjang}`) : jenjang;
+      const cNum = String(kelas);
+      const cStr = t('edu_levels.class_format', { num: cNum }).includes('edu_levels.') ? `Kelas ${cNum}` : t('edu_levels.class_format', { num: cNum });
+      const sStr = t('edu_levels.semester_format', { num: semester }).includes('edu_levels.') ? `Semester ${semester}` : t('edu_levels.semester_format', { num: semester });
+      return `${jLevel} ${cStr} • ${sStr}`;
+  }
   // Common fallback maps
   const levelMap: Record<string, Record<string, string>> = {
     'id': { 'SD': 'SD', 'SMP': 'SMP', 'SMA': 'SMA', 'SMK': 'SMK', 'Kuliah': 'Kuliah' },
@@ -88,8 +96,14 @@ export const formatEducationLevel = (
   return `${isNumericKelas ? `Kelas ${kelas}` : String(kelas)} • Semester ${semester}`;
 };
 
-export const formatClassOption = (jenjang: string, kelas: string | number, lang: string): string => {
+export const formatClassOption = (jenjang: string, kelas: string | number, lang: string, t?: any): string => {
   if (kelas === 'Semua' || kelas === '-') return String(kelas);
+
+  if (t) {
+      const cNum = String(kelas);
+      const cStr = t('edu_levels.class_format', { num: cNum });
+      if (!cStr.includes('edu_levels.')) return cStr;
+  }
 
   const kNum = Number(kelas);
   const isNumericKelas = !isNaN(kNum);
@@ -117,7 +131,11 @@ export const formatClassOption = (jenjang: string, kelas: string | number, lang:
   return isNumericKelas ? `Kelas ${kelas}` : String(kelas);
 };
 
-export const formatSemesterOption = (semester: number, lang: string): string => {
+export const formatSemesterOption = (semester: number, lang: string, t?: any): string => {
+  if (t) {
+      const sStr = t('edu_levels.semester_format', { num: semester });
+      if (!sStr.includes('edu_levels.')) return sStr;
+  }
   if (lang === 'zh') {
     const zhSemNumbers = ['一', '二', '三', '四', '五', '六', '七', '八'];
     return (semester === 1 || semester === 2) 

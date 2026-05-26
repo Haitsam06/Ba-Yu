@@ -749,7 +749,7 @@ export default function AdminDashboard() {
                                                                             </>
                                                                         )}
                                                                         <span className="text-[10px] text-slate-400 mx-0.5 font-bold">•</span>
-                                                                        <span className="text-[12px] text-slate-500 dark:text-slate-400 font-bold">{new Date(note.createdAt || note.created_at || Date.now()).toLocaleDateString(language === 'id' ? 'id-ID' : language, { day: 'numeric', month: 'short' })}</span>
+                                                                        <span className="text-[12px] text-slate-500 dark:text-slate-400 font-bold">{new Date(note.createdAt || note.created_at || Date.now()).toLocaleDateString((language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language), { day: 'numeric', month: 'short' })}</span>
                                                                         <span className="text-[10px] text-slate-400 mx-0.5 font-bold">•</span>
                                                                         <span className="text-[12px] text-slate-500 dark:text-slate-400 font-bold flex items-center gap-1"><Clock className="w-3 h-3" /> {note.read_time || 1}{t('notecard.read_time_badge') !== 'notecard.read_time_badge' ? t('notecard.read_time_badge') : 'm'}</span>
                                                                     </div>
@@ -851,7 +851,7 @@ export default function AdminDashboard() {
                                                                     {t('admin_dashboard.reported_prefix')} {report.type ? t(`admin_dashboard.report_type_${report.type}`) : t('admin_dashboard.report_type_catatan')}
                                                                 </span>
                                                                 <span className="text-[12px] font-['Manrope'] text-slate-500 dark:text-slate-400 font-bold">
-                                                                    {report.date || new Date(report.created_at).toLocaleDateString(language === 'id' ? 'id-ID' : language, { day: 'numeric', month: 'short' })}
+                                                                    {report.date || new Date(report.created_at).toLocaleDateString((language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language), { day: 'numeric', month: 'short' })}
                                                                 </span>
                                                                 {report.status !== "pending" && (
                                                                     <span className="bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] px-2 py-0.5 rounded font-black tracking-widest uppercase ml-2">

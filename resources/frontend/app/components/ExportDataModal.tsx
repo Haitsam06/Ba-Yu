@@ -99,7 +99,7 @@ export function ExportDataModal({
             [t("export_modal.col_subject") || "Mata Pelajaran"]: translateSubject(String(n.mataPelajaran || n.mapel || "-"), t),
             [t("export_modal.col_class") || "Kelas"]: translateClass(String(n.kelas || "-"), t),
             [t("export_modal.col_status") || "Status"]: n.isValidated || n.is_verified ? (t("export_modal.verified") || "Terverifikasi") : (t("export_modal.not_verified") || "Belum"),
-            [t("export_modal.col_date") || "Tanggal"]: new Date(n.created_at || n.createdAt || Date.now()).toLocaleDateString(lang),
+            [t("export_modal.col_date") || "Tanggal"]: new Date(n.created_at || n.createdAt || Date.now()).toLocaleDateString((lang === 'ar' ? 'ar-EG' : lang === 'fa' ? 'fa-IR' : lang === 'id' ? 'id-ID' : lang)),
         }));
     };
 
@@ -118,7 +118,7 @@ export function ExportDataModal({
                 [t("export_modal.col_reason") || "Alasan"]: translateReason(String(r.reason || "-"), t),
                 [t("export_modal.col_desc") || "Deskripsi"]: String(r.description || "-").substring(0, 100),
                 [t("export_modal.col_status") || "Status"]: statusText,
-                [t("export_modal.col_date") || "Tanggal"]: new Date(r.created_at || r.date || Date.now()).toLocaleDateString(lang),
+                [t("export_modal.col_date") || "Tanggal"]: new Date(r.created_at || r.date || Date.now()).toLocaleDateString((lang === 'ar' ? 'ar-EG' : lang === 'fa' ? 'fa-IR' : lang === 'id' ? 'id-ID' : lang)),
             };
         });
     };
@@ -137,7 +137,7 @@ export function ExportDataModal({
                 [t("export_modal.col_field") || "Bidang Keahlian"]: translateSubject(String(c.bidang_keahlian || "-"), t),
                 [t("export_modal.col_status") || "Status"]: statusText,
                 [t("export_modal.col_reject_reason") || "Alasan Penolakan"]: String(c.alasan_penolakan || "-"),
-                [t("export_modal.col_date") || "Tanggal"]: new Date(c.created_at || Date.now()).toLocaleDateString(lang),
+                [t("export_modal.col_date") || "Tanggal"]: new Date(c.created_at || Date.now()).toLocaleDateString((lang === 'ar' ? 'ar-EG' : lang === 'fa' ? 'fa-IR' : lang === 'id' ? 'id-ID' : lang)),
             };
         });
     };
@@ -152,7 +152,7 @@ export function ExportDataModal({
             [t("export_modal.col_email") || "Email"]: String(u.email || "-"),
             [t("export_modal.col_role") || "Role"]: translateRole(String(u.role || "-"), t),
             [t("export_modal.col_status") || "Status"]: u.role === "admin" || u.role === "pakar" ? (t("export_modal.verified") || "Terverifikasi") : (t("export_modal.regular") || "Reguler"),
-            [t("export_modal.col_reg_date") || "Tanggal Daftar"]: new Date(u.created_at || Date.now()).toLocaleDateString(lang),
+            [t("export_modal.col_reg_date") || "Tanggal Daftar"]: new Date(u.created_at || Date.now()).toLocaleDateString((lang === 'ar' ? 'ar-EG' : lang === 'fa' ? 'fa-IR' : lang === 'id' ? 'id-ID' : lang)),
         }));
     };
 

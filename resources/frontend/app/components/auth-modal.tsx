@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Mail, Lock, User, Eye, EyeOff, BookOpen, ArrowRight, GraduationCap, Loader2, Sparkles, CheckCircle, ChevronRight } from 'lucide-react';
+import { X, Mail, Lock, User, Eye, EyeOff, ArrowRight, GraduationCap, Loader2, Sparkles, CheckCircle, ChevronRight } from 'lucide-react';
 import { useNavigate, Link } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useTranslation } from '../hooks/useTranslation';
 import ApplicationLogo from './ApplicationLogo';
 import axios from 'axios';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -19,9 +20,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
   const { showToast } = useToast();
   const { t, language } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const backdropRef = useRef<HTMLDivElement>(null);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -35,15 +34,6 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
   const navigate = useNavigate();
   const { login, register } = useAuth();
 
-  // Animate in/out
-  useEffect(() => {
-    if (isOpen) {
-      requestAnimationFrame(() => setIsVisible(true));
-    } else {
-      setIsVisible(false);
-    }
-  }, [isOpen]);
-
   // Sync defaultTab 
   useEffect(() => {
     setActiveTab(defaultTab);
@@ -51,8 +41,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (activeTab === 'forgot') return; // Forgot password handles its own submission via button onClick
+    if (activeTab === 'forgot') return; 
 
     setIsSubmitting(true);
     
@@ -93,416 +82,340 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
 
   if (!isOpen) return null;
 
-  const inputClass = "w-full pl-11 pr-4 py-3 bg-white dark:bg-[#1C1A29] border border-gray-300 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 transition-all focus:outline-none focus:ring-4 focus:ring-indigo-50 dark:focus:ring-white/10 focus:border-indigo-600 dark:focus:border-primary/40 placeholder:text-gray-400 shadow-sm dark:shadow-none";
-  const labelClass = "block text-[13px] font-['Lexend_Deca'] font-bold text-gray-800 dark:text-gray-300 pl-1 mb-1.5";
-  const iconClass = "absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-500 dark:text-gray-400 group-focus-within:text-indigo-600 dark:group-focus-within:text-primary transition-colors duration-200";
+  // PREMIUM INPUT STYLING (Apple / Chronicle Aesthetic)
+  const inputClass = "w-full pl-12 pr-4 py-3.5 bg-gray-50/50 dark:bg-[#111] border border-gray-200 dark:border-white/10 rounded-2xl font-['Manrope'] text-[15px] text-gray-900 dark:text-gray-100 transition-all focus:outline-none focus:ring-4 focus:ring-primary/10 dark:focus:ring-primary/20 focus:border-primary/50 dark:focus:border-primary/40 placeholder:text-gray-400 hover:bg-white dark:hover:bg-[#1a1a1a]";
+  const labelClass = "block text-[13px] font-['Lexend_Deca'] font-bold text-gray-800 dark:text-gray-300 pl-1 mb-2 tracking-wide";
+  const iconClass = "absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-400 dark:text-gray-500 group-focus-within:text-primary transition-colors duration-300";
 
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        ref={backdropRef}
-        onClick={onClose}
-        style={{ transition: 'opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}
-        className={`fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
-      />
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop (Darker blur for focus) */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-black/40 dark:bg-black/80 backdrop-blur-md z-50"
+          />
 
           {/* Modal Container */}
-      <div className="fixed inset-0 flex items-center justify-center z-50 p-4" onClick={onClose}>
-        <div
-          onClick={(e) => e.stopPropagation()}
-          style={{ transition: 'opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)' }}
-          className={`bg-white dark:bg-[#1C1A29] rounded-[2rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] w-full max-w-[440px] max-h-[min(700px,92vh)] flex flex-col overflow-hidden relative ${
-            isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'
-          }`}
-        >
-          {/* Subtle Background Decorations */}
-          <div className="absolute top-[-5%] right-[-5%] w-48 h-48 bg-indigo-100/30 dark:bg-indigo-900/20 rounded-full blur-3xl -z-10"></div>
-          <div className="absolute bottom-[-5%] left-[-5%] w-48 h-48 bg-purple-100/30 dark:bg-purple-900/20 rounded-full blur-3xl -z-10"></div>
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4 sm:p-6" onClick={onClose}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/50 dark:border-white/10 rounded-[2.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] dark:shadow-[0_0_80px_-15px_rgba(0,0,0,0.5)] w-full max-w-[480px] max-h-[90vh] flex flex-col relative overflow-hidden"
+            >
+              {/* Premium Glow Accents */}
+              <div className="absolute -top-32 -right-32 w-64 h-64 bg-primary/10 dark:bg-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
+              <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-fuchsia-500/10 dark:bg-fuchsia-500/20 rounded-full blur-[80px] pointer-events-none"></div>
 
-          {/* Close Button */}
-          <button
-            onClick={onClose}
-            className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white dark:bg-[#252336] hover:bg-gray-100 dark:hover:bg-white/10 flex items-center justify-center transition-all z-50 group border border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none"
-          >
-            <X className="w-4 h-4 text-gray-500 dark:text-gray-400 group-hover:rotate-90 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-all duration-300" strokeWidth={2.5} />
-          </button>
+              {/* Close Button */}
+              <button
+                onClick={onClose}
+                className="absolute top-6 right-6 w-10 h-10 rounded-full bg-gray-50/80 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 flex items-center justify-center transition-all z-50 group border border-gray-200/50 dark:border-white/5 backdrop-blur-sm"
+              >
+                <X className="w-4 h-4 text-gray-500 dark:text-gray-400 group-hover:rotate-90 group-hover:text-gray-900 dark:group-hover:text-white transition-all duration-300" strokeWidth={2.5} />
+              </button>
 
-          {/* Scrollable Content Container */}
-          <div className="flex-1 overflow-y-auto no-scrollbar py-8 px-6 sm:px-10">
-            {activeTab !== 'forgot' && (
-              <div className="mb-6">
-                {/* Logo & Title */}
-                <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center mb-4">
-                    <ApplicationLogo className="w-11 h-11 sm:w-12 sm:h-12 drop-shadow-md" />
-                  </div>
-                  <h2 className="font-['Lexend_Deca'] text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1 leading-tight tracking-tight">
-                    {activeTab === 'login' ? t("auth_modal.welcome") || 'Selamat Datang' : t("auth_modal.create_account") || 'Buat Akun Baru'}
-                  </h2>
-                  <p className="font-['Manrope'] text-[14px] text-gray-600 dark:text-gray-400 font-medium">
-                    {activeTab === 'login' 
-                      ? t("auth_modal.login_desc") || "Masuk untuk mengakses semua fitur Ba-Yu." 
-                      : t("auth_modal.register_desc") || "Daftar dan mulai kelola catatanmu sekarang."}
-                  </p>
-                </div>
-
-                {/* Tab Switcher - Clean Style */}
-                <div className="flex bg-gray-100 dark:bg-[#252336] p-1 rounded-2xl border border-gray-200 dark:border-white/5">
-                  <button
-                    onClick={() => { setActiveTab('login'); }}
-                    className={`flex-1 py-2 rounded-xl font-['Lexend_Deca'] text-[13px] sm:text-[14px] font-bold transition-all duration-300 outline-none ${
-                      activeTab === 'login'
-                        ? "bg-white dark:bg-[#1C1A29] text-indigo-600 dark:text-primary shadow-sm border border-gray-200 dark:border-white/10"
-                        : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-                    }`}
-                  >
-                    {t("auth_modal.login") || "Masuk"}
-                  </button>
-                  <button
-                    onClick={() => { setActiveTab('register'); }}
-                    className={`flex-1 py-2 rounded-xl font-['Lexend_Deca'] text-[13px] sm:text-[14px] font-bold transition-all duration-300 outline-none ${
-                      activeTab === 'register'
-                        ? "bg-white dark:bg-[#1C1A29] text-indigo-600 dark:text-primary shadow-sm border border-gray-200 dark:border-white/10"
-                        : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-                    }`}
-                  >
-                    {t("auth_modal.register") || "Daftar Baru"}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {activeTab !== 'forgot' && (<>
-                {/* Name & Username — Register Only */}
-                {activeTab === 'register' && (
-                  <>
-                    <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
-                      <label className={labelClass}>{t("auth_modal.fullname") || "Nama Lengkap (Display Name)"}</label>
-                      <div className="relative group">
-                        <User className={iconClass} strokeWidth={2.5} />
-                        <input
-                          type="text"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleChange}
-                          placeholder="John Doe"
-                          className={inputClass}
-                          required={activeTab === 'register'}
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
-                      <label className={labelClass}>{t("auth_modal.username") || "Username"}</label>
-                      <div className="relative group">
-                        <span className={`absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500 group-focus-within:text-indigo-600 transition-colors`}>@</span>
-                        <input
-                          type="text"
-                          name="username"
-                          value={formData.username}
-                          onChange={(e) => {
-                            // Only allow lowercase, numbers, and underscores
-                            const val = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
-                            setFormData(prev => ({ ...prev, username: val }));
-                          }}
-                          placeholder="johndoe123"
-                          className={inputClass}
-                          required={activeTab === 'register'}
-                        />
-                      </div>
-                      <p className="text-[11px] text-gray-500 pl-1 font-medium">{t("auth_modal.username_hint") || "Hanya huruf kecil, angka, dan underscore (_)"}</p>
-                    </div>
-                  </>
-                )}
-
-                {/* Email / Username (Login Only) or Email (Register Only) */}
-                <div className="space-y-1.5">
-                  <label className={labelClass}>{activeTab === 'login' ? (t("auth_modal.email_or_username") || 'Email atau Username') : (t("auth_modal.email") || 'Alamat Email')}</label>
-                  <div className="relative group">
-                    <Mail className={iconClass} strokeWidth={2.5} />
-                    <input
-                      type={activeTab === 'login' ? 'text' : 'email'}
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder={activeTab === 'login' ? 'nama@email.com / username_anda' : 'nama@email.com'}
-                      className={inputClass}
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Password */}
-                <div className="space-y-1.5">
-                  <label className={labelClass}>{t("auth_modal.password") || "Password"}</label>
-                  <div className="relative group">
-                    <Lock className={iconClass} strokeWidth={2.5} />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      placeholder="••••••••"
-                      className={`${inputClass} !pr-12`}
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 focus:outline-none p-1 rounded-full transition-colors"
+              {/* Content Scrollable Area */}
+              <div className="flex-1 overflow-y-auto no-scrollbar py-10 px-8 sm:px-12 relative z-10">
+                <AnimatePresence mode="wait">
+                  {activeTab !== 'forgot' ? (
+                    <motion.div
+                      key="login-register"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      transition={{ duration: 0.3 }}
                     >
-                      {showPassword ? <EyeOff className="w-[18px] h-[18px]" strokeWidth={2.5} /> : <Eye className="w-[18px] h-[18px]" strokeWidth={2.5} />}
-                    </button>
-                  </div>
-                </div>
+                      {/* Logo & Header */}
+                      <div className="mb-8">
+                        <div className="inline-flex mb-6">
+                          <ApplicationLogo className="w-12 h-12" />
+                        </div>
+                        <h2 className="font-['Lexend_Deca'] text-3xl font-extrabold text-gray-900 dark:text-white mb-2 tracking-tight">
+                          {activeTab === 'login' ? t("auth_modal.welcome") || 'Selamat Datang' : t("auth_modal.create_account") || 'Mulai Perjalananmu'}
+                        </h2>
+                        <p className="font-['Manrope'] text-[15px] text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
+                          {activeTab === 'login' 
+                            ? t("auth_modal.login_desc") || "Masuk untuk mengakses semua fitur cerdas Ba-Yu." 
+                            : t("auth_modal.register_desc") || "Daftar sekarang dan nikmati ekosistem catatan modern."}
+                        </p>
+                      </div>
 
-                {/* Profesi — Register Only */}
-                {activeTab === 'register' && (
-                  <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
-                    <label className={labelClass}>{t("auth_modal.role") || "Profesi / Peran"}</label>
-                    <div className="relative group">
-                      <User className={`${iconClass} pointer-events-none`} strokeWidth={2.5} />
-                      <select
-                        name="profesi"
-                        value={formData.profesi}
-                        onChange={handleChange}
-                        className={`${inputClass} appearance-none cursor-pointer font-bold`}
-                        required={activeTab === 'register'}
-                      >
-                        <option value="Pelajar">{t("auth_modal.role_pelajar") || "Pelajar"}</option>
-                        <option value="Mahasiswa">{t("auth_modal.role_mahasiswa") || "Mahasiswa"}</option>
-                        <option value="Pengajar">{t("auth_modal.role_pengajar") || "Pengajar (Guru/Dosen)"}</option>
-                        <option value="Umum">{t("auth_modal.role_umum") || "Umum / Profesional"}</option>
-                      </select>
-                      <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-500 pointer-events-none transform rotate-90" />
-                    </div>
-                  </div>
-                )}
-
-                {/* Jenjang — Register Only */}
-                {activeTab === 'register' && (
-                  <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
-                    <label className={labelClass}>{t("auth_modal.level") || "Jenjang Pendidikan"}</label>
-                    <div className="relative group">
-                      <GraduationCap className={`${iconClass} pointer-events-none`} strokeWidth={2.5} />
-                      <select
-                        name="jenjang"
-                        value={formData.jenjang}
-                        onChange={handleChange}
-                        className={`${inputClass} appearance-none cursor-pointer font-bold`}
-                        required={activeTab === 'register'}
-                      >
-                        <option value="SD">{t("auth_modal.level_sd") || "Sekolah Dasar (SD)"}</option>
-                        <option value="SMP">{t("auth_modal.level_smp") || "Menengah Pertama (SMP)"}</option>
-                        <option value="SMA">{t("auth_modal.level_sma") || "Menengah Atas (SMA/SMK)"}</option>
-                        <option value="Kuliah">{t("auth_modal.level_kuliah") || "Perguruan Tinggi (Kuliah)"}</option>
-                        <option value="Umum">{t("auth_modal.level_umum") || "Umum"}</option>
-                      </select>
-                      <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-gray-500 pointer-events-none transform rotate-90" />
-                    </div>
-                  </div>
-                )}
-
-                {/* Login Extras */}
-                {activeTab === 'login' && (
-                  <div className="flex items-center justify-between mt-1 pt-1">
-                    <label className="flex items-center cursor-pointer group">
-                      <div className="relative flex items-center justify-center">
-                        <input
-                          type="checkbox"
-                          checked={rememberMe}
-                          onChange={(e) => setRememberMe(e.target.checked)}
-                          className="peer sr-only"
+                      {/* Pill Tab Switcher */}
+                      <div className="flex bg-gray-100/80 dark:bg-white/5 p-1.5 rounded-2xl border border-gray-200/50 dark:border-white/5 mb-8 backdrop-blur-sm relative">
+                        <button
+                          onClick={() => setActiveTab('login')}
+                          className={`flex-1 py-2.5 rounded-xl font-['Lexend_Deca'] text-[14px] font-bold transition-colors z-10 ${
+                            activeTab === 'login' ? "text-gray-900 dark:text-white" : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                          }`}
+                        >
+                          {t("auth_modal.login") || "Masuk"}
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('register')}
+                          className={`flex-1 py-2.5 rounded-xl font-['Lexend_Deca'] text-[14px] font-bold transition-colors z-10 ${
+                            activeTab === 'register' ? "text-gray-900 dark:text-white" : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                          }`}
+                        >
+                          {t("auth_modal.register") || "Daftar Baru"}
+                        </button>
+                        {/* Tab Active Background indicator */}
+                        <div 
+                            className={`absolute top-1.5 bottom-1.5 w-[calc(50%-0.375rem)] bg-white dark:bg-[#222] rounded-xl shadow-sm border border-gray-200/50 dark:border-white/10 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${activeTab === 'login' ? 'left-1.5' : 'left-[calc(50%+0.375rem)]'}`}
                         />
-                        <div className="w-5 h-5 border border-gray-400 rounded-md peer-checked:bg-indigo-600 peer-checked:border-indigo-600 transition-colors flex items-center justify-center">
-                          <CheckCircle className={`w-3.5 h-3.5 text-white transition-transform duration-200 ${rememberMe ? 'scale-100' : 'scale-0'}`} strokeWidth={3} />
+                      </div>
+
+                      <form onSubmit={handleSubmit} className="space-y-5">
+                        {/* REGISTER FIELDS */}
+                        <AnimatePresence>
+                          {activeTab === 'register' && (
+                            <motion.div 
+                              initial={{ opacity: 0, height: 0 }} 
+                              animate={{ opacity: 1, height: 'auto' }} 
+                              exit={{ opacity: 0, height: 0 }}
+                              className="space-y-5 overflow-hidden"
+                            >
+                              <div className="space-y-1.5">
+                                <label className={labelClass}>{t("auth_modal.fullname") || "Nama Lengkap (Display Name)"}</label>
+                                <div className="relative group">
+                                  <User className={iconClass} strokeWidth={2.5} />
+                                  <input
+                                    type="text" name="name" value={formData.name} onChange={handleChange}
+                                    placeholder="John Doe" className={inputClass} required
+                                  />
+                                </div>
+                              </div>
+                              <div className="space-y-1.5">
+                                <label className={labelClass}>{t("auth_modal.username") || "Username"}</label>
+                                <div className="relative group">
+                                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400 group-focus-within:text-primary transition-colors">@</span>
+                                  <input
+                                    type="text" name="username" value={formData.username}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') }))}
+                                    placeholder="johndoe123" className={inputClass} required
+                                  />
+                                </div>
+                              </div>
+                              
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                  <label className={labelClass}>{t("auth_modal.role") || "Profesi"}</label>
+                                  <div className="relative group">
+                                    <User className={`${iconClass} !w-4 !h-4`} strokeWidth={2.5} />
+                                    <select name="profesi" value={formData.profesi} onChange={handleChange} className={`${inputClass} !pl-10 !text-[13px] font-bold appearance-none cursor-pointer`} required>
+                                      <option value="Pelajar">{t("auth_modal.role_pelajar") !== "auth_modal.role_pelajar" ? t("auth_modal.role_pelajar") : "Pelajar"}</option>
+                                      <option value="Mahasiswa">{t("auth_modal.role_mahasiswa") !== "auth_modal.role_mahasiswa" ? t("auth_modal.role_mahasiswa") : "Mahasiswa"}</option>
+                                      <option value="Pengajar">{t("auth_modal.role_pengajar") !== "auth_modal.role_pengajar" ? t("auth_modal.role_pengajar") : "Pengajar"}</option>
+                                      <option value="Umum">{t("auth_modal.role_umum") !== "auth_modal.role_umum" ? t("auth_modal.role_umum") : "Umum"}</option>
+                                    </select>
+                                    <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none transform rotate-90" />
+                                  </div>
+                                </div>
+                                <div className="space-y-1.5">
+                                  <label className={labelClass}>{t("auth_modal.level") || "Jenjang"}</label>
+                                  <div className="relative group">
+                                    <GraduationCap className={`${iconClass} !w-4 !h-4`} strokeWidth={2.5} />
+                                    <select name="jenjang" value={formData.jenjang} onChange={handleChange} className={`${inputClass} !pl-10 !text-[13px] font-bold appearance-none cursor-pointer`} required>
+                                      <option value="SD">{t('edu_levels.SD') !== 'edu_levels.SD' ? t('edu_levels.SD') : "SD"}</option>
+                                      <option value="SMP">{t('edu_levels.SMP') !== 'edu_levels.SMP' ? t('edu_levels.SMP') : "SMP"}</option>
+                                      <option value="SMA">{t('edu_levels.SMA') !== 'edu_levels.SMA' ? t('edu_levels.SMA') : "SMA/SMK"}</option>
+                                      <option value="Kuliah">{t('edu_levels.Kuliah') !== 'edu_levels.Kuliah' ? t('edu_levels.Kuliah') : "Kuliah"}</option>
+                                      <option value="Umum">{t('edu_levels.Umum') !== 'edu_levels.Umum' ? t('edu_levels.Umum') : "Umum"}</option>
+                                    </select>
+                                    <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none transform rotate-90" />
+                                  </div>
+                                </div>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+
+                        {/* EMAIL & PASSWORD (ALWAYS PRESENT) */}
+                        <div className="space-y-1.5">
+                          <label className={labelClass}>{activeTab === 'login' ? (t("auth_modal.email_or_username") || 'Email atau Username') : (t("auth_modal.email") || 'Alamat Email')}</label>
+                          <div className="relative group">
+                            <Mail className={iconClass} strokeWidth={2.5} />
+                            <input
+                              type={activeTab === 'login' ? 'text' : 'email'}
+                              name="email" value={formData.email} onChange={handleChange}
+                              placeholder={activeTab === 'login' ? 'nama@email.com / username_anda' : 'nama@email.com'}
+                              className={inputClass} required
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className={labelClass}>{t("auth_modal.password") || "Password"}</label>
+                          <div className="relative group">
+                            <Lock className={iconClass} strokeWidth={2.5} />
+                            <input
+                              type={showPassword ? 'text' : 'password'}
+                              name="password" value={formData.password} onChange={handleChange}
+                              placeholder="••••••••" className={`${inputClass} !pr-12`} required
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors focus:outline-none"
+                            >
+                              {showPassword ? <EyeOff className="w-[18px] h-[18px]" strokeWidth={2.5} /> : <Eye className="w-[18px] h-[18px]" strokeWidth={2.5} />}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Login Extras (Remember Me & Forgot Pass) */}
+                        {activeTab === 'login' && (
+                          <div className="flex items-center justify-between pt-1">
+                            <label className="flex items-center cursor-pointer group">
+                              <div className="relative flex items-center justify-center">
+                                <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} className="peer sr-only" />
+                                <div className="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 rounded-md peer-checked:bg-primary peer-checked:border-primary transition-colors flex items-center justify-center">
+                                  <CheckCircle className={`w-3.5 h-3.5 text-white transition-transform duration-200 ${rememberMe ? 'scale-100' : 'scale-0'}`} strokeWidth={3} />
+                                </div>
+                              </div>
+                              <span className="ml-3 text-[14px] text-gray-600 dark:text-gray-400 font-medium group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors">
+                                {t("auth_modal.remember_me") || "Ingat saya"}
+                              </span>
+                            </label>
+                            <button 
+                              type="button" onClick={() => setActiveTab('forgot')} 
+                              className="text-[13px] text-primary hover:text-primary/80 font-bold transition-colors"
+                            >
+                              {t("auth_modal.forgot_password") || "Lupa Password?"}
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Submit CTA */}
+                        <div className="pt-4">
+                          <button
+                            type="submit" disabled={isSubmitting}
+                            className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-900 dark:hover:bg-gray-100 py-4 rounded-2xl font-['Lexend_Deca'] font-extrabold text-[15px] shadow-xl hover:shadow-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                          >
+                            {isSubmitting ? (
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                              <>
+                                {activeTab === 'login' ? (t("auth_modal.login_btn") || 'Masuk') : (t("auth_modal.register_btn") || 'Daftar')}
+                                <ArrowRight className="w-4 h-4" />
+                              </>
+                            )}
+                          </button>
+
+                          {/* Social Login Separator */}
+                          <div className="relative my-8">
+                            <div className="absolute inset-0 flex items-center">
+                              <div className="w-full border-t border-gray-200 dark:border-white/10"></div>
+                            </div>
+                            <div className="relative flex justify-center text-[12px]">
+                              <span className="px-4 bg-white dark:bg-[#0a0a0a] text-gray-400 font-['Lexend_Deca'] font-semibold">
+                                {t("auth_modal.or_continue_with") || "atau dengan"}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Modern Social Buttons (Square) */}
+                          <div className="grid grid-cols-1 gap-4">
+                            <button
+                              type="button" onClick={() => { window.location.href = '/api/auth/google/redirect'; }}
+                              className="flex items-center justify-center gap-3 py-3.5 bg-gray-50 dark:bg-[#111] border border-gray-200 dark:border-white/5 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 transition-colors active:scale-95 group w-full"
+                            >
+                              <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                              <span className="font-['Lexend_Deca'] font-bold text-gray-700 dark:text-gray-300">Lanjutkan dengan Google</span>
+                            </button>
+                          </div>
+                          
+                          {activeTab === 'register' && (
+                            <div className="mt-8 text-center">
+                              <p className="text-[12px] text-gray-500 font-medium font-['Manrope']">
+                                {t("auth_modal.terms_prefix") || "Dengan mendaftar, Anda menyetujui"}{' '}
+                                <Link to="/terms" target="_blank" className="text-gray-800 dark:text-gray-300 font-bold hover:underline">{t("auth_modal.terms") || "Syarat & Ketentuan"}</Link>
+                                {' '}{t("auth_modal.terms_and") || "serta"}{' '}
+                                <Link to="/privacy" target="_blank" className="text-gray-800 dark:text-gray-300 font-bold hover:underline">{t("auth_modal.privacy") || "Kebijakan Privasi"}</Link>
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </form>
+                    </motion.div>
+                  ) : (
+                    /* FORGOT PASSWORD VIEW */
+                    <motion.div
+                      key="forgot"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3 }}
+                      className="py-4"
+                    >
+                      <div className="text-center mb-10">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-full mb-6 border border-gray-100 dark:border-white/10">
+                          <Sparkles className="w-8 h-8 text-primary" />
+                        </div>
+                        <h3 className="font-['Lexend_Deca'] text-3xl font-extrabold text-gray-900 dark:text-white mb-3">{t("auth_modal.forgot_password") || "Lupa Password?"}</h3>
+                        <p className="font-['Manrope'] text-[15px] text-gray-500 dark:text-gray-400 font-medium leading-relaxed max-w-sm mx-auto">
+                          {t("auth_modal.forgot_desc") || "Jangan khawatir. Masukkan email terdaftar Anda untuk menerima tautan reset."}
+                        </p>
+                      </div>
+                      
+                      <div className="space-y-6">
+                        <div className="space-y-1.5">
+                          <label className={labelClass}>{t("auth_modal.email") || "Alamat Email"}</label>
+                          <div className="relative">
+                            <Mail className={iconClass} strokeWidth={2.5} />
+                            <input
+                              type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                              className={inputClass} placeholder="nama@email.com" required
+                            />
+                          </div>
+                        </div>
+
+                        <button
+                          type="button" disabled={isSubmitting}
+                          onClick={async () => {
+                            if (!formData.email) { showToast(t("auth_modal.email_required") || "Isi email terlebih dahulu!", "error"); return; }
+                            setIsSubmitting(true);
+                            try {
+                              const response = await axios.post('/api/forgot-password', { email: formData.email, lang: language || 'id' });
+                              if (response.status === 200) {
+                                showToast(t("forgot_password.reset_sent") || "Link reset password telah dikirim ke email Anda.", "success");
+                                setActiveTab('login');
+                              }
+                            } catch (error: any) {
+                              showToast(error.response?.data?.message || "Koneksi gagal", "error");
+                            } finally {
+                              setIsSubmitting(false);
+                            }
+                          }}
+                          className="w-full bg-black dark:bg-white text-white dark:text-black py-4 rounded-2xl font-['Lexend_Deca'] font-extrabold text-[15px] shadow-xl hover:shadow-2xl transition-all active:scale-[0.98]"
+                        >
+                          {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (t("auth_modal.send_reset_link") || "Kirim Tautan Reset")}
+                        </button>
+
+                        <div className="text-center pt-2">
+                          <button
+                            type="button" onClick={() => setActiveTab('login')}
+                            className="text-[14px] font-bold text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors font-['Lexend_Deca']"
+                          >
+                            {t("auth_modal.back_to_login") || "Kembali ke Login"}
+                          </button>
                         </div>
                       </div>
-                      <span className="ml-2.5 text-[14px] text-gray-700 dark:text-gray-400 font-medium group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors">
-                        {t("auth_modal.remember_me") || "Ingat saya"}
-                      </span>
-                    </label>
-                    <button 
-                      type="button" 
-                      onClick={() => setActiveTab('forgot')} 
-                      className="text-[13px] text-indigo-600 font-bold hover:text-indigo-800 transition-colors"
-                    >
-                      {t("auth_modal.forgot_password") || "Lupa Password?"}
-                    </button>
-                  </div>
-                )}
-              </>)}
-
-              {activeTab === 'forgot' && (
-                <div className="space-y-6 animate-in fade-in zoom-in duration-300 py-4">
-                  <div className="text-center mb-6">
-                    <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-50 dark:bg-primary/10 rounded-2xl mb-4 border border-indigo-200 dark:border-primary/20 shadow-sm dark:shadow-none">
-                      <Sparkles className="w-6 h-6 text-indigo-600" />
-                    </div>
-                    <h3 className="font-['Lexend_Deca'] text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1.5">{t("auth_modal.forgot_password") || "Lupa Password?"}</h3>
-                    <p className="font-['Manrope'] text-[14px] text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
-                      {t("auth_modal.forgot_desc") || "Masukkan email terdaftar untuk menerima link reset password."}
-                    </p>
-                  </div>
-                  
-                  <div className="space-y-1.5">
-                    <label className={labelClass}>{t("auth_modal.email") || "Alamat Email"}</label>
-                    <div className="relative">
-                      <Mail className={iconClass} strokeWidth={2.5} />
-                      <input
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className={inputClass}
-                        placeholder="nama@email.com"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="pt-2">
-                    <button
-                      type="button"
-                      disabled={isSubmitting}
-                      onClick={async () => {
-                        if (!formData.email) {
-                          showToast(t("auth_modal.email_required") || "Isi email terlebih dahulu!", "error");
-                          return;
-                        }
-                        setIsSubmitting(true);
-                        try {
-                          const response = await axios.post('/api/forgot-password', { 
-                            email: formData.email,
-                            lang: language || 'id'
-                          }, {
-                            headers: {
-                              'Accept': 'application/json'
-                            }
-                          });
-                          
-                          if (response.status === 200) {
-                            const successMsg = response.data.message === "passwords.sent" || response.data.message.includes("emailed")
-                                ? (t("forgot_password.reset_sent") || "Link reset password telah dikirim ke email Anda.")
-                                : response.data.message;
-                            showToast(successMsg, "success");
-                            setActiveTab('login');
-                          } else {
-                            showToast(response.data.message, "error");
-                          }
-                        } catch (error: any) {
-                          const rawErrorMsg = error.response?.data?.message || "";
-                          let errorMsg = rawErrorMsg;
-                          if (rawErrorMsg === "passwords.user" || rawErrorMsg.includes("not found")) {
-                              errorMsg = t("reset_password.error_user") || "Pengguna dengan email ini tidak ditemukan.";
-                          } else if (rawErrorMsg === "passwords.throttled" || rawErrorMsg === "Please wait before retrying.") {
-                              errorMsg = t("forgot_password.reset_throttled") || "Silakan tunggu beberapa saat (60 detik) sebelum mencoba lagi.";
-                          } else {
-                              errorMsg = rawErrorMsg || (t("auth_modal.connection_failed") || "Koneksi gagal");
-                          }
-                          showToast(errorMsg, "error");
-                        } finally {
-                          setIsSubmitting(false);
-                        }
-                      }}
-                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-full font-['Lexend_Deca'] font-bold text-[15px] shadow-lg shadow-indigo-600/20 transition-all active:scale-[0.98]"
-                    >
-                      {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (t("auth_modal.send_reset_link") || "Kirim Link Reset")}
-                    </button>
-                  </div>
-
-                  <div className="text-center">
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('login')}
-                      className="text-[13px] font-bold text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-primary transition-colors font-['Lexend_Deca']"
-                    >
-                      {t("auth_modal.back_to_login") || "Kembali ke Login"}
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Submit CTA */}
-              {activeTab !== 'forgot' && (
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-full font-['Lexend_Deca'] font-bold text-[15px] shadow-lg shadow-indigo-600/20 hover:-translate-y-0.5 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                  >
-                    {isSubmitting ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <>
-                        {activeTab === 'login' ? (t("auth_modal.login_btn") || 'Masuk ke Akun') : (t("auth_modal.register_btn") || 'Daftar Sekarang')}
-                        <ArrowRight className="w-4 h-4" />
-                      </>
-                    )}
-                  </button>
-
-                  {/* Social Login Separator */}
-                  <div className="relative my-6">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-200 dark:border-white/10"></div>
-                    </div>
-                    <div className="relative flex justify-center text-[12px]">
-                      <span className="px-4 bg-white dark:bg-[#1C1A29] text-gray-500 dark:text-gray-500 font-['Lexend_Deca'] font-semibold">
-                        {t("auth_modal.or_continue_with") || "atau lanjutkan dengan"}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Social Buttons */}
-                  <div className="grid grid-cols-2 gap-3.5">
-                    <button
-                      type="button"
-                      onClick={() => { window.location.href = '/api/auth/google/redirect'; }}
-                      className="flex items-center justify-center gap-2 py-3 bg-white dark:bg-[#252336] border border-gray-300 dark:border-white/10 rounded-2xl font-['Lexend_Deca'] font-bold text-[13px] sm:text-[14px] text-gray-800 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-all active:scale-95 shadow-sm dark:shadow-none"
-                    >
-                      <svg className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                      Google
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { window.location.href = '/api/auth/facebook/redirect'; }}
-                      className="flex items-center justify-center gap-2 py-3 bg-white dark:bg-[#252336] border border-gray-200 dark:border-white/10 rounded-2xl font-['Lexend_Deca'] font-bold text-[13px] sm:text-[14px] text-gray-800 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-all active:scale-95 shadow-sm dark:shadow-none"
-                    >
-                      <svg className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                      Facebook
-                    </button>
-                  </div>
-                  
-                  {/* Terms (Register) */}
-                  {activeTab === 'register' && (
-                    <div className="mt-6 px-2 text-center">
-                      <p className="text-[12px] text-gray-500 leading-relaxed font-medium font-['Manrope']">
-                        {t("auth_modal.terms_prefix") || "Dengan mendaftar, Anda menyetujui"}{' '}
-                        <Link 
-                          to="/terms" 
-                          target="_blank" 
-                          className="text-indigo-600 font-bold hover:text-indigo-800 hover:underline transition-colors"
-                        >
-                          {t("auth_modal.terms") || "Syarat & Ketentuan"}
-                        </Link>
-                        {' '}{t("auth_modal.terms_and") || "serta"}{' '}
-                        <Link 
-                          to="/privacy" 
-                          target="_blank" 
-                          className="text-indigo-600 font-bold hover:text-indigo-800 hover:underline transition-colors"
-                        >
-                          {t("auth_modal.privacy") || "Kebijakan Privasi"}
-                        </Link>
-                        {' '}{t("auth_modal.terms_suffix") || "layanan Ba-Yu."}
-                      </p>
-                    </div>
+                    </motion.div>
                   )}
-                </div>
-              )}
-            </form>
+                </AnimatePresence>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      </div>
-    </>
+        </>
+      )}
+    </AnimatePresence>
   );
 }

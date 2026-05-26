@@ -360,7 +360,7 @@ export default function HomePage() {
                                                                 {hAuthor?.name}
                                                             </span>
                                                             <span className="text-[12px] font-['Manrope'] text-gray-700 dark:text-gray-400 font-bold">
-                                                                {heroNote.createdAt ? new Date(heroNote.createdAt).toLocaleDateString(language === 'id' ? 'id-ID' : language, { day: 'numeric', month: 'short', year: 'numeric' }) : t('notifications.time_just_now')}
+                                                                {heroNote.createdAt ? new Date(heroNote.createdAt).toLocaleDateString((language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language), { day: 'numeric', month: 'short', year: 'numeric' }) : t('notifications.time_just_now')}
                                                             </span>
                                                         </div>
                                                     </Link>
@@ -527,7 +527,7 @@ export default function HomePage() {
                                                             {trend.author?.name}
                                                         </span>
                                                         <span className="text-[12px] font-['Manrope'] text-gray-500 font-medium">
-                                                            {trend.createdAt ? new Date(trend.createdAt).toLocaleDateString(language === 'id' ? 'id-ID' : language, { day: 'numeric', month: 'short' }) : t('notifications.time_just_now')}
+                                                            {trend.createdAt ? new Date(trend.createdAt).toLocaleDateString((language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language), { day: 'numeric', month: 'short' }) : t('notifications.time_just_now')}
                                                         </span>
                                                     </Link>
                                                     <Link
@@ -542,7 +542,7 @@ export default function HomePage() {
                                                         {new Date(
                                                             trend.createdAt,
                                                         ).toLocaleDateString(
-                                                            language === 'id' ? 'id-ID' : language,
+                                                            (language === 'ar' ? 'ar-EG' : language === 'fa' ? 'fa-IR' : language === 'id' ? 'id-ID' : language),
                                                             {
                                                                 month: "long",
                                                                 year: "numeric",

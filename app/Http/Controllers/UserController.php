@@ -156,7 +156,15 @@ class UserController extends Controller
 
     public function show($id)
     {
-        $user = User::find($id);
+        $user = \Illuminate\Support\Facades\Cache::remember("user_profile_{$id}", now()->addMinutes(5), function() use ($id) {
+            $u = User::find($id);
+            if ($u) {
+                // 🔥 SULAP 2: Ngitung dari tabel Follows buat Halaman Profil
+                $u->setAttribute('followers_count', $u->followers()->count());
+                $u->setAttribute('following_count', $u->followings()->count());
+            }
+            return $u;
+        });
 
         if (!$user) {
             return response()->json(['message' => 'Pengguna tidak ditemukan'], 404);
@@ -182,6 +190,8 @@ class UserController extends Controller
 
         // Prevent viewing private accounts unless admin, owner, or follower
         if ($user->is_private && !$isAdmin && $viewerIdStr !== $userIdStr) {
+            $isFollower = false;
+            $isPending = false;
             if ($viewerIdStr) {
                 $follow = \App\Models\Follow::where('follower_id', $viewerIdStr)->where('following_id', $userIdStr)->first();
                 $isFollower = $follow && $follow->status === \App\Models\Follow::STATUS_ACCEPTED;
@@ -202,10 +212,6 @@ class UserController extends Controller
                 ], 403);
             }
         }
-
-        // 🔥 SULAP 2: Ngitung dari tabel Follows buat Halaman Profil
-        $user->setAttribute('followers_count', $user->followers()->count());
-        $user->setAttribute('following_count', $user->followings()->count());
 
         $user->makeHidden(['email', 'phone', 'is_verified']); 
 

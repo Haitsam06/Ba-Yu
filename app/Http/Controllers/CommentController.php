@@ -57,12 +57,19 @@ class CommentController extends Controller
                      if ($postUserIdStr !== (string) Auth::id()) {
                          /** @var \App\Models\User $authUser */
                          $authUser = Auth::user();
+                         
+                         $isRespond = !empty($request->input('quote_context'));
+                         $notifTitle = $isRespond ? 'Respons Baru di Catatanmu' : 'Komentar Baru di Catatanmu';
+                         $notifMessage = $isRespond 
+                             ? $authUser->name . ' merespons catatan anda' 
+                             : $authUser->name . ' berkomentar: "' . substr($request->input('content'), 0, 50) . '..."';
+
                          \App\Models\Notification::create([
                              'user_id'  => $postUserIdStr,
                              'actor_id' => Auth::id(),
-                             'title'    => 'Komentar Baru di Catatanmu',
-                             'message'  => $authUser->name . ' berkomentar: "' . substr($request->input('content'), 0, 50) . '..."',
-                             'type'     => 'comment',
+                             'title'    => $notifTitle,
+                             'message'  => $notifMessage,
+                             'type'     => $isRespond ? 'respond' : 'comment',
                              'link'     => '/note/' . $postId . '#comment-' . $comment->_id,
                              'is_read'  => false,
                          ]);
