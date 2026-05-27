@@ -12,7 +12,7 @@ class UserController extends Controller
     public function index()
     {
         if (Auth::user()->role !== 'admin') {
-            return response()->json(['message' => 'Hanya Admin yang punya akses!'], 403);
+            return response()->json(['message' => 'users.admin_only'], 403);
         }
 
         $users = User::orderBy('created_at', 'desc')->get();
@@ -23,7 +23,7 @@ class UserController extends Controller
         });
 
         return response()->json([
-            'message' => 'Berhasil mengambil daftar seluruh pengguna',
+            'message' => 'users.fetch_all_success',
             'data' => $users
         ], 200);
     }
@@ -63,7 +63,7 @@ class UserController extends Controller
         });
 
         return response()->json([
-            'message' => 'Hasil pencarian pengguna',
+            'message' => 'users.search_success',
             'data' => $users,
             'meta' => [
                 'current_page' => $paginator->currentPage(),
@@ -102,14 +102,17 @@ class UserController extends Controller
             $validated['username'] = strtolower($validated['username']);
             $exists = User::where('username', $validated['username'])->where('_id', '!=', $user->_id)->exists();
             if ($exists) {
-                return response()->json(['message' => 'Username sudah digunakan oleh pengguna lain.'], 400);
+                return response()->json(['message' => 'users.username_taken'], 400);
             }
 
             if ($user->username_updated_at) {
                 $daysSinceUpdate = now()->diffInDays($user->username_updated_at);
                 if ($daysSinceUpdate < 15) {
                     $daysLeft = 15 - $daysSinceUpdate;
-                    return response()->json(['message' => "Anda baru saja mengubah username. Silakan tunggu $daysLeft hari lagi."], 400);
+                    return response()->json([
+                        'message' => 'users.username_cooldown_error',
+                        'daysLeft' => $daysLeft
+                    ], 400);
                 }
             }
 
@@ -126,7 +129,7 @@ class UserController extends Controller
         $user->save();
 
         return response()->json([
-            'message' => 'Profil berhasil diperbarui',
+            'message' => 'users.profile_updated',
             'user' => $user
         ], 200);
     }
@@ -137,16 +140,16 @@ class UserController extends Controller
             'current_password' => 'required|string',
             'new_password' => ['required', 'string', 'min:8', 'max:128', 'confirmed', 'regex:/^(?=.*[A-Za-z])(?=.*\d).+$/'],
         ], [
-            'new_password.min' => 'Password baru minimal 8 karakter.',
-            'new_password.max' => 'Password baru maksimal 128 karakter.',
-            'new_password.regex' => 'Password baru harus mengandung minimal 1 huruf dan 1 angka (tidak boleh hanya angka atau hanya huruf saja).',
+            'new_password.min' => 'auth.error_password_min',
+            'new_password.max' => 'auth.error_password_max',
+            'new_password.regex' => 'auth.error_password_regex',
         ]);
 
         $user = auth()->user();
 
         if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
             return response()->json([
-                'message' => 'Password saat ini salah.'
+                'message' => 'users.current_password_wrong'
             ], 400);
         }
 
@@ -154,7 +157,7 @@ class UserController extends Controller
         $user->save();
 
         return response()->json([
-            'message' => 'Password berhasil diperbarui.'
+            'message' => 'users.password_updated'
         ], 200);
     }
 
@@ -171,7 +174,7 @@ class UserController extends Controller
         });
 
         if (!$user) {
-            return response()->json(['message' => 'Pengguna tidak ditemukan'], 404);
+            return response()->json(['message' => 'users.user_not_found'], 404);
         }
 
         $viewerId = null;
@@ -189,7 +192,7 @@ class UserController extends Controller
 
         // Prevent viewing dormant accounts unless admin or owner
         if ($user->is_dormant && !$isAdmin && $viewerIdStr !== $userIdStr) {
-            return response()->json(['message' => 'Pengguna ini sedang tidak aktif (Dormant).'], 403);
+            return response()->json(['message' => 'users.user_dormant'], 403);
         }
 
         // Prevent viewing private accounts unless admin, owner, or follower
@@ -203,7 +206,7 @@ class UserController extends Controller
             }
             if (!$isFollower) {
                 return response()->json([
-                    'message' => 'Akun ini bersifat Privat.',
+                    'message' => 'users.user_private',
                     'is_private_restricted' => true,
                     'is_follow_pending' => $isPending,
                     'data' => [
@@ -243,7 +246,7 @@ class UserController extends Controller
         }
 
         return response()->json([
-            'message' => 'Berhasil mengambil profil pengguna',
+            'message' => 'users.fetch_profile_success',
             'data' => $user
         ], 200);
     }
@@ -253,7 +256,7 @@ class UserController extends Controller
         $user = User::find($id);
 
         if (!$user) {
-            return response()->json(['message' => 'Pengguna tidak ditemukan'], 404);
+            return response()->json(['message' => 'users.user_not_found'], 404);
         }
 
         $activities = \App\Models\Comment::with('post')
@@ -262,7 +265,7 @@ class UserController extends Controller
         ->get();
 
         return response()->json([
-            'message' => 'Berhasil mengambil aktivitas pengguna',
+            'message' => 'users.fetch_activities_success',
             'data' => $activities
         ], 200);
     }
@@ -288,7 +291,7 @@ class UserController extends Controller
         });
 
         return response()->json([
-            'message' => 'Berhasil mengambil daftar pakar',
+            'message' => 'users.fetch_experts_success',
             'data' => $experts
         ], 200);
     }
@@ -304,7 +307,7 @@ class UserController extends Controller
 
        return response()->json([
            'success' => true,
-           'message' => 'Target berhasil disimpan ke Database!',
+           'message' => 'users.target_saved',
            'target' => $user->target_belajar
        ]);
    }
@@ -312,16 +315,16 @@ class UserController extends Controller
     public function demote($id)
     {
         if (Auth::user()->role !== 'admin') {
-            return response()->json(['message' => 'Hanya Admin yang bisa menurunkan pangkat!'], 403);
+            return response()->json(['message' => 'users.demote_admin_only'], 403);
         }
 
         $user = User::find($id);
         if (!$user) {
-            return response()->json(['message' => 'User tidak ditemukan'], 404);
+            return response()->json(['message' => 'users.user_not_found'], 404);
         }
 
         if ($user->id === Auth::id()) {
-            return response()->json(['message' => 'Lu nggak bisa nurunin pangkat diri sendiri kocak!'], 400);
+            return response()->json(['message' => 'users.cannot_demote_self'], 400);
         }
 
         $oldRole = $user->role;
@@ -329,7 +332,8 @@ class UserController extends Controller
         $user->save();
 
         return response()->json([
-            'message' => 'Berhasil menurunkan pangkat dari ' . $oldRole . ' menjadi user biasa.',
+            'message' => 'users.demote_success',
+            'oldRole' => $oldRole,
             'user' => $user
         ], 200);
     }
@@ -346,7 +350,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Pengaturan privasi berhasil diperbarui',
+            'message' => 'users.privacy_updated',
             'user' => $user
         ]);
     }
@@ -367,7 +371,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Akun berhasil dinonaktifkan dan masuk ke masa Dormant.'
+            'message' => 'users.account_deactivated'
         ]);
     }
 }

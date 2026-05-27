@@ -39,16 +39,27 @@ export default function ResetPasswordPage() {
             }, 2000);
             
         } catch (error: any) {
-            const errorMsg = error.response?.data?.message || "";
+            const errData = error.response?.data;
+            const errorMsg = errData?.message || "";
             let translatedError = errorMsg;
-            if (errorMsg === "passwords.token" || errorMsg.includes("invalid") || errorMsg.includes("expired")) {
+            
+            // Extract Laravel validation errors if present
+            if (errData && typeof errData === "object" && !errData.message && errData[Object.keys(errData)[0]]) {
+                const firstErrorKey = Object.keys(errData)[0];
+                translatedError = t(errData[firstErrorKey][0]);
+            } else if (errData?.errors && typeof errData.errors === "object") {
+                const firstErrorKey = Object.keys(errData.errors)[0];
+                translatedError = t(errData.errors[firstErrorKey][0]);
+            } else if (errorMsg === "passwords.token" || errorMsg.includes("invalid") || errorMsg.includes("expired")) {
                 translatedError = t("reset_password.error_token") || "Link reset tidak valid atau sudah kadaluarsa.";
             } else if (errorMsg === "passwords.user" || errorMsg.includes("not found")) {
                 translatedError = t("reset_password.error_user") || "Pengguna dengan email ini tidak ditemukan.";
             } else if (!translatedError) {
                 translatedError = t("reset_password.error_generic") || "Terjadi kesalahan saat mengatur ulang kata sandi.";
             }
-            showToast(translatedError, 'error');
+            
+            // If the key is not found in translation, t() returns the key itself, so we check and try to translate it directly if it's the raw message
+            showToast(t(translatedError) !== translatedError ? t(translatedError) : translatedError, 'error');
         } finally {
             setLoading(false);
         }

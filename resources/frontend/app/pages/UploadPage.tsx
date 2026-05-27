@@ -439,10 +439,10 @@ export default function UploadPage() {
             </div>
           </div>
           <h3 className="mt-6 font-['Lexend_Deca'] font-extrabold text-gray-900 dark:text-gray-100 text-lg">
-            {t('upload.preparing_draft')}
+            {t('upload.preparing_draft') || 'Menyiapkan draf...'}
           </h3>
           <p className="mt-2 font-['Manrope'] text-gray-700 font-medium text-sm">
-            {t('upload.wait_draft')}
+            {t('upload.wait_draft') || 'Mohon tunggu sebentar...'}
           </p>
         </div>
       )}

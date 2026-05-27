@@ -153,7 +153,8 @@ export default function PublicProfilePage() {
                         setIsFollowing(false);
                         setIsPending(error.response.data.is_follow_pending || false);
                     } else {
-                        showToast(error.response.data.message || "Akses ditolak", "error");
+                        const errorMsg = error.response.data.message;
+                        showToast(errorMsg ? t(errorMsg) : "Akses ditolak", "error");
                         navigate(-1);
                     }
                 } else {
@@ -387,8 +388,9 @@ export default function PublicProfilePage() {
             setReportReason("");
             setReportDescription("");
         } catch (e: any) {
+            const errorMsg = e.response?.data?.message;
             showToast(
-                e.response?.data?.message || t('public_profile.report_failed') || "Gagal mengirim laporan.",
+                (errorMsg ? t(errorMsg) : t('public_profile.report_failed')) || "Gagal mengirim laporan.",
                 "error",
             );
         } finally {

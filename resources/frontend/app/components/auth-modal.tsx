@@ -159,7 +159,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
   if (!isOpen) return null;
 
   // PREMIUM INPUT STYLING (Apple / Chronicle Aesthetic)
-  const inputClass = "w-full pl-12 pr-4 py-3.5 bg-[#0c0a1a] border border-white/5 rounded-2xl font-['Manrope'] text-[15px] text-gray-100 transition-all focus:outline-none focus:ring-4 focus:ring-[#5D5CE6]/20 focus:border-[#8B5CF6]/40 placeholder:text-gray-500 hover:bg-[#0f0d22]";
+  const inputClass = "w-full pl-12 pr-4 py-3.5 bg-[#0c0a1a] border border-white/5 rounded-2xl font-['Manrope'] text-[15px] text-white transition-all focus:outline-none focus:ring-4 focus:ring-[#5D5CE6]/20 focus:border-[#8B5CF6]/40 placeholder:text-white/70 hover:bg-[#0f0d22]";
   const labelClass = "block text-[13px] font-['Lexend_Deca'] font-bold text-gray-300 pl-1 mb-2 tracking-wide";
   const iconClass = "absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-400 group-focus-within:text-[#8B5CF6] transition-colors duration-300";
 
@@ -469,7 +469,8 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                                 setActiveTab('login');
                               }
                             } catch (error: any) {
-                              showToast(error.response?.data?.message || "Koneksi gagal", "error");
+                              const errorMsg = error.response?.data?.message;
+                              showToast(errorMsg ? t(errorMsg) : "Koneksi gagal", "error");
                             } finally {
                               setIsSubmitting(false);
                             }

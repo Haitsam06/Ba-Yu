@@ -52,8 +52,20 @@ export default function SecurityPage() {
             });
         } catch (error: any) {
             console.error("Failed to update password", error);
+            const errData = error.response?.data;
+            let errMsg = errData?.message || t("security.password_update_failed");
+
+            // Extract Laravel validation errors if present
+            if (errData && typeof errData === "object" && !errData.message && errData[Object.keys(errData)[0]]) {
+                const firstErrorKey = Object.keys(errData)[0];
+                errMsg = errData[firstErrorKey][0];
+            } else if (errData?.errors && typeof errData.errors === "object") {
+                const firstErrorKey = Object.keys(errData.errors)[0];
+                errMsg = errData.errors[firstErrorKey][0];
+            }
+
             showToast(
-                error.response?.data?.message || t("security.password_update_failed"),
+                t(errMsg) !== errMsg ? t(errMsg) : errMsg,
                 "error"
             );
         } finally {

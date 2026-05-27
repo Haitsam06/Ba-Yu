@@ -143,7 +143,8 @@ export default function Login() {
             setIsForgotPasswordOpen(false);
             setForgotPasswordEmail("");
         } catch (error: any) {
-            showToast(error.response?.data?.message || 'Terjadi kesalahan. Pastikan email terdaftar.', 'error');
+            const errorMsg = error.response?.data?.message;
+            showToast(errorMsg ? t(errorMsg) : 'Terjadi kesalahan. Pastikan email terdaftar.', 'error');
         } finally {
             setIsForgotLoading(false);
         }

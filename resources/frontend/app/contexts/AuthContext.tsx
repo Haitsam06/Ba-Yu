@@ -6,6 +6,7 @@ import {
     useEffect,
 } from "react";
 import axios from "axios";
+import { useTranslation } from '../hooks/useTranslation';
 
 export type UserRole = "user" | "pakar" | "admin";
 
@@ -61,6 +62,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const { t } = useTranslation();
 
     // Setup Axios defaults
     // Dihapus hardcode baseURL agar Axios otomatis mengikuti port tempat aplikasi berjalan (misal: 8001)
@@ -122,9 +124,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             return null;
         } catch (error: any) {
             console.error("Login failed", error);
+            const errorMsg = error.response?.data?.message;
             return (
-                error.response?.data?.message ||
-                "Login gagal. Periksa kembali email dan password."
+                (errorMsg ? t(errorMsg) : t('auth.error_login')) || "Login gagal. Periksa kembali email dan password."
             );
         }
     };
@@ -140,15 +142,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const response = await axios.post("/api/v1/auth/oauth-exchange", { code });
             const { access_token } = response.data;
             if (!access_token) {
-                return "Token tidak diterima dari server.";
+                return t('auth.error_no_token') || "Token tidak diterima dari server.";
             }
             await socialLogin(access_token);
             return null;
         } catch (error: any) {
             console.error("OAuth exchange failed", error);
+            const errorMsg = error.response?.data?.message;
             return (
-                error.response?.data?.message ||
-                "Sesi OAuth kadaluwarsa, silakan login ulang."
+                (errorMsg ? t(errorMsg) : t('auth.error_oauth_expired')) || "Sesi OAuth kadaluwarsa, silakan login ulang."
             );
         }
     };
@@ -188,11 +190,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 !error.response.data.message
             ) {
                 const firstErrorKey = Object.keys(error.response.data)[0];
-                return error.response.data[firstErrorKey][0];
+                const errorMsg = error.response.data[firstErrorKey][0];
+                return t(errorMsg);
             }
+            const errorMsg = error.response?.data?.message;
             return (
-                error.response?.data?.message ||
-                "Registrasi gagal. Coba gunakan email lain."
+                (errorMsg ? t(errorMsg) : t('auth.error_register')) || "Registrasi gagal. Coba gunakan email lain."
             );
         }
     };
@@ -216,7 +219,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     {/* Animasi loading muter-muter */}
                     <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
                     <p className="text-gray-500 font-medium font-['Manrope']">
-                        Memuat sesi...
+                        {t('auth.loading_session') || 'Memuat sesi...'}
                     </p>
                 </div>
             </div>

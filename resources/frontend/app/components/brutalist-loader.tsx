@@ -1,24 +1,26 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Sparkles, Globe, Terminal } from 'lucide-react';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface BrutalistLoaderProps {
   onComplete: () => void;
 }
 
-// System log status updates to show elegant bootup process
-const SYSTEM_LOGS = [
-  'ALIGNING EDUCATION PROTOCOLS...',
-  'ACTIVATING MULTILINGUAL DECK (52 LANGUAGES)...',
-  'COMPILING LATEX FORMULA ENGINE...',
-  'SYNCHRONIZING PORTAL DYNAMICS...',
-  'ESTABLISHING COHESIVE SYSTEM BRIGHTNESS...',
-  'PRE-RENDERING VISUAL SPARKLES...',
-  'COMPLETING HANDSHAKE PROTOCOLS...',
-  'PORTAL HORIZON ENGAGED...'
-];
-
 export function BrutalistLoader({ onComplete }: BrutalistLoaderProps) {
+  const { t } = useTranslation();
+  
+  // System log status updates to show elegant bootup process
+  const SYSTEM_LOGS = [
+    t('loader.log_1') || 'ALIGNING EDUCATION PROTOCOLS...',
+    t('loader.log_2') || 'ACTIVATING MULTILINGUAL DECK (40+ LANGUAGES)...',
+    t('loader.log_3') || 'COMPILING LATEX FORMULA ENGINE...',
+    t('loader.log_4') || 'SYNCHRONIZING PORTAL DYNAMICS...',
+    t('loader.log_5') || 'ESTABLISHING COHESIVE SYSTEM BRIGHTNESS...',
+    t('loader.log_6') || 'PRE-RENDERING VISUAL SPARKLES...',
+    t('loader.log_7') || 'COMPLETING HANDSHAKE PROTOCOLS...',
+    t('loader.log_8') || 'PORTAL HORIZON ENGAGED...'
+  ];
   const [counter, setCounter] = useState(0);
   const [logIndex, setLogIndex] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
@@ -139,7 +141,7 @@ export function BrutalistLoader({ onComplete }: BrutalistLoaderProps) {
             className="flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full border border-white/5 bg-white/[0.02] backdrop-blur-md shadow-lg"
           >
             <Sparkles className="w-3.5 h-3.5 text-[#8B5CF6] animate-pulse" />
-            <span className="text-[10px] tracking-[0.2em] font-mono text-white/60 font-semibold uppercase">SYSTEM LOAD IN PROGRESS</span>
+            <span className="text-[10px] tracking-[0.2em] font-mono text-white/60 font-semibold uppercase">{t('loader.sys_load') || 'SYSTEM LOAD IN PROGRESS'}</span>
           </motion.div>
 
           <motion.h1
@@ -204,7 +206,7 @@ export function BrutalistLoader({ onComplete }: BrutalistLoaderProps) {
           {/* Sleek Minimalist Counter & Status Ticker */}
           <div className="flex flex-col items-center gap-1">
             <span className="font-mono text-xs tracking-[0.25em] text-white/50 uppercase tabular-nums">
-              LOADING {Math.min(Math.floor(counter), 100)}%
+              {t('loader.loading') || 'LOADING'} {Math.min(Math.floor(counter), 100)}%
             </span>
             <span className="font-mono text-[9px] tracking-[0.18em] text-[#8B5CF6]/80 uppercase h-4 transition-all duration-300">
               {SYSTEM_LOGS[logIndex]}

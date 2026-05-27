@@ -7,6 +7,7 @@ import { ScrollToTop } from '../components/scroll-to-top';
 import { AuthModal } from '../components/auth-modal';
 import { BrutalistLoader } from '../components/brutalist-loader';
 import ApplicationLogo from '../components/ApplicationLogo';
+import { useTranslation } from '../hooks/useTranslation';
 import {
   BookOpen, Search, Shield, Zap, ArrowRight,
   Globe, Users, Star, CheckCircle2, Layers,
@@ -21,42 +22,49 @@ import 'katex/dist/katex.min.css';
    DATA: Multilingual "Education" words
    =================================================== */
 const MULTI_LANG_TEXTS = [
-  { code: 'EN', flag: '🇬🇧', lang: 'English', text: 'Hello,\nShare your notes\nHere!', badge: 'ACTIVE MULTI-LANG', glyphs: ['A', 'Ω', '✎', '✍'] },
-  { code: 'ID', flag: '🇮🇩', lang: 'Indonesia', text: 'Halo,\nBagikan catatanmu\ndi Sini!', badge: 'AKTIF MULTI-BAHASA', glyphs: ['a', 'b', 'c', '✍'] },
-  { code: 'JP', flag: '🇯🇵', lang: '日本語', text: 'こんにちは、\nここでノートを\n共有して！', badge: 'マルチ言語対応', glyphs: ['あ', 'か', 'さ', 'た'] },
-  { code: 'KR', flag: '🇰🇷', lang: '한국어', text: '안녕하세요,\n여기서 노트를\n공유하세요!', badge: '다국어 지원 활성', glyphs: ['가', '나', '다', '라'] },
-  { code: 'ZH', flag: '🇨🇳', lang: '简体中文', text: '你好，\n在此分享你的\n笔记！', badge: '多语言模式开启', glyphs: ['文', '字', '书', '学'] },
-  { code: 'AR', flag: '🇸🇦', lang: 'العربية', text: 'مرحباً،\nشارك ملاحظاتك\nهنا!', badge: 'نشط متعدد اللغات', glyphs: ['أ', 'ب', 'ت', 'ث'] },
-  { code: 'ES', flag: '🇪🇸', lang: 'Español', text: '¡Hola,\ncomparte tus notas\naquí!', badge: 'MULTILINGÜE ACTIVO', glyphs: ['á', 'é', 'í', 'ó'] },
-  { code: 'FR', flag: '🇫🇷', lang: 'Français', text: 'Bonjour,\npartagez vos notes\nici !', badge: 'ACTIF MULTILINGUE', glyphs: ['à', 'è', 'ù', 'ç'] },
-  { code: 'DE', flag: '🇩🇪', lang: 'Deutsch', text: 'Hallo,\nteilen Sie Ihre Notizen\nhier!', badge: 'AKTIV MULTILINGUAL', glyphs: ['ä', 'ö', 'ü', 'ß'] },
-  { code: 'RU', flag: '🇷🇺', lang: 'Русский', text: 'Привет,\nподелись своими заметками\nздесь!', badge: 'АКТИВНЫЙ ЯЗЫК', glyphs: ['А', 'Б', 'В', 'Г'] },
-  { code: 'PT', flag: '🇵🇹', lang: 'Português', text: 'Olá,\ncompartilhe suas notas\naqui!', badge: 'MULTILINGUE ATIVO', glyphs: ['ã', 'õ', 'ç', 'ê'] },
-  { code: 'IT', flag: '🇮🇹', lang: 'Italiano', text: 'Ciao,\ncondividi le tue note\nqui!', badge: 'MULTILINGUA ATTIVO', glyphs: ['à', 'è', 'ì', 'ò'] },
-  { code: 'IN', flag: '🇮🇳', lang: 'हिन्दी', text: 'नमस्ते,\nअपने नोट्स यहाँ\nसाझा करें!', badge: 'सक्रिय बहुभाषी', glyphs: ['अ', 'आ', 'इ', 'ई'] },
-  { code: 'TR', flag: '🇹🇷', lang: 'Türkçe', text: 'Merhaba,\nnotlarınızı burada\npaylaşın!', badge: 'AKTİF ÇOK DİLLİ', glyphs: ['ç', 'ğ', 'ı', 'ö'] },
-  { code: 'VN', flag: '🇻🇳', lang: 'Tiếng Việt', text: 'Xin chào,\nhãy chia sẻ ghi chú\ntại đây!', badge: 'ĐA NGÔN NGỮ HOẠT ĐỘNG', glyphs: ['ă', 'â', 'đ', 'ê'] },
-  { code: 'TH', flag: '🇹🇭', lang: 'ไทย', text: 'สวัสดี\nแบ่งปันบันทึกของคุณ\nที่นี่!', badge: 'เปิดใช้งานหลายภาษา', glyphs: ['ก', 'ข', 'ค', 'ง'] },
-  { code: 'NL', flag: '🇳🇱', lang: 'Nederlands', text: 'Hallo,\ndeel je notities\nhier!', badge: 'AKTIEF MULTI-TAAL', glyphs: ['a', 'b', 'c', 'd'] },
-  { code: 'PL', flag: '🇵🇱', lang: 'Polski', text: 'Cześć,\npodziel się notatkami\ntutaj!', badge: 'AKTYWNY MULTI-LANG', glyphs: ['ą', 'ć', 'ę', 'ł'] },
-  { code: 'SE', flag: '🇸🇪', lang: 'Svenska', text: 'Hej,\ndela dina anteckningar\nhär!', badge: 'AKTIV MULTI-LANG', glyphs: ['å', 'ä', 'ö', 's'] },
-  { code: 'NO', flag: '🇳🇴', lang: 'Norsk', text: 'Hei,\ndel notatene dine\nher!', badge: 'AKTIV FLERSPRÅKLIG', glyphs: ['æ', 'ø', 'å', 'n'] },
-  { code: 'DK', flag: '🇩🇰', lang: 'Dansk', text: 'Hej,\ndel dine noter\nher!', badge: 'AKTIV FLERSPROGET', glyphs: ['æ', 'ø', 'å', 'd'] },
-  { code: 'FI', flag: '🇫🇮', lang: 'Suomi', text: 'Hei,\njaa muistiinpanosi\ntäällä!', badge: 'MONIKIELINEN', glyphs: ['ä', 'ö', 'f', 's'] },
-  { code: 'GR', flag: '🇬🇷', lang: 'Ελληνικά', text: 'Γεια σας,\nμοιραστείτε τις σημειώσεις\nσας εδώ!', badge: 'ΕΝΕΡΓΟΠΟΙΗΜΕΝΟ', glyphs: ['α', 'β', 'γ', 'δ'] },
-  { code: 'IL', flag: '🇮🇱', lang: 'עברית', text: 'שלום,\nשתף את ההערות\nשלך כאน์!', badge: 'פעيل רב-לשוני', glyphs: ['א', 'ב', 'ג', 'ד'] },
-  { code: 'IR', flag: '🇮🇷', lang: 'فارسی', text: 'سلام,\nیادداشت های خود را در اینجا\nبه اشتراک بگذارید!', badge: 'فعال چند زبانه', glyphs: ['ا', 'ب', 'پ', 'ت'] },
-  { code: 'UA', flag: '🇺🇦', lang: 'Українська', text: 'Привіт,\nподіліться своїми нотатками\nтут!', badge: 'АКТИВНА МУЛЬТИМОВНІСТЬ', glyphs: ['А', 'Б', 'В', 'Г'] },
-  { code: 'RO', flag: '🇷🇴', lang: 'Română', text: 'Bună,\nîmpărtășește-ți notițele\naici!', badge: 'MULTILINGV ACTIV', glyphs: ['ă', 'â', 'î', 'ș'] },
-  { code: 'HU', flag: '🇭🇺', lang: 'Magyar', text: 'Szia,\noszd meg a jegyzeteidet\nitt!', badge: 'AKTÍV TÖBBNYELVŰ', glyphs: ['á', 'é', 'í', 'ó'] },
-  { code: 'CZ', flag: '🇨🇿', lang: 'Čeština', text: 'Ahoj,\npoděl se o své poznámky\nzde!', badge: 'AKTIVNÍ MULTI-LANG', glyphs: ['á', 'č', 'ď', 'é'] },
-  { code: 'SK', flag: '🇸🇰', lang: 'Slovenčina', text: 'Ahoj,\npodeľ sa o svoje poznámky\ntu!', badge: 'AKTÍVNY MULTI-LANG', glyphs: ['á', 'č', 'ď', 'é'] },
-  { code: 'BG', flag: '🇧🇬', lang: 'Български', text: 'Здравейте,\nсподелете вашите мисли\nтук!', badge: 'АКТИВЕН ЕЗИК', glyphs: ['А', 'Б', 'В', 'Г'] },
-  { code: 'MS', flag: '🇲🇾', lang: 'Melayu', text: 'Helo,\nkongsi pemikiran anda\ndi sini!', badge: 'AKTIF MULTI-BAHASA', glyphs: ['a', 'b', 'c', 'd'] },
-  { code: 'SU', flag: '🇮🇩', lang: 'Sunda', text: 'Sampurasun,\nbagikeun pamikiran anjeun\ndi dieu!', badge: 'AKTIF MULTI-BAHASA', glyphs: ['a', 'b', 'c', 'd'] },
-  { code: 'JV', flag: '🇮🇩', lang: 'Jawa', text: 'Halo,\nbagikan gagasanmu\ning kene!', badge: 'AKTIF MULTI-BAHASA', glyphs: ['a', 'b', 'c', 'd'] },
-  { code: 'PH', flag: '🇵🇭', lang: 'Tagalog', text: 'Kamusta,\nibahagi ang iyong mga saloobin\ndito!', badge: 'AKTIBONG MULTILINGGUAL', glyphs: ['a', 'b', 'c', 'd'] },
-  { code: 'IS', flag: '🇮🇸', lang: 'Íslenska', text: 'Hæ,\ndeildu hugsunum þínum\nhér!', badge: 'VIRKT MARGMÁL', glyphs: ['á', 'ð', 'é', 'í'] }
+  { code: 'AF', flag: '🇿🇦', lang: 'Afrikaans', text: `Hallo,\nDeel jou notas\nHier!`, badge: 'MEERTALIGE AKTIEF', glyphs: ["a","b","c","d"] },
+  { code: 'AM', flag: '🇪🇹', lang: 'Amharic', text: `ሰላም\nማስታወሻዎችዎን ያጋሩ\nእዚህ!`, badge: 'ባለብዙ ቋንቋ ንቁ', glyphs: ["ሀ","ሁ","ሂ","ሃ"] },
+  { code: 'AR', flag: '🇸🇦', lang: 'العربية', text: `مرحبًا،\nشارك ملاحظاتك\nهنا!`, badge: 'متعدد اللغات نشط', glyphs: ["أ","ب","ت","ث"] },
+  { code: 'BN', flag: '🇧🇩', lang: 'Bengali', text: `হ্যালো,\nআপনার নোট শেয়ার করুন\nএখানে!`, badge: 'বহু-ভাষা সক্রিয়', glyphs: ["a","b","c","d"] },
+  { code: 'CS', flag: '🇨🇿', lang: 'Čeština', text: `Dobrý den,\nSdílejte své poznámky\nTady!`, badge: 'VÍCE JAZYKŮ AKTIVNÍ', glyphs: ["a","b","c","d"] },
+  { code: 'DA', flag: '🇩🇰', lang: 'Dansk', text: `Hej\nDel dine noter\nHer!`, badge: 'FLERE SPROG AKTIV', glyphs: ["a","b","c","d"] },
+  { code: 'DE', flag: '🇩🇪', lang: 'Deutsch', text: `Hallo,\nTeilen Sie Ihre Notizen\nHier!`, badge: 'MEHRSPRACHIG AKTIV', glyphs: ["a","b","c","d"] },
+  { code: 'EL', flag: '🇬🇷', lang: 'Ελληνικά', text: `Γεια σας,\nΜοιραστείτε τις σημειώσεις σας\nΕδώ!`, badge: 'ΠΟΛΥΓΛΩΣΣΟ ΕΝΕΡΓΟ', glyphs: ["α","β","γ","δ"] },
+  { code: 'EN', flag: '🇬🇧', lang: 'English', text: `Hello, \nShare your notes \nHere!`, badge: 'MULTI-LANGUAGE ACTIVE', glyphs: ["a","b","c","d"] },
+  { code: 'ES', flag: '🇪🇸', lang: 'Español', text: `Hola,\nComparte tus notas\n¡Aquí!`, badge: 'ACTIVO MULTIIDIOMA', glyphs: ["a","b","c","d"] },
+  { code: 'FA', flag: '🇮🇷', lang: 'فارسی', text: `سلام\nیادداشت های خود را به اشتراک بگذارید\nاینجا!`, badge: 'چند زبانه فعال', glyphs: ["أ","ب","ت","ث"] },
+  { code: 'FI', flag: '🇫🇮', lang: 'Suomi', text: `Hei,\nJaa muistiinpanosi\nTäällä!`, badge: 'MONIKIELINEN AKTIIVINEN', glyphs: ["a","b","c","d"] },
+  { code: 'FR', flag: '🇫🇷', lang: 'Français', text: `Bonjour,\nPartagez vos notes\nIci !`, badge: 'ACTIF MULTILANGUE', glyphs: ["a","b","c","d"] },
+  { code: 'HE', flag: '🇮🇱', lang: 'עברית', text: `שלום,\nשתף את ההערות שלך\nהנה!`, badge: 'ריבוי שפות פעיל', glyphs: ["א","ב","ג","ד"] },
+  { code: 'HI', flag: '🇮🇳', lang: 'हिन्दी', text: `नमस्कार,\nअपने नोट्स साझा करें\nयहाँ!`, badge: 'बहुभाषी सक्रिय', glyphs: ["अ","आ","इ","ई"] },
+  { code: 'HU', flag: '🇭🇺', lang: 'Magyar', text: `Hello!\nOssza meg jegyzeteit\nTessék!`, badge: 'TÖBBNYELVŰ AKTÍV', glyphs: ["a","b","c","d"] },
+  { code: 'ID', flag: '🇮🇩', lang: 'Indonesia', text: `Halo,\nBagikan catatanmu\ndi Sini!`, badge: 'AKTIF MULTI-BAHASA', glyphs: ["a","b","c","d"] },
+  { code: 'IT', flag: '🇮🇹', lang: 'Italiano', text: `Ciao,\nCondividi i tuoi appunti\nEcco!`, badge: 'MULTILINGUA ATTIVA', glyphs: ["a","b","c","d"] },
+  { code: 'JA', flag: '🇯🇵', lang: '日本語', text: `こんにちは。\nメモを共有する\nここです！`, badge: '多言語で活躍中', glyphs: ["文","字","书","学"] },
+  { code: 'KM', flag: '🇰🇭', lang: 'Khmer', text: `សួស្តី\nចែករំលែកកំណត់ចំណាំរបស់អ្នក។\nនៅទីនេះ!`, badge: 'សកម្មពហុភាសា', glyphs: ["ក","ខ","គ","ឃ"] },
+  { code: 'KO', flag: '🇰🇷', lang: '한국어', text: `안녕하세요.\n메모를 공유하세요\n여기!`, badge: '다중 언어 활성', glyphs: ["文","字","书","学"] },
+  { code: 'LO', flag: '🇱🇦', lang: 'Lao', text: `ສະບາຍດີ,\nແບ່ງປັນບັນທຶກຂອງທ່ານ\nທີ່ນີ້!`, badge: 'ນຳໃຊ້ຫຼາຍພາສາ', glyphs: ["ก","ข","ค","ง"] },
+  { code: 'MS', flag: '🇲🇾', lang: 'Melayu', text: `helo,\nKongsi nota anda\nDi sini!`, badge: 'AKTIF PELBAGAI BAHASA', glyphs: ["a","b","c","d"] },
+  { code: 'MY', flag: '🇲🇲', lang: 'Burmese', text: `ဟဲလို၊\nသင်၏မှတ်စုများကိုမျှဝေပါ။\nဒီမှာ!`, badge: 'ဘာသာစကားမျိုးစုံ တက်ကြွနေပါသည်။', glyphs: ["က","ခ","ဂ","ဃ"] },
+  { code: 'NE', flag: '🇳🇵', lang: 'Nepali', text: `नमस्ते,\nआफ्नो टिप्पणी साझा गर्नुहोस्\nयहाँ!`, badge: 'बहु-भाषा सक्रिय', glyphs: ["अ","आ","इ","ई"] },
+  { code: 'NL', flag: '🇳🇱', lang: 'Nederlands', text: `Hallo,\nDeel uw aantekeningen\nHier!`, badge: 'MEERTALEN ACTIEF', glyphs: ["a","b","c","d"] },
+  { code: 'PA', flag: '🇮🇳', lang: 'Punjabi', text: `ਹੈਲੋ,\nਆਪਣੇ ਨੋਟ ਸਾਂਝੇ ਕਰੋ\nਇੱਥੇ!`, badge: 'ਮਲਟੀ-ਲੈਂਗਵੇਜ ਐਕਟਿਵ', glyphs: ["अ","आ","इ","ई"] },
+  { code: 'PL', flag: '🇵🇱', lang: 'Polski', text: `Witam,\nPodziel się swoimi notatkami\nTutaj!`, badge: 'AKTYWNY W WIELU JĘZYKACH', glyphs: ["a","b","c","d"] },
+  { code: 'PT', flag: '🇵🇹', lang: 'Português', text: `Olá,\nCompartilhe suas anotações\nAqui!`, badge: 'ATIVO MULTI-LÍNGUA', glyphs: ["a","b","c","d"] },
+  { code: 'RO', flag: '🇷🇴', lang: 'Română', text: `buna ziua,\nDistribuiți-vă notele\nAici!`, badge: 'ACTIV MULTI-LIMBĂ', glyphs: ["a","b","c","d"] },
+  { code: 'RU', flag: '🇷🇺', lang: 'Русский', text: `Привет,\nПоделитесь своими заметками\nЗдесь!`, badge: 'МНОГОЯЗЫЧНЫЙ АКТИВ', glyphs: ["А","Б","В","Г"] },
+  { code: 'SI', flag: '🇱🇰', lang: 'Sinhala', text: `ආයුබෝවන්,\nඔබේ සටහන් බෙදා ගන්න\nමෙන්න!`, badge: 'බහු භාෂා ක්‍රියාකාරී', glyphs: ["අ","ආ","ඇ","ඈ"] },
+  { code: 'SV', flag: '🇸🇪', lang: 'Svenska', text: `Hej!\nDela dina anteckningar\nHär!`, badge: 'AKTIVT FLERSPRÅK', glyphs: ["a","b","c","d"] },
+  { code: 'SW', flag: '🇰🇪', lang: 'Swahili', text: `Habari,\nShiriki madokezo yako\nHapa!`, badge: 'LUGHA NYINGI TENDAJI', glyphs: ["a","b","c","d"] },
+  { code: 'TH', flag: '🇹🇭', lang: 'ไทย', text: `สวัสดี\nแบ่งปันบันทึกย่อของคุณ\nนี่!`, badge: 'ใช้งานหลายภาษา', glyphs: ["ก","ข","ค","ง"] },
+  { code: 'TL', flag: '🇵🇭', lang: 'Tagalog', text: `hello,\nIbahagi ang iyong mga tala\nDito!`, badge: 'MULTI-LANGUAGE ACTIVE', glyphs: ["a","b","c","d"] },
+  { code: 'TR', flag: '🇹🇷', lang: 'Türkçe', text: `Merhaba,\nNotlarınızı paylaşın\nİşte!`, badge: 'ÇOKLU DİL AKTİF', glyphs: ["a","b","c","d"] },
+  { code: 'UK', flag: '🇺🇦', lang: 'Українська', text: `привіт\nПоділіться своїми нотатками\nтут!`, badge: 'БАГАТОМОВНА АКТИВНІСТЬ', glyphs: ["А","Б","В","Г"] },
+  { code: 'UR', flag: '🇵🇰', lang: 'Urdu', text: `ہیلو،\nاپنے نوٹ شیئر کریں۔\nیہاں!`, badge: 'ملٹی لینگویج ایکٹو', glyphs: ["أ","ب","ت","ث"] },
+  { code: 'VI', flag: '🇻🇳', lang: 'Tiếng Việt', text: `Xin chào,\nChia sẻ ghi chú của bạn\nĐây!`, badge: 'ĐA NGÔN NGỮ HOẠT ĐỘNG', glyphs: ["a","b","c","d"] },
+  { code: 'ZH', flag: '🇨🇳', lang: '简体中文', text: `你好，\n分享你的笔记\n在这里！`, badge: '多语言活跃', glyphs: ["文","字","书","学"] },
+  { code: 'ZH-TW', flag: '🇹🇼', lang: '繁體中文', text: `你好，\n分享你的筆記\n在這裡！`, badge: '多語言活躍', glyphs: ["文","字","书","学"] },
+  { code: 'ZU', flag: '🇿🇦', lang: 'Zulu', text: `Sawubona,\nYabelana ngamanothi akho\nLapha!`, badge: 'IZILIMI EZININGI IYASEBENZA', glyphs: ["a","b","c","d"] }
 ];
 
 /* ===================================================
@@ -86,7 +94,7 @@ function Reel({ activeIndex, delay }: { activeIndex: number; delay: number }) {
         }}
       >
         {MULTI_LANG_TEXTS.map((lang, idx) => (
-          <div key={idx} className="h-16 w-16 flex items-center justify-center text-3xl select-none leading-none pt-0.5">
+          <div key={idx} className="h-16 w-16 flex items-center justify-center text-3xl text-white select-none leading-none pt-0.5">
             <span className="inline-block transform -translate-y-0.5 select-none">{lang.flag}</span>
           </div>
         ))}
@@ -127,77 +135,7 @@ function MarqueeRow({ items, direction = 'left', speed = 30 }: { items: string[]
   );
 }
 
-const row1Items = [
-  "🌐 50+ Bahasa Didukung",
-  "📝 Teks Editor Dinamis",
-  "📚 Topik Belajar yang Luas",
-  "🎒 Dari Jenjang Sekolah Dasar hingga Kuliah",
-  "🔥 Sistem Streak & Habit",
-  "🔍 Pencarian Topik & Catatan",
-];
 
-const row2Items = [
-  "📐 Tulis Rumus dengan Mudah",
-  "🎓 Belajar Bersama Komunitas",
-  "📂 Kumpulan Catatan",
-  "💬 Saling Berbagi Pikiran",
-  "🏆 Tumbuh & Berkembang Bersama",
-  "🌍 Akses Belajar Kapan Saja",
-];
-
-/* ===================================================
-   DATA: Subjects for Toggle
-   =================================================== */
-const SUBJECTS = [
-  { name: 'Matematika', icon: '📐', desc: 'Rumus LaTeX & Kalkulus kompleks kini gampang dipahami.', tags: ['Formula LaTeX', 'Kalkulus & Aljabar', 'Metode Pembuktian'] },
-  { name: 'Sains', icon: '🔬', desc: 'Dari hukum termodinamika hingga struktur sel biologi.', tags: ['Hukum Fisika', 'Struktur Sel Biologi', 'Reaksi Kimia'] },
-  { name: 'Bahasa', icon: '📚', desc: 'Analisis tata bahasa, prosa, dan retorika linguistik.', tags: ['Tata Bahasa', 'Linguistik', 'Prosa & Retorika'] },
-  { name: 'Sosial', icon: '🌍', desc: 'Peta tektonik, demografi, dan struktur sosiologi masyarakat.', tags: ['Geografi', 'Demografi Penduduk', 'Struktur Sosiologi'] },
-  { name: 'Coding', icon: '💻', desc: 'Catat snippet kode, dokumentasi API, dan logika algoritma.', tags: ['Snippet Kode', 'Logika Algoritma', 'Struktur Data'] },
-  { name: 'Sejarah', icon: '🏛️', desc: 'Garis waktu peradaban, arsip sejarah, dan peninggalan kuno.', tags: ['Garis Waktu Peradaban', 'Arsip Sejarah', 'Peninggalan Kuno'] },
-];
-
-/* ===================================================
-   DATA: Slot Machine / Feature Tags for Cockpit
-   =================================================== */
-const COCKPIT_FEATURES = [
-  {
-    id: 'latex',
-    title: 'LaTeX Rich Editor',
-    badge: 'Formula Cerdas',
-    icon: Code,
-    color: '#8B5CF6',
-    desc: 'Tulis rumus matematika dan sains seindah jurnal akademis profesional menggunakan render engine KaTeX berkecepatan tinggi.',
-    mockupType: 'editor',
-  },
-  {
-    id: 'verification',
-    title: 'Pakar Verified',
-    badge: 'Jaminan Akurasi',
-    icon: Award,
-    color: '#10B981',
-    desc: 'Setiap catatan krusial dapat ditinjau oleh pakar bidang studi atau guru terverifikasi untuk memastikan kebenaran rumus dan konsep.',
-    mockupType: 'badge',
-  },
-  {
-    id: 'search',
-    title: 'Pencarian Instan',
-    badge: 'Sub-second Index',
-    icon: Search,
-    color: '#3B82F6',
-    desc: 'Cari kata kunci, topik, bahkan rumus LaTeX spesifik di seluruh catatan komunitas secara instan secepat kedipan mata.',
-    mockupType: 'search',
-  },
-  {
-    id: 'community',
-    title: 'Habit & Streak',
-    badge: 'Fokus Harian',
-    icon: Flame,
-    color: '#EF4444',
-    desc: 'Bangun kebiasaan belajar harian yang konsisten bersama ribuan pelajar lain dengan sistem streak interaktif dan reward eksklusif.',
-    mockupType: 'streak',
-  }
-];
 
 /* ===================================================
    COMPONENT: Floating Grain Background Element
@@ -217,13 +155,14 @@ function GrainNoise() {
    COMPONENT: Text Scroll Highlight Reveal (Motto Style)
    =================================================== */
 function ScrollRevealText() {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"]
   });
 
-  const text = "Kami percaya bahwa pendidikan terbaik lahir dari kolaborasi. Ba-Yu hadir untuk membantu Anda menyusun gagasan, berbagi wawasan, dan tumbuh bersama dalam komunitas belajar yang saling mendukung.";
+  const text = t('landing.philosophy_text') || "Kami percaya bahwa pendidikan terbaik lahir dari kolaborasi. Ba-Yu hadir untuk membantu Anda menyusun gagasan, berbagi wawasan, dan tumbuh bersama dalam komunitas belajar yang saling mendukung.";
   const words = text.split(" ");
 
   return (
@@ -235,11 +174,11 @@ function ScrollRevealText() {
 
       <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
         <p className="text-xs md:text-sm font-semibold text-[#8B5CF6] tracking-[0.2em] uppercase mb-4 flex items-center justify-center gap-2">
-          <Sparkles className="w-4 h-4 animate-spin-slow" /> VISI KAMI
+          <Sparkles className="w-4 h-4 animate-spin-slow" /> {t('landing.philosophy_vision') || 'VISI KAMI'}
         </p>
 
         <h3 className="font-display font-bold tracking-tight leading-[1.3] text-center" style={{ fontSize: 'clamp(1.5rem, 2.8vw, 2.5rem)' }}>
-          {words.map((word, i) => {
+          {words.map((word: string, i: number) => {
             const start = i / words.length;
             const end = (i + 1) / words.length;
             
@@ -278,7 +217,7 @@ function ScrollRevealText() {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <CornerDownRight className="w-4 h-4" />
-          <span>Filosofi Ba-Yu — Belajar, Berbagi, Tumbuh Bersama</span>
+          <span>{t('landing.philosophy_motto') || 'Filosofi Ba-Yu — Belajar, Berbagi, Tumbuh Bersama'}</span>
         </motion.div>
       </div>
     </div>
@@ -363,6 +302,7 @@ function CountUp({ to, duration = 1.5 }: { to: number; duration?: number }) {
    COMPONENT: Interactive Holographic Topic Warp Section
    =================================================== */
 function TopicWarpSection({ openAuthModal }: { openAuthModal: (tab: 'login' | 'register') => void }) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Golden ratio hash for evenly-distributed horizontal positions
@@ -583,7 +523,7 @@ function TopicWarpSection({ openAuthModal }: { openAuthModal: (tab: 'login' | 'r
             className="font-serif italic font-light text-white text-2xl md:text-3xl lg:text-4xl tracking-wider select-none leading-none"
             style={{ textShadow: '0 0 25px rgba(255,255,255,0.2), 0 0 50px rgba(255,255,255,0.1)' }}
           >
-            dan masih banyak lagi...
+            {t('landing.and_many_more') || 'dan masih banyak lagi...'}
           </h3>
         </motion.div>
       </div>
@@ -595,6 +535,74 @@ function TopicWarpSection({ openAuthModal }: { openAuthModal: (tab: 'login' | 'r
    COMPONENT: Interactive Landing Page
    =================================================== */
 export function LandingPage() {
+  const { t } = useTranslation();
+
+  const row1Items = [
+    `🌐 ${t('landing.row1_1') || '40+ Bahasa Didukung'}`,
+    `📝 ${t('landing.row1_2') || 'Teks Editor Dinamis'}`,
+    `📚 ${t('landing.row1_3') || 'Topik Belajar yang Luas'}`,
+    `🎒 ${t('landing.row1_4') || 'Dari Jenjang Sekolah Dasar hingga Kuliah'}`,
+    `🔥 ${t('landing.row1_5') || 'Sistem Streak & Habit'}`,
+    `🔍 ${t('landing.row1_6') || 'Pencarian Topik & Catatan'}`,
+  ];
+
+  const row2Items = [
+    `📐 ${t('landing.row2_1') || 'Tulis Rumus dengan Mudah'}`,
+    `🎓 ${t('landing.row2_2') || 'Belajar Bersama Komunitas'}`,
+    `📂 ${t('landing.row2_3') || 'Kumpulan Catatan'}`,
+    `💬 ${t('landing.row2_4') || 'Saling Berbagi Pikiran'}`,
+    `🏆 ${t('landing.row2_5') || 'Tumbuh & Berkembang Bersama'}`,
+    `🌍 ${t('landing.row2_6') || 'Akses Belajar Kapan Saja'}`,
+  ];
+
+  const SUBJECTS = [
+    { name: t('landing.subj_math_name') || 'Matematika', icon: '📐', desc: t('landing.subj_math_desc') || 'Rumus LaTeX & Kalkulus kompleks kini gampang dipahami.', tags: [t('landing.subj_math_tag1') || 'Formula LaTeX', t('landing.subj_math_tag2') || 'Kalkulus & Aljabar', t('landing.subj_math_tag3') || 'Metode Pembuktian'] },
+    { name: t('landing.subj_science_name') || 'Sains', icon: '🔬', desc: t('landing.subj_science_desc') || 'Dari hukum termodinamika hingga struktur sel biologi.', tags: [t('landing.subj_science_tag1') || 'Hukum Fisika', t('landing.subj_science_tag2') || 'Struktur Sel Biologi', t('landing.subj_science_tag3') || 'Reaksi Kimia'] },
+    { name: t('landing.subj_lang_name') || 'Bahasa', icon: '📚', desc: t('landing.subj_lang_desc') || 'Analisis tata bahasa, prosa, dan retorika linguistik.', tags: [t('landing.subj_lang_tag1') || 'Tata Bahasa', t('landing.subj_lang_tag2') || 'Linguistik', t('landing.subj_lang_tag3') || 'Prosa & Retorika'] },
+    { name: t('landing.subj_social_name') || 'Sosial', icon: '🌍', desc: t('landing.subj_social_desc') || 'Peta tektonik, demografi, dan struktur sosiologi masyarakat.', tags: [t('landing.subj_social_tag1') || 'Geografi', t('landing.subj_social_tag2') || 'Demografi Penduduk', t('landing.subj_social_tag3') || 'Struktur Sosiologi'] },
+    { name: t('landing.subj_coding_name') || 'Coding', icon: '💻', desc: t('landing.subj_coding_desc') || 'Catat snippet kode, dokumentasi API, dan logika algoritma.', tags: [t('landing.subj_coding_tag1') || 'Snippet Kode', t('landing.subj_coding_tag2') || 'Logika Algoritma', t('landing.subj_coding_tag3') || 'Struktur Data'] },
+    { name: t('landing.subj_history_name') || 'Sejarah', icon: '🏛️', desc: t('landing.subj_history_desc') || 'Garis waktu peradaban, arsip sejarah, dan peninggalan kuno.', tags: [t('landing.subj_history_tag1') || 'Garis Waktu Peradaban', t('landing.subj_history_tag2') || 'Arsip Sejarah', t('landing.subj_history_tag3') || 'Peninggalan Kuno'] },
+  ];
+
+  const COCKPIT_FEATURES = [
+    {
+      id: 'latex',
+      title: t('landing.cockpit_latex_title') || 'LaTeX Rich Editor',
+      badge: t('landing.cockpit_latex_badge') || 'Formula Cerdas',
+      icon: Code,
+      color: '#8B5CF6',
+      desc: t('landing.cockpit_latex_desc') || 'Tulis rumus matematika dan sains seindah jurnal akademis profesional menggunakan render engine KaTeX berkecepatan tinggi.',
+      mockupType: 'editor',
+    },
+    {
+      id: 'verification',
+      title: t('landing.cockpit_verif_title') || 'Pakar Verified',
+      badge: t('landing.cockpit_verif_badge') || 'Jaminan Akurasi',
+      icon: Award,
+      color: '#10B981',
+      desc: t('landing.cockpit_verif_desc') || 'Setiap catatan krusial dapat ditinjau oleh pakar bidang studi atau guru terverifikasi untuk memastikan kebenaran rumus dan konsep.',
+      mockupType: 'badge',
+    },
+    {
+      id: 'search',
+      title: t('landing.cockpit_search_title') || 'Pencarian Instan',
+      badge: t('landing.cockpit_search_badge') || 'Sub-second Index',
+      icon: Search,
+      color: '#3B82F6',
+      desc: t('landing.cockpit_search_desc') || 'Cari kata kunci, topik, bahkan rumus LaTeX spesifik di seluruh catatan komunitas secara instan secepat kedipan mata.',
+      mockupType: 'search',
+    },
+    {
+      id: 'community',
+      title: t('landing.cockpit_comm_title') || 'Habit & Streak',
+      badge: t('landing.cockpit_comm_badge') || 'Fokus Harian',
+      icon: Flame,
+      color: '#EF4444',
+      desc: t('landing.cockpit_comm_desc') || 'Bangun kebiasaan belajar harian yang konsisten bersama ribuan pelajar lain dengan sistem streak interaktif dan reward eksklusif.',
+      mockupType: 'streak',
+    }
+  ];
+
   const [isLoading, setIsLoading] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
@@ -816,7 +824,7 @@ export function LandingPage() {
               className="block"
               style={{ fontSize: 'clamp(2rem, 8vw, 5rem)' }}
             >
-              Belajar. Berbagi.
+              {t('landing.hero_title_1') || 'Belajar. Berbagi.'}
             </motion.span>
             
             <motion.span 
@@ -826,7 +834,7 @@ export function LandingPage() {
               className="block text-transparent bg-clip-text bg-gradient-to-r from-[#5D5CE6] to-[#8B5CF6]"
               style={{ fontSize: 'clamp(2rem, 8vw, 5rem)' }}
             >
-              Berkembang.
+              {t('landing.hero_title_2') || 'Berkembang.'}
             </motion.span>
 
             <motion.span 
@@ -836,7 +844,7 @@ export function LandingPage() {
               className="block tracking-normal font-medium text-gray-300 mt-6 max-w-3xl px-4 leading-relaxed"
               style={{ fontSize: 'clamp(0.95rem, 1.6vw, 1.2rem)' }}
             >
-              Ubah catatan belajarmu dari jenjang sekolah dasar hingga kuliah menjadi portofolio wawasan terstruktur dengan editor LaTeX yang mudah.
+              {t('landing.hero_desc') || 'Ubah catatan belajarmu dari jenjang sekolah dasar hingga kuliah menjadi portofolio wawasan terstruktur dengan editor LaTeX yang mudah.'}
             </motion.span>
           </h1>
 
@@ -853,7 +861,7 @@ export function LandingPage() {
               style={{ background: 'linear-gradient(135deg, #5D5CE6, #8B5CF6)' }}
             >
               <span className="relative z-10 flex items-center gap-2">
-                Mulai Belajar <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                {t('landing.hero_btn_start') || 'Mulai Belajar'} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </span>
               <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </button>
@@ -862,7 +870,7 @@ export function LandingPage() {
               onClick={() => openAuthModal('login')}
               className="w-full sm:w-auto cursor-pointer inline-flex items-center justify-center gap-2 px-8 py-3.5 sm:px-10 sm:py-5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md font-bold text-sm sm:text-base hover:bg-white/10 hover:border-white/20 transition-all text-gray-300"
             >
-              Telusuri Catatan
+              {t('landing.hero_btn_explore') || 'Telusuri Catatan'}
             </button>
           </motion.div>
 
@@ -911,15 +919,15 @@ export function LandingPage() {
                 transition={{ duration: 0.8 }}
               >
                 <p className="text-xs md:text-sm font-semibold text-gray-500 tracking-[0.2em] uppercase mb-4">
-                  AKSESIBILITAS GLOBAL
+                  {t('landing.multilang_badge') || 'AKSESIBILITAS GLOBAL'}
                 </p>
                 <h2 className="font-display font-extrabold tracking-tight leading-[1.1] text-white" style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}>
-                  Akses Ilmu<br />
-                  <span className="text-[#5D5CE6]">Tanpa Batas</span><br />
-                  Bahasa.
+                  {t('landing.multilang_title_1') || 'Pembelajaran'}<br />
+                  <span className="text-[#5D5CE6]">{t('landing.multilang_title_2') || 'Tanpa Batas'}</span><br />
+                  {t('landing.multilang_title_3') || 'Bahasa.'}
                 </h2>
                 <p className="text-gray-400 mt-6 max-w-md text-sm md:text-base leading-relaxed">
-                  Ba-Yu mendukung tampilan antarmuka dalam 52+ bahasa, memungkinkan pelajar dari berbagai belahan dunia untuk berkolaborasi dan belajar dengan nyaman menggunakan platform kami.
+                  {t('landing.multilang_desc') || 'Ba-Yu mendukung tampilan antarmuka dalam 40+ bahasa, memungkinkan pelajar dari berbagai belahan dunia untuk berkolaborasi dan belajar dengan nyaman menggunakan platform kami.'}
                 </p>
               </motion.div>
 
@@ -942,7 +950,7 @@ export function LandingPage() {
                 {/* Info Panel & Premium SPIN Button on the Right */}
                 <div className="flex flex-col gap-3 justify-center items-center sm:items-start z-10 flex-1">
                   <div>
-                    <span className="text-[9px] text-[#8B5CF6] font-bold uppercase tracking-wider block mb-0.5 text-center sm:text-left">Bahasa Aktif</span>
+                    <span className="text-[9px] text-white font-bold uppercase tracking-wider block mb-0.5 text-center sm:text-left">{t('landing.active_language') || 'Bahasa Aktif'}</span>
                     <p className="text-base font-bold text-white leading-tight font-display">
                       {MULTI_LANG_TEXTS[activeWord].lang}
                     </p>
@@ -1096,7 +1104,7 @@ export function LandingPage() {
                   </AnimatePresence>
                 </div>
 
-                <div className="border-t border-white/5 pt-4 md:pt-6 flex flex-col xs:flex-row items-center gap-3 xs:gap-0 xs:justify-between text-[10px] sm:text-xs text-gray-500 font-semibold relative z-10 w-full" style={{ transform: "translateZ(30px)" }}>
+                <div className="border-t border-white/5 pt-4 md:pt-6 flex flex-col md:flex-row items-center gap-3 md:gap-0 md:justify-between text-[10px] sm:text-xs text-gray-500 font-semibold relative z-10 w-full" style={{ transform: "translateZ(30px)" }}>
                   {/* Dynamic scrolling badge */}
                   <span className="tracking-wider text-gray-400 font-bold uppercase transition-all duration-300">
                     <MorphingText text={(MULTI_LANG_TEXTS[activeWord].badge || 'AKTIF MULTI-BAHASA').toUpperCase()} />
@@ -1106,7 +1114,7 @@ export function LandingPage() {
                   <span className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors duration-300">
                     <Users className="w-4 h-4 text-[#5D5CE6]" /> 
                     <span>
-                      <CountUp to={52} />+ Bahasa Didukung
+                      <CountUp to={40} />+ {t('landing.multilang_supported') || 'Bahasa Didukung'}
                     </span>
                   </span>
                 </div>
@@ -1132,10 +1140,10 @@ export function LandingPage() {
           <div className="max-w-6xl mx-auto px-6 relative z-10">
             <div className="text-center max-w-2xl mx-auto mb-8 md:mb-16">
               <p className="text-xs md:text-sm font-semibold text-[#5D5CE6] tracking-[0.2em] uppercase mb-4">
-                EKSPLORASI TOPIK
+                {t('landing.explore_badge') || 'EKSPLORASI TOPIK'}
               </p>
               <h2 className="font-display font-extrabold tracking-tight text-white text-3xl md:text-4xl leading-tight">
-                Beragam Bidang Ilmu dalam Satu Platform.
+                {t('landing.explore_title') || 'Beragam Bidang Ilmu dalam Satu Platform.'}
               </h2>
             </div>
 
@@ -1159,7 +1167,7 @@ export function LandingPage() {
                     />
                   )}
                   <span className="text-lg relative z-10">{sub.icon}</span>
-                  <span className="relative z-10">{sub.name}</span>
+                  <span className="relative z-10 hidden sm:block">{sub.name}</span>
                 </button>
               ))}
             </div>
@@ -1189,7 +1197,7 @@ export function LandingPage() {
 
                   {/* Left Side: Illustration Box with Dynamic SVGs vector background */}
                   <div 
-                    className="w-24 h-24 md:w-1/3 md:aspect-square rounded-2xl bg-[#0d0b1a] border border-white/5 flex items-center justify-center text-4xl md:text-8xl shadow-inner relative overflow-hidden shrink-0"
+                    className="w-24 h-24 md:w-1/3 md:h-auto md:aspect-square rounded-2xl bg-[#0d0b1a] border border-white/5 flex items-center justify-center text-4xl md:text-8xl shadow-inner relative overflow-hidden shrink-0"
                     style={{ transform: "translateZ(30px)" }}
                   >
                     {/* Decorative dynamic vector outlines behind icon based on activeSubject */}
@@ -1253,7 +1261,7 @@ export function LandingPage() {
 
                   {/* Right Side: Description content */}
                   <div className="flex-1 text-center md:text-left" style={{ transform: "translateZ(45px)" }}>
-                    <span className="text-[10px] font-bold text-[#8B5CF6] tracking-widest uppercase font-mono block">EKSPLORASI BIDANG</span>
+                    <span className="text-[10px] font-bold text-[#8B5CF6] tracking-widest uppercase font-mono block">{t('landing.explore_field') || 'EKSPLORASI BIDANG'}</span>
                     <h3 className="font-display font-black text-2xl md:text-4xl text-white tracking-tight mt-2.5 leading-none">
                       {currentSubject.name}
                     </h3>
@@ -1274,7 +1282,7 @@ export function LandingPage() {
                       onClick={() => openAuthModal('register')}
                       className="cursor-pointer mt-6 md:mt-8 inline-flex items-center gap-2.5 text-sm font-bold text-white hover:text-[#5D5CE6] transition-colors group justify-center md:justify-start w-full md:w-auto"
                     >
-                      <span>Jelajahi Catatan {currentSubject.name}</span>
+                      <span>{t('landing.explore_notes_btn') || 'Jelajahi Catatan'} {currentSubject.name}</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                     </button>
                   </div>
@@ -1299,14 +1307,14 @@ export function LandingPage() {
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12 md:mb-16">
             <div className="text-left">
               <p className="text-xs md:text-sm font-semibold text-[#8B5CF6] tracking-[0.2em] uppercase mb-3">
-                FITUR INTI
+                {t('landing.feature_badge') || 'FITUR INTI'}
               </p>
               <h2 className="font-display font-extrabold tracking-tight text-white text-3xl md:text-4xl leading-tight">
-                Teknologi Di Balik Ba-Yu.
+                {t('landing.feature_title') || 'Teknologi Di Balik Ba-Yu.'}
               </h2>
             </div>
             <p className="text-gray-400 text-sm md:text-base max-w-sm text-left leading-relaxed">
-              Kami merancang ekosistem mencatat yang cerdas untuk membantumu menyusun, memverifikasi, dan menguasai setiap materi pelajaran dengan efektif.
+              {t('landing.feature_desc') || 'Kami merancang ekosistem mencatat yang cerdas untuk membantumu menyusun, memverifikasi, dan menguasai setiap materi pelajaran dengan efektif.'}
             </p>
           </div>
 
@@ -1321,22 +1329,22 @@ export function LandingPage() {
                   <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8B5CF6]">
                     <Code className="w-5 h-5" />
                   </div>
-                  <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest font-mono">01 / RICH EDITOR</span>
+                  <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest font-mono">01 / {t('landing.feat1_badge') || 'RICH EDITOR'}</span>
                 </div>
-                <h3 className="text-xl md:text-2xl font-display font-black text-white tracking-tight leading-tight">LaTeX Rich Editor</h3>
-                <p className="text-gray-400 mt-2 text-sm leading-relaxed max-w-md font-medium">Tulis rumus matematika, kalkulus, dan sains seindah jurnal akademis profesional menggunakan render engine KaTeX berkecepatan tinggi.</p>
+                <h3 className="text-xl md:text-2xl font-display font-black text-white tracking-tight leading-tight">{t('landing.feat1_title') || 'LaTeX Rich Editor'}</h3>
+                <p className="text-gray-400 mt-2 text-sm leading-relaxed max-w-md font-medium">{t('landing.feat1_desc') || 'Tulis rumus matematika, kalkulus, dan sains seindah jurnal akademis profesional menggunakan render engine KaTeX berkecepatan tinggi.'}</p>
               </div>
 
               {/* LaTeX Mockup Widget */}
               <div className="mt-8 bg-[#0c0a1a]/80 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/5 font-mono text-[11px] w-full shadow-inner relative z-10">
                 <div className="flex items-center justify-between border-b border-white/5 pb-2.5 mb-3 text-[9px] text-gray-500 font-bold">
-                  <span>LaTeX EDITOR ENGINE</span>
-                  <span className="text-[#8B5CF6] animate-pulse">ACTIVE RENDERING</span>
+                  <span>{t('landing.mockup_latex_title') || 'LaTeX EDITOR ENGINE'}</span>
+                  <span className="text-[#8B5CF6] animate-pulse">{t('landing.mockup_latex_status') || 'ACTIVE RENDERING'}</span>
                 </div>
-                <p className="text-emerald-400 font-bold">// Input KaTeX:</p>
+                <p className="text-emerald-400 font-bold">// {t('landing.mockup_latex_input') || 'Input KaTeX:'}</p>
                 <p className="text-gray-300 mt-0.5 font-semibold">{"$$\\int_{-\\infty}^{\\infty} e^{-x^2} \\, dx = \\sqrt{\\pi}$$"}</p>
                 
-                <p className="text-emerald-400 font-bold mt-3">// Output Rendered:</p>
+                <p className="text-emerald-400 font-bold mt-3">// {t('landing.mockup_latex_output') || 'Output Rendered:'}</p>
                 <div 
                   className="dark mt-2 p-3 sm:p-3.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white text-base font-display overflow-x-auto"
                   dangerouslySetInnerHTML={{
@@ -1357,20 +1365,20 @@ export function LandingPage() {
                   <div className="w-10 h-10 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center text-white">
                     <Award className="w-5 h-5" />
                   </div>
-                  <span className="text-[9px] text-white/70 font-bold uppercase tracking-widest font-mono">02 / VERIFIED ACCURACY</span>
+                  <span className="text-[9px] text-white/70 font-bold uppercase tracking-widest font-mono">02 / {t('landing.feat2_badge') || 'VERIFIED ACCURACY'}</span>
                 </div>
-                <h3 className="text-xl md:text-2xl font-display font-black text-white tracking-tight leading-tight">Ditinjau Guru & Pakar</h3>
+                <h3 className="text-xl md:text-2xl font-display font-black text-white tracking-tight leading-tight">{t('landing.feat2_title') || 'Ditinjau Guru & Pakar'}</h3>
                 <p className="text-white/80 mt-2 text-sm leading-relaxed">
-                  Tidak ada lagi keraguan materi salah. Belajar dengan tenang dari catatan tepercaya yang disetujui reviewer ahli.
+                  {t('landing.feat2_desc') || 'Tidak ada lagi keraguan materi salah. Belajar dengan tenang dari catatan tepercaya yang disetujui reviewer ahli.'}
                 </p>
               </div>
 
               {/* Expert Profile Mockup Widget */}
               <div className="mt-8 bg-black/45 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/10 w-full shadow-inner text-center relative z-10">
                 <h4 className="text-white font-display text-sm font-bold tracking-tight">Dr. Hermawan, M.T.</h4>
-                <p className="text-[10px] text-gray-300 mt-0.5 font-medium uppercase tracking-wider">Reviewer Ahli / Dosen Matematika</p>
+                <p className="text-[10px] text-gray-300 mt-0.5 font-medium uppercase tracking-wider">{t('landing.mockup_verif_role') || 'Reviewer Ahli / Dosen Matematika'}</p>
                 <div className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-bold text-[9px] uppercase tracking-wider font-mono">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> AKURASI: VERIFIED
+                  <CheckCircle2 className="w-3.5 h-3.5" /> {t('landing.mockup_verif_status') || 'AKURASI: VERIFIED'}
                 </div>
               </div>
             </div>
@@ -1383,19 +1391,19 @@ export function LandingPage() {
                   <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#EF4444]">
                     <Flame className="w-5 h-5" />
                   </div>
-                  <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest font-mono">03 / HABIT & STREAK</span>
+                  <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest font-mono">03 / {t('landing.feat3_badge') || 'HABIT & STREAK'}</span>
                 </div>
-                <h3 className="text-xl md:text-2xl font-display font-black text-white tracking-tight leading-tight">Streak Konsistensi</h3>
+                <h3 className="text-xl md:text-2xl font-display font-black text-white tracking-tight leading-tight">{t('landing.feat3_title') || 'Streak Konsistensi'}</h3>
                 <p className="text-gray-400 mt-2 text-sm leading-relaxed">
-                  Bangun kebiasaan belajar harian yang solid bersama ribuan pelajar lain dengan sistem streak harian interaktif.
+                  {t('landing.feat3_desc') || 'Bangun kebiasaan belajar harian yang solid bersama ribuan pelajar lain dengan sistem streak harian interaktif.'}
                 </p>
               </div>
 
               {/* Flame Streak Mockup Widget */}
               <div className="mt-8 bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex items-center justify-between gap-4 w-full shadow-inner relative z-10">
                 <div className="text-left">
-                  <p className="text-[9px] text-gray-500 uppercase tracking-widest font-bold">Streak Harian</p>
-                  <h4 className="text-white font-display text-base sm:text-lg font-black mt-0.5 tracking-tight">45 Hari Beruntun</h4>
+                  <p className="text-[9px] text-gray-500 uppercase tracking-widest font-bold">{t('landing.streak_daily') || 'Streak Harian'}</p>
+                  <h4 className="text-white font-display text-base sm:text-lg font-black mt-0.5 tracking-tight">{t('landing.streak_count') || '45 Hari Beruntun'}</h4>
                 </div>
                 <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex flex-col items-center justify-center text-red-500 animate-pulse">
                   <Flame className="w-6 h-6 fill-red-500/10" />
@@ -1411,23 +1419,23 @@ export function LandingPage() {
                   <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#3B82F6]">
                     <Search className="w-5 h-5" />
                   </div>
-                  <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest font-mono">04 / INSTANT ACCESS</span>
+                  <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest font-mono">04 / {t('landing.feat4_badge') || 'INSTANT ACCESS'}</span>
                 </div>
-                <h3 className="text-xl md:text-2xl font-display font-black text-white tracking-tight leading-tight">Pencarian Instan</h3>
-                <p className="text-gray-400 mt-2 text-sm leading-relaxed max-w-md font-medium">Cari rumus LaTeX spesifik, teori fisika, atau snippet pemrograman di seluruh catatan publik komunitas secara instan dalam hitungan milidetik.</p>
+                <h3 className="text-xl md:text-2xl font-display font-black text-white tracking-tight leading-tight">{t('landing.feat4_title') || 'Pencarian Instan'}</h3>
+                <p className="text-gray-400 mt-2 text-sm leading-relaxed max-w-md font-medium">{t('landing.feat4_desc') || 'Cari rumus LaTeX spesifik, teori fisika, atau snippet pemrograman di seluruh catatan publik komunitas secara instan dalam hitungan milidetik.'}</p>
               </div>
 
               {/* Search Mockup Widget */}
               <div className="mt-8 bg-[#0c0a1a]/80 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/5 w-full shadow-inner relative z-10">
                 <div className="flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-xl px-3 py-2">
                   <Search className="w-3.5 h-3.5 text-gray-400 hover:text-white transition-colors duration-200" />
-                  <span className="text-xs font-mono font-bold text-white flex-1 animate-pulse">hukum termodinamika...</span>
+                  <span className="text-xs font-mono font-bold text-white flex-1 animate-pulse">{t('landing.mockup_search_query') || 'hukum termodinamika...'}</span>
                   <span className="text-[9px] text-gray-500 font-mono">0.02ms</span>
                 </div>
                 <div className="mt-3 flex flex-col gap-2">
                   <div className="p-3 bg-white/5 border border-white/10 rounded-xl flex items-center justify-between text-xs">
-                    <span className="font-bold text-white">Siklus Carnot & Entropi Gas</span>
-                    <span className="text-[#3B82F6] font-bold">12 Temuan</span>
+                    <span className="font-bold text-white">{t('landing.mockup_search_result_title') || 'Siklus Carnot & Entropi Gas'}</span>
+                    <span className="text-[#3B82F6] font-bold">{t('landing.mockup_search_result_count') || '12 Temuan'}</span>
                   </div>
                 </div>
               </div>
@@ -1453,13 +1461,13 @@ export function LandingPage() {
 
               {/* Right: Content */}
               <div className="flex-1 relative z-10">
-                <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest font-mono">05 / SOCIAL LEARNING</span>
-                <h3 className="text-xl md:text-2xl font-display font-black text-white tracking-tight leading-tight mt-2">Belajar Bersama</h3>
+                <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest font-mono">05 / {t('landing.feat5_badge') || 'SOCIAL LEARNING'}</span>
+                <h3 className="text-xl md:text-2xl font-display font-black text-white tracking-tight leading-tight mt-2">{t('landing.feat5_title') || 'Belajar Bersama'}</h3>
                 <p className="text-gray-400 mt-2 text-sm leading-relaxed max-w-xl">
-                  Bagikan catatanmu dan diskusikan rumus-rumus sains serta kode pemrograman bersama ribuan pelajar berdedikasi tinggi lainnya.
+                  {t('landing.feat5_desc') || 'Bagikan catatanmu dan diskusikan rumus-rumus sains serta kode pemrograman bersama ribuan pelajar berdedikasi tinggi lainnya.'}
                 </p>
                 <span className="inline-flex items-center gap-1.5 mt-4 text-[10px] text-[#8B5CF6] font-black tracking-wider uppercase">
-                  <Users className="w-3.5 h-3.5" /> +12.000 MAHASISWA AKTIF
+                  <Users className="w-3.5 h-3.5" /> {t('landing.feat5_active') || 'KOMUNITAS AKTIF'}
                 </span>
               </div>
             </div>
@@ -1479,16 +1487,16 @@ export function LandingPage() {
         
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
           <p className="text-xs md:text-sm font-semibold text-gray-400 tracking-[0.2em] uppercase mb-4 sm:mb-6">
-            MULAI SEKARANG
+            {t('landing.cta_badge') || 'MULAI SEKARANG'}
           </p>
           
           <h2 className="font-display font-extrabold text-white tracking-tight leading-[1.1] mb-6" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
-            Mulai Perjalanan<br />
-            Belajarmu Hari Ini.
+            {t('landing.cta_title_1') || 'Mulai Perjalanan'}<br />
+            {t('landing.cta_title_2') || 'Belajarmu Hari Ini.'}
           </h2>
 
           <p className="text-gray-400 text-sm md:text-base max-w-md mx-auto mb-10 sm:mb-12 leading-relaxed">
-            Bergabunglah secara gratis dan temukan cara yang lebih terstruktur untuk mengatur catatan serta wawasan belajarmu.
+            {t('landing.cta_desc') || 'Bergabunglah secara gratis dan temukan cara yang lebih terstruktur untuk mengatur catatan serta wawasan belajarmu.'}
           </p>
 
           {/* Magnetic CTA Button */}
@@ -1501,7 +1509,7 @@ export function LandingPage() {
             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
           >
             <span className="relative z-10 flex items-center gap-2 tracking-wide">
-              Mulai Belajar Sekarang <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              {t('landing.cta_btn') || 'Mulai Belajar Sekarang'} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </span>
             {/* Shimmer effect */}
             <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -1510,9 +1518,9 @@ export function LandingPage() {
 
           {/* Value indicators */}
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-8 sm:mt-10 text-[10px] sm:text-xs text-gray-500 font-bold uppercase tracking-widest">
-            <span className="flex items-center gap-1.5"><Shield className="w-4 h-4 text-[#5D5CE6]" /> Gratis Selamanya</span>
-            <span className="flex items-center gap-1.5"><Zap className="w-4 h-4 text-[#5D5CE6]" /> Setup Instan</span>
-            <span className="flex items-center gap-1.5"><Users className="w-4 h-4 text-[#5D5CE6]" /> 12K+ Anggota</span>
+            <span className="flex items-center gap-1.5"><Shield className="w-4 h-4 text-[#5D5CE6]" /> {t('landing.value_free') || 'Gratis Selamanya'}</span>
+            <span className="flex items-center gap-1.5"><Zap className="w-4 h-4 text-[#5D5CE6]" /> {t('landing.value_instant') || 'Setup Instan'}</span>
+            <span className="flex items-center gap-1.5"><Users className="w-4 h-4 text-[#5D5CE6]" /> {t('landing.value_community') || 'Komunitas Aktif'}</span>
           </div>
         </div>
       </section>

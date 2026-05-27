@@ -60,7 +60,7 @@ export function Footer() {
 
           {/* Product */}
           <div>
-            <h4 className="font-semibold mb-4 text-gray-100 tracking-wide">{t("footer.product") || "Produk"}</h4>
+            <h4 className="font-semibold mb-4 text-white tracking-wide">{t("footer.product") || "Produk"}</h4>
             <ul className="space-y-3">
               <li>
                 <button onClick={(e) => handleAuthClick(e, 'login')} className="text-gray-400 hover:text-[#8B5CF6] transition-all duration-200 hover:pl-1 flex items-center bg-transparent border-none p-0 cursor-pointer text-left">
@@ -82,7 +82,7 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h4 className="font-semibold mb-4 text-gray-100 tracking-wide">{t("footer.resources") || "Sumber Daya"}</h4>
+            <h4 className="font-semibold mb-4 text-white tracking-wide">{t("footer.resources") || "Sumber Daya"}</h4>
             <ul className="space-y-3">
               <li>
                 <Link to="/guidelines" className="text-gray-400 hover:text-[#8B5CF6] transition-all duration-200 hover:pl-1 flex items-center">
@@ -104,7 +104,7 @@ export function Footer() {
 
           {/* Company */}
           <div>
-            <h4 className="font-semibold mb-4 text-gray-100 tracking-wide">{t("footer.company") || "Perusahaan"}</h4>
+            <h4 className="font-semibold mb-4 text-white tracking-wide">{t("footer.company") || "Perusahaan"}</h4>
             <ul className="space-y-3">
               <li>
                 <Link to="/about" className="text-gray-400 hover:text-[#8B5CF6] transition-all duration-200 hover:pl-1 flex items-center">

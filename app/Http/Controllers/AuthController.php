@@ -23,9 +23,9 @@ class AuthController extends Controller
             'jenjang_pendidikan' => 'required|string',
             'profesi' => 'required|string',
         ], [
-            'password.min' => 'Password minimal 8 karakter.',
-            'password.max' => 'Password maksimal 128 karakter.',
-            'password.regex' => 'Password harus mengandung minimal 1 huruf dan 1 angka (tidak boleh hanya angka atau hanya huruf saja).',
+            'password.min' => 'auth.error_password_min',
+            'password.max' => 'auth.error_password_max',
+            'password.regex' => 'auth.error_password_regex',
         ]);
 
         if ($validator->fails()) {
@@ -45,7 +45,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Register berhasil!',
+            'message' => 'auth.register_success',
             'data' => $user,
             'access_token' => $token,
             'token_type' => 'Bearer',
@@ -65,13 +65,13 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
-                'message' => 'Kredensial atau Password salah '
+                'message' => 'auth.invalid_credentials'
             ], 401);
         }
 
         if ($user->role === 'banned') {
             return response()->json([
-                'message' => 'Akun Anda telah diblokir oleh Admin. Hubungi support untuk informasi lebih lanjut.'
+                'message' => 'auth.account_banned'
             ], 403);
         }
 
@@ -84,7 +84,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Login sukses!',
+            'message' => 'auth.login_success',
             'access_token' => $token,
             'token_type' => 'Bearer',
             'user' => [
@@ -112,7 +112,7 @@ class AuthController extends Controller
             'email' => 'required|email|exists:user,email',
             'lang' => 'nullable|string'
         ], [
-            'email.exists' => 'Email belum terdaftar!'
+            'email.exists' => 'auth.email_not_registered'
         ]);
 
         if ($request->has('lang')) {
@@ -143,9 +143,9 @@ class AuthController extends Controller
             'email' => 'required|email|exists:user,email',
             'password' => ['required', 'string', 'min:8', 'max:128', 'confirmed', 'regex:/^(?=.*[A-Za-z])(?=.*\d).+$/'],
         ], [
-            'password.min' => 'Password minimal 8 karakter.',
-            'password.max' => 'Password maksimal 128 karakter.',
-            'password.regex' => 'Password harus mengandung minimal 1 huruf dan 1 angka (tidak boleh hanya angka atau hanya huruf saja).',
+            'password.min' => 'auth.error_password_min',
+            'password.max' => 'auth.error_password_max',
+            'password.regex' => 'auth.error_password_regex',
         ]);
 
         $status = Password::reset(
@@ -159,12 +159,12 @@ class AuthController extends Controller
 
         if ($status === Password::PASSWORD_RESET) {
             return response()->json([
-                'message' => 'Password berhasil diubah!'
+                'message' => 'auth.password_changed_success'
             ], 200);
         }
 
         return response()->json([
-            'message' => 'Gagal mengubah password, link mungkin sudah kadaluarsa.'
+            'message' => 'auth.password_reset_failed'
         ], 400);
     }
 
@@ -174,7 +174,7 @@ class AuthController extends Controller
     public function redirectToProvider($provider)
     {
         if (!in_array($provider, ['google', 'facebook'])) {
-            return response()->json(['message' => 'Provider tidak didukung'], 400);
+            return response()->json(['message' => 'auth.provider_not_supported'], 400);
         }
 
         /** @var \Laravel\Socialite\Two\AbstractProvider $driver */
@@ -270,7 +270,7 @@ class AuthController extends Controller
 
         if (!$token) {
             return response()->json([
-                'message' => 'Code tidak valid atau sudah kadaluwarsa. Silakan login ulang.'
+                'message' => 'auth.oauth_code_invalid'
             ], 400);
         }
 

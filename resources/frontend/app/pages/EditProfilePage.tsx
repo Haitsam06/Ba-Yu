@@ -321,8 +321,10 @@ export default function EditProfilePage() {
             navigate("/profile");
         } catch (error: any) {
             console.error("Failed to update profile", error);
+            const errData = error.response?.data;
+            const errorMsg = errData?.message;
             showToast(
-                error.response?.data?.message || (t('edit_profile.save_error') || "Gagal menyimpan perubahan. Silakan coba lagi."),
+                (errorMsg ? t(errorMsg, errData) : t('edit_profile.save_error')) || "Gagal menyimpan perubahan. Silakan coba lagi.",
                 "error"
             );
         } finally {
