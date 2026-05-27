@@ -3,12 +3,14 @@ import { MobileLayout } from "../components/MobileLayout";
 import { ArrowLeft, Search, Mail, MessageCircle, ChevronDown, BookOpen, ExternalLink } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import { useTranslation } from "../hooks/useTranslation";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function HelpPage() {
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState("");
     const [openFaq, setOpenFaq] = useState<number | null>(0);
     const { t } = useTranslation();
+    const { user } = useAuth();
 
     const FAQS = [
         {
@@ -35,7 +37,7 @@ export default function HelpPage() {
     );
 
     return (
-        <MobileLayout showBottomNav={false} hideMobileTopNav={true}>
+        <MobileLayout showBottomNav={false} hideMobileTopNav={true} hideTopNav={!user} hideSidebar={!user}>
             <div className="min-h-screen pb-10 bg-[#FAFAFA] dark:bg-[#13111C]">
                 {/* Header */}
                 <div className="sticky top-0 bg-[#FAFAFA]/95 dark:bg-[#13111C]/95 backdrop-blur-md z-20 px-5 pt-8 pb-4 flex items-center justify-between border-b border-gray-100 dark:border-white/5 mb-6">

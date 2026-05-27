@@ -1,9 +1,20 @@
 import { Link } from 'react-router';
-import { BookOpen, Github, Twitter, Instagram } from 'lucide-react';
+import { Github, Twitter, Instagram } from 'lucide-react';
 import { useTranslation } from '../hooks/useTranslation';
+import { useState } from 'react';
+import { AuthModal } from './auth-modal';
 
 export function Footer() {
   const { t } = useTranslation();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
+
+  const handleAuthClick = (e: React.MouseEvent, tab: 'login' | 'register') => {
+    e.preventDefault();
+    setAuthTab(tab);
+    setShowAuthModal(true);
+  };
+
   return (
     <footer className="bg-[#06050e] border-t border-white/5 mt-32 relative overflow-hidden">
       {/* Premium dark mode glow accents - unconditionally visible */}
@@ -15,8 +26,8 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-1">
             <Link to="/" className="flex items-center gap-2 mb-4 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#5D5CE6] to-[#8B5CF6] flex items-center justify-center shadow-lg shadow-[#5D5CE6]/20 transition-transform group-hover:scale-105 duration-300">
-                <BookOpen className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 transition-transform group-hover:scale-105 duration-300">
+                <img src="/logo.svg" alt="Ba-Yu Logo" className="w-full h-full object-contain" />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-[#5D5CE6] to-[#8B5CF6] bg-clip-text text-transparent transition-all duration-300">
                 Ba-Yu
@@ -52,19 +63,19 @@ export function Footer() {
             <h4 className="font-semibold mb-4 text-gray-100 tracking-wide">{t("footer.product") || "Produk"}</h4>
             <ul className="space-y-3">
               <li>
-                <Link to="/explore" className="text-gray-400 hover:text-[#8B5CF6] transition-all duration-200 hover:pl-1 flex items-center">
+                <button onClick={(e) => handleAuthClick(e, 'login')} className="text-gray-400 hover:text-[#8B5CF6] transition-all duration-200 hover:pl-1 flex items-center bg-transparent border-none p-0 cursor-pointer text-left">
                   {t("footer.explore_notes") || "Jelajahi Catatan"}
-                </Link>
+                </button>
               </li>
               <li>
-                <Link to="/dashboard" className="text-gray-400 hover:text-[#8B5CF6] transition-all duration-200 hover:pl-1 flex items-center">
+                <button onClick={(e) => handleAuthClick(e, 'register')} className="text-gray-400 hover:text-[#8B5CF6] transition-all duration-200 hover:pl-1 flex items-center bg-transparent border-none p-0 cursor-pointer text-left">
                   {t("footer.dashboard") || "Dashboard"}
-                </Link>
+                </button>
               </li>
               <li>
-                <Link to="/#features" className="text-gray-400 hover:text-[#8B5CF6] transition-all duration-200 hover:pl-1 flex items-center">
+                <button onClick={(e) => handleAuthClick(e, 'login')} className="text-gray-400 hover:text-[#8B5CF6] transition-all duration-200 hover:pl-1 flex items-center bg-transparent border-none p-0 cursor-pointer text-left">
                   {t("footer.features") || "Fitur"}
-                </Link>
+                </button>
               </li>
             </ul>
           </div>
@@ -74,7 +85,7 @@ export function Footer() {
             <h4 className="font-semibold mb-4 text-gray-100 tracking-wide">{t("footer.resources") || "Sumber Daya"}</h4>
             <ul className="space-y-3">
               <li>
-                <Link to="/settings/help" className="text-gray-400 hover:text-[#8B5CF6] transition-all duration-200 hover:pl-1 flex items-center">
+                <Link to="/guidelines" className="text-gray-400 hover:text-[#8B5CF6] transition-all duration-200 hover:pl-1 flex items-center">
                   {t("footer.guide") || "Panduan"}
                 </Link>
               </li>
@@ -128,6 +139,12 @@ export function Footer() {
           </div>
         </div>
       </div>
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        defaultTab={authTab}
+      />
     </footer>
   );
 }

@@ -24,6 +24,15 @@ export function MobileLayout({ children, showBottomNav = true, hideTopNav = fals
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [shouldAnimate, setShouldAnimate] = useState(false);
+
+  useEffect(() => {
+    const hasAnimated = sessionStorage.getItem('has_animated_session_entry');
+    if (!hasAnimated) {
+      setShouldAnimate(true);
+      sessionStorage.setItem('has_animated_session_entry', 'true');
+    }
+  }, []);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -52,17 +61,27 @@ export function MobileLayout({ children, showBottomNav = true, hideTopNav = fals
       
       {/* 1. DESKTOP & TABLET TOP REGION */}
       {!hideTopNav && (
-        <div className="hidden md:block w-full border-b border-slate-100/60 dark:border-white/5 z-50 bg-white dark:bg-[#13111C] shrink-0 shadow-[0_2px_10px_rgb(0,0,0,0.02)] dark:shadow-none relative">
+        <motion.div 
+          initial={shouldAnimate ? { y: -60, opacity: 0 } : false}
+          animate={{ y: 0, opacity: 1 }}
+          transition={shouldAnimate ? { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.05 } : { duration: 0 }}
+          className="hidden md:block w-full border-b border-slate-100/60 dark:border-white/5 z-50 bg-white dark:bg-[#13111C] shrink-0 shadow-[0_2px_10px_rgb(0,0,0,0.02)] dark:shadow-none relative"
+        >
            <TopNav 
              isSidebarExpanded={isSidebarExpanded} 
              toggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)} 
            />
-        </div>
+        </motion.div>
       )}
 
       {/* 2. MOBILE TOP BAR */}
       {!hideTopNav && !hideMobileTopNav && (
-        <div className="md:hidden w-full bg-white/90 dark:bg-[#13111C]/90 backdrop-blur-md pt-[env(safe-area-inset-top)] border-b border-slate-100 dark:border-white/5 z-40 shadow-sm dark:shadow-none shrink-0">
+        <motion.div 
+          initial={shouldAnimate ? { y: -60, opacity: 0 } : false}
+          animate={{ y: 0, opacity: 1 }}
+          transition={shouldAnimate ? { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.05 } : { duration: 0 }}
+          className="md:hidden w-full bg-white/90 dark:bg-[#13111C]/90 backdrop-blur-md pt-[env(safe-area-inset-top)] border-b border-slate-100 dark:border-white/5 z-40 shadow-sm dark:shadow-none shrink-0"
+        >
            <div className="flex items-center justify-between px-5 h-[60px]">
                <div className="flex items-center">
                    <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -ml-2 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-primary outline-none transition-colors rounded-md">
@@ -84,7 +103,7 @@ export function MobileLayout({ children, showBottomNav = true, hideTopNav = fals
                   </div>
                </div>
            </div>
-        </div>
+        </motion.div>
       )}
 
       {/* 3. MAIN BODY SPLIT */}
@@ -102,18 +121,30 @@ export function MobileLayout({ children, showBottomNav = true, hideTopNav = fals
             transition={{ type: "spring", damping: 25, stiffness: 250 }}
             className={`hidden md:flex flex-col flex-shrink-0 z-20 bg-white dark:bg-[#13111C] border-r h-full overflow-hidden ${isSidebarExpanded ? 'border-slate-100/100 dark:border-white/5' : 'border-transparent dark:border-transparent'}`}
           >
-             <SideNav 
-               isExpanded={isSidebarExpanded} 
-               toggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)} 
-             />
+             <motion.div
+               initial={shouldAnimate ? { x: -30, opacity: 0 } : false}
+               animate={{ x: 0, opacity: 1 }}
+               transition={shouldAnimate ? { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.12 } : { duration: 0 }}
+               className="flex flex-col flex-1 h-full w-full overflow-hidden"
+             >
+                <SideNav 
+                  isExpanded={isSidebarExpanded} 
+                  toggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)} 
+                />
+             </motion.div>
           </motion.div>
         )}
 
         {/* MAIN SCROLLABLE CONTENT */}
         <div id="main-scroll-container" className="flex-1 overflow-y-auto overflow-x-hidden w-full h-full bg-white dark:bg-[#13111C] scroll-smooth">
-           <div className={`transition-all duration-300 ${isMobile && showBottomNav ? 'pb-24' : 'pb-10 pt-2'}`}>
+           <motion.div 
+             initial={{ opacity: 0, y: 8 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ duration: 0.4, ease: "easeOut" }}
+             className={`transition-all duration-300 ${isMobile && showBottomNav ? 'pb-24' : 'pb-10 pt-2'}`}
+           >
               {children}
-           </div>
+           </motion.div>
         </div>
 
       </div>
@@ -121,9 +152,14 @@ export function MobileLayout({ children, showBottomNav = true, hideTopNav = fals
       {/* 4. MOBILE BOTTOM NAV */}
 
       {showBottomNav && (
-        <div className="md:hidden fixed bottom-0 left-0 w-full z-40 bg-white dark:bg-[#1C1A29] border-t border-slate-200 dark:border-white/5 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] dark:shadow-none pb-safe">
+        <motion.div 
+          initial={shouldAnimate ? { y: 80, opacity: 0 } : false}
+          animate={{ y: 0, opacity: 1 }}
+          transition={shouldAnimate ? { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.15 } : { duration: 0 }}
+          className="md:hidden fixed bottom-0 left-0 w-full z-40 bg-white dark:bg-[#1C1A29] border-t border-slate-200 dark:border-white/5 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] dark:shadow-none pb-safe"
+        >
            <BottomNav />
-        </div>
+        </motion.div>
       )}
 
       {/* MOBILE SLIDE-OUT SIDEBAR */}

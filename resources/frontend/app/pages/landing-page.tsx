@@ -5,6 +5,7 @@ import { Navbar } from '../components/navbar';
 import { Footer } from '../components/footer';
 import { ScrollToTop } from '../components/scroll-to-top';
 import { AuthModal } from '../components/auth-modal';
+import { BrutalistLoader } from '../components/brutalist-loader';
 import ApplicationLogo from '../components/ApplicationLogo';
 import {
   BookOpen, Search, Shield, Zap, ArrowRight,
@@ -127,8 +128,8 @@ function MarqueeRow({ items, direction = 'left', speed = 30 }: { items: string[]
 }
 
 const row1Items = [
-  "🌐 52+ Bahasa Didukung",
-  "📝 Editor LaTeX & Markdown",
+  "🌐 50+ Bahasa Didukung",
+  "📝 Teks Editor Dinamis",
   "📚 Topik Belajar yang Luas",
   "🎒 Dari Jenjang Sekolah Dasar hingga Kuliah",
   "🔥 Sistem Streak & Habit",
@@ -136,10 +137,10 @@ const row1Items = [
 ];
 
 const row2Items = [
-  "📐 Tulis Rumus KaTeX Mudah",
+  "📐 Tulis Rumus dengan Mudah",
   "🎓 Belajar Bersama Komunitas",
-  "📂 Kumpulan Catatan Lengkap",
-  "💬 Saling Berbagi Catatan",
+  "📂 Kumpulan Catatan",
+  "💬 Saling Berbagi Pikiran",
   "🏆 Tumbuh & Berkembang Bersama",
   "🌍 Akses Belajar Kapan Saja",
 ];
@@ -226,18 +227,18 @@ function ScrollRevealText() {
   const words = text.split(" ");
 
   return (
-    <div ref={containerRef} id="visi-misi" className="relative py-28 md:py-40 bg-[#080616] overflow-hidden flex items-center justify-center">
+    <div ref={containerRef} id="visi-misi" className="relative py-16 md:py-40 bg-[#080616] overflow-hidden flex items-center justify-center">
       {/* Decorative radial lighting behind text */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] rounded-full blur-[120px] opacity-[0.05] pointer-events-none"
            style={{ background: 'radial-gradient(circle, #5D5CE6 0%, transparent 60%)' }} />
       <GrainNoise />
 
       <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
-        <p className="text-xs md:text-sm font-semibold text-[#8B5CF6] tracking-[0.2em] uppercase mb-6 flex items-center justify-center gap-2">
+        <p className="text-xs md:text-sm font-semibold text-[#8B5CF6] tracking-[0.2em] uppercase mb-4 flex items-center justify-center gap-2">
           <Sparkles className="w-4 h-4 animate-spin-slow" /> VISI KAMI
         </p>
 
-        <h3 className="font-display font-bold tracking-tight leading-[1.3] text-left md:text-center" style={{ fontSize: 'clamp(1.5rem, 2.8vw, 2.5rem)' }}>
+        <h3 className="font-display font-bold tracking-tight leading-[1.3] text-center" style={{ fontSize: 'clamp(1.5rem, 2.8vw, 2.5rem)' }}>
           {words.map((word, i) => {
             const start = i / words.length;
             const end = (i + 1) / words.length;
@@ -270,7 +271,7 @@ function ScrollRevealText() {
         </h3>
 
         <motion.div 
-          className="mt-12 inline-flex items-center gap-3 text-xs md:text-sm font-semibold text-[#8B5CF6] border border-[#8B5CF6]/20 bg-[#8B5CF6]/5 px-5 py-2.5 rounded-full"
+          className="mt-8 md:mt-12 inline-flex items-center gap-3 text-[10px] md:text-sm font-semibold text-[#8B5CF6] border border-[#8B5CF6]/20 bg-[#8B5CF6]/5 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -367,41 +368,120 @@ function TopicWarpSection({ openAuthModal }: { openAuthModal: (tab: 'login' | 'r
   // Golden ratio hash for evenly-distributed horizontal positions
   const GOLDEN_RATIO = 0.618033988749895;
   
-  const WARP_TOPICS = mataPelajaran.map((m, idx) => {
-    // Golden ratio hashing for beautifully-spaced horizontal distribution (5%–95%)
+  // Beautifully curated diverse translations of academic & learning keywords in 52+ languages
+  const MULTILINGUAL_WARP_TOPICS = [
+    // English (Latin)
+    "Calculus", "Quantum Mechanics", "Data Structures", "Organic Chemistry", "Microbiology", "Machine Learning", "Astrophysics", "Genetics", "Geometry", "Linguistics", "World History", "Sociology", "Thermodynamics",
+    // Japanese (Kanji/Kana)
+    "数学", "量子力学", "アルゴリズム", "有機化学", "微生物学", "機械学習", "宇宙科学", "古典文学", "線形代数", "日本史",
+    // Korean (Hangul)
+    "대수학", "생물학", "화학", "데이터 구조", "분석화학", "딥러닝", "인공지능", "천체물리", "국어국문", "세계사",
+    // Spanish (Latin with Accents)
+    "Álgebra", "Biología Celular", "Termodinámica", "Bioquímica", "Sociología", "Robótica", "Historia", "Geografía", "Filosofía", "Cálculo",
+    // Arabic (Arabic Script)
+    "الخوارزميات", "علم الاحياء", "الهندسة", "الذكاء الاصطناعي", "الفلسفة", "الرياضيات", "الفيزياء", "الكيمياء", "علم الفلك", "الأدب",
+    // French (French Accents)
+    "Physique", "Astronomie", "Génétique", "Chimie", "Linguistique", "Algèbre", "Poésie", "Géométrie", "Philosophie", "Thermodynamique",
+    // German (Umlauts & Eszett)
+    "Relativität", "Weltraum", "Künstliche Intelligenz", "Elektrotechnik", "Neuroinformatik", "Linguistik", "Mathe", "Biologie", "Kryptografie", "Soziologie",
+    // Russian (Cyrillic Script)
+    "Геометрия", "Тригонометрия", "Астрофизика", "Анатомия", "Кибербезопасность", "Информатика", "Алгеbra", "Молекулярная биология",
+    // Hindi (Devanagari Script)
+    "रसायन विज्ञान", "इतिहास", "भूगोल", "जीव विज्ञान", "व्याकरण",
+    // Indonesian (Cultural & Regional Diversity)
+    "Algoritma", "Filsafat", "Kriptografi", "Struktur Data", "Anatomi", "Fisiologi", "Tata Krama", "Sastra", "Matematika", "Fisika", "Demografi", "Ekologi"
+  ];
+  
+  const WARP_TOPICS = MULTILINGUAL_WARP_TOPICS.map((topic, idx) => {
+    // Golden ratio hashing for beautifully-spaced horizontal distribution (3%–97%)
     const hash = ((idx * GOLDEN_RATIO) % 1);
-    const left = `${(hash * 90) + 5}%`;
+    const left = `${(hash * 94) + 3}%`;
     
-    // Stagger: ~0.8s gap so all 78 topics start within ~62s, then loop continuously  
-    const delay = idx * 0.8;
+    // Staggered delay to make the entrance loop uniform and natural
+    const delay = idx * 0.7;
     
-    // Variable speeds between 18s–28s for natural parallax depth feel
-    const speed = 18 + ((idx * 7) % 11);
+    // Variable speeds between 16s–26s for natural parallax depth feel
+    const speed = 16 + ((idx * 7) % 11);
     
     // 3 depth layers: small (far), medium, large (near) — for parallax illusion
     const depthLayer = idx % 3;
-    const fontSize = depthLayer === 0 ? 'text-[9px] md:text-[11px]' : depthLayer === 1 ? 'text-[11px] md:text-sm' : 'text-xs md:text-base';
-    const maxOpacity = depthLayer === 0 ? 0.35 : depthLayer === 1 ? 0.55 : 0.75;
-    const glowIntensity = depthLayer === 0 ? 4 : depthLayer === 1 ? 6 : 10;
+    
+    // Sizes mapped to depth layers for real 3D depth feeling
+    const fontSize = depthLayer === 0 
+      ? 'text-[10px] md:text-[12px]' 
+      : depthLayer === 1 
+      ? 'text-[12px] md:text-sm' 
+      : 'text-xs md:text-base lg:text-lg font-bold';
+      
+    const maxOpacity = depthLayer === 0 ? 0.32 : depthLayer === 1 ? 0.55 : 0.85;
+    const glowIntensity = depthLayer === 0 ? 3 : depthLayer === 1 ? 6 : 12;
+    
+    // Sandwiching parallax effect:
+    // We want only a few foreground elements to pass IN FRONT of the card (z-30)
+    // The rest (medium and far elements, and some near elements) pass BEHIND (z-10)
+    // We achieve this by letting near elements (depthLayer === 2) at every 4th index pass in front.
+    const isForeground = depthLayer === 2 && idx % 4 === 0;
+    const zIndex = isForeground ? 30 : 10;
+    
+    // Foreground elements get scaled up slightly to create strong volumetric focus depth
+    const scale = isForeground ? 1.12 : 1.0;
     
     return {
-      text: m.name,
+      text: topic,
       left,
       delay,
       speed,
       fontSize,
       maxOpacity,
       glowIntensity,
-      sway: Math.sin(idx * 5.7) * (12 + depthLayer * 8)
+      zIndex,
+      scale,
+      sway: Math.sin(idx * 5.7) * (14 + depthLayer * 10)
+    };
+  });
+
+  // Portal Sparkles - tiny glowing dots emerging from the bottom and fading out within the first 1/4 section
+  const PORTAL_SPARKLES = [...Array(25)].map((_, idx) => {
+    const hash1 = ((idx * 0.718) % 1); // pseudo-random left position (4% to 96%)
+    const left = `${(hash1 * 92) + 4}%`;
+    
+    const hash2 = ((idx * 0.382) % 1); // pseudo-random speed (2.5s to 5.5s)
+    const speed = 2.5 + hash2 * 3.0;
+    
+    const hash3 = ((idx * 0.912) % 1); // pseudo-random delay
+    const delay = hash3 * 6.5; 
+    
+    // Slightly larger size for stronger visual impact: 2px to 5px
+    const size = 2.0 + ((idx % 3) * 1.5);
+    
+    // Staggered premium gradient colors: white, deep purple, and neon violet/blue
+    const colors = ["#ffffff", "#5D5CE6", "#8B5CF6", "#c084fc", "#ffffff"];
+    const color = colors[idx % colors.length];
+    
+    // Sway offset
+    const sway = Math.sin(idx * 4.3) * (8 + (idx % 3) * 6);
+    
+    // 20% of sparkles float all the way up to the centered card (-52vh), while 80% fade out at 1/3 section height (-38vh)
+    const isHigh = idx % 5 === 0;
+    const targetY = isHigh ? "-52vh" : "-38vh";
+    
+    return {
+      left,
+      speed: isHigh ? speed * 1.2 : speed, // slightly longer speed for higher travel to keep pace uniform
+      delay,
+      size,
+      color,
+      sway,
+      targetY
     };
   });
 
   return (
-    <div ref={containerRef} className="relative min-h-[100vh] md:min-h-[110vh] lg:min-h-[120vh] w-full bg-transparent flex items-center justify-center">
+    <div ref={containerRef} className="relative min-h-[60vh] md:min-h-[110vh] lg:min-h-[120vh] w-full bg-transparent flex items-center justify-center overflow-hidden">
       
       {/* Background Starfield — more dots for cosmic depth */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(12)].map((_, i) => (
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {[...Array(15)].map((_, i) => (
           <div
             key={i}
             className="absolute rounded-full bg-white animate-pulse"
@@ -410,49 +490,87 @@ function TopicWarpSection({ openAuthModal }: { openAuthModal: (tab: 'login' | 'r
               height: `${1 + (i % 3) * 0.5}px`,
               top: `${((i * 37) % 90) + 5}%`,
               left: `${((i * 53) % 90) + 5}%`,
-              opacity: 0.12 + (i % 4) * 0.06,
-              animationDelay: `${i * 0.7}s`,
-              animationDuration: `${2 + (i % 3)}s`
+              opacity: 0.1 + (i % 4) * 0.05,
+              animationDelay: `${i * 0.6}s`,
+              animationDuration: `${2.5 + (i % 3)}s`
             }}
           />
         ))}
       </div>
 
       {/* Subtle radial glow behind center text */}
-      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-        <div className="w-[50vw] h-[50vw] max-w-[500px] max-h-[500px] rounded-full bg-white/[0.02] blur-[100px]" />
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-5">
+        <div className="w-[60vw] h-[60vw] max-w-[550px] max-h-[550px] rounded-full bg-[#5D5CE6]/[0.02] blur-[120px]" />
       </div>
 
-      {/* Floating Sparkling Subjects — Dreamy White, Parallax Depth, Elegant (No overflow-hidden to allow seamless floating up) */}
-      <div className="absolute inset-0 pointer-events-none w-full h-full">
-        {WARP_TOPICS.map((item, idx) => (
-          <motion.div
-            key={idx}
-            initial={{ y: "10vh", x: 0, opacity: 0 }}
-            animate={{
-              y: ["10vh", "-125vh"],
-              x: [0, item.sway, 0, -item.sway, 0],
-              opacity: [0, item.maxOpacity * 0.5, item.maxOpacity, item.maxOpacity * 0.8, 0]
-            }}
-            transition={{
-              y: { duration: item.speed, repeat: Infinity, ease: "linear", delay: item.delay },
-              x: { duration: item.speed * 0.8, repeat: Infinity, ease: "easeInOut", delay: item.delay },
-              opacity: { duration: item.speed, repeat: Infinity, ease: "linear", delay: item.delay, times: [0, 0.1, 0.4, 0.8, 1] }
-            }}
-            style={{
-              left: item.left,
-              bottom: '-5%',
-              filter: `drop-shadow(0 0 ${item.glowIntensity}px rgba(255,255,255,0.35))`
-            }}
-            className={`absolute font-sans font-medium text-white/90 ${item.fontSize} tracking-[0.15em] uppercase select-none pointer-events-none whitespace-nowrap`}
-          >
-            {item.text}
-          </motion.div>
-        ))}
-      </div>
+      {/* Volumetric Dual-Layer Portal Glow at the bottom boundary */}
+      {/* Layer 1: Wide, ambient violet glow */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90vw] h-16 bg-gradient-to-t from-white/[0.08] via-[#5D5CE6]/[0.03] to-transparent blur-2xl pointer-events-none rounded-[100%] z-5" />
+      {/* Layer 2: Center, intense white core glow */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[55vw] h-8 bg-gradient-to-t from-white/[0.22] via-[#8B5CF6]/[0.08] to-transparent blur-xl pointer-events-none rounded-[100%] z-5" />
+      {/* Glowing horizontal portal boundary beam line */}
+      <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/30 via-[#8B5CF6]/35 to-transparent pointer-events-none z-10 filter drop-shadow(0 0 5px rgba(255,255,255,0.45))" />
+
+      {/* Portal Sparkles - tiny glowing dots emerging from the bottom portal boundary and fading out quickly within 1/3 height or rising higher */}
+      {PORTAL_SPARKLES.map((sparkle, idx) => (
+        <motion.div
+          key={`sparkle-${idx}`}
+          initial={{ y: "0vh", x: 0, opacity: 0 }}
+          animate={{
+            y: ["0vh", sparkle.targetY], 
+            x: [0, sparkle.sway, -sparkle.sway / 2, 0],
+            opacity: [0, 0.95, 0.4, 0]
+          }}
+          transition={{
+            y: { duration: sparkle.speed, repeat: Infinity, ease: "easeOut", delay: sparkle.delay },
+            x: { duration: sparkle.speed * 0.9, repeat: Infinity, ease: "easeInOut", delay: sparkle.delay },
+            opacity: { duration: sparkle.speed, repeat: Infinity, ease: "linear", delay: sparkle.delay, times: [0, 0.15, 0.5, 1] }
+          }}
+          style={{
+            left: sparkle.left,
+            bottom: '-4%',
+            width: `${sparkle.size}px`,
+            height: `${sparkle.size}px`,
+            backgroundColor: sparkle.color,
+            borderRadius: '50%',
+            // Stacked drop-shadows create highly intense, bright glowing light bulbs
+            filter: `blur(0.2px) drop-shadow(0 0 5px ${sparkle.color}) drop-shadow(0 0 10px ${sparkle.color}) drop-shadow(0 0 15px ${sparkle.color})`,
+            zIndex: 8,
+          }}
+          className="absolute pointer-events-none"
+        />
+      ))}
+
+      {/* Floating Sparkling Subjects — Dreamy White, Volumetric Depth (Rendered directly under container to respect zIndex) */}
+      {WARP_TOPICS.map((item, idx) => (
+        <motion.div
+          key={idx}
+          initial={{ y: "15vh", x: 0, opacity: 0 }}
+          animate={{
+            y: ["15vh", "-130vh"],
+            x: [0, item.sway, 0, -item.sway, 0],
+            opacity: [0, item.maxOpacity * 0.6, item.maxOpacity, item.maxOpacity * 0.8, 0]
+          }}
+          transition={{
+            y: { duration: item.speed, repeat: Infinity, ease: "linear", delay: item.delay },
+            x: { duration: item.speed * 0.85, repeat: Infinity, ease: "easeInOut", delay: item.delay },
+            opacity: { duration: item.speed, repeat: Infinity, ease: "linear", delay: item.delay, times: [0, 0.12, 0.45, 0.85, 1] }
+          }}
+          style={{
+            left: item.left,
+            bottom: '-10%',
+            zIndex: item.zIndex,
+            scale: item.scale,
+            filter: `drop-shadow(0 0 ${item.glowIntensity}px rgba(255,255,255,0.4))`
+          }}
+          className={`absolute font-sans font-medium text-white/90 ${item.fontSize} tracking-[0.18em] uppercase select-none pointer-events-none whitespace-nowrap`}
+        >
+          {item.text}
+        </motion.div>
+      ))}
 
       {/* Centered Cinematic Title — Elegant italic serif with soft glow & masked backdrop blur */}
-      <div className="relative z-10 max-w-2xl px-6 text-center py-20 pointer-events-none flex flex-col items-center justify-center">
+      <div className="relative z-20 max-w-2xl px-6 text-center py-20 pointer-events-none flex flex-col items-center justify-center">
         
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -477,11 +595,30 @@ function TopicWarpSection({ openAuthModal }: { openAuthModal: (tab: 'login' | 'r
    COMPONENT: Interactive Landing Page
    =================================================== */
 export function LandingPage() {
+  const [isLoading, setIsLoading] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
   const [activeWord, setActiveWord] = useState(0);
   const [activeSubject, setActiveSubject] = useState(0);
   const [activeCockpitTab, setActiveCockpitTab] = useState('latex');
+
+  // Scroll lock during loading state to prevent scroll glitching
+  useEffect(() => {
+    if (isLoading) {
+      document.body.style.overflow = 'hidden';
+      window.scrollTo(0, 0);
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isLoading]);
+
+  // Clear layout entrance animation flag when landing page mounts to reset session entry animation state
+  useEffect(() => {
+    sessionStorage.removeItem('has_animated_session_entry');
+  }, []);
 
   // Smooth scroll to hash on load or redirection
   useEffect(() => {
@@ -530,48 +667,48 @@ export function LandingPage() {
   const springGlareLeft = useSpring(glareLeft, { stiffness: 200, damping: 25 });
   const springGlareTop = useSpring(glareTop, { stiffness: 200, damping: 25 });
 
-  const handleCardMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
-    const mouseXRel = e.clientX - rect.left - width / 2;
-    const mouseYRel = e.clientY - rect.top - height / 2;
-    cardX.set(mouseXRel / width);
-    cardY.set(mouseYRel / height);
-  }, [cardX, cardY]);
+    const mouseXVal = e.clientX - rect.left - width / 2;
+    const mouseYVal = e.clientY - rect.top - height / 2;
+    cardX.set(mouseXVal / width);
+    cardY.set(mouseYVal / height);
+  };
 
-  const handleCardMouseLeave = useCallback(() => {
+  const handleCardMouseLeave = () => {
     cardX.set(0);
     cardY.set(0);
-  }, [cardX, cardY]);
+  };
 
-  // 3D Subject Card tilt motion hooks
+  // Subject Card 3D hooks
   const subCardRef = useRef<HTMLDivElement>(null);
   const subCardX = useMotionValue(0);
   const subCardY = useMotionValue(0);
 
-  const subRotateX = useTransform(subCardY, [-0.5, 0.5], [8, -8]);
-  const subRotateY = useTransform(subCardX, [-0.5, 0.5], [-8, 8]);
+  const subCardRotateX = useTransform(subCardY, [-0.5, 0.5], [10, -10]);
+  const subCardRotateY = useTransform(subCardX, [-0.5, 0.5], [-10, 10]);
 
-  const springSubRotateX = useSpring(subRotateX, { stiffness: 150, damping: 20 });
-  const springSubRotateY = useSpring(subRotateY, { stiffness: 150, damping: 20 });
+  const springSubRotateX = useSpring(subCardRotateX, { stiffness: 200, damping: 25 });
+  const springSubRotateY = useSpring(subCardRotateY, { stiffness: 200, damping: 25 });
 
-  const handleSubCardMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+  const handleSubCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!subCardRef.current) return;
     const rect = subCardRef.current.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
-    const mouseXRel = e.clientX - rect.left - width / 2;
-    const mouseYRel = e.clientY - rect.top - height / 2;
-    subCardX.set(mouseXRel / width);
-    subCardY.set(mouseYRel / height);
-  }, [subCardX, subCardY]);
+    const mouseXVal = e.clientX - rect.left - width / 2;
+    const mouseYVal = e.clientY - rect.top - height / 2;
+    subCardX.set(mouseXVal / width);
+    subCardY.set(mouseYVal / height);
+  };
 
-  const handleSubCardMouseLeave = useCallback(() => {
+  const handleSubCardMouseLeave = () => {
     subCardX.set(0);
     subCardY.set(0);
-  }, [subCardX, subCardY]);
+  };
 
   // Rotating Multilingual texts
   useEffect(() => {
@@ -611,7 +748,13 @@ export function LandingPage() {
 
   return (
     <div className="font-sans text-gray-100 bg-[#06050e] min-h-screen overflow-x-clip selection:bg-[#5D5CE6]/30 selection:text-white">
-      <Navbar theme="dark" />
+      <AnimatePresence>
+        {isLoading && (
+          <BrutalistLoader key="loader" onComplete={() => setIsLoading(false)} />
+        )}
+      </AnimatePresence>
+
+      <Navbar theme="dark" isLoading={isLoading} />
       <ScrollToTop />
       <AuthModal
         isOpen={showAuthModal}
@@ -625,7 +768,7 @@ export function LandingPage() {
       <section 
         ref={heroRef}
         onMouseMove={handleMouseMove}
-        className="relative min-h-[95vh] flex items-center justify-center pt-44 md:pt-48 lg:pt-52 pb-16 overflow-hidden bg-[#06050e]"
+        className="relative min-h-[95vh] flex items-center justify-center pt-28 md:pt-48 lg:pt-52 pb-12 md:pb-16 overflow-hidden bg-[#06050e]"
       >
         {/* Fine Matrix grid styling in background */}
         <div 
@@ -638,8 +781,19 @@ export function LandingPage() {
         <GrainNoise />
 
         {/* Ambient background light orbs */}
-        <div className="absolute top-1/4 left-1/6 w-80 h-80 rounded-full blur-[120px] opacity-[0.15] bg-[#5D5CE6] pointer-events-none animate-pulse-slow" />
-        <div className="absolute bottom-1/4 right-1/6 w-[400px] h-[400px] rounded-full blur-[140px] opacity-[0.12] bg-[#8B5CF6] pointer-events-none animate-pulse-slow" style={{ animationDelay: '2s' }} />
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={!isLoading ? { opacity: 0.15 } : { opacity: 0 }}
+          transition={{ duration: 1.5, delay: 0.2 }}
+          className="absolute top-1/4 left-1/6 w-80 h-80 rounded-full blur-[120px] bg-[#5D5CE6] pointer-events-none animate-pulse-slow" 
+        />
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={!isLoading ? { opacity: 0.12 } : { opacity: 0 }}
+          transition={{ duration: 1.5, delay: 0.4 }}
+          className="absolute bottom-1/4 right-1/6 w-[400px] h-[400px] rounded-full blur-[140px] bg-[#8B5CF6] pointer-events-none animate-pulse-slow" 
+          style={{ animationDelay: '2s' }} 
+        />
 
         {/* Interactive Mouse-Tracking Glowing Follower */}
         <motion.div 
@@ -657,7 +811,7 @@ export function LandingPage() {
           <h1 className="font-display font-extrabold tracking-tight leading-[1.2] text-white flex flex-col items-center">
             <motion.span 
               initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={!isLoading ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
               transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               className="block"
               style={{ fontSize: 'clamp(2rem, 8vw, 5rem)' }}
@@ -667,7 +821,7 @@ export function LandingPage() {
             
             <motion.span 
               initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={!isLoading ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
               transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
               className="block text-transparent bg-clip-text bg-gradient-to-r from-[#5D5CE6] to-[#8B5CF6]"
               style={{ fontSize: 'clamp(2rem, 8vw, 5rem)' }}
@@ -677,7 +831,7 @@ export function LandingPage() {
 
             <motion.span 
               initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={!isLoading ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
               transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
               className="block tracking-normal font-medium text-gray-300 mt-6 max-w-3xl px-4 leading-relaxed"
               style={{ fontSize: 'clamp(0.95rem, 1.6vw, 1.2rem)' }}
@@ -689,13 +843,13 @@ export function LandingPage() {
           {/* Action Buttons */}
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={!isLoading ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-12 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto"
+            className="mt-12 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto px-4"
           >
             <button
               onClick={() => openAuthModal('register')}
-              className="w-full sm:w-auto cursor-pointer relative inline-flex items-center justify-center gap-3 px-10 py-5 rounded-full font-bold text-base text-white overflow-hidden group shadow-lg shadow-[#5D5CE6]/25"
+              className="w-full sm:w-auto cursor-pointer relative inline-flex items-center justify-center gap-3 px-8 py-3.5 sm:px-10 sm:py-5 rounded-full font-bold text-sm sm:text-base text-white overflow-hidden group shadow-lg shadow-[#5D5CE6]/25"
               style={{ background: 'linear-gradient(135deg, #5D5CE6, #8B5CF6)' }}
             >
               <span className="relative z-10 flex items-center gap-2">
@@ -706,7 +860,7 @@ export function LandingPage() {
 
             <button
               onClick={() => openAuthModal('login')}
-              className="w-full sm:w-auto cursor-pointer inline-flex items-center justify-center gap-2 px-10 py-5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md font-bold text-base hover:bg-white/10 hover:border-white/20 transition-all text-gray-300"
+              className="w-full sm:w-auto cursor-pointer inline-flex items-center justify-center gap-2 px-8 py-3.5 sm:px-10 sm:py-5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md font-bold text-sm sm:text-base hover:bg-white/10 hover:border-white/20 transition-all text-gray-300"
             >
               Telusuri Catatan
             </button>
@@ -715,9 +869,9 @@ export function LandingPage() {
           {/* Gorgeous Dual-Direction Marquee (Horizontal for clean, premium vibe) */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={!isLoading ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
             transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-6xl mt-20 py-8 overflow-hidden select-none"
+            className="relative w-full max-w-6xl mt-10 md:mt-20 py-4 md:py-8 overflow-hidden select-none"
           >
             {/* Side Vignette Fades (Left & Right gradients) */}
             <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#06050e] to-transparent z-10 pointer-events-none" />
@@ -743,7 +897,7 @@ export function LandingPage() {
       {/* =============================================
           3. MULTILINGUAL "MADE FOR LEARNING" SHOWCASE
           ============================================= */}
-      <section className="relative py-24 bg-[#06050e] overflow-hidden">
+      <section className="relative py-12 md:py-24 bg-[#06050e] overflow-hidden">
         <GrainNoise />
         <div className="max-w-6xl mx-auto px-6 relative z-10">
           <div className="flex flex-col lg:flex-row items-stretch gap-12">
@@ -770,7 +924,7 @@ export function LandingPage() {
               </motion.div>
 
               {/* Premium mechanical horizontal gaming console for active language and acak bahasa */}
-              <div className="mt-12 flex items-center gap-6 p-5 rounded-3xl bg-gradient-to-b from-white/[0.04] to-white/[0.01] border border-white/10 backdrop-blur-2xl max-w-md shadow-2xl relative group/slot overflow-hidden">
+              <div className="mt-8 md:mt-12 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 p-4 sm:p-5 rounded-3xl bg-gradient-to-b from-white/[0.04] to-white/[0.01] border border-white/10 backdrop-blur-2xl max-w-md shadow-2xl relative group/slot overflow-hidden">
                 {/* Ambient glow behind slot */}
                 <div className="absolute -inset-10 bg-[#5D5CE6]/8 rounded-full blur-3xl opacity-0 group-hover/slot:opacity-100 transition-opacity duration-700 pointer-events-none" />
                 
@@ -786,9 +940,9 @@ export function LandingPage() {
                 </div>
 
                 {/* Info Panel & Premium SPIN Button on the Right */}
-                <div className="flex flex-col gap-3 justify-center items-start z-10 flex-1">
+                <div className="flex flex-col gap-3 justify-center items-center sm:items-start z-10 flex-1">
                   <div>
-                    <span className="text-[9px] text-[#8B5CF6] font-bold uppercase tracking-wider block mb-0.5">Bahasa Aktif</span>
+                    <span className="text-[9px] text-[#8B5CF6] font-bold uppercase tracking-wider block mb-0.5 text-center sm:text-left">Bahasa Aktif</span>
                     <p className="text-base font-bold text-white leading-tight font-display">
                       {MULTI_LANG_TEXTS[activeWord].lang}
                     </p>
@@ -829,7 +983,7 @@ export function LandingPage() {
                 ref={cardRef}
                 onMouseMove={handleCardMouseMove}
                 onMouseLeave={handleCardMouseLeave}
-                className="w-full min-h-[380px] bg-gradient-to-br from-[#120F2D] via-[#0E0C23] to-[#0A0917] rounded-3xl p-8 border border-white/10 shadow-2xl relative overflow-hidden flex flex-col justify-between cursor-default origin-center select-none"
+                className="w-full min-h-[300px] md:min-h-[380px] bg-gradient-to-br from-[#120F2D] via-[#0E0C23] to-[#0A0917] rounded-3xl p-5 md:p-8 border border-white/10 shadow-2xl relative overflow-hidden flex flex-col justify-between cursor-default origin-center select-none"
                 style={{
                   rotateX: springRotateX,
                   rotateY: springRotateY,
@@ -925,7 +1079,7 @@ export function LandingPage() {
                 </div>
 
                 {/* Huge dynamic text display */}
-                <div className="my-8 relative z-10 overflow-hidden h-[180px] flex items-center" style={{ transform: "translateZ(45px)" }}>
+                <div className="my-4 md:my-8 relative z-10 overflow-hidden h-[120px] md:h-[180px] flex items-center" style={{ transform: "translateZ(45px)" }}>
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={activeWord}
@@ -942,9 +1096,9 @@ export function LandingPage() {
                   </AnimatePresence>
                 </div>
 
-                <div className="border-t border-white/5 pt-6 flex items-center justify-between text-xs text-gray-500 font-semibold relative z-10" style={{ transform: "translateZ(30px)" }}>
+                <div className="border-t border-white/5 pt-4 md:pt-6 flex flex-col xs:flex-row items-center gap-3 xs:gap-0 xs:justify-between text-[10px] sm:text-xs text-gray-500 font-semibold relative z-10 w-full" style={{ transform: "translateZ(30px)" }}>
                   {/* Dynamic scrolling badge */}
-                  <span className="text-[10px] tracking-wider text-gray-400 font-bold uppercase transition-all duration-300">
+                  <span className="tracking-wider text-gray-400 font-bold uppercase transition-all duration-300">
                     <MorphingText text={(MULTI_LANG_TEXTS[activeWord].badge || 'AKTIF MULTI-BAHASA').toUpperCase()} />
                   </span>
                   
@@ -970,13 +1124,13 @@ export function LandingPage() {
         <GrainNoise />
 
         {/* Section 4: Interactive Subject Rotator (Transparent seamless background) */}
-        <section id="eksplorasi-topik" className="relative py-24 bg-transparent">
+        <section id="eksplorasi-topik" className="relative py-12 md:py-24 bg-transparent">
           {/* Ambient neon backdrop glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[50vw] rounded-full blur-[130px] opacity-[0.05] pointer-events-none"
                style={{ background: 'radial-gradient(circle, #8B5CF6 0%, transparent 60%)' }} />
 
           <div className="max-w-6xl mx-auto px-6 relative z-10">
-            <div className="text-center max-w-2xl mx-auto mb-16">
+            <div className="text-center max-w-2xl mx-auto mb-8 md:mb-16">
               <p className="text-xs md:text-sm font-semibold text-[#5D5CE6] tracking-[0.2em] uppercase mb-4">
                 EKSPLORASI TOPIK
               </p>
@@ -986,41 +1140,48 @@ export function LandingPage() {
             </div>
 
             {/* Subject Navigation Ribbon */}
-            <div className="flex overflow-x-auto pb-4 gap-3 no-scrollbar scroll-smooth justify-start md:justify-center">
+            <div className="flex overflow-x-auto pb-4 gap-3 no-scrollbar scroll-smooth justify-start md:justify-center p-2">
               {SUBJECTS.map((sub, i) => (
                 <button
                   key={i}
                   onClick={() => setActiveSubject(i)}
-                  className={`cursor-pointer flex items-center gap-2.5 px-6 py-4 rounded-2xl border text-sm font-bold tracking-wide whitespace-nowrap transition-all duration-300 ${
+                  className={`cursor-pointer relative flex items-center gap-2.5 px-4 py-3 md:px-6 md:py-4 rounded-2xl border text-xs md:text-sm font-bold tracking-wide whitespace-nowrap transition-all duration-500 overflow-hidden ${
                     i === activeSubject
-                      ? 'bg-[#5D5CE6] border-[#5D5CE6] text-white shadow-lg shadow-[#5D5CE6]/20 scale-[1.02]'
-                      : 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                      ? 'border-transparent text-white scale-[1.02] z-10'
+                      : 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10 hover:text-white z-0'
                   }`}
                 >
-                  <span className="text-lg">{sub.icon}</span>
-                  <span>{sub.name}</span>
+                  {i === activeSubject && (
+                    <motion.div
+                      layoutId="activeSubjectPill"
+                      className="absolute inset-0 bg-gradient-to-r from-[#5D5CE6] to-[#8B5CF6] -z-10 shadow-lg shadow-[#5D5CE6]/20"
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    />
+                  )}
+                  <span className="text-lg relative z-10">{sub.icon}</span>
+                  <span className="relative z-10">{sub.name}</span>
                 </button>
               ))}
             </div>
 
             {/* Interactive 3D Showcase Card */}
-            <div className="mt-10 max-w-4xl mx-auto" style={{ perspective: 1000 }}>
+            <div className="mt-10 max-w-4xl mx-auto overflow-hidden rounded-3xl" style={{ perspective: 1000 }}>
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeSubject}
                   ref={subCardRef}
                   onMouseMove={handleSubCardMouseMove}
                   onMouseLeave={handleSubCardMouseLeave}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -30 }}
-                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  initial={{ opacity: 0, x: 80, scale: 0.98, filter: "blur(4px)" }}
+                  animate={{ opacity: 1, x: 0, scale: 1, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, x: -80, scale: 0.98, filter: "blur(4px)" }}
+                  transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
                   style={{
                     rotateX: springSubRotateX,
                     rotateY: springSubRotateY,
                     transformStyle: "preserve-3d"
                   }}
-                  className="bg-gradient-to-br from-white/[0.04] to-white/[0.01] rounded-3xl p-8 md:p-12 border border-white/10 shadow-2xl backdrop-blur-xl relative overflow-hidden flex flex-col md:flex-row items-center gap-10 cursor-default select-none group/subcard"
+                  className="bg-gradient-to-br from-white/[0.04] to-white/[0.01] rounded-3xl p-5 md:p-12 border border-white/10 shadow-2xl backdrop-blur-xl relative overflow-hidden flex flex-col md:flex-row items-center gap-6 md:gap-10 cursor-default select-none group/subcard"
                 >
                   {/* Dynamic light sheet glare reflection */}
                   <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-[#5D5CE6]/15 via-transparent to-[#8B5CF6]/15 opacity-50 pointer-events-none blur-[0.5px]" />
@@ -1028,7 +1189,7 @@ export function LandingPage() {
 
                   {/* Left Side: Illustration Box with Dynamic SVGs vector background */}
                   <div 
-                    className="w-full md:w-1/3 aspect-square rounded-2xl bg-[#0d0b1a] border border-white/5 flex items-center justify-center text-7xl md:text-8xl shadow-inner relative overflow-hidden shrink-0"
+                    className="w-24 h-24 md:w-1/3 md:aspect-square rounded-2xl bg-[#0d0b1a] border border-white/5 flex items-center justify-center text-4xl md:text-8xl shadow-inner relative overflow-hidden shrink-0"
                     style={{ transform: "translateZ(30px)" }}
                   >
                     {/* Decorative dynamic vector outlines behind icon based on activeSubject */}
@@ -1091,17 +1252,17 @@ export function LandingPage() {
                   </div>
 
                   {/* Right Side: Description content */}
-                  <div className="flex-1 text-left" style={{ transform: "translateZ(45px)" }}>
+                  <div className="flex-1 text-center md:text-left" style={{ transform: "translateZ(45px)" }}>
                     <span className="text-[10px] font-bold text-[#8B5CF6] tracking-widest uppercase font-mono block">EKSPLORASI BIDANG</span>
                     <h3 className="font-display font-black text-2xl md:text-4xl text-white tracking-tight mt-2.5 leading-none">
                       {currentSubject.name}
                     </h3>
-                    <p className="text-gray-400 mt-5 text-sm md:text-base leading-relaxed">
+                    <p className="text-gray-400 mt-5 text-sm leading-relaxed">
                       {currentSubject.desc}
                     </p>
                     
                     {/* Floating feature pills inside subject */}
-                    <div className="mt-8 flex flex-wrap gap-2">
+                    <div className="mt-4 md:mt-8 flex flex-wrap gap-2 justify-center md:justify-start">
                       {currentSubject.tags?.map((tag, tIdx) => (
                         <span key={tIdx} className="text-xs font-bold text-gray-300 bg-white/5 border border-white/10 px-4 py-2 rounded-full hover:border-[#5D5CE6]/35 hover:bg-white/10 transition-all duration-300">
                           {tag}
@@ -1111,7 +1272,7 @@ export function LandingPage() {
 
                     <button
                       onClick={() => openAuthModal('register')}
-                      className="cursor-pointer mt-8 inline-flex items-center gap-2.5 text-sm font-bold text-white hover:text-[#5D5CE6] transition-colors group"
+                      className="cursor-pointer mt-6 md:mt-8 inline-flex items-center gap-2.5 text-sm font-bold text-white hover:text-[#5D5CE6] transition-colors group justify-center md:justify-start w-full md:w-auto"
                     >
                       <span>Jelajahi Catatan {currentSubject.name}</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
@@ -1130,14 +1291,14 @@ export function LandingPage() {
       {/* =============================================
           6. CORE FEATURES BENTO GRID (Unifies Core features & Mockups)
           ============================================= */}
-      <section className="relative py-24 bg-[#080615] overflow-hidden border-t border-white/5">
+      <section className="relative py-12 md:py-24 bg-[#080615] overflow-hidden border-t border-white/5">
         <GrainNoise />
         <div className="max-w-6xl mx-auto px-6 relative z-10">
           
           {/* Header */}
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-16">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12 md:mb-16">
             <div className="text-left">
-              <p className="text-xs md:text-sm font-semibold text-[#8B5CF6] tracking-[0.2em] uppercase mb-4">
+              <p className="text-xs md:text-sm font-semibold text-[#8B5CF6] tracking-[0.2em] uppercase mb-3">
                 FITUR INTI
               </p>
               <h2 className="font-display font-extrabold tracking-tight text-white text-3xl md:text-4xl leading-tight">
@@ -1153,7 +1314,7 @@ export function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             {/* Cell 1: LaTeX Rich Editor (Double Width) */}
-            <div className="md:col-span-2 bg-gradient-to-br from-white/[0.04] to-white/[0.01] rounded-3xl p-8 border border-white/10 flex flex-col justify-between min-h-[380px] hover:border-[#8B5CF6]/30 transition-all duration-300 relative group overflow-hidden shadow-2xl">
+            <div className="md:col-span-2 bg-gradient-to-br from-white/[0.04] to-white/[0.01] rounded-3xl p-5 sm:p-8 border border-white/10 flex flex-col justify-between min-h-[340px] md:min-h-[380px] hover:border-[#8B5CF6]/30 transition-all duration-300 relative group overflow-hidden shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-tr from-[#8B5CF6]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div>
                 <div className="flex items-center justify-between mb-6">
@@ -1167,7 +1328,7 @@ export function LandingPage() {
               </div>
 
               {/* LaTeX Mockup Widget */}
-              <div className="mt-8 bg-[#0c0a1a]/80 backdrop-blur-md rounded-2xl p-5 border border-white/5 font-mono text-[11px] w-full shadow-inner relative z-10">
+              <div className="mt-8 bg-[#0c0a1a]/80 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/5 font-mono text-[11px] w-full shadow-inner relative z-10">
                 <div className="flex items-center justify-between border-b border-white/5 pb-2.5 mb-3 text-[9px] text-gray-500 font-bold">
                   <span>LaTeX EDITOR ENGINE</span>
                   <span className="text-[#8B5CF6] animate-pulse">ACTIVE RENDERING</span>
@@ -1177,7 +1338,7 @@ export function LandingPage() {
                 
                 <p className="text-emerald-400 font-bold mt-3">// Output Rendered:</p>
                 <div 
-                  className="dark mt-2 p-3.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white text-base font-display overflow-x-auto"
+                  className="dark mt-2 p-3 sm:p-3.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white text-base font-display overflow-x-auto"
                   dangerouslySetInnerHTML={{
                     __html: katex.renderToString("\\int_{-\\infty}^{\\infty} e^{-x^2} \\, dx = \\sqrt{\\pi}", {
                       throwOnError: false,
@@ -1189,7 +1350,7 @@ export function LandingPage() {
             </div>
 
             {/* Cell 2: Verified Pakar (Standard Width) */}
-            <div className="bg-gradient-to-br from-[#5D5CE6] to-[#8B5CF6] rounded-3xl p-8 flex flex-col justify-between min-h-[380px] hover:shadow-lg hover:shadow-[#5D5CE6]/20 transition-all duration-300 relative overflow-hidden group shadow-2xl">
+            <div className="bg-gradient-to-br from-[#5D5CE6] to-[#8B5CF6] rounded-3xl p-5 sm:p-8 flex flex-col justify-between min-h-[340px] md:min-h-[380px] hover:shadow-lg hover:shadow-[#5D5CE6]/20 transition-all duration-300 relative overflow-hidden group shadow-2xl">
               <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div>
                 <div className="flex items-center justify-between mb-6">
@@ -1205,7 +1366,7 @@ export function LandingPage() {
               </div>
 
               {/* Expert Profile Mockup Widget */}
-              <div className="mt-8 bg-black/45 backdrop-blur-md rounded-2xl p-5 border border-white/10 w-full shadow-inner text-center relative z-10">
+              <div className="mt-8 bg-black/45 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/10 w-full shadow-inner text-center relative z-10">
                 <h4 className="text-white font-display text-sm font-bold tracking-tight">Dr. Hermawan, M.T.</h4>
                 <p className="text-[10px] text-gray-300 mt-0.5 font-medium uppercase tracking-wider">Reviewer Ahli / Dosen Matematika</p>
                 <div className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-bold text-[9px] uppercase tracking-wider font-mono">
@@ -1215,7 +1376,7 @@ export function LandingPage() {
             </div>
 
             {/* Cell 3: Streak Tracker (Standard Width) */}
-            <div className="bg-[#0c0a1a] border border-white/10 rounded-3xl p-8 flex flex-col justify-between min-h-[380px] hover:border-[#EF4444]/30 transition-all duration-300 relative group overflow-hidden shadow-2xl">
+            <div className="bg-[#0c0a1a] border border-white/10 rounded-3xl p-5 sm:p-8 flex flex-col justify-between min-h-[340px] md:min-h-[380px] hover:border-[#EF4444]/30 transition-all duration-300 relative group overflow-hidden shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-br from-[#EF4444]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div>
                 <div className="flex items-center justify-between mb-6">
@@ -1231,10 +1392,10 @@ export function LandingPage() {
               </div>
 
               {/* Flame Streak Mockup Widget */}
-              <div className="mt-8 bg-white/[0.02] border border-white/5 rounded-2xl p-4.5 flex items-center justify-between gap-4 w-full shadow-inner relative z-10">
+              <div className="mt-8 bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex items-center justify-between gap-4 w-full shadow-inner relative z-10">
                 <div className="text-left">
                   <p className="text-[9px] text-gray-500 uppercase tracking-widest font-bold">Streak Harian</p>
-                  <h4 className="text-white font-display text-lg font-black mt-0.5 tracking-tight">45 Hari Beruntun</h4>
+                  <h4 className="text-white font-display text-base sm:text-lg font-black mt-0.5 tracking-tight">45 Hari Beruntun</h4>
                 </div>
                 <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex flex-col items-center justify-center text-red-500 animate-pulse">
                   <Flame className="w-6 h-6 fill-red-500/10" />
@@ -1243,7 +1404,7 @@ export function LandingPage() {
             </div>
 
             {/* Cell 4: Sub-second Search Index (Double Width) */}
-            <div className="md:col-span-2 bg-gradient-to-br from-white/[0.04] to-white/[0.01] rounded-3xl p-8 border border-white/10 flex flex-col justify-between min-h-[380px] hover:border-[#3B82F6]/30 transition-all duration-300 relative group overflow-hidden shadow-2xl">
+            <div className="md:col-span-2 bg-gradient-to-br from-white/[0.04] to-white/[0.01] rounded-3xl p-5 sm:p-8 border border-white/10 flex flex-col justify-between min-h-[340px] md:min-h-[380px] hover:border-[#3B82F6]/30 transition-all duration-300 relative group overflow-hidden shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-tr from-[#3B82F6]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div>
                 <div className="flex items-center justify-between mb-6">
@@ -1257,9 +1418,9 @@ export function LandingPage() {
               </div>
 
               {/* Search Mockup Widget */}
-              <div className="mt-8 bg-[#0c0a1a]/80 backdrop-blur-md rounded-2xl p-5 border border-white/5 w-full shadow-inner relative z-10">
-                <div className="flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-xl px-3.5 py-2">
-                  <Search className="w-3.5 h-3.5 text-gray-400" />
+              <div className="mt-8 bg-[#0c0a1a]/80 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/5 w-full shadow-inner relative z-10">
+                <div className="flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+                  <Search className="w-3.5 h-3.5 text-gray-400 hover:text-white transition-colors duration-200" />
                   <span className="text-xs font-mono font-bold text-white flex-1 animate-pulse">hukum termodinamika...</span>
                   <span className="text-[9px] text-gray-500 font-mono">0.02ms</span>
                 </div>
@@ -1273,7 +1434,7 @@ export function LandingPage() {
             </div>
 
             {/* Cell 5: Student Community (Full Width Banner) */}
-            <div className="md:col-span-3 bg-gradient-to-br from-[#0c0a1a] via-[#100c25] to-[#150f38] rounded-3xl p-8 md:p-10 border border-white/10 flex flex-col md:flex-row items-start md:items-center gap-8 hover:border-[#8B5CF6]/50 transition-all duration-300 relative group overflow-hidden shadow-2xl">
+            <div className="md:col-span-3 bg-gradient-to-br from-[#0c0a1a] via-[#100c25] to-[#150f38] rounded-3xl p-5 sm:p-8 md:p-10 border border-white/10 flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-8 hover:border-[#8B5CF6]/50 transition-all duration-300 relative group overflow-hidden shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-tr from-[#8B5CF6]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
               {/* Left: Icon + Avatars */}
@@ -1310,14 +1471,14 @@ export function LandingPage() {
       {/* =============================================
           7. CINEMATIC GRADIENT CTA SECTION (Gravity / Magnetic Hover style)
           ============================================= */}
-      <section className="relative py-28 md:py-40 bg-[#06050e] overflow-hidden border-t border-white/5">
+      <section className="relative py-16 md:py-32 bg-[#06050e] overflow-hidden border-t border-white/5">
         <GrainNoise />
 
         {/* Massive atmospheric background glowing flow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] h-[35vw] rounded-full blur-[140px] opacity-[0.22] pointer-events-none bg-gradient-to-r from-[#5D5CE6] via-[#7B6BF5] to-[#8B5CF6]" />
         
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-          <p className="text-xs md:text-sm font-semibold text-gray-400 tracking-[0.2em] uppercase mb-6">
+          <p className="text-xs md:text-sm font-semibold text-gray-400 tracking-[0.2em] uppercase mb-4 sm:mb-6">
             MULAI SEKARANG
           </p>
           
@@ -1326,14 +1487,14 @@ export function LandingPage() {
             Belajarmu Hari Ini.
           </h2>
 
-          <p className="text-gray-400 text-sm md:text-base max-w-md mx-auto mb-12 leading-relaxed">
+          <p className="text-gray-400 text-sm md:text-base max-w-md mx-auto mb-10 sm:mb-12 leading-relaxed">
             Bergabunglah secara gratis dan temukan cara yang lebih terstruktur untuk mengatur catatan serta wawasan belajarmu.
           </p>
 
           {/* Magnetic CTA Button */}
           <motion.button
             onClick={() => openAuthModal('register')}
-            className="cursor-pointer relative inline-flex items-center justify-center gap-3 px-14 py-6 rounded-full font-bold text-base md:text-lg text-white overflow-hidden shadow-2xl shadow-[#5D5CE6]/30 group"
+            className="cursor-pointer relative inline-flex items-center justify-center gap-3 px-8 py-4 sm:px-14 sm:py-6 rounded-full font-bold text-sm sm:text-base md:text-lg text-white overflow-hidden shadow-2xl shadow-[#5D5CE6]/30 group w-full sm:w-auto"
             style={{ background: 'linear-gradient(135deg, #5D5CE6, #8B5CF6)' }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.96 }}
@@ -1348,7 +1509,7 @@ export function LandingPage() {
           </motion.button>
 
           {/* Value indicators */}
-          <div className="flex flex-wrap items-center justify-center gap-6 mt-10 text-xs text-gray-500 font-bold uppercase tracking-widest">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-8 sm:mt-10 text-[10px] sm:text-xs text-gray-500 font-bold uppercase tracking-widest">
             <span className="flex items-center gap-1.5"><Shield className="w-4 h-4 text-[#5D5CE6]" /> Gratis Selamanya</span>
             <span className="flex items-center gap-1.5"><Zap className="w-4 h-4 text-[#5D5CE6]" /> Setup Instan</span>
             <span className="flex items-center gap-1.5"><Users className="w-4 h-4 text-[#5D5CE6]" /> 12K+ Anggota</span>
