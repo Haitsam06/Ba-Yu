@@ -135,7 +135,11 @@ class UserController extends Controller
     {
         $request->validate([
             'current_password' => 'required|string',
-            'new_password' => 'required|string|min:8|confirmed',
+            'new_password' => ['required', 'string', 'min:8', 'max:128', 'confirmed', 'regex:/^(?=.*[A-Za-z])(?=.*\d).+$/'],
+        ], [
+            'new_password.min' => 'Password baru minimal 8 karakter.',
+            'new_password.max' => 'Password baru maksimal 128 karakter.',
+            'new_password.regex' => 'Password baru harus mengandung minimal 1 huruf dan 1 angka (tidak boleh hanya angka atau hanya huruf saja).',
         ]);
 
         $user = auth()->user();

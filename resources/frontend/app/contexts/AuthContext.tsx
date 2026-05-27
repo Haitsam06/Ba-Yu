@@ -42,6 +42,7 @@ interface AuthContextType {
         rememberMe?: boolean,
     ) => Promise<string | null>; // Returns error string if failed, null if success
     socialLogin: (token: string) => void;
+    exchangeAndLogin: (code: string) => Promise<string | null>;
     register: (
         name: string,
         username: string,
@@ -134,6 +135,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await loadUser(); // Muat ulang data user dengan token baru dan tunggu sampai selesai
     };
 
+    const exchangeAndLogin = async (code: string): Promise<string | null> => {
+        try {
+            const response = await axios.post("/api/v1/auth/oauth-exchange", { code });
+            const { access_token } = response.data;
+            if (!access_token) {
+                return "Token tidak diterima dari server.";
+            }
+            await socialLogin(access_token);
+            return null;
+        } catch (error: any) {
+            console.error("OAuth exchange failed", error);
+            return (
+                error.response?.data?.message ||
+                "Sesi OAuth kadaluwarsa, silakan login ulang."
+            );
+        }
+    };
+
     const register = async (
         name: string,
         username: string,
@@ -211,6 +230,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 isLoading,
                 login,
                 socialLogin,
+                exchangeAndLogin,
                 register,
                 logout,
                 updateUserSession,

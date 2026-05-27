@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
 
@@ -18,9 +19,13 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:50|unique:App\Models\User,username|regex:/^[a-zA-Z0-9_]+$/',
             'email' => 'required|string|email|max:255|unique:App\Models\User,email',
-            'password' => 'required|string|min:6',
+            'password' => ['required', 'string', 'min:8', 'max:128', 'regex:/^(?=.*[A-Za-z])(?=.*\d).+$/'],
             'jenjang_pendidikan' => 'required|string',
             'profesi' => 'required|string',
+        ], [
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.max' => 'Password maksimal 128 karakter.',
+            'password.regex' => 'Password harus mengandung minimal 1 huruf dan 1 angka (tidak boleh hanya angka atau hanya huruf saja).',
         ]);
 
         if ($validator->fails()) {
@@ -62,6 +67,12 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Kredensial atau Password salah '
             ], 401);
+        }
+
+        if ($user->role === 'banned') {
+            return response()->json([
+                'message' => 'Akun Anda telah diblokir oleh Admin. Hubungi support untuk informasi lebih lanjut.'
+            ], 403);
         }
 
         if ($user->is_dormant) {
@@ -130,7 +141,11 @@ class AuthController extends Controller
         $request->validate([
             'token' => 'required',
             'email' => 'required|email|exists:user,email',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => ['required', 'string', 'min:8', 'max:128', 'confirmed', 'regex:/^(?=.*[A-Za-z])(?=.*\d).+$/'],
+        ], [
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.max' => 'Password maksimal 128 karakter.',
+            'password.regex' => 'Password harus mengandung minimal 1 huruf dan 1 angka (tidak boleh hanya angka atau hanya huruf saja).',
         ]);
 
         $status = Password::reset(
@@ -188,6 +203,10 @@ class AuthController extends Controller
         $existingUser = User::where('email', $socialUser->getEmail())->first();
 
         if ($existingUser) {
+            if ($existingUser->role === 'banned') {
+                return redirect(config('app.url') . '/app/login?error=banned');
+            }
+
             // Update provider info if not set
             if (!$existingUser->provider) {
                 $existingUser->update([
@@ -204,7 +223,9 @@ class AuthController extends Controller
             }
 
             $token = $existingUser->createToken('auth_token')->plainTextToken;
-            return redirect(config('app.url') . '/app/login?token=' . $token . '&existing=true');
+            $code = (string) Str::uuid();
+            Cache::put('oauth_exchange:' . $code, $token, now()->addSeconds(60));
+            return redirect(config('app.url') . '/app/login?code=' . $code . '&existing=true');
         }
 
         // Create new user from social login
@@ -229,6 +250,33 @@ class AuthController extends Controller
         ]);
 
         $token = $newUser->createToken('auth_token')->plainTextToken;
-        return redirect(config('app.url') . '/app/login?token=' . $token . '&new=true');
+        $code = (string) Str::uuid();
+        Cache::put('oauth_exchange:' . $code, $token, now()->addSeconds(60));
+        return redirect(config('app.url') . '/app/login?code=' . $code . '&new=true');
+    }
+
+    /**
+     * Exchange a short-lived OAuth code for an access token.
+     * Code is one-time-use and expires in 60 seconds.
+     */
+    public function exchangeOAuthCode(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string|size:36',
+        ]);
+
+        $cacheKey = 'oauth_exchange:' . $request->input('code');
+        $token = Cache::pull($cacheKey); // pull = get + forget (one-time use)
+
+        if (!$token) {
+            return response()->json([
+                'message' => 'Code tidak valid atau sudah kadaluwarsa. Silakan login ulang.'
+            ], 400);
+        }
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ]);
     }
 }

@@ -53,7 +53,6 @@ class User extends Authenticatable
         'email',
         'avatar',
         'password',
-        'role',
         'jenjang_pendidikan',
         'profesi',
         'username',

@@ -104,7 +104,8 @@ class SertifikasiController extends Controller
         if ($request->status === 'approved') {
             $userPengaju = User::find($sertifikasi->user_id);
             if ($userPengaju) {
-                $userPengaju->update(['role' => 'pakar']);
+                $userPengaju->role = 'pakar';
+                $userPengaju->save();
             }
         }
 

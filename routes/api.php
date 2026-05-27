@@ -15,24 +15,21 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\HighlightController;
 
-Route::post('/v1/register', [AuthController::class, 'register']);
-Route::post('/v1/login', [AuthController::class, 'login']);
-Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::post('/v1/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
+Route::post('/v1/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:3,10');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:5,10');
 
 // Social Auth (OAuth)
-Route::get('/auth/{provider}/redirect', [AuthController::class, 'redirectToProvider']);
-Route::get('/auth/{provider}/callback', [AuthController::class, 'handleProviderCallback']);
+Route::get('/auth/{provider}/redirect', [AuthController::class, 'redirectToProvider'])->middleware('throttle:30,1');
+Route::get('/auth/{provider}/callback', [AuthController::class, 'handleProviderCallback'])->middleware('throttle:30,1');
+Route::post('/v1/auth/oauth-exchange', [AuthController::class, 'exchangeOAuthCode'])->middleware('throttle:10,1');
 
 Route::get('/v1/posts', [PostController::class, 'index']);
 Route::get('/v1/posts/pakar-choice', [PostController::class, 'pakarChoice']);
 Route::get('/v1/posts/{id}', [PostController::class, 'show']);
 
 // Public User Endpoints
-Route::get('/v1/debug', function() {
-    $n = \App\Models\Notification::where('type', 'sertifikasi')->orderBy('created_at', 'desc')->first();
-    return response()->json(['id' => $n->_id, 'id_string' => (string) $n->_id, 'user_id' => $n->user_id]);
-});
 Route::get('/v1/users/search', [UserController::class, 'search']);
 Route::get('/v1/users/{id}', [UserController::class, 'show']);
 Route::get('/v1/users/{id}/activities', [UserController::class, 'activities']);

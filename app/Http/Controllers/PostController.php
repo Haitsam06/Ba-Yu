@@ -9,6 +9,7 @@ use App\Models\Like;
 use App\Models\Follow;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Mews\Purifier\Facades\Purifier;
 
 class PostController extends Controller
 {
@@ -155,12 +156,15 @@ class PostController extends Controller
             'submitted_for_review' => 'nullable|boolean',
         ]);
 
+        $rawContent = $request->input('content');
+        $cleanContent = $rawContent ? Purifier::clean($rawContent, 'quill') : '';
+
         $post = Post::create([
             'user_id' => Auth::id(),
             'title' => $request->title,
-            'content' => $request->input('content'),
+            'content' => $cleanContent,
             // FIX ERROR 500: Cek dulu content-nya ada isinya nggak sebelum di-strip_tags
-            'plain_content' => $request->input('content') ? html_entity_decode(str_replace('&nbsp;', ' ', strip_tags($request->input('content')))) : '',
+            'plain_content' => $cleanContent ? html_entity_decode(str_replace('&nbsp;', ' ', strip_tags($cleanContent))) : '',
             'description' => $request->description,
             'mapel' => $request->mapel,
             'jenjang' => $request->jenjang,
@@ -222,10 +226,13 @@ class PostController extends Controller
             $post->save();
         }
 
+        $rawContent = $request->input('content');
+        $cleanContent = $rawContent ? Purifier::clean($rawContent, 'quill') : '';
+
         $post->update([
             'title' => $request->title,
-            'content' => $request->input('content'),
-            'plain_content' => $request->input('content') ? html_entity_decode(str_replace('&nbsp;', ' ', strip_tags($request->input('content')))) : '',
+            'content' => $cleanContent,
+            'plain_content' => $cleanContent ? html_entity_decode(str_replace('&nbsp;', ' ', strip_tags($cleanContent))) : '',
             'description' => $request->description,
             'mapel' => $request->mapel,
             'jenjang' => $request->jenjang,

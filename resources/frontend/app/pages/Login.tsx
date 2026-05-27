@@ -23,7 +23,7 @@ export default function Login() {
     const [rememberMe, setRememberMe] = useState(false);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const { login, register, socialLogin } = useAuth();
+    const { login, register, socialLogin, exchangeAndLogin } = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { showToast } = useToast();
     const { t, language } = useTranslation();
@@ -33,16 +33,32 @@ export default function Login() {
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
     const [isForgotLoading, setIsForgotLoading] = useState(false);
 
-    // Handle OAuth callback token from URL
+    // Handle OAuth callback token/code from URL
     useEffect(() => {
         const handleOAuth = async () => {
-            const token = searchParams.get('token');
+            const code = searchParams.get('code');
+            const token = searchParams.get('token'); // backward compat
             const error = searchParams.get('error');
             const isNew = searchParams.get('new');
 
             if (error) {
-                showToast('Login dengan sosial media gagal. Silakan coba lagi.', 'error');
+                const msg = error === 'banned'
+                    ? 'Akun Anda telah diblokir oleh Admin.'
+                    : 'Login dengan sosial media gagal. Silakan coba lagi.';
+                showToast(msg, 'error');
                 navigate('/login', { replace: true });
+                return;
+            }
+
+            if (code) {
+                setIsSubmitting(true);
+                const err = await exchangeAndLogin(code);
+                if (err) {
+                    showToast(err, 'error');
+                    navigate('/login', { replace: true });
+                    return;
+                }
+                navigate(isNew === 'true' ? '/complete-profile' : '/home', { replace: true });
                 return;
             }
 
@@ -133,7 +149,7 @@ export default function Login() {
         }
     };
 
-    if (searchParams.get('token')) {
+    if (searchParams.get('token') || searchParams.get('code')) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-[#13111C]">
                 <div className="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
