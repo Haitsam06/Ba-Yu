@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState, useEffect } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import { NoteCard } from "../components/NoteCard";
@@ -46,9 +47,11 @@ import { useTranslation } from '../hooks/useTranslation';
 import { CustomSelect } from "../components/ui/CustomSelect";
 
 export default function PublicProfilePage() {
+    const { t, language } = useTranslation();
+    useDocumentTitle(t('titles.public_profile'));
     const { id } = useParams(); // Mengambil ID dari URL
     const navigate = useNavigate();
-    const { t, language } = useTranslation();
+
     const [searchParams, setSearchParams] = useSearchParams();
     const tabParam = searchParams.get("tab");
     const [activeTab, setActiveTab] = useState<"catatan" | "aktivitas">(

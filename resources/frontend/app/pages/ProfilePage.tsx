@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState, useEffect } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import { NoteCard } from "../components/NoteCard";
@@ -42,6 +43,8 @@ import {
 import { useTranslation } from "../hooks/useTranslation";
 
 export default function ProfilePage() {
+    const { t, language } = useTranslation();
+    useDocumentTitle(t('titles.profile'));
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const tabParam = searchParams.get("tab") as
@@ -99,7 +102,7 @@ export default function ProfilePage() {
     }, [showFollowers, showFollowing]);
     const { bookmarkedIds, isBookmarked, toggleBookmark } = useBookmarks();
     const { showToast } = useToast();
-    const { t, language } = useTranslation();
+
 
     // Sync state if URL changes
     useEffect(() => {

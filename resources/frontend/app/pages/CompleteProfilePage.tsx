@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { MobileLayout } from '../components/MobileLayout';
@@ -10,10 +11,12 @@ import { CustomSelect } from '../components/ui/CustomSelect';
 import axios from 'axios';
 
 export default function CompleteProfilePage() {
+    const { t } = useTranslation();
+    useDocumentTitle(t('titles.complete_profile'));
     const { user, updateUserSession } = useAuth();
     const navigate = useNavigate();
     const { showToast } = useToast();
-    const { t } = useTranslation();
+
     
     const [formData, setFormData] = useState({
         name: user?.name || '',

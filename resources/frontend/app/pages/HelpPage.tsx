@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import { ArrowLeft, Search, Mail, MessageCircle, ChevronDown, BookOpen, ExternalLink } from "lucide-react";
@@ -6,10 +7,12 @@ import { useTranslation } from "../hooks/useTranslation";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function HelpPage() {
+    const { t } = useTranslation();
+    useDocumentTitle(t('titles.help_center'));
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState("");
     const [openFaq, setOpenFaq] = useState<number | null>(0);
-    const { t } = useTranslation();
+
     const { user } = useAuth();
 
     const FAQS = [

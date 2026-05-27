@@ -1,9 +1,12 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { Link } from 'react-router';
 import { MobileLayout } from '../components/MobileLayout';
 import { useTranslation } from '../hooks/useTranslation';
 
 export default function NotFound() {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
+    useDocumentTitle(t('titles.page_not_found'));
+
   return (
     <MobileLayout showBottomNav={false}>
       <div className="flex items-center justify-center min-h-screen bg-[#FAFAFA] dark:bg-[#13111C] transition-colors duration-500">

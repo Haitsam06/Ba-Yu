@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
@@ -46,6 +47,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from '../hooks/useTranslation';
 
 const LearningStatisticsPage = () => {
+    const { t, language } = useTranslation();
+    useDocumentTitle(t('titles.learning_statistics'));
   const [notes, setNotes] = useState<any[]>([]);
   const [allNotes, setAllNotes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,7 +65,7 @@ const LearningStatisticsPage = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { user } = useAuth();
-  const { t, language } = useTranslation();
+
 
   const handleLikePost = async (postId: string) => {
       if (!user)

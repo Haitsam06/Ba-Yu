@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { ArrowLeft, ShieldCheck, UserCheck, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { MobileLayout } from '../components/MobileLayout';
@@ -5,8 +6,10 @@ import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function TermsPage() {
-    const navigate = useNavigate();
     const { t } = useTranslation();
+    useDocumentTitle(t('titles.terms_of_service'));
+    const navigate = useNavigate();
+
     const { user } = useAuth();
 
     const section2Items = [

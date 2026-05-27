@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { MobileLayout } from '../components/MobileLayout';
 import { ArrowLeft, Check, Globe, Monitor } from 'lucide-react';
 import { useNavigate } from 'react-router';
@@ -13,9 +14,11 @@ interface LangOption {
 }
 
 export default function LanguagePage() {
+    const { t } = useTranslation();
+    useDocumentTitle(t('titles.language'));
   const navigate = useNavigate();
   const { language, setLanguage } = useLanguage();
-  const { t } = useTranslation();
+
 
   const languageOptions: LangOption[] = [
     {

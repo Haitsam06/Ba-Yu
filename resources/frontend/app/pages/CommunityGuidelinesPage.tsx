@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { ArrowLeft, Users, MessageCircle, Heart, ShieldAlert } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { MobileLayout } from '../components/MobileLayout';
@@ -5,8 +6,10 @@ import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function CommunityGuidelinesPage() {
-    const navigate = useNavigate();
     const { t } = useTranslation();
+    useDocumentTitle(t('titles.community_guidelines'));
+    const navigate = useNavigate();
+
     const { user } = useAuth();
 
     const values = [

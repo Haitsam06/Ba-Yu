@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { MobileLayout } from '../components/MobileLayout';
 import { ArrowLeft, Monitor, Moon, Sun, Check } from 'lucide-react';
 import { useNavigate } from 'react-router';
@@ -5,9 +6,11 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from '../hooks/useTranslation';
 
 export default function ThemePage() {
+    const { t } = useTranslation();
+    useDocumentTitle(t('titles.appearance'));
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
-  const { t } = useTranslation();
+
 
   const themeOptions = [
     {

@@ -1,11 +1,14 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { ArrowLeft, Server, Activity, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { MobileLayout } from '../components/MobileLayout';
 import { useTranslation } from '../hooks/useTranslation';
 
 export default function StatusPage() {
-    const navigate = useNavigate();
     const { t } = useTranslation();
+    useDocumentTitle(t('titles.app_status'));
+    const navigate = useNavigate();
+
 
     return (
         <MobileLayout showBottomNav={false} hideMobileTopNav={true}>

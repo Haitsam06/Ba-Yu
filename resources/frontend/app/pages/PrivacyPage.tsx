@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { ArrowLeft, Shield, Eye, Lock, Database, Info, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { MobileLayout } from '../components/MobileLayout';
@@ -5,8 +6,10 @@ import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function PrivacyPage() {
-    const navigate = useNavigate();
     const { t } = useTranslation();
+    useDocumentTitle(t('titles.privacy_policy'));
+    const navigate = useNavigate();
+
     const { user } = useAuth();
 
     const principles = [

@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import { ArrowLeft, ShieldCheck, Globe, Lock, AlertTriangle, Loader2 } from "lucide-react";
@@ -9,10 +10,12 @@ import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { useTranslation } from "../hooks/useTranslation";
 
 export default function PrivacySettingsPage() {
+    const { t } = useTranslation();
+    useDocumentTitle(t('titles.privacy_settings'));
     const navigate = useNavigate();
     const { user, updateUserSession, logout } = useAuth();
     const { showToast } = useToast();
-    const { t } = useTranslation();
+
     
     // We assume `is_private` is a boolean on the user object. If not present, default to false.
     const [isPrivate, setIsPrivate] = useState<boolean>(user?.is_private || false);

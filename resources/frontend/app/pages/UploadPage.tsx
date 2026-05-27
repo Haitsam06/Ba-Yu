@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { MobileLayout } from '../components/MobileLayout';
 import { useNavigate, useSearchParams } from 'react-router';
@@ -134,12 +135,14 @@ registerQuillExtensions(Quill);
 
 // ========== MAIN UPLOAD PAGE ==========
 export default function UploadPage() {
+    const { t } = useTranslation();
+    useDocumentTitle(t('titles.write_note'));
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialDraftId = searchParams.get('id');
   const [draftId, setDraftId] = useState<string | null>(initialDraftId);
   const { showToast } = useToast();
-  const { t } = useTranslation();
+
   const { resolvedLanguage } = useLanguage();
   
   const quillRef = useRef<ReactQuill>(null);

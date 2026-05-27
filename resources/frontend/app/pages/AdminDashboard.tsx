@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState, useEffect } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import { useAuth } from "../contexts/AuthContext";
@@ -37,8 +38,10 @@ import { useTranslation } from "../hooks/useTranslation";
 type TabType = "catatan" | "laporan" | "users" | "sertifikasi";
 
 export default function AdminDashboard() {
-    const { user } = useAuth();
     const { t, language } = useTranslation();
+    useDocumentTitle(t('titles.admin_dashboard'));
+    const { user } = useAuth();
+
     const { showToast } = useToast();
     const location = useLocation();
     const [activeTab, setActiveTab] = useState<TabType>("sertifikasi");

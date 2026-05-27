@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState, useEffect } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import { ArrowLeft, UserPlus, Check, X, Loader2, Users, Clock, Shield } from "lucide-react";
@@ -25,10 +26,12 @@ interface FollowRequest {
 }
 
 export default function FollowRequestsPage() {
+    const { t, language } = useTranslation();
+    useDocumentTitle(t('titles.follow_requests'));
     const navigate = useNavigate();
     const { user } = useAuth();
     const { showToast } = useToast();
-    const { t, language } = useTranslation();
+
     const [requests, setRequests] = useState<FollowRequest[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);

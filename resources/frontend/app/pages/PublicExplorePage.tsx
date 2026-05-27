@@ -1,3 +1,5 @@
+import { useTranslation } from '../hooks/useTranslation';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState, useEffect } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import { Navbar } from "../components/navbar";
@@ -30,6 +32,8 @@ import { TagList } from "../components/ui/TagList";
 import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
 import { NoteCard } from "../components/NoteCard";
 export default function PublicExplorePage() {
+    const { t } = useTranslation();
+    useDocumentTitle(t('titles.public_explore'));
     const { isAuthenticated } = useAuth();
     const { isBookmarked, toggleBookmark } = useBookmarks();
     const location = useLocation();

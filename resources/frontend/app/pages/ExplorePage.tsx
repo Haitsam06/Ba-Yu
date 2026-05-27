@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState, useEffect, useRef, useMemo } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import { Navbar } from "../components/navbar";
@@ -41,10 +42,12 @@ import { useToast } from "../contexts/ToastContext";
 import { useTranslation } from "../hooks/useTranslation";
 
 export default function ExplorePage() {
+    const { t, language } = useTranslation();
+    useDocumentTitle(t('titles.explore'));
     const { isAuthenticated } = useAuth();
     const { isBookmarked, toggleBookmark } = useBookmarks();
     const { showToast } = useToast();
-    const { t, language } = useTranslation();
+
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const tabFromUrl = queryParams.get("tab") as "kategori" | "populer" | "terbaru" | "pengguna" | null;

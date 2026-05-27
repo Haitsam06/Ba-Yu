@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { MobileLayout } from "../components/MobileLayout";
 import {
     Bell,
@@ -97,9 +98,11 @@ function timeAgo(dateStr: string, t: (key: string) => string, lang: string) {
 }
 
 export default function NotificationsPage() {
+    const { t, language } = useTranslation();
+    useDocumentTitle(t('titles.notifications'));
     const { user } = useAuth();
     const navigate = useNavigate();
-    const { t, language } = useTranslation();
+
     const { translateNotification } = useNotificationTranslator();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLoading, setIsLoading] = useState(true);

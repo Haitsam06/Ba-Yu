@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import axios from "axios";
@@ -30,12 +31,14 @@ interface NotificationDetail {
 }
 
 export default function NotificationDetailPage() {
+    const { t, language } = useTranslation();
+    useDocumentTitle(t('titles.notification_detail'));
     const { id } = useParams();
     const navigate = useNavigate();
     const [notif, setNotif] = useState<NotificationDetail | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const { t, language } = useTranslation();
+
     const { translateNotification } = useNotificationTranslator();
 
     useEffect(() => {

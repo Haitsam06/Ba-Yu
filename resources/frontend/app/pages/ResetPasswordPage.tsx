@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState } from 'react';
 import axios from 'axios';
 import { useToast } from '../contexts/ToastContext';
@@ -7,6 +8,8 @@ import { Lock, ArrowRight, CheckCircle2, X } from 'lucide-react';
 import { useTranslation } from '../hooks/useTranslation';
 
 export default function ResetPasswordPage() {
+    const { t } = useTranslation();
+    useDocumentTitle(t('titles.reset_password'));
     const pathname = window.location.pathname;
     const token = pathname.substring(pathname.lastIndexOf('/') + 1); 
 
@@ -19,7 +22,7 @@ export default function ResetPasswordPage() {
     const [isSuccess, setIsSuccess] = useState(false);
     const { showToast } = useToast();
     const navigate = useNavigate();
-    const { t } = useTranslation();
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

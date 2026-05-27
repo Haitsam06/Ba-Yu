@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { ArrowLeft, BookOpen, PenTool } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { MobileLayout } from '../components/MobileLayout';
@@ -5,8 +6,10 @@ import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function BlogPage() {
-    const navigate = useNavigate();
     const { t } = useTranslation();
+    useDocumentTitle(t('titles.blog'));
+    const navigate = useNavigate();
+
     const { user } = useAuth();
 
     return (

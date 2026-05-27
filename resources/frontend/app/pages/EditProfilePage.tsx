@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState, useRef, useCallback, useEffect } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import {
@@ -25,11 +26,13 @@ import { CustomSelect } from "../components/ui/CustomSelect";
 import { useTranslation } from "../hooks/useTranslation";
 
 export default function EditProfilePage() {
+    const { t } = useTranslation();
+    useDocumentTitle(t('titles.edit_profile'));
     const { user, updateUserSession } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const { showToast } = useToast();
-    const { t } = useTranslation();
+
 
     // Local state for the form, pre-filled with actual active user data
     const [formData, setFormData] = useState({

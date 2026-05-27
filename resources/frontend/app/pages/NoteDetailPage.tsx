@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState, useEffect } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import { Navbar } from "../components/navbar";
@@ -58,6 +59,8 @@ import { useTranslation } from '../hooks/useTranslation';
 import { formatEducationLevel } from '../utils/formatEducationLevel';
 import { NoteCard } from "../components/NoteCard";
 export default function NoteDetailPage() {
+    const { t, language } = useTranslation();
+    useDocumentTitle(t('titles.note_detail'));
     const { id } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
@@ -83,7 +86,7 @@ export default function NoteDetailPage() {
     // Mobile drawer states
     const [isMenuDrawerOpen, setIsMenuDrawerOpen] = useState(false);
     
-    const { t, language } = useTranslation();
+
 
     const [isCheckingToken, setIsCheckingToken] = useState(true);
     const [editingCommentId, setEditingCommentId] = useState<string | null>(null);

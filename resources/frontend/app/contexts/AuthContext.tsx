@@ -214,13 +214,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
-                <div className="flex flex-col items-center gap-3">
-                    {/* Animasi loading muter-muter */}
-                    <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-                    <p className="text-gray-500 font-medium font-['Manrope']">
-                        {t('auth.loading_session') || 'Memuat sesi...'}
-                    </p>
+            <div className="relative min-h-screen w-full bg-[#06050E] text-slate-100 overflow-hidden flex items-center justify-center font-sans select-none">
+                {/* 1. Subtle Space Grid Pattern */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none z-0" />
+                
+                {/* 2. Soft Glowing Lights in the background */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] h-[70vw] max-w-[500px] max-h-[500px] rounded-full blur-[100px] bg-[#5D5CE6]/[0.08] pointer-events-none z-0 animate-pulse" />
+
+                {/* 3. Center Loader Content */}
+                <div className="relative z-10 flex flex-col items-center gap-6">
+                    {/* Glowing Logo centerpiece with spinning border */}
+                    <div className="relative w-20 h-20 flex items-center justify-center">
+                        {/* Elegant glowing spinner border */}
+                        <div className="absolute inset-0 rounded-full border-2 border-[#5D5CE6]/20 border-t-[#5D5CE6] animate-spin" />
+                        
+                        {/* Central Logo */}
+                        <img 
+                            src="/logo.svg" 
+                            alt="Ba-Yu Logo" 
+                            className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(93,92,230,0.4)] animate-pulse" 
+                        />
+                    </div>
+
+                    {/* Text */}
+                    <div className="flex flex-col items-center gap-1 text-center">
+                        <span className="font-mono text-[10px] tracking-[0.25em] text-[#8B5CF6] uppercase">
+                            AUTHENTICATING
+                        </span>
+                        <p className="text-slate-300 text-sm font-medium tracking-wide">
+                            {t('auth.loading_session') || 'Memuat sesi...'}
+                        </p>
+                    </div>
                 </div>
             </div>
         );

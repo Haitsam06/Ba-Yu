@@ -1,3 +1,5 @@
+import { useTranslation } from '../hooks/useTranslation';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { MobileLayout } from '../components/MobileLayout';
@@ -22,6 +24,8 @@ const onboardingSlides = [
 ];
 
 export default function Onboarding() {
+    const { t } = useTranslation();
+    useDocumentTitle(t('titles.onboarding'));
   const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
 

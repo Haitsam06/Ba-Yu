@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router';
 import { motion, useScroll, useTransform, useSpring, AnimatePresence, useMotionValue } from 'motion/react';
@@ -535,7 +536,9 @@ function TopicWarpSection({ openAuthModal }: { openAuthModal: (tab: 'login' | 'r
    COMPONENT: Interactive Landing Page
    =================================================== */
 export function LandingPage() {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
+    useDocumentTitle(t('titles.welcome'));
+
 
   const row1Items = [
     `🌐 ${t('landing.row1_1') || '40+ Bahasa Didukung'}`,

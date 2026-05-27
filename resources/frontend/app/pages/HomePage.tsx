@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { MobileLayout } from "../components/MobileLayout";
@@ -25,10 +26,12 @@ import { NoteCard } from "../components/NoteCard";
 import { useTranslation } from "../hooks/useTranslation";
 
 export default function HomePage() {
+    const { t, language } = useTranslation();
+    useDocumentTitle(t('titles.home'));
     const { user } = useAuth();
     const { isBookmarked, toggleBookmark } = useBookmarks();
     const { showToast } = useToast();
-    const { t, language } = useTranslation();
+
     const [notes, setNotes] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [page, setPage] = useState(1);

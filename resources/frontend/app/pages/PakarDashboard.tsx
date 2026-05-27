@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState, useEffect } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import { useAuth } from "../contexts/AuthContext";
@@ -164,8 +165,10 @@ const FeedbackModal = ({ isOpen, onClose, onSubmit, type, noteTitle }: FeedbackM
 };
 
 export default function PakarDashboard() {
-    const { user } = useAuth();
     const { t } = useTranslation();
+    useDocumentTitle(t('titles.expert_dashboard'));
+    const { user } = useAuth();
+
     const [filter, setFilter] = useState<VerificationStatus>("pending");
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState<"terbaru" | "terlama">("terbaru");

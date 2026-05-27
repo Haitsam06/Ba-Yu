@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router";
 import { Mail, Lock, User, GraduationCap, Eye, EyeOff, Sparkles, CheckCircle, X, ArrowLeft, ChevronDown } from "lucide-react";
@@ -10,6 +11,8 @@ import { motion, AnimatePresence } from "motion/react";
 import ApplicationLogo from "../components/ApplicationLogo";
 
 export default function Login() {
+    const { t, language } = useTranslation();
+    useDocumentTitle(t('titles.login'));
     const [isLogin, setIsLogin] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
@@ -26,7 +29,7 @@ export default function Login() {
     const { login, register, socialLogin, exchangeAndLogin } = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { showToast } = useToast();
-    const { t, language } = useTranslation();
+
 
     // Forgot Password States
     const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);

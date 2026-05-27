@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { MobileLayout } from '../components/MobileLayout';
 import { 
   ChevronRight, 
@@ -81,10 +82,12 @@ const langDisplayNames: Record<LanguagePreference, string> = {
 };
 
 export default function SettingsPage() {
+    const { t } = useTranslation();
+    useDocumentTitle(t('titles.settings'));
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { language } = useLanguage();
-  const { t } = useTranslation();
+
   const navigate = useNavigate();
   
   if (!user) return null;

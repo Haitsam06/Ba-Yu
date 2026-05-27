@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useState } from "react";
 import { MobileLayout } from "../components/MobileLayout";
 import { ArrowLeft, Lock, Shield, Smartphone, Loader2, KeyRound } from "lucide-react";
@@ -7,10 +8,12 @@ import { useToast } from "../contexts/ToastContext";
 import { useTranslation } from "../hooks/useTranslation";
 
 export default function SecurityPage() {
+    const { t } = useTranslation();
+    useDocumentTitle(t('titles.security'));
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const { showToast } = useToast();
-    const { t } = useTranslation();
+
 
     const [passwords, setPasswords] = useState({
         current_password: "",
