@@ -28,6 +28,8 @@ Berawal dari prototipe sederhana, kini Ba-Yu telah berkembang menjadi aplikasi s
 
 - **SPA Architecture**: Navigasi ultra-cepat menggunakan React Router yang diintegrasikan langsung di dalam Laravel lewat Vite.
 - **Sistem Autentikasi & Otorisasi**: Login aman menggunakan Laravel Sanctum.
+- **Login OAuth (Google)**: Memudahkan pengguna masuk dan mendaftar dengan cepat hanya dengan satu klik menggunakan akun Google.
+- **Cloudinary Integration**: Penyimpanan dan pengoptimalan *file* media gambar (seperti avatar dan *cover* catatan) secara *cloud* menggunakan Cloudinary.
 - **Multibahasa (i18n)**: Dukungan terjemahan antarmuka dan notifikasi email ke lebih dari 40 bahasa.
 - **Sertifikasi Pakar**: Pengguna dapat mengunggah dokumen kredensial untuk di-*review* oleh Admin dan mendapatkan lencana *Pakar*.
 - **Admin Dashboard**: Panel kontrol terpusat untuk memantau catatan, pengguna, laporan moderasi, hingga ekspor data komprehensif.
