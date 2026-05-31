@@ -2,7 +2,7 @@
   <img src="./public/logo.svg" width="180" alt="Ba-Yu Logo">
 </p>
 
-<h1 align="center">Ba-Yu (Bagi Ilmu) - Web Platform</h1>
+<h1 align="center">Ba-Yu (Belajar Yuk) - Web Platform</h1>
 
 <p align="center">
   <strong>Platform Berbagi Catatan dan Ilmu Pengetahuan</strong><br>
