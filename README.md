@@ -1,59 +1,105 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="./public/logo.svg" width="180" alt="Ba-Yu Logo">
 </p>
 
-## About Laravel
+<h1 align="center">Ba-Yu (Bagi Ilmu) - Web Platform</h1>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<p align="center">
+  <strong>Platform Berbagi Catatan dan Ilmu Pengetahuan</strong><br>
+  Proyek pembelajaran kolaboratif (PJBL) yang dibangun dengan arsitektur modern SPA dan backend yang solid.
+</p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+<p align="center">
+  <img src="https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React">
+  <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB">
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind">
+</p>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🌟 Tentang Proyek
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+**Ba-Yu** adalah platform berbasis web untuk berbagi catatan pelajaran, berdiskusi, dan membagikan ilmu pengetahuan. Platform ini mempertemukan siswa reguler dengan para pakar tersertifikasi dalam sebuah komunitas yang suportif. 
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Berawal dari prototipe sederhana, kini Ba-Yu telah berkembang menjadi aplikasi skala produksi dengan arsitektur modern, didukung dengan i18n (lebih dari 40 bahasa) dan sistem verifikasi pengguna yang aman.
 
-## Laravel Sponsors
+## 🚀 Fitur Utama
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **SPA Architecture**: Navigasi ultra-cepat menggunakan React Router yang diintegrasikan langsung di dalam Laravel lewat Vite.
+- **Sistem Autentikasi & Otorisasi**: Login aman menggunakan Laravel Sanctum.
+- **Multibahasa (i18n)**: Dukungan terjemahan antarmuka dan notifikasi email ke lebih dari 40 bahasa.
+- **Sertifikasi Pakar**: Pengguna dapat mengunggah dokumen kredensial untuk di-*review* oleh Admin dan mendapatkan lencana *Pakar*.
+- **Admin Dashboard**: Panel kontrol terpusat untuk memantau catatan, pengguna, laporan moderasi, hingga ekspor data komprehensif.
+- **Manajemen Catatan**: Fitur untuk membuat, membaca, menyukai (like), menyimpan (bookmark), dan memberikan ulasan pada catatan pengguna lain.
+- **Dark/Light Mode**: Dukungan antarmuka gelap dan terang secara *native*.
 
-### Premium Partners
+## 🛠️ Tech Stack
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Backend
+- **Framework**: Laravel 11
+- **Database**: MongoDB (via `mongodb/laravel-mongodb`)
+- **API Security**: Laravel Sanctum
 
-## Contributing
+### Frontend
+- **Library Utama**: React 19 + React Router v7
+- **Styling**: Tailwind CSS v4 + Lucide Icons
+- **Build Tool**: Vite
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Infrastruktur
+- **Containerization**: Docker (Apache + PHP 8.3)
+- **Deployment Ready**: Siap ditarik ke layanan seperti Render, Railway, dsb.
 
-## Code of Conduct
+## 💻 Instalasi Lokal
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Jika Anda ingin mengembangkan atau menjalankan aplikasi ini secara lokal, ikuti langkah-langkah berikut:
 
-## Security Vulnerabilities
+### Prasyarat
+- PHP 8.3 atau lebih baru
+- Composer
+- Node.js (LTS version)
+- MongoDB Database (Local atau Atlas)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Langkah Instalasi
+1. **Clone repository ini**
+   ```bash
+   git clone https://github.com/Haitsam06/Ba-Yu.git
+   cd Ba-Yu
+   ```
+2. **Install dependensi Backend (PHP)**
+   ```bash
+   composer install
+   ```
+3. **Install dependensi Frontend (NPM)**
+   ```bash
+   npm install
+   ```
+4. **Konfigurasi Environment**
+   Salin file env dan atur koneksi MongoDB Anda.
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+5. **Jalankan Aplikasi**
+   Buka 2 terminal terpisah. Terminal pertama untuk backend, terminal kedua untuk frontend (Vite).
+   ```bash
+   # Terminal 1
+   php artisan serve
+   
+   # Terminal 2
+   npm run dev
+   ```
 
-## License
+## 🐳 Deployment (Production)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Proyek ini sudah dilengkapi dengan `Dockerfile` tingkat *production* berbasis Apache. Untuk mem-*build* dan menjalankannya:
+
+```bash
+docker build -t bayu-web .
+docker run -p 8000:8000 bayu-web
+```
+*Catatan: Port akan secara otomatis menyesuaikan nilai variabel environment `$PORT` pada layanan hosting.*
+
+## 📝 Lisensi
+
+Hak cipta dilindungi. Proyek ini dibangun sebagai tugas PJBL dan hak miliknya berada pada kontributor utama repositori ini.
