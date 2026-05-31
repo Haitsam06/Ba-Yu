@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Comment;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -65,18 +66,18 @@ class ProfileController extends Controller
     {
         $userId = Auth::id();
 
-        if (!$userId) {
+        if (! $userId) {
             return response()->json(['message' => 'Belum login woi!'], 401);
         }
 
-        $activities = \App\Models\Comment::with('post')
-        ->where('user_id', $userId)
-        ->orderBy('created_at', 'desc')
-        ->get();
+        $activities = Comment::with('post')
+            ->where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return response()->json([
             'message' => 'Berhasil mengambil aktivitas diskusi',
-            'data' => $activities
+            'data' => $activities,
         ], 200);
     }
 }

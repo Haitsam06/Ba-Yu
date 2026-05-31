@@ -12,7 +12,7 @@ class CustomResetPassword extends ResetPassword
      * Build the mail representation of the notification.
      *
      * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @return MailMessage
      */
     public function toMail($notifiable)
     {
@@ -22,7 +22,7 @@ class CustomResetPassword extends ResetPassword
 
         // URL mengarah ke Laravel (port 8000/8001) pada prefix /app/
         $baseUrl = config('app.url');
-        $url = rtrim($baseUrl, '/') . '/app/reset-password/' . $this->token . '?email=' . urlencode($notifiable->getEmailForPasswordReset());
+        $url = rtrim($baseUrl, '/').'/app/reset-password/'.$this->token.'?email='.urlencode($notifiable->getEmailForPasswordReset());
 
         return (new MailMessage)
             ->subject(Lang::get('email.subject'))
@@ -30,6 +30,6 @@ class CustomResetPassword extends ResetPassword
             ->line(Lang::get('email.line1'))
             ->action(Lang::get('email.action'), $url)
             ->line(Lang::get('email.warning'))
-            ->salutation(Lang::get('email.regards') . "\n\n" . config('app.name'));
+            ->salutation(Lang::get('email.regards')."\n\n".config('app.name'));
     }
 }

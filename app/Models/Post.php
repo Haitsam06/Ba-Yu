@@ -7,7 +7,9 @@ use MongoDB\Laravel\Eloquent\Model;
 class Post extends Model
 {
     protected $connection = 'mongodb';
+
     protected $table = 'post';
+
     protected $collection = 'post';
 
     protected $fillable = [
@@ -64,6 +66,7 @@ class Post extends Model
             $wordCount = count(preg_split('~[^\p{L}\p{N}\']+~u', $text, -1, PREG_SPLIT_NO_EMPTY));
         }
         $minutes = ceil($wordCount / 200);
+
         return max(1, (int) $minutes);
     }
 

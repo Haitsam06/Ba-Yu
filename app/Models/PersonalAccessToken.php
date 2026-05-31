@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use MongoDB\Laravel\Eloquent\Model;
 use Laravel\Sanctum\Contracts\HasAbilities;
+use MongoDB\Laravel\Eloquent\Model;
 
 // Perhatiin: Dia extends Model murni MongoDB, bukan Sanctum!
 class PersonalAccessToken extends Model implements HasAbilities
@@ -49,6 +49,7 @@ class PersonalAccessToken extends Model implements HasAbilities
     public function can($ability)
     {
         $abilities = $this->abilities ?? [];
+
         return in_array('*', $abilities) ||
                 array_key_exists($ability, array_flip($this->abilities));
     }

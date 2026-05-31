@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class MongoUserSeeder extends Seeder
@@ -39,7 +39,7 @@ class MongoUserSeeder extends Seeder
 
         foreach ($users as $u) {
             $existing = User::where('email', $u['email'])->first();
-            if (!$existing) {
+            if (! $existing) {
                 User::create($u);
                 $this->command->info("Created user: {$u['email']}");
             } else {
@@ -47,7 +47,7 @@ class MongoUserSeeder extends Seeder
                 $this->command->info("Updated user: {$u['email']}");
             }
         }
-        
+
         $this->command->info('MongoDB Users Seeded Successfully!');
     }
 }

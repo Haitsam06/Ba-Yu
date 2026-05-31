@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Like;
-use App\Models\Post;
 use App\Models\Comment;
+use App\Models\Like;
 use App\Models\Notification;
-use Illuminate\Http\Request;
+use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 
 class LikeController extends Controller
@@ -14,7 +13,7 @@ class LikeController extends Controller
     public function toggle($postId)
     {
         $post = Post::find($postId);
-        if (!$post) {
+        if (! $post) {
             return response()->json(['message' => 'Post tidak ditemukan'], 404);
         }
 
@@ -24,8 +23,8 @@ class LikeController extends Controller
         // 🔥 JURUS PAMUNGKAS: Langsung coba hapus.
         // Ini bakal nge-unlike, dan mencegah adanya data DUPLIKAT.
         $deleted = Like::where('post_id', $postIdStr)
-                       ->where('user_id', $userId)
-                       ->delete();
+            ->where('user_id', $userId)
+            ->delete();
 
         if ($deleted) {
             // Kalau ada yang terhapus, berarti action-nya adalah UNLIKE
@@ -37,24 +36,24 @@ class LikeController extends Controller
             // Bikin data Like BARU.
             Like::create([
                 'post_id' => $postIdStr,
-                'user_id' => $userId
+                'user_id' => $userId,
             ]);
             $isLikedNow = true;
             $msg = 'Berhasil like post';
             $statusCode = 201;
 
             // Logika Notifikasi Lu (Aman!)
-            if ($post->user_id) { 
+            if ($post->user_id) {
                 $postUserIdStr = is_array($post->user_id) ? (string) current($post->user_id) : (string) $post->user_id;
                 if ($postUserIdStr !== $userId) {
                     Notification::create([
-                        'user_id'  => $postUserIdStr,
+                        'user_id' => $postUserIdStr,
                         'actor_id' => $userId,
-                        'title'    => 'Seseorang Menyukai Catatanmu',
-                        'message'  => Auth::user()->name . ' menyukai catatanmu "' . $post->title . '".',
-                        'type'     => 'like',
-                        'link'     => '/note/' . $postIdStr,
-                        'is_read'  => false,
+                        'title' => 'Seseorang Menyukai Catatanmu',
+                        'message' => Auth::user()->name.' menyukai catatanmu "'.$post->title.'".',
+                        'type' => 'like',
+                        'link' => '/note/'.$postIdStr,
+                        'is_read' => false,
                     ]);
                 }
             }
@@ -70,14 +69,14 @@ class LikeController extends Controller
         return response()->json([
             'message' => $msg,
             'likes_count' => $actualLikesCount,
-            'is_liked' => $isLikedNow
+            'is_liked' => $isLikedNow,
         ], $statusCode);
     }
 
     public function toggleCommentLike($commentId)
     {
         $comment = Comment::find($commentId);
-        if (!$comment) {
+        if (! $comment) {
             return response()->json(['message' => 'Komentar tidak ditemukan'], 404);
         }
 
@@ -96,7 +95,7 @@ class LikeController extends Controller
             // LIKE KOMENTAR
             Like::create([
                 'comment_id' => $commentIdStr,
-                'user_id' => $userId
+                'user_id' => $userId,
             ]);
             $isLikedNow = true;
             $msg = 'Berhasil like komentar! 👍';
@@ -107,13 +106,13 @@ class LikeController extends Controller
                 $commentUserIdStr = is_array($comment->user_id) ? (string) current($comment->user_id) : (string) $comment->user_id;
                 if ($commentUserIdStr !== $userId) {
                     Notification::create([
-                        'user_id'  => $commentUserIdStr,
+                        'user_id' => $commentUserIdStr,
                         'actor_id' => $userId,
-                        'title'    => 'Seseorang Menyukai Komentarmu',
-                        'message'  => Auth::user()->name . ' menyukai komentarmu.',
-                        'type'     => 'like',
-                        'link'     => '/note/' . $comment->post_id . '#comment-' . $commentIdStr,
-                        'is_read'  => false,
+                        'title' => 'Seseorang Menyukai Komentarmu',
+                        'message' => Auth::user()->name.' menyukai komentarmu.',
+                        'type' => 'like',
+                        'link' => '/note/'.$comment->post_id.'#comment-'.$commentIdStr,
+                        'is_read' => false,
                     ]);
                 }
             }
@@ -126,7 +125,7 @@ class LikeController extends Controller
         return response()->json([
             'message' => $msg,
             'likes_count' => $actualLikesCount,
-            'is_liked' => $isLikedNow
+            'is_liked' => $isLikedNow,
         ], $statusCode);
     }
 }

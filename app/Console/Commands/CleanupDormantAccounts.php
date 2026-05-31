@@ -2,6 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Comment;
+use App\Models\Follow;
+use App\Models\Like;
+use App\Models\Notification;
+use App\Models\Post;
+use App\Models\User;
 use Illuminate\Console\Command;
 
 class CleanupDormantAccounts extends Command
@@ -26,23 +32,23 @@ class CleanupDormantAccounts extends Command
     public function handle()
     {
         $cutoffDate = now()->subDays(30);
-        
-        $usersToDelete = \App\Models\User::where('is_dormant', true)
-                             ->where('deactivated_at', '<=', $cutoffDate)
-                             ->get();
-                             
+
+        $usersToDelete = User::where('is_dormant', true)
+            ->where('deactivated_at', '<=', $cutoffDate)
+            ->get();
+
         $count = 0;
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         foreach ($usersToDelete as $user) {
-            $userIdStr = (string)$user->_id;
+            $userIdStr = (string) $user->_id;
 
             // Delete all related content
-            \App\Models\Post::where('user_id', $userIdStr)->delete();
-            \App\Models\Comment::where('user_id', $userIdStr)->delete();
-            \App\Models\Like::where('user_id', $userIdStr)->delete();
-            \App\Models\Follow::where('follower_id', $userIdStr)->orWhere('following_id', $userIdStr)->delete();
-            \App\Models\Notification::where('user_id', $userIdStr)->orWhere('actor_id', $userIdStr)->delete();
-            
+            Post::where('user_id', $userIdStr)->delete();
+            Comment::where('user_id', $userIdStr)->delete();
+            Like::where('user_id', $userIdStr)->delete();
+            Follow::where('follower_id', $userIdStr)->orWhere('following_id', $userIdStr)->delete();
+            Notification::where('user_id', $userIdStr)->orWhere('actor_id', $userIdStr)->delete();
+
             $user->delete();
             $count++;
         }

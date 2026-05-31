@@ -7,6 +7,7 @@ use MongoDB\Laravel\Eloquent\Model;
 class Topic extends Model
 {
     protected $connection = 'mongodb';
+
     protected $table = 'topic';
 
     protected $fillable = [

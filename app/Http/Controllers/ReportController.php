@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Report;
-use App\Models\Post;
-use App\Models\User;
+use App\Models\Comment;
 use App\Models\Notification;
+use App\Models\Post;
+use App\Models\Report;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,7 +20,7 @@ class ReportController extends Controller
         ]);
 
         $post = Post::find($postId);
-        if (!$post) {
+        if (! $post) {
             return response()->json(['message' => 'Post tidak ditemukan'], 404);
         }
 
@@ -46,10 +47,10 @@ class ReportController extends Controller
         // Notif ke pelapor
         Notification::create([
             'user_id' => $userId,
-            'title'   => 'Laporan Diterima',
-            'message' => 'Laporan kamu untuk catatan "' . $post->title . '" sedang direview oleh tim kami.',
-            'type'    => 'report',
-            'link'    => '/note/' . $postId,
+            'title' => 'Laporan Diterima',
+            'message' => 'Laporan kamu untuk catatan "'.$post->title.'" sedang direview oleh tim kami.',
+            'type' => 'report',
+            'link' => '/note/'.$postId,
             'is_read' => false,
         ]);
 
@@ -58,10 +59,10 @@ class ReportController extends Controller
             $postUserIdStr = is_array($post->user_id) ? current($post->user_id) : $post->user_id;
             Notification::create([
                 'user_id' => (string) $postUserIdStr,
-                'title'   => 'Peringatan: Catatan Dilaporkan',
-                'message' => 'Catatan kamu "' . $post->title . '" dilaporkan karena: ' . $request->reason . '. Tim pakar/admin akan mereviewnya.',
-                'type'    => 'report',
-                'link'    => '/note/' . $postId,
+                'title' => 'Peringatan: Catatan Dilaporkan',
+                'message' => 'Catatan kamu "'.$post->title.'" dilaporkan karena: '.$request->reason.'. Tim pakar/admin akan mereviewnya.',
+                'type' => 'report',
+                'link' => '/note/'.$postId,
                 'is_read' => false,
             ]);
         }
@@ -70,17 +71,16 @@ class ReportController extends Controller
         foreach ($admins as $admin) {
             Notification::create([
                 'user_id' => (string) $admin->id,
-                'title'   => 'Laporan Konten Baru',
-                'message' => 'Ada laporan masuk dengan alasan: ' . $request->reason . '. Segera periksa di Dasbor Admin.',
-                'type'    => 'report',
+                'title' => 'Laporan Konten Baru',
+                'message' => 'Ada laporan masuk dengan alasan: '.$request->reason.'. Segera periksa di Dasbor Admin.',
+                'type' => 'report',
                 'is_read' => false,
             ]);
         }
 
-
         return response()->json([
             'message' => 'Report berhasil dikirim',
-            'data' => $report
+            'data' => $report,
         ], 201);
     }
 
@@ -91,8 +91,8 @@ class ReportController extends Controller
             'description' => 'required|string',
         ]);
 
-        $comment = \App\Models\Comment::find($commentId);
-        if (!$comment) {
+        $comment = Comment::find($commentId);
+        if (! $comment) {
             return response()->json(['message' => 'Komentar tidak ditemukan'], 404);
         }
 
@@ -111,10 +111,10 @@ class ReportController extends Controller
         // Notif pelapor
         Notification::create([
             'user_id' => $userId,
-            'title'   => 'Laporan Komentar Diterima',
+            'title' => 'Laporan Komentar Diterima',
             'message' => 'Terima kasih, laporan kamu untuk sebuah komentar sedang direview oleh admin.',
-            'type'    => 'report',
-            'link'    => '/note/' . $comment->post_id,
+            'type' => 'report',
+            'link' => '/note/'.$comment->post_id,
             'is_read' => false,
         ]);
 
@@ -123,10 +123,10 @@ class ReportController extends Controller
             $commentUserIdStr = is_array($comment->user_id) ? current($comment->user_id) : $comment->user_id;
             Notification::create([
                 'user_id' => (string) $commentUserIdStr,
-                'title'   => 'Peringatan: Komentar Dilaporkan',
-                'message' => 'Komentar kamu dilaporkan atas alasan: ' . $request->reason . '. Harap selalu jaga etika berdiskusi yang sehat.',
-                'type'    => 'report',
-                'link'    => '/note/' . $comment->post_id,
+                'title' => 'Peringatan: Komentar Dilaporkan',
+                'message' => 'Komentar kamu dilaporkan atas alasan: '.$request->reason.'. Harap selalu jaga etika berdiskusi yang sehat.',
+                'type' => 'report',
+                'link' => '/note/'.$comment->post_id,
                 'is_read' => false,
             ]);
         }
@@ -135,16 +135,16 @@ class ReportController extends Controller
         foreach ($admins as $admin) {
             Notification::create([
                 'user_id' => (string) $admin->id,
-                'title'   => 'Laporan Komentar Baru',
-                'message' => 'Ada komentar toxic dilaporkan: ' . $request->reason . '. Segera periksa.',
-                'type'    => 'report',
+                'title' => 'Laporan Komentar Baru',
+                'message' => 'Ada komentar toxic dilaporkan: '.$request->reason.'. Segera periksa.',
+                'type' => 'report',
                 'is_read' => false,
             ]);
         }
 
         return response()->json([
             'message' => 'Laporan komentar berhasil dikirim',
-            'data' => $report
+            'data' => $report,
         ], 201);
     }
 
@@ -156,7 +156,7 @@ class ReportController extends Controller
         ]);
 
         $reportedUser = User::find($userId);
-        if (!$reportedUser) {
+        if (! $reportedUser) {
             return response()->json(['message' => 'User tidak ditemukan'], 404);
         }
 
@@ -181,10 +181,10 @@ class ReportController extends Controller
         // Notif pelapor
         Notification::create([
             'user_id' => $reporterId,
-            'title'   => 'Laporan Pengguna Diterima',
-            'message' => 'Laporan kamu untuk pengguna @' . $reportedUser->username . ' sedang direview oleh admin.',
-            'type'    => 'report',
-            'link'    => '/profile/' . $userId,
+            'title' => 'Laporan Pengguna Diterima',
+            'message' => 'Laporan kamu untuk pengguna @'.$reportedUser->username.' sedang direview oleh admin.',
+            'type' => 'report',
+            'link' => '/profile/'.$userId,
             'is_read' => false,
         ]);
 
@@ -192,16 +192,16 @@ class ReportController extends Controller
         foreach ($admins as $admin) {
             Notification::create([
                 'user_id' => (string) $admin->id,
-                'title'   => 'Laporan Pengguna Baru',
-                'message' => 'Ada pengguna dilaporkan dengan alasan: ' . $request->reason . '. Segera periksa.',
-                'type'    => 'report',
+                'title' => 'Laporan Pengguna Baru',
+                'message' => 'Ada pengguna dilaporkan dengan alasan: '.$request->reason.'. Segera periksa.',
+                'type' => 'report',
                 'is_read' => false,
             ]);
         }
 
         return response()->json([
             'message' => 'Report pengguna berhasil dikirim',
-            'data' => $report
+            'data' => $report,
         ], 201);
     }
 
@@ -216,7 +216,7 @@ class ReportController extends Controller
 
         return response()->json([
             'message' => 'Berhasil mengambil data report',
-            'data' => $reports
+            'data' => $reports,
         ], 200);
     }
 
@@ -228,11 +228,11 @@ class ReportController extends Controller
 
         $request->validate([
             'action' => 'required|in:abaikan,takedown,banned',
-            'admin_note' => 'nullable|string'
+            'admin_note' => 'nullable|string',
         ]);
 
         $report = Report::find($id);
-        if (!$report) {
+        if (! $report) {
             return response()->json(['message' => 'Report tidak ditemukan'], 404);
         }
 
@@ -247,40 +247,40 @@ class ReportController extends Controller
             if ($report->reporter_id) {
                 Notification::create([
                     'user_id' => (string) $report->reporter_id,
-                    'title'   => 'Laporan Ditolak',
-                    'message' => 'Laporan kamu ditolak oleh admin dengan alasan: ' . ($request->admin_note ?: 'Tidak ada alasan khusus.'),
-                    'type'    => 'report',
-                    'link'    => $report->post_id ? '/note/' . $report->post_id : null,
+                    'title' => 'Laporan Ditolak',
+                    'message' => 'Laporan kamu ditolak oleh admin dengan alasan: '.($request->admin_note ?: 'Tidak ada alasan khusus.'),
+                    'type' => 'report',
+                    'link' => $report->post_id ? '/note/'.$report->post_id : null,
                     'is_read' => false,
                 ]);
             }
 
         } elseif ($action === 'takedown') {
             if ($report->comment_id) {
-                $comment = \App\Models\Comment::find($report->comment_id);
+                $comment = Comment::find($report->comment_id);
                 if ($comment) {
                     $postId = $comment->post_id;
-                    $commentIdStr = (string)$comment->_id;
+                    $commentIdStr = (string) $comment->_id;
                     $commentUserId = $comment->user_id;
-                    
-                    \App\Models\Comment::where('parent_comment_id', $commentIdStr)->delete();
+
+                    Comment::where('parent_comment_id', $commentIdStr)->delete();
                     $comment->delete();
-                    
+
                     if ($postId) {
                         $post = Post::find($postId);
                         if ($post) {
-                            $post->update(['comments_count' => \App\Models\Comment::where('post_id', $postId)->count()]);
+                            $post->update(['comments_count' => Comment::where('post_id', $postId)->count()]);
                         }
                     }
 
                     // Notif ke pembuat komentar
                     if ($commentUserId) {
                         Notification::create([
-                            'user_id' => is_array($commentUserId) ? current($commentUserId) : (string)$commentUserId,
-                            'title'   => 'Komentar Dihapus (Takedown)',
-                            'message' => 'Komentar kamu telah dihapus oleh Admin karena melanggar panduan komunitas kami. Alasan admin: ' . ($request->admin_note ?: 'Pelanggaran pedoman.'),
-                            'type'    => 'report',
-                            'link'    => null,
+                            'user_id' => is_array($commentUserId) ? current($commentUserId) : (string) $commentUserId,
+                            'title' => 'Komentar Dihapus (Takedown)',
+                            'message' => 'Komentar kamu telah dihapus oleh Admin karena melanggar panduan komunitas kami. Alasan admin: '.($request->admin_note ?: 'Pelanggaran pedoman.'),
+                            'type' => 'report',
+                            'link' => null,
                             'is_read' => false,
                         ]);
                     }
@@ -296,11 +296,11 @@ class ReportController extends Controller
                     // Notif ke pembuat catatan
                     if ($postUserId) {
                         Notification::create([
-                            'user_id' => is_array($postUserId) ? current($postUserId) : (string)$postUserId,
-                            'title'   => 'Catatan Dihapus (Takedown)',
-                            'message' => 'Catatan kamu "' . $postTitle . '" telah dihapus oleh Admin karena melanggar panduan komunitas kami. Alasan admin: ' . ($request->admin_note ?: 'Pelanggaran pedoman.'),
-                            'type'    => 'report',
-                            'link'    => null,
+                            'user_id' => is_array($postUserId) ? current($postUserId) : (string) $postUserId,
+                            'title' => 'Catatan Dihapus (Takedown)',
+                            'message' => 'Catatan kamu "'.$postTitle.'" telah dihapus oleh Admin karena melanggar panduan komunitas kami. Alasan admin: '.($request->admin_note ?: 'Pelanggaran pedoman.'),
+                            'type' => 'report',
+                            'link' => null,
                             'is_read' => false,
                         ]);
                     }
@@ -311,30 +311,30 @@ class ReportController extends Controller
 
         } elseif ($action === 'banned') {
             if ($report->comment_id) {
-                $comment = \App\Models\Comment::find($report->comment_id);
+                $comment = Comment::find($report->comment_id);
                 if ($comment) {
                     User::where('id', $comment->user_id)->update(['role' => 'banned']);
                     $postId = $comment->post_id;
-                    $commentIdStr = (string)$comment->_id;
+                    $commentIdStr = (string) $comment->_id;
                     $commentUserId = $comment->user_id;
-                    
-                    \App\Models\Comment::where('parent_comment_id', $commentIdStr)->delete();
+
+                    Comment::where('parent_comment_id', $commentIdStr)->delete();
                     $comment->delete();
-                    
+
                     if ($postId) {
                         $post = Post::find($postId);
                         if ($post) {
-                            $post->update(['comments_count' => \App\Models\Comment::where('post_id', $postId)->count()]);
+                            $post->update(['comments_count' => Comment::where('post_id', $postId)->count()]);
                         }
                     }
 
                     if ($commentUserId) {
                         Notification::create([
-                            'user_id' => is_array($commentUserId) ? current($commentUserId) : (string)$commentUserId,
-                            'title'   => 'Akun Diblokir (Banned)',
-                            'message' => 'Akun kamu telah diblokir secara permanen oleh Admin akibat pelanggaran berat pada komentarmu. Alasan admin: ' . ($request->admin_note ?: 'Pelanggaran pedoman berat.'),
-                            'type'    => 'report',
-                            'link'    => null,
+                            'user_id' => is_array($commentUserId) ? current($commentUserId) : (string) $commentUserId,
+                            'title' => 'Akun Diblokir (Banned)',
+                            'message' => 'Akun kamu telah diblokir secara permanen oleh Admin akibat pelanggaran berat pada komentarmu. Alasan admin: '.($request->admin_note ?: 'Pelanggaran pedoman berat.'),
+                            'type' => 'report',
+                            'link' => null,
                             'is_read' => false,
                         ]);
                     }
@@ -349,11 +349,11 @@ class ReportController extends Controller
 
                     if ($postUserId) {
                         Notification::create([
-                            'user_id' => is_array($postUserId) ? current($postUserId) : (string)$postUserId,
-                            'title'   => 'Akun Diblokir (Banned)',
-                            'message' => 'Akun kamu telah diblokir secara permanen oleh Admin akibat pelanggaran berat pada catatan "' . $postTitle . '". Alasan admin: ' . ($request->admin_note ?: 'Pelanggaran pedoman berat.'),
-                            'type'    => 'report',
-                            'link'    => null,
+                            'user_id' => is_array($postUserId) ? current($postUserId) : (string) $postUserId,
+                            'title' => 'Akun Diblokir (Banned)',
+                            'message' => 'Akun kamu telah diblokir secara permanen oleh Admin akibat pelanggaran berat pada catatan "'.$postTitle.'". Alasan admin: '.($request->admin_note ?: 'Pelanggaran pedoman berat.'),
+                            'type' => 'report',
+                            'link' => null,
                             'is_read' => false,
                         ]);
                     }
@@ -365,7 +365,7 @@ class ReportController extends Controller
 
         return response()->json([
             'message' => $pesan,
-            'data' => $report
+            'data' => $report,
         ], 200);
     }
 }

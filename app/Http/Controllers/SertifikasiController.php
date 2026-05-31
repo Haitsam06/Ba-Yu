@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Sertifikasi;
 use App\Models\Notification;
+use App\Models\Sertifikasi;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Cloudinary\Cloudinary;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SertifikasiController extends Controller
 {
@@ -24,16 +24,16 @@ class SertifikasiController extends Controller
 
         if ($cekPengajuan) {
             return response()->json([
-                'message' => 'Masih dicek admin der'
+                'message' => 'Masih dicek admin der',
             ], 400);
         }
 
         $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
         $upload = $cloudinary->uploadApi()->upload($request->file('file_sertifikat')->getRealPath(), [
             'folder' => 'bayu_sertifikat',
-            'resource_type' => 'auto'
+            'resource_type' => 'auto',
         ]);
-        
+
         $pathFile = $upload['secure_url'];
 
         $sertifikasi = Sertifikasi::create([
@@ -47,20 +47,20 @@ class SertifikasiController extends Controller
         foreach ($admins as $admin) {
             Notification::create([
                 'user_id' => $admin->id,
-                'title'   => 'Pengajuan Pakar Baru',
-                'message' => Auth::user()->name . ' mengajukan diri sebagai pakar di bidang ' . $request->bidang_keahlian . '.',
-                'type'    => 'sertifikasi',
+                'title' => 'Pengajuan Pakar Baru',
+                'message' => Auth::user()->name.' mengajukan diri sebagai pakar di bidang '.$request->bidang_keahlian.'.',
+                'type' => 'sertifikasi',
                 'is_read' => false,
             ]);
         }
 
         return response()->json([
             'message' => 'Berkasi berhasil diajukan!.',
-            'data' => $sertifikasi
+            'data' => $sertifikasi,
         ], 201);
     }
 
-// FUNGSI 1: Buat Admin ngeliat daftar antrean yang masih "pending"
+    // FUNGSI 1: Buat Admin ngeliat daftar antrean yang masih "pending"
     public function getPending()
     {
         // --- GEMBOK ADMIN ---
@@ -73,7 +73,7 @@ class SertifikasiController extends Controller
 
         return response()->json([
             'message' => 'Berhasil mengambil daftar sertifikasi',
-            'data' => $pengajuan
+            'data' => $pengajuan,
         ], 200);
     }
 
@@ -87,17 +87,17 @@ class SertifikasiController extends Controller
         // --------------------
 
         $request->validate([
-            'status' => 'required|in:approved,rejected'
+            'status' => 'required|in:approved,rejected',
         ]);
 
         $sertifikasi = Sertifikasi::find($id);
 
-        if (!$sertifikasi) {
+        if (! $sertifikasi) {
             return response()->json(['message' => 'Data pengajuan tidak ditemukan'], 404);
         }
 
         $sertifikasi->update([
-            'status' => $request->status
+            'status' => $request->status,
         ]);
 
         // 🔥 INI DIA OBATNYA: Kalau di-ACC, ubah jabatan usernya di tabel User!
@@ -111,22 +111,22 @@ class SertifikasiController extends Controller
 
         $title = $request->status === 'approved' ? 'Sertifikasi Diterima!' : 'Sertifikasi Ditolak';
 
-        $message = $request->status === 'approved' 
-            ? 'Selamat! Pengajuan sertifikasi pakarmu untuk bidang ' . $sertifikasi->bidang_keahlian . ' telah disetujui Admin.' 
-            : 'Mohon maaf, pengajuan sertifikasi pakarmu untuk bidang ' . $sertifikasi->bidang_keahlian . ' belum dapat disetujui saat ini.';
+        $message = $request->status === 'approved'
+            ? 'Selamat! Pengajuan sertifikasi pakarmu untuk bidang '.$sertifikasi->bidang_keahlian.' telah disetujui Admin.'
+            : 'Mohon maaf, pengajuan sertifikasi pakarmu untuk bidang '.$sertifikasi->bidang_keahlian.' belum dapat disetujui saat ini.';
 
         Notification::create([
-            'user_id'  => $sertifikasi->user_id,
+            'user_id' => $sertifikasi->user_id,
             'actor_id' => Auth::id(),
-            'title'    => $title,
-            'message'  => $message,
-            'type'     => 'sertifikasi',
-            'is_read'  => false,
+            'title' => $title,
+            'message' => $message,
+            'type' => 'sertifikasi',
+            'is_read' => false,
         ]);
 
         return response()->json([
-            'message' => 'Status berhasil diubah jadi ' . $request->status . '!',
-            'data' => $sertifikasi
+            'message' => 'Status berhasil diubah jadi '.$request->status.'!',
+            'data' => $sertifikasi,
         ], 200);
     }
 }

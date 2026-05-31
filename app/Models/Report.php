@@ -7,6 +7,7 @@ use MongoDB\Laravel\Eloquent\Model;
 class Report extends Model
 {
     protected $connection = 'mongodb';
+
     protected $table = 'report';
 
     protected $fillable = [

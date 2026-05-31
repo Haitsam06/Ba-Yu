@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
-use MongoDB\Laravel\Eloquent\Model; 
+use MongoDB\Laravel\Eloquent\Model;
 
 class LearningHistory extends Model
 {
     protected $connection = 'mongodb';
+
     protected $collection = 'learning_histories';
 
     protected $fillable = [

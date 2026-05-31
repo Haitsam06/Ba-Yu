@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -28,13 +28,13 @@ Route::middleware('auth')->group(function () {
 Route::get('/storage/sertifikat/{filename}', function ($filename) {
     // Strip any path component & enforce safe filename pattern
     $safeName = basename($filename);
-    if ($safeName !== $filename || !preg_match('/^[a-zA-Z0-9_\-\.]+$/', $safeName)) {
+    if ($safeName !== $filename || ! preg_match('/^[a-zA-Z0-9_\-\.]+$/', $safeName)) {
         return response('Nama file tidak valid', 400);
     }
 
     $candidates = [
-        storage_path('app/sertifikat/' . $safeName),
-        storage_path('app/public/sertifikat/' . $safeName),
+        storage_path('app/sertifikat/'.$safeName),
+        storage_path('app/public/sertifikat/'.$safeName),
     ];
     $allowedRoots = [
         realpath(storage_path('app/sertifikat')),
@@ -42,7 +42,9 @@ Route::get('/storage/sertifikat/{filename}', function ($filename) {
     ];
 
     foreach ($candidates as $i => $path) {
-        if (!File::exists($path)) continue;
+        if (! File::exists($path)) {
+            continue;
+        }
         $real = realpath($path);
         if ($real && $allowedRoots[$i] && str_starts_with($real, $allowedRoots[$i])) {
             return response()->file($real);
@@ -56,4 +58,4 @@ Route::get('/app/{any?}', function () {
     return view('frontend');
 })->where('any', '.*');
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

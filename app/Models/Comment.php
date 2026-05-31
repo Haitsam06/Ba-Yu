@@ -7,6 +7,7 @@ use MongoDB\Laravel\Eloquent\Model;
 class Comment extends Model
 {
     protected $connection = 'mongodb';
+
     protected $table = 'comment';
 
     protected $fillable = [

@@ -7,6 +7,7 @@ use MongoDB\Laravel\Eloquent\Model;
 class Sertifikasi extends Model
 {
     protected $connection = 'mongodb';
+
     protected $table = 'sertifikasi';
 
     protected $fillable = [
@@ -14,7 +15,7 @@ class Sertifikasi extends Model
         'bidang_keahlian',
         'file_sertifikat',
         'status',
-        'alasan_penolakan'
+        'alasan_penolakan',
     ];
 
     protected $attributes = [

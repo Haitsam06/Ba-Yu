@@ -7,7 +7,9 @@ use MongoDB\Laravel\Eloquent\Model;
 class Category extends Model
 {
     protected $connection = 'mongodb';
+
     protected $collection = 'category';
+
     protected $table = 'category';
 
     protected $fillable = [

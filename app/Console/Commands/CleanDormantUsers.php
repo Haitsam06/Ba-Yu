@@ -2,16 +2,16 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\User;
-use App\Models\Post;
-use App\Models\Comment;
-use App\Models\Like;
-use App\Models\Follow;
-use App\Models\Notification;
-use App\Models\LearningHistory;
 use App\Models\Bookmark;
+use App\Models\Comment;
+use App\Models\Follow;
+use App\Models\LearningHistory;
+use App\Models\Like;
+use App\Models\Notification;
+use App\Models\Post;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
 class CleanDormantUsers extends Command
@@ -40,26 +40,27 @@ class CleanDormantUsers extends Command
 
         // Find users who have been dormant for more than 30 days
         $thresholdDate = Carbon::now()->subDays(30);
-        
+
         $dormantUsers = User::where('is_dormant', true)
-                            ->where('deactivated_at', '<', $thresholdDate)
-                            ->get();
+            ->where('deactivated_at', '<', $thresholdDate)
+            ->get();
 
         if ($dormantUsers->isEmpty()) {
             $this->info('No dormant users to clean up today.');
             Log::info('CleanDormantUsers: No users found.');
+
             return;
         }
 
         $count = 0;
         foreach ($dormantUsers as $user) {
-            /** @var \App\Models\User $user */
-            $userIdStr = (string)$user->_id;
+            /** @var User $user */
+            $userIdStr = (string) $user->_id;
 
             // Delete Posts and their references
             $posts = Post::where('user_id', $userIdStr)->get();
             foreach ($posts as $post) {
-                $postIdStr = (string)$post->_id;
+                $postIdStr = (string) $post->_id;
                 // Delete comments of this post
                 Comment::where('post_id', $postIdStr)->delete();
                 // Delete likes of this post
@@ -68,7 +69,7 @@ class CleanDormantUsers extends Command
                 Bookmark::where('post_id', $postIdStr)->delete();
                 // Delete learning history of this post
                 LearningHistory::where('post_id', $postIdStr)->delete();
-                
+
                 $post->delete();
             }
 
@@ -86,14 +87,14 @@ class CleanDormantUsers extends Command
 
             // Delete Learning History made by the user
             LearningHistory::where('user_id', $userIdStr)->delete();
-            
+
             // Delete Bookmarks made by the user
             Bookmark::where('user_id', $userIdStr)->delete();
 
             // Finally, delete the user
             $user->delete();
             $count++;
-            
+
             $this->info("Deleted user: {$user->email} ({$userIdStr})");
         }
 

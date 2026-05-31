@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
+use App\Models\Follow;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Cloudinary\Cloudinary;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -16,15 +21,15 @@ class UserController extends Controller
         }
 
         $users = User::orderBy('created_at', 'desc')->get();
-        
-        $users->each(function($u) {
+
+        $users->each(function ($u) {
             $u->followers = $u->followers()->count();
             $u->followings = $u->followings()->count();
         });
 
         return response()->json([
             'message' => 'users.fetch_all_success',
-            'data' => $users
+            'data' => $users,
         ], 200);
     }
 
@@ -40,7 +45,7 @@ class UserController extends Controller
         if (strlen($query) > 0) {
             $usersQuery->where(function ($q) use ($query) {
                 $q->where('name', 'like', "%{$query}%")
-                  ->orWhere('username', 'like', "%{$query}%");
+                    ->orWhere('username', 'like', "%{$query}%");
             });
         }
 
@@ -48,11 +53,21 @@ class UserController extends Controller
         $users = collect($paginator->items());
 
         $viewerId = null;
-        try { $viewerId = Auth::guard('sanctum')->id(); } catch (\Exception $e) {}
-        if (!$viewerId) { try { $viewerId = Auth::guard('api')->id(); } catch (\Exception $e) {} }
-        if (!$viewerId) { $viewerId = Auth::id(); }
+        try {
+            $viewerId = Auth::guard('sanctum')->id();
+        } catch (\Exception $e) {
+        }
+        if (! $viewerId) {
+            try {
+                $viewerId = Auth::guard('api')->id();
+            } catch (\Exception $e) {
+            }
+        }
+        if (! $viewerId) {
+            $viewerId = Auth::id();
+        }
 
-        $viewer = $viewerId ? User::find((string)$viewerId) : null;
+        $viewer = $viewerId ? User::find((string) $viewerId) : null;
 
         $users->each(function (User $u) use ($viewer) {
             $u->setAttribute('followers_count', $u->followers()->count());
@@ -69,9 +84,42 @@ class UserController extends Controller
                 'current_page' => $paginator->currentPage(),
                 'last_page' => $paginator->lastPage(),
                 'total' => $paginator->total(),
-                'has_more' => $paginator->hasMorePages()
-            ]
+                'has_more' => $paginator->hasMorePages(),
+            ],
         ], 200);
+    }
+
+    public function updateFcmToken(Request $request)
+    {
+        $request->validate([
+            'fcm_token' => 'required|string',
+        ]);
+
+        $user = auth()->user();
+        $user->fcm_token = $request->fcm_token;
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'FCM Token updated successfully.',
+        ], 200);
+    }
+
+    public function updateLocale(Request $request)
+    {
+        $validated = $request->validate([
+            'locale' => 'required|string|max:10',
+        ]);
+
+        $user = Auth::user();
+        if ($user) {
+            $user->locale = $validated['locale'];
+            $user->save();
+
+            return response()->json(['message' => 'Locale updated', 'data' => ['locale' => $user->locale]], 200);
+        }
+
+        return response()->json(['message' => 'Unauthorized'], 401);
     }
 
     public function updateProfile(Request $request)
@@ -89,11 +137,11 @@ class UserController extends Controller
 
         if ($request->hasFile('avatar')) {
             $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
-            
+
             $upload = $cloudinary->uploadApi()->upload($request->file('avatar')->getRealPath(), [
-                'folder' => 'ba-yu-avatars'
+                'folder' => 'ba-yu-avatars',
             ]);
-            
+
             $validated['avatar'] = $upload['secure_url'];
         }
         $user = Auth::user();
@@ -109,28 +157,29 @@ class UserController extends Controller
                 $daysSinceUpdate = now()->diffInDays($user->username_updated_at);
                 if ($daysSinceUpdate < 15) {
                     $daysLeft = 15 - $daysSinceUpdate;
+
                     return response()->json([
                         'message' => 'users.username_cooldown_error',
-                        'daysLeft' => $daysLeft
+                        'daysLeft' => $daysLeft,
                     ], 400);
                 }
             }
 
-            $user->username_updated_at = \Illuminate\Support\Carbon::now();
+            $user->username_updated_at = Carbon::now();
         }
 
         $user->fill($validated);
-        
+
         // If profile was incomplete (social login), mark it complete
-        if (isset($user->profile_completed) && !$user->profile_completed) {
+        if (isset($user->profile_completed) && ! $user->profile_completed) {
             $user->profile_completed = true;
         }
-        
+
         $user->save();
 
         return response()->json([
             'message' => 'users.profile_updated',
-            'user' => $user
+            'user' => $user,
         ], 200);
     }
 
@@ -147,42 +196,53 @@ class UserController extends Controller
 
         $user = auth()->user();
 
-        if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return response()->json([
-                'message' => 'users.current_password_wrong'
+                'message' => 'users.current_password_wrong',
             ], 400);
         }
 
-        $user->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
+        $user->password = Hash::make($request->new_password);
         $user->save();
 
         return response()->json([
-            'message' => 'users.password_updated'
+            'message' => 'users.password_updated',
         ], 200);
     }
 
     public function show($id)
     {
-        $user = \Illuminate\Support\Facades\Cache::remember("user_profile_{$id}", now()->addMinutes(5), function() use ($id) {
+        $user = Cache::remember("user_profile_{$id}", now()->addMinutes(5), function () use ($id) {
             $u = User::find($id);
             if ($u) {
                 // 🔥 SULAP 2: Ngitung dari tabel Follows buat Halaman Profil
                 $u->setAttribute('followers_count', $u->followers()->count());
                 $u->setAttribute('following_count', $u->followings()->count());
             }
+
             return $u;
         });
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'users.user_not_found'], 404);
         }
 
         $viewerId = null;
-        try { $viewerId = Auth::guard('sanctum')->id(); } catch (\Exception $e) {}
-        if (!$viewerId) { try { $viewerId = Auth::guard('api')->id(); } catch (\Exception $e) {} }
-        if (!$viewerId) { $viewerId = Auth::id(); }
-        $viewerIdStr = (string)$viewerId;
-        $userIdStr = (string)$user->id;
+        try {
+            $viewerId = Auth::guard('sanctum')->id();
+        } catch (\Exception $e) {
+        }
+        if (! $viewerId) {
+            try {
+                $viewerId = Auth::guard('api')->id();
+            } catch (\Exception $e) {
+            }
+        }
+        if (! $viewerId) {
+            $viewerId = Auth::id();
+        }
+        $viewerIdStr = (string) $viewerId;
+        $userIdStr = (string) $user->id;
 
         $isAdmin = false;
         if ($viewerIdStr) {
@@ -191,20 +251,20 @@ class UserController extends Controller
         }
 
         // Prevent viewing dormant accounts unless admin or owner
-        if ($user->is_dormant && !$isAdmin && $viewerIdStr !== $userIdStr) {
+        if ($user->is_dormant && ! $isAdmin && $viewerIdStr !== $userIdStr) {
             return response()->json(['message' => 'users.user_dormant'], 403);
         }
 
         // Prevent viewing private accounts unless admin, owner, or follower
-        if ($user->is_private && !$isAdmin && $viewerIdStr !== $userIdStr) {
+        if ($user->is_private && ! $isAdmin && $viewerIdStr !== $userIdStr) {
             $isFollower = false;
             $isPending = false;
             if ($viewerIdStr) {
-                $follow = \App\Models\Follow::where('follower_id', $viewerIdStr)->where('following_id', $userIdStr)->first();
-                $isFollower = $follow && $follow->status === \App\Models\Follow::STATUS_ACCEPTED;
-                $isPending = $follow && $follow->status === \App\Models\Follow::STATUS_PENDING;
+                $follow = Follow::where('follower_id', $viewerIdStr)->where('following_id', $userIdStr)->first();
+                $isFollower = $follow && $follow->status === Follow::STATUS_ACCEPTED;
+                $isPending = $follow && $follow->status === Follow::STATUS_PENDING;
             }
-            if (!$isFollower) {
+            if (! $isFollower) {
                 return response()->json([
                     'message' => 'users.user_private',
                     'is_private_restricted' => true,
@@ -215,26 +275,36 @@ class UserController extends Controller
                         'avatar' => $user->avatar,
                         'role' => $user->role,
                         'is_private' => true,
-                    ]
+                    ],
                 ], 403);
             }
         }
 
-        $user->makeHidden(['email', 'phone', 'is_verified']); 
+        $user->makeHidden(['email', 'phone', 'is_verified']);
 
         $userId = null;
-        try { $userId = Auth::guard('sanctum')->id(); } catch (\Exception $e) {}
-        if (!$userId) { try { $userId = Auth::guard('api')->id(); } catch (\Exception $e) {} }
-        if (!$userId) { $userId = Auth::id(); }
+        try {
+            $userId = Auth::guard('sanctum')->id();
+        } catch (\Exception $e) {
+        }
+        if (! $userId) {
+            try {
+                $userId = Auth::guard('api')->id();
+            } catch (\Exception $e) {
+            }
+        }
+        if (! $userId) {
+            $userId = Auth::id();
+        }
 
         if ($userId) {
-            $loggedInUser = User::find((string)$userId);
+            $loggedInUser = User::find((string) $userId);
             $isFollowed = $loggedInUser ? $loggedInUser->isFollowing($user->id) : false;
-            
-            $isPending = \App\Models\Follow::where('follower_id', (string)$userId)
-                                           ->where('following_id', (string)$user->id)
-                                           ->where('status', \App\Models\Follow::STATUS_PENDING)
-                                           ->exists();
+
+            $isPending = Follow::where('follower_id', (string) $userId)
+                ->where('following_id', (string) $user->id)
+                ->where('status', Follow::STATUS_PENDING)
+                ->exists();
 
             $user->setAttribute('is_followed_by_me', $isFollowed);
             $user->setAttribute('is_follow_pending', $isPending);
@@ -247,7 +317,7 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'users.fetch_profile_success',
-            'data' => $user
+            'data' => $user,
         ], 200);
     }
 
@@ -255,34 +325,44 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'users.user_not_found'], 404);
         }
 
-        $activities = \App\Models\Comment::with('post')
-        ->where('user_id', $id)
-        ->orderBy('created_at', 'desc')
-        ->get();
+        $activities = Comment::with('post')
+            ->where('user_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return response()->json([
             'message' => 'users.fetch_activities_success',
-            'data' => $activities
+            'data' => $activities,
         ], 200);
     }
 
     public function experts()
     {
         $experts = User::where('role', 'pakar')
-            ->where(function($q) {
+            ->where(function ($q) {
                 $q->where('is_dormant', false)->orWhereNull('is_dormant');
             })->get();
 
         $userId = null;
-        try { $userId = Auth::guard('sanctum')->id(); } catch (\Exception $e) {}
-        if (!$userId) { try { $userId = Auth::guard('api')->id(); } catch (\Exception $e) {} }
-        if (!$userId) { $userId = Auth::id(); }
+        try {
+            $userId = Auth::guard('sanctum')->id();
+        } catch (\Exception $e) {
+        }
+        if (! $userId) {
+            try {
+                $userId = Auth::guard('api')->id();
+            } catch (\Exception $e) {
+            }
+        }
+        if (! $userId) {
+            $userId = Auth::id();
+        }
 
-        $loggedInUser = $userId ? User::find((string)$userId) : null;
+        $loggedInUser = $userId ? User::find((string) $userId) : null;
 
         $experts->each(function (User $expert) use ($loggedInUser) {
             $expert->setAttribute('followers_count', $expert->followers()->count());
@@ -292,25 +372,26 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'users.fetch_experts_success',
-            'data' => $experts
+            'data' => $experts,
         ], 200);
     }
+
     public function updateTarget(Request $request)
-   {
-       $request->validate([
-           'target' => 'required|numeric'
-       ]);
+    {
+        $request->validate([
+            'target' => 'required|numeric',
+        ]);
 
-       $user = Auth::user();
-       $user->target_belajar = $request->target;
-       $user->save();
+        $user = Auth::user();
+        $user->target_belajar = $request->target;
+        $user->save();
 
-       return response()->json([
-           'success' => true,
-           'message' => 'users.target_saved',
-           'target' => $user->target_belajar
-       ]);
-   }
+        return response()->json([
+            'success' => true,
+            'message' => 'users.target_saved',
+            'target' => $user->target_belajar,
+        ]);
+    }
 
     public function demote($id)
     {
@@ -319,7 +400,7 @@ class UserController extends Controller
         }
 
         $user = User::find($id);
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'users.user_not_found'], 404);
         }
 
@@ -334,14 +415,14 @@ class UserController extends Controller
         return response()->json([
             'message' => 'users.demote_success',
             'oldRole' => $oldRole,
-            'user' => $user
+            'user' => $user,
         ], 200);
     }
 
     public function updatePrivacy(Request $request)
     {
         $request->validate([
-            'is_private' => 'required|boolean'
+            'is_private' => 'required|boolean',
         ]);
 
         $user = Auth::user();
@@ -351,17 +432,17 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'users.privacy_updated',
-            'user' => $user
+            'user' => $user,
         ]);
     }
 
     public function deactivate(Request $request)
     {
         $user = Auth::user();
-        
+
         // Mark as dormant and set deactivation timestamp
         $user->is_dormant = true;
-        $user->deactivated_at = \Illuminate\Support\Carbon::now();
+        $user->deactivated_at = Carbon::now();
         $user->save();
 
         // Optional: revoke all tokens so they are fully logged out
@@ -371,7 +452,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'users.account_deactivated'
+            'message' => 'users.account_deactivated',
         ]);
     }
 }

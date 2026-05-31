@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
@@ -17,16 +17,16 @@ class NotificationController extends Controller
             ->get();
 
         // Manual attach actor for stability (MongoDB relationship fix)
-        $actorIds = $notifikasi->pluck('actor_id')->filter()->unique()->map(fn($id) => (string)$id)->toArray();
-        
-        $actors = \App\Models\User::whereIn('_id', $actorIds)
+        $actorIds = $notifikasi->pluck('actor_id')->filter()->unique()->map(fn ($id) => (string) $id)->toArray();
+
+        $actors = User::whereIn('_id', $actorIds)
             ->get(['_id', 'name', 'avatar'])
-            ->mapWithKeys(fn($user) => [(string)$user->_id => $user]);
+            ->mapWithKeys(fn ($user) => [(string) $user->_id => $user]);
 
         if ($actors->isEmpty()) {
-             $actors = \App\Models\User::whereIn('id', $actorIds)
+            $actors = User::whereIn('id', $actorIds)
                 ->get(['id', 'name', 'avatar'])
-                ->mapWithKeys(fn($user) => [(string)$user->id => $user]);
+                ->mapWithKeys(fn ($user) => [(string) $user->id => $user]);
         }
 
         $notifikasi->each(function ($item) use ($actors) {
@@ -40,7 +40,7 @@ class NotificationController extends Controller
 
         return response()->json([
             'message' => 'Berhasil mengambil data notifikasi',
-            'data'    => $notifikasi
+            'data' => $notifikasi,
         ], 200);
     }
 
@@ -48,18 +48,18 @@ class NotificationController extends Controller
     {
         $notifikasi = Notification::find($id);
 
-        if (!$notifikasi) {
+        if (! $notifikasi) {
             return response()->json(['message' => 'Notifikasi tidak ditemukan'], 404);
         }
 
-        if ((string)$notifikasi->user_id !== (string) Auth::id()) {
+        if ((string) $notifikasi->user_id !== (string) Auth::id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         // Attach actor if exists
         if ($notifikasi->actor_id) {
             $actorId = (string) $notifikasi->actor_id;
-            $actor = \App\Models\User::where('_id', $actorId)->first() ?? \App\Models\User::where('id', $actorId)->first();
+            $actor = User::where('_id', $actorId)->first() ?? User::where('id', $actorId)->first();
             if ($actor) {
                 $notifikasi->actor = ['_id' => (string) $actor->id, 'name' => $actor->name, 'avatar' => $actor->avatar];
             }
@@ -67,7 +67,7 @@ class NotificationController extends Controller
 
         return response()->json([
             'message' => 'Berhasil mengambil data notifikasi',
-            'data'    => $notifikasi
+            'data' => $notifikasi,
         ], 200);
     }
 
@@ -75,11 +75,11 @@ class NotificationController extends Controller
     {
         $notifikasi = Notification::find($id);
 
-        if (!$notifikasi) {
+        if (! $notifikasi) {
             return response()->json(['message' => 'Notifikasi tidak ditemukan'], 404);
         }
 
-        if ((string)$notifikasi->user_id !== (string) Auth::id()) {
+        if ((string) $notifikasi->user_id !== (string) Auth::id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

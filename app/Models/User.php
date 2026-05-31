@@ -2,9 +2,15 @@
 
 namespace App\Models;
 
-use MongoDB\Laravel\Auth\User as Authenticatable;
+use App\Notifications\CustomResetPassword;
+use App\Notifications\CustomVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
+use MongoDB\Laravel\Auth\User as Authenticatable;
 
 /**
  * @property string $_id
@@ -21,31 +27,33 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $phone
  * @property string $bio
  * @property string $school
- * @property boolean $is_verified
- * @property boolean $is_private
- * @property boolean $is_dormant
- * @property \Illuminate\Support\Carbon|null $deactivated_at
- * @property \Illuminate\Support\Carbon|null $username_updated_at
+ * @property bool $is_verified
+ * @property bool $is_private
+ * @property bool $is_dormant
+ * @property Carbon|null $deactivated_at
+ * @property Carbon|null $username_updated_at
  * @property string $provider
  * @property string $provider_id
- * @property \Illuminate\Support\Carbon|null $email_verified_at
- * @property boolean $profile_completed
+ * @property Carbon|null $email_verified_at
+ * @property bool $profile_completed
  * @property int|null $target_belajar
- * 
- * @property boolean $is_followed_by_me
- * @property boolean $is_follow_pending
- * @property boolean $follows_me
+ * @property bool $is_followed_by_me
+ * @property bool $is_follow_pending
+ * @property bool $follows_me
  * @property int $followers_count
  * @property int $following_count
  * @property int $posts_count
  */
-class User extends Authenticatable
+class User extends Authenticatable implements HasLocalePreference, MustVerifyEmail
 {
     use HasApiTokens, Notifiable;
 
     protected $connection = 'mongodb';
+
     protected $collection = 'user';
+
     protected $table = 'user';
+
     protected $primaryKey = '_id';
 
     protected $fillable = [
@@ -59,6 +67,8 @@ class User extends Authenticatable
         'display_name',
         'phone',
         'bio',
+        'locale',
+        'fcm_token',
         'school',
         'is_verified',
         'is_private',
@@ -97,7 +107,17 @@ class User extends Authenticatable
     // Relationships
     public function sendPasswordResetNotification($token)
     {
-        $this->notify(new \App\Notifications\CustomResetPassword($token));
+        $this->notify(new CustomResetPassword($token));
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new CustomVerifyEmail);
+    }
+
+    public function preferredLocale()
+    {
+        return $this->locale ?? config('app.locale');
     }
 
     public function posts()
@@ -125,28 +145,27 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class, 'user_id');
     }
 
-
     public function isFollowing($userId)
     {
-        return \App\Models\Follow::where('follower_id', (string)$this->id)
-                                 ->where('following_id', (string)$userId)
-                                 ->where('status', \App\Models\Follow::STATUS_ACCEPTED)
-                                 ->exists();
+        return Follow::where('follower_id', (string) $this->id)
+            ->where('following_id', (string) $userId)
+            ->where('status', Follow::STATUS_ACCEPTED)
+            ->exists();
     }
 
     public function followings()
     {
-        return $this->hasMany(\App\Models\Follow::class, 'follower_id')->where('status', \App\Models\Follow::STATUS_ACCEPTED);
+        return $this->hasMany(Follow::class, 'follower_id')->where('status', Follow::STATUS_ACCEPTED);
     }
 
     public function followers()
     {
-        return $this->hasMany(\App\Models\Follow::class, 'following_id')->where('status', \App\Models\Follow::STATUS_ACCEPTED);
+        return $this->hasMany(Follow::class, 'following_id')->where('status', Follow::STATUS_ACCEPTED);
     }
 
     public function createToken(string $name, array $abilities = ['*'], ?\DateTimeInterface $expiresAt = null)
     {
-        $plainTextToken = \Illuminate\Support\Str::random(40);
+        $plainTextToken = Str::random(40);
 
         $token = $this->tokens()->create([
             'name' => $name,
@@ -155,8 +174,12 @@ class User extends Authenticatable
             'expires_at' => $expiresAt,
         ]);
 
-        return new class ($token, $token->getKey() . '|' . $plainTextToken) {
-            public $accessToken, $plainTextToken;
+        return new class($token, $token->getKey().'|'.$plainTextToken)
+        {
+            public $accessToken;
+
+            public $plainTextToken;
+
             public function __construct($token, $plainText)
             {
                 $this->accessToken = $token;

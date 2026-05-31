@@ -4,7 +4,7 @@
 # Target: Render free tier (also works for Railway, Fly.io, etc.)
 # =============================================================================
 
-FROM php:8.3-cli
+FROM php:8.3-apache
 
 # Step 1: Install system tools & libraries needed by PHP extensions and build tools.
 RUN apt-get update && apt-get install -y \
@@ -38,33 +38,40 @@ RUN pecl install mongodb && docker-php-ext-enable mongodb
 # Step 5: Install Composer (PHP package manager).
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Step 6: Set working directory inside the container.
+# Step 6: Configure Apache DocumentRoot and Enable ModRewrite
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+RUN a2enmod rewrite
+
+# Step 7: Set working directory inside the container.
 WORKDIR /var/www/html
 
-# Step 7: Copy composer manifests first to leverage Docker layer caching.
+# Step 8: Copy composer manifests first to leverage Docker layer caching.
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction
 
-# Step 8: Copy npm manifests for the same caching reason.
+# Step 9: Copy npm manifests for the same caching reason.
 COPY package.json package-lock.json ./
 RUN npm ci --legacy-peer-deps
 
-# Step 9: Copy the rest of the project source.
+# Step 10: Copy the rest of the project source.
 COPY . .
 
-# Step 10: Build the frontend (Vite produces public/build/).
+# Step 11: Build the frontend (Vite produces public/build/).
 RUN npm run build
 
-# Step 11: Finalize composer autoload with the full source present.
+# Step 12: Finalize composer autoload with the full source present.
 RUN composer dump-autoload --optimize --no-interaction
 
-# Step 12: Make storage and cache directories writable.
+# Step 13: Make storage and cache directories writable.
 RUN chmod -R 775 storage bootstrap/cache
 
-# Step 13: Render injects PORT via env var. Default to 8000 for local runs.
+# Step 14: Dynamic Port Configuration for Render
 ENV PORT=8000
-EXPOSE 8000
+EXPOSE ${PORT}
 
-# Step 14: Start command — clear cached config (in case anything was baked in), then serve.
-CMD php artisan config:clear \
-    && php artisan serve --host=0.0.0.0 --port=${PORT}
+# Step 15: Start command — Modify Apache port dynamically, clear config cache, and start Apache
+CMD sed -i "s/80/$PORT/g" /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf \
+    && php artisan config:clear \
+    && docker-php-entrypoint apache2-foreground

@@ -37,7 +37,7 @@ class HighlightController extends Controller
         ]);
 
         $post = Post::find($postId);
-        if (!$post) {
+        if (! $post) {
             return response()->json(['message' => 'Post tidak ditemukan'], 404);
         }
 
@@ -47,7 +47,7 @@ class HighlightController extends Controller
             ->where(function ($query) use ($request) {
                 $query->where(function ($q) use ($request) {
                     $q->where('start_offset', '<', $request->end_offset)
-                      ->where('end_offset', '>', $request->start_offset);
+                        ->where('end_offset', '>', $request->start_offset);
                 });
             })
             ->first();
@@ -89,7 +89,7 @@ class HighlightController extends Controller
     {
         $highlight = Highlight::find($id);
 
-        if (!$highlight) {
+        if (! $highlight) {
             return response()->json(['message' => 'Highlight tidak ditemukan'], 404);
         }
 

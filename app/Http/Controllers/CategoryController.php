@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -13,7 +12,7 @@ class CategoryController extends Controller
 
         return response()->json([
             'message' => 'Berhasil mengambil data kategori',
-            'data' => $categories
+            'data' => $categories,
         ], 200);
     }
 }

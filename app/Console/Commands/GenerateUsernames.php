@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\User;
 use Illuminate\Console\Command;
 
 class GenerateUsernames extends Command
@@ -25,27 +26,27 @@ class GenerateUsernames extends Command
      */
     public function handle()
     {
-        $users = \App\Models\User::whereNull('username')->orWhere('username', '')->get();
+        $users = User::whereNull('username')->orWhere('username', '')->get();
         $count = 0;
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         foreach ($users as $user) {
             $baseName = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $user->name));
             if (empty($baseName)) {
                 $baseName = 'user';
             }
-            
+
             $username = $baseName;
             $suffix = 1;
-            
-            while (\App\Models\User::where('username', $username)->exists()) {
-                $username = $baseName . $suffix;
+
+            while (User::where('username', $username)->exists()) {
+                $username = $baseName.$suffix;
                 $suffix++;
             }
 
             $user->username = $username;
             $user->save();
-            
+
             $count++;
             $this->info("Generated username {$username} for user {$user->name}");
         }

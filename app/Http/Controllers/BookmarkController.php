@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Bookmark;
 use App\Models\Post;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class BookmarkController extends Controller
@@ -12,7 +11,7 @@ class BookmarkController extends Controller
     public function toggle($postId)
     {
         $post = Post::find($postId);
-        if (!$post) {
+        if (! $post) {
             return response()->json(['message' => 'Post tidak ditemukan'], 404);
         }
 
@@ -24,12 +23,13 @@ class BookmarkController extends Controller
             // Unbookmark
             $bookmark->delete();
             $post->decrement('bookmarks_count');
+
             return response()->json(['message' => 'Berhasil unbookmark post'], 200);
         } else {
             // Bookmark
             Bookmark::create([
                 'post_id' => $postIdStr,
-                'user_id' => $userId
+                'user_id' => $userId,
             ]);
             $post->increment('bookmarks_count');
 
@@ -44,9 +44,9 @@ class BookmarkController extends Controller
         $bookmarks = Bookmark::where('user_id', $userId)->get();
         // Return just an array of the post IDs
         $bookmarkedIds = $bookmarks->pluck('post_id');
-        
+
         return response()->json([
-            'bookmarkedIds' => $bookmarkedIds
+            'bookmarkedIds' => $bookmarkedIds,
         ]);
     }
 }

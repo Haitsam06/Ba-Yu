@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
-use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\AbstractProvider;
 
 class AuthController extends Controller
 {
@@ -39,8 +42,9 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'jenjang_pendidikan' => $request->jenjang_pendidikan,
             'profesi' => $request->profesi,
-            'email_verified_at' => now(), // Auto-verify for development (no email provider configured)
         ]);
+
+        $user->sendEmailVerificationNotification();
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -63,15 +67,15 @@ class AuthController extends Controller
 
         $user = User::where($loginField, $request->login)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json([
-                'message' => 'auth.invalid_credentials'
+                'message' => 'auth.invalid_credentials',
             ], 401);
         }
 
         if ($user->role === 'banned') {
             return response()->json([
-                'message' => 'auth.account_banned'
+                'message' => 'auth.account_banned',
             ], 403);
         }
 
@@ -95,13 +99,13 @@ class AuthController extends Controller
                 'role' => $user->role,
                 'jenjang_pendidikan' => $user->jenjang_pendidikan,
                 'avatar' => $user->avatar,
-                'bio' => $user->bio,      
+                'bio' => $user->bio,
                 'school' => $user->school,
                 'phone' => $user->phone,
                 'is_private' => $user->is_private ?? false,
                 'is_dormant' => $user->is_dormant,
                 'username_updated_at' => $user->username_updated_at,
-            ]
+            ],
         ]);
     }
 
@@ -110,13 +114,13 @@ class AuthController extends Controller
         // 1. Validasi: Pastiin emailnya diisi dan emang ada di database lu
         $request->validate([
             'email' => 'required|email|exists:user,email',
-            'lang' => 'nullable|string'
+            'lang' => 'nullable|string',
         ], [
-            'email.exists' => 'auth.email_not_registered'
+            'email.exists' => 'auth.email_not_registered',
         ]);
 
         if ($request->has('lang')) {
-            \Illuminate\Support\Facades\App::setLocale($request->lang);
+            App::setLocale($request->lang);
         }
 
         // 2. Suruh Laravel bikin token dan "ngirim" email
@@ -127,12 +131,12 @@ class AuthController extends Controller
         // 3. Cek apakah berhasil dikirim
         if ($status === Password::RESET_LINK_SENT) {
             return response()->json([
-                'message' => 'passwords.sent'
+                'message' => 'passwords.sent',
             ], 200);
         }
 
         return response()->json([
-            'message' => 'passwords.throttled'
+            'message' => 'passwords.throttled',
         ], 500);
     }
 
@@ -152,19 +156,19 @@ class AuthController extends Controller
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
                 $user->forceFill([
-                    'password' => Hash::make($password)
+                    'password' => Hash::make($password),
                 ])->save();
             }
         );
 
         if ($status === Password::PASSWORD_RESET) {
             return response()->json([
-                'message' => 'auth.password_changed_success'
+                'message' => 'auth.password_changed_success',
             ], 200);
         }
 
         return response()->json([
-            'message' => 'auth.password_reset_failed'
+            'message' => 'auth.password_reset_failed',
         ], 400);
     }
 
@@ -173,12 +177,13 @@ class AuthController extends Controller
      */
     public function redirectToProvider($provider)
     {
-        if (!in_array($provider, ['google', 'facebook'])) {
+        if (! in_array($provider, ['google', 'facebook'])) {
             return response()->json(['message' => 'auth.provider_not_supported'], 400);
         }
 
-        /** @var \Laravel\Socialite\Two\AbstractProvider $driver */
+        /** @var AbstractProvider $driver */
         $driver = Socialite::driver($provider);
+
         return $driver->stateless()->redirect();
     }
 
@@ -187,16 +192,16 @@ class AuthController extends Controller
      */
     public function handleProviderCallback($provider)
     {
-        if (!in_array($provider, ['google', 'facebook'])) {
-            return redirect(config('app.url') . '/app/login?error=provider_invalid');
+        if (! in_array($provider, ['google', 'facebook'])) {
+            return redirect(config('app.url').'/app/login?error=provider_invalid');
         }
 
         try {
-            /** @var \Laravel\Socialite\Two\AbstractProvider $driver */
+            /** @var AbstractProvider $driver */
             $driver = Socialite::driver($provider);
             $socialUser = $driver->stateless()->user();
         } catch (\Exception $e) {
-            return redirect(config('app.url') . '/app/login?error=oauth_failed');
+            return redirect(config('app.url').'/app/login?error=oauth_failed');
         }
 
         // Check if user already exists with this email
@@ -204,11 +209,11 @@ class AuthController extends Controller
 
         if ($existingUser) {
             if ($existingUser->role === 'banned') {
-                return redirect(config('app.url') . '/app/login?error=banned');
+                return redirect(config('app.url').'/app/login?error=banned');
             }
 
             // Update provider info if not set
-            if (!$existingUser->provider) {
+            if (! $existingUser->provider) {
                 $existingUser->update([
                     'provider' => $provider,
                     'provider_id' => $socialUser->getId(),
@@ -224,8 +229,9 @@ class AuthController extends Controller
 
             $token = $existingUser->createToken('auth_token')->plainTextToken;
             $code = (string) Str::uuid();
-            Cache::put('oauth_exchange:' . $code, $token, now()->addSeconds(60));
-            return redirect(config('app.url') . '/app/login?code=' . $code . '&existing=true');
+            Cache::put('oauth_exchange:'.$code, $token, now()->addSeconds(60));
+
+            return redirect(config('app.url').'/app/login?code='.$code.'&existing=true');
         }
 
         // Create new user from social login
@@ -234,7 +240,7 @@ class AuthController extends Controller
         $counter = 1;
         // Ensure username is unique
         while (User::where('username', $username)->exists()) {
-            $username = $baseUsername . '_' . $counter;
+            $username = $baseUsername.'_'.$counter;
             $counter++;
         }
 
@@ -251,8 +257,9 @@ class AuthController extends Controller
 
         $token = $newUser->createToken('auth_token')->plainTextToken;
         $code = (string) Str::uuid();
-        Cache::put('oauth_exchange:' . $code, $token, now()->addSeconds(60));
-        return redirect(config('app.url') . '/app/login?code=' . $code . '&new=true');
+        Cache::put('oauth_exchange:'.$code, $token, now()->addSeconds(60));
+
+        return redirect(config('app.url').'/app/login?code='.$code.'&new=true');
     }
 
     /**
@@ -265,12 +272,12 @@ class AuthController extends Controller
             'code' => 'required|string|size:36',
         ]);
 
-        $cacheKey = 'oauth_exchange:' . $request->input('code');
+        $cacheKey = 'oauth_exchange:'.$request->input('code');
         $token = Cache::pull($cacheKey); // pull = get + forget (one-time use)
 
-        if (!$token) {
+        if (! $token) {
             return response()->json([
-                'message' => 'auth.oauth_code_invalid'
+                'message' => 'auth.oauth_code_invalid',
             ], 400);
         }
 
@@ -278,5 +285,100 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer',
         ]);
+    }
+
+    /**
+     * Verify Google ID token from mobile native app
+     */
+    public function verifyGoogleToken(Request $request)
+    {
+        $request->validate([
+            'id_token' => 'required|string',
+        ]);
+
+        try {
+            $response = Http::get('https://oauth2.googleapis.com/tokeninfo', [
+                'id_token' => $request->id_token,
+            ]);
+
+            if (! $response->successful()) {
+                return response()->json(['message' => 'Invalid Google token'], 401);
+            }
+
+            $payload = $response->json();
+            $email = $payload['email'] ?? null;
+            $name = $payload['name'] ?? null;
+            $googleId = $payload['sub'] ?? null;
+            $picture = $payload['picture'] ?? null;
+
+            if (! $email) {
+                return response()->json(['message' => 'Email not found in Google payload'], 400);
+            }
+
+            // Check if user already exists
+            $existingUser = User::where('email', $email)->first();
+
+            if ($existingUser) {
+                if ($existingUser->role === 'banned') {
+                    return response()->json(['message' => 'auth.account_banned'], 403);
+                }
+
+                // Update provider info if not set
+                if (! $existingUser->provider) {
+                    $existingUser->update([
+                        'provider' => 'google',
+                        'provider_id' => $googleId,
+                    ]);
+                }
+
+                // Reactivate dormant user
+                if ($existingUser->is_dormant) {
+                    $existingUser->is_dormant = false;
+                    $existingUser->deactivated_at = null;
+                    $existingUser->save();
+                }
+
+                $token = $existingUser->createToken('auth_token')->plainTextToken;
+
+                return response()->json([
+                    'message' => 'auth.login_success',
+                    'access_token' => $token,
+                    'token_type' => 'Bearer',
+                    'user' => $existingUser,
+                ]);
+            }
+
+            // Create new user from social login
+            $baseUsername = strtolower(Str::slug($name, '_'));
+            $username = $baseUsername;
+            $counter = 1;
+            while (User::where('username', $username)->exists()) {
+                $username = $baseUsername.'_'.$counter;
+                $counter++;
+            }
+
+            $newUser = User::create([
+                'name' => $name,
+                'email' => $email,
+                'username' => strtolower($username),
+                'avatar' => $picture,
+                'provider' => 'google',
+                'provider_id' => $googleId,
+                'email_verified_at' => now(),
+                'profile_completed' => false,
+            ]);
+
+            $token = $newUser->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'message' => 'auth.login_success',
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'user' => $newUser,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to verify Google token', 'error' => $e->getMessage()], 500);
+        }
     }
 }

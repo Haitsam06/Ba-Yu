@@ -7,6 +7,7 @@ use MongoDB\Laravel\Eloquent\Model;
 class Highlight extends Model
 {
     protected $connection = 'mongodb';
+
     protected $table = 'highlights';
 
     protected $fillable = [

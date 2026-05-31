@@ -7,9 +7,11 @@ use MongoDB\Laravel\Eloquent\Model;
 class Follow extends Model
 {
     protected $connection = 'mongodb';
+
     protected $collection = 'follows';
 
     const STATUS_PENDING = 'pending';
+
     const STATUS_ACCEPTED = 'accepted';
 
     protected $fillable = [

@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\LearningHistory;
-use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 use App\Models\Post;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class LearningHistoryController extends Controller
 {
     public function logAktivitas(Request $request)
     {
         $request->validate([
-            'post_id'  => 'required|string',
+            'post_id' => 'required|string',
             'duration' => 'required|numeric',
         ]);
 
@@ -25,22 +26,22 @@ class LearningHistoryController extends Controller
         $hariIni = Carbon::today();
 
         $riwayat = LearningHistory::where('user_id', $userId)
-                    ->where('post_id', $postId)
-                    ->where('created_at', '>=', $hariIni)
-                    ->first();
+            ->where('post_id', $postId)
+            ->where('created_at', '>=', $hariIni)
+            ->first();
 
         if ($riwayat) {
             $riwayat->increment('duration', $durationTambah);
         } else {
             LearningHistory::create([
-                'user_id'  => $userId,
-                'post_id'  => $postId,
+                'user_id' => $userId,
+                'post_id' => $postId,
                 'duration' => $durationTambah,
             ]);
         }
 
         // Hapus cache statistik belajar user ini agar datanya diperbarui
-        \Illuminate\Support\Facades\Cache::forget("learning_stats_user_{$userId}");
+        Cache::forget("learning_stats_user_{$userId}");
 
         return response()->json(['message' => 'Berhasil mencatat aktivitas belajar!'], 200);
     }
@@ -51,7 +52,7 @@ class LearningHistoryController extends Controller
         $cacheKey = "learning_stats_user_{$userId}";
 
         // Cache hasil statistik selama 30 menit
-        $statsData = \Illuminate\Support\Facades\Cache::remember($cacheKey, now()->addMinutes(30), function () use ($userId) {
+        $statsData = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($userId) {
             $hariIni = Carbon::today();
 
             $durasiHariIni = LearningHistory::where('user_id', $userId)
@@ -69,12 +70,11 @@ class LearningHistoryController extends Controller
                 ->unique()
                 ->count();
 
-
             $catatanDibuat = Post::where('user_id', $userId)->where('visibility', 'public')->count();
 
             $awalMinggu = Carbon::now()->startOfWeek();
             $akhirMinggu = Carbon::now()->endOfWeek();
-            
+
             $historiMingguIni = LearningHistory::where('user_id', $userId)
                 ->whereBetween('created_at', [$awalMinggu, $akhirMinggu])
                 ->get();
@@ -110,11 +110,13 @@ class LearningHistoryController extends Controller
             foreach ($historiBulanIni as $log) {
                 $tanggal = Carbon::parse($log->created_at);
                 $weekOfMonth = ceil($tanggal->day / 7);
-                if ($weekOfMonth > 5) $weekOfMonth = 5;
-                $label = 'W' . $weekOfMonth;
+                if ($weekOfMonth > 5) {
+                    $weekOfMonth = 5;
+                }
+                $label = 'W'.$weekOfMonth;
                 $grafikBulananMentah[$label] += $log->duration;
             }
-            
+
             if ($grafikBulananMentah['W5'] == 0) {
                 unset($grafikBulananMentah['W5']);
             }
@@ -159,13 +161,13 @@ class LearningHistoryController extends Controller
                 'weekly_chart' => $grafikMingguan,
                 'monthly_chart' => $grafikBulananMentah,
                 'recent_history' => $riwayatTerakhir,
-                'active_dates' => $semuaTanggalBelajar
+                'active_dates' => $semuaTanggalBelajar,
             ];
         });
 
         return response()->json([
             'message' => 'Berhasil mengambil statistik belajar',
-            'data' => $statsData
+            'data' => $statsData,
         ], 200);
     }
 }

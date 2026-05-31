@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useToast } from '../contexts/ToastContext';
 import { useNavigate } from 'react-router';
 import ApplicationLogo from '../components/ApplicationLogo';
-import { Lock, ArrowRight, CheckCircle2, X } from 'lucide-react';
+import { Lock, ArrowRight, CheckCircle2, X, Smartphone } from 'lucide-react';
 import { useTranslation } from '../hooks/useTranslation';
 
 export default function ResetPasswordPage() {
@@ -101,6 +101,14 @@ export default function ResetPasswordPage() {
                             {t('reset_password.description_start')} <span className="font-semibold text-gray-800 dark:text-gray-200">{email}</span>.
                         </p>
                     </div>
+                    
+                    <a
+                        href={`bayumobile://reset-password/${token}/${email}`}
+                        className="md:hidden mb-6 w-full bg-indigo-100 hover:bg-indigo-200 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50 py-3 rounded-xl font-['Lexend_Deca'] font-bold text-[14px] flex items-center justify-center gap-2 transition-all"
+                    >
+                        <Smartphone className="w-5 h-5" />
+                        <span>{t('reset_password.open_in_app') !== 'reset_password.open_in_app' ? t('reset_password.open_in_app') : 'Buka di Aplikasi Ba-Yu Mobile'}</span>
+                    </a>
 
                     <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
                         <div className="space-y-1.5">

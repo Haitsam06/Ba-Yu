@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
-use App\Models\Post;
 use App\Models\Comment;
 use App\Models\Like;
-use App\Models\Report;
 use App\Models\Notification;
+use App\Models\Post;
+use App\Models\Report;
+use App\Models\User;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class PresentationSeeder extends Seeder
 {
@@ -37,7 +37,7 @@ class PresentationSeeder extends Seeder
             'jenjang_pendidikan' => 'Universitas',
             'avatar' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop', // Diverse face UI
             'bio' => 'Administrator resmi platform Ba-Yu.',
-            'is_verified' => true
+            'is_verified' => true,
         ]);
 
         $pakar1 = User::create([
@@ -48,7 +48,7 @@ class PresentationSeeder extends Seeder
             'jenjang_pendidikan' => 'Universitas',
             'avatar' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop', // Diverse face UI
             'bio' => 'Dosen Matematika dengan 19 tahun pengalaman mengajar',
-            'is_verified' => true
+            'is_verified' => true,
         ]);
 
         $pakar2 = User::create([
@@ -59,7 +59,7 @@ class PresentationSeeder extends Seeder
             'jenjang_pendidikan' => 'Universitas',
             'avatar' => 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100&h=100&fit=crop', // Diverse face UI
             'bio' => 'Pakar Fisika dan Kimia, hobi berbagi ilmu',
-            'is_verified' => true
+            'is_verified' => true,
         ]);
 
         $siswa1 = User::create([
@@ -70,7 +70,7 @@ class PresentationSeeder extends Seeder
             'jenjang_pendidikan' => 'SMA',
             'avatar' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop', // Diverse face UI
             'bio' => 'Suka berbagi catatan matematika',
-            'is_verified' => false
+            'is_verified' => false,
         ]);
 
         $siswa2 = User::create([
@@ -81,7 +81,7 @@ class PresentationSeeder extends Seeder
             'jenjang_pendidikan' => 'SMP',
             'avatar' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop', // Diverse face UI
             'bio' => 'Pejuang nilai UTBK 🔥',
-            'is_verified' => false
+            'is_verified' => false,
         ]);
 
         $siswa3 = User::create([
@@ -92,7 +92,7 @@ class PresentationSeeder extends Seeder
             'jenjang_pendidikan' => 'SMA',
             'avatar' => 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop', // Diverse face UI
             'bio' => 'Semangat belajar buat menggapai cita',
-            'is_verified' => false
+            'is_verified' => false,
         ]);
 
         // 3. Insert Posts
@@ -260,25 +260,25 @@ class PresentationSeeder extends Seeder
         Comment::create([
             'post_id' => $post1->id,
             'user_id' => $siswa3->id,
-            'content' => 'Wah penjelasannya lengkap banget dok, terima kasih banyak! Jadi paham bedanya Bubble dan Quick sort.'
+            'content' => 'Wah penjelasannya lengkap banget dok, terima kasih banyak! Jadi paham bedanya Bubble dan Quick sort.',
         ]);
-        
+
         Comment::create([
             'post_id' => $post1->id,
             'user_id' => $siswa2->id,
-            'content' => 'Kalo pake Python lebih mudah dibaca ya ternyata.'
+            'content' => 'Kalo pake Python lebih mudah dibaca ya ternyata.',
         ]);
 
         Comment::create([
             'post_id' => $post1->id,
             'user_id' => $admin->id,
-            'content' => 'Mantap materi berkualitas tinggi 👍'
+            'content' => 'Mantap materi berkualitas tinggi 👍',
         ]);
 
         Comment::create([
             'post_id' => $post2->id,
             'user_id' => $siswa2->id,
-            'content' => 'Gambar diagramnya sangat membantu.'
+            'content' => 'Gambar diagramnya sangat membantu.',
         ]);
 
         // 5. Insert Likes (Post 1)
