@@ -250,7 +250,7 @@
     "help_center": "Yardım Merkezi",
     "logout": "Oturumu Kapat",
     "about": "Hakkımızda",
-    "blog": "Blog",
+    "blog": "Bloglar",
     "terms": "Şartlar",
     "privacy": "Mahremiyet"
   },
@@ -262,7 +262,7 @@
     "video_placeholder": "YouTube veya Vimeo URL'sini girin...",
     "video_caption": "Video başlığını buraya yazın...",
     "image": "Resim",
-    "video": "Video",
+    "video": "Videolar",
     "code": "Kod",
     "formula": "Formül",
     "divider": "Bölücü",
@@ -428,43 +428,9 @@
     "wait_draft": "Lütfen biraz bekleyin..."
   },
   "calendar": {
-    "days": {
-      "0": "Güneş",
-      "1": "Pazartesi",
-      "2": "Salı",
-      "3": "Çar",
-      "4": "Per",
-      "5": "Cuma",
-      "6": "Doygunluk"
-    },
-    "months": {
-      "0": "Ocak",
-      "1": "Şubat",
-      "2": "Mart",
-      "3": "Nisan",
-      "4": "Mayıs",
-      "5": "Haziran",
-      "6": "Temmuz",
-      "7": "Ağustos",
-      "8": "Eylül",
-      "9": "Ekim",
-      "10": "Kasım",
-      "11": "Aralık"
-    },
-    "full_months": {
-      "0": "Ocak",
-      "1": "Şubat",
-      "2": "Mart",
-      "3": "Nisan",
-      "4": "Mayıs",
-      "5": "Haziran",
-      "6": "Temmuz",
-      "7": "Ağustos",
-      "8": "Eylül",
-      "9": "Ekim",
-      "10": "Kasım",
-      "11": "Aralık"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "Üzgünüz, aradığınız sayfa mevcut değil.",
@@ -585,7 +551,6 @@
     "report_note": "Rapor Notu",
     "report_comment": "Yorumu Bildir",
     "report_report": "Rapor",
-    "report_laporkan": "Rapor",
     "suka_count": "({{count}})",
     "share_cta": "Bu değerli bilgiyi arkadaşlarınıza yayın.",
     "copy_link_copied": "Bağlantı kopyalandı!",
@@ -1109,7 +1074,7 @@
     "features": "Özellikler",
     "resources": "Kaynaklar",
     "guide": "Rehber",
-    "blog": "Blog",
+    "blog": "Bloglar",
     "help": "Yardım",
     "company": "Şirket",
     "about_us": "Hakkımızda",
@@ -1117,7 +1082,7 @@
     "contact": "Temas etmek",
     "privacy": "Gizlilik Politikası",
     "terms": "Şartlar ve Koşullar",
-    "status": "Status"
+    "status": "Durum"
   },
   "apply_pakar": {
     "title": "Uzman Sertifikası",
@@ -1258,42 +1223,12 @@
     "title": "Gizlilik Politikası",
     "hero_title": "Gizliliğiniz",
     "hero_desc": "Verileriniz Ba-Yu ile güvende. Şeffaflığı ve veri korumayı birinci önceliğimiz olarak sürdürüyoruz.",
-    "principles": {
-      "0": {
-        "label": "Güvenli",
-        "desc": "Veriler şifrelenmiştir."
-      },
-      "1": {
-        "label": "Şeffaf",
-        "desc": "Veriler hakkında açın."
-      },
-      "2": {
-        "label": "Kontrollü",
-        "desc": "Kontrol sizde."
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. Topladığımız Veriler",
     "collection_desc": "Yalnızca öğrenme sürecinizi desteklemek için gereken minimum bilgileri topluyoruz:",
-    "collections": {
-      "0": {
-        "title": "Profil Bilgileri",
-        "text": "Ad, e-posta ve eğitim düzeyi."
-      },
-      "1": {
-        "title": "Öğrenim İçeriği",
-        "text": "Notlar, resimler ve yorumlar."
-      },
-      "2": {
-        "title": "Teknik Veriler",
-        "text": "İyileştirme için etkinlik günlükleri."
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. Veri Kullanımı",
-    "usages": {
-      "0": "Not paylaşımını etkinleştirme.",
-      "1": "Önemli bildirimlerin sağlanması.",
-      "2": "Platform özelliklerinin iyileştirilmesi."
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 Ba-Yu Platformu. Gizliliğiniz Bizim Güvenimizdir."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "Ba-Yu platformuna erişerek ve onu kullanarak, bu Hüküm ve Koşulları okumuş, anlamış ve bunlara bağlı kalmayı kabul etmiş sayılırsınız. Kabul etmiyorsanız lütfen karşılıklı güvenlik açısından hizmetlerimizi kullanmaya devam etmeyin.",
     "section2_title": "2. Hesap Kaydı",
     "section2_desc": "Not paylaşma özelliğini kullanabilmeniz için doğru bilgilerle kayıt olmanız gerekmektedir. Aşağıdakilerden tamamen siz sorumlusunuz:",
-    "section2_items": {
-      "0": "Hesap şifrenizin gizliliğini korumak.",
-      "1": "Hesabınız altında gerçekleşen tüm etkinlikler.",
-      "2": "Doğru ve doğru bilgi vermek."
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. Fikri Mülkiyet Hakları",
     "section3_quote": "\"Ba-Yu'ya yüklediğiniz tüm notlar sizin kalır. Ancak bunları yükleyerek, Ba-Yu'ya söz konusu içeriği platform ekosistemimizde eğitim amaçlı olarak görüntülemesi, dağıtması ve tanıtması için bir lisans vermiş olursunuz.\"",
     "section4_title": "4. Kullanım Kuralları",
     "allowed_title": "Nelere İzin Verilir",
-    "allowed_items": {
-      "0": "Orijinal çalışma materyallerini paylaşmak.",
-      "1": "Olumlu yorumlar sağlamak.",
-      "2": "Kişisel referans için indiriliyor."
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "Neler Yasaktır?",
-    "prohibited_items": {
-      "0": "Çalıntı içerik yükleniyor.",
-      "1": "Nefret söylemini yaymak.",
-      "2": "Platform sistemine zarar vermek."
-    },
+    "prohibited_items": "[object Object]",
     "contact": "Sorularınız mı var? <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a> ile iletişime geçin",
     "footer": "© 2026 Ba-Yu Platformu.<br/>Tüm Hakları Saklıdır."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "Topluluk Kuralları",
     "hero_desc": "Ba-Yu'da güvenli, olumlu ve destekleyici bir öğrenme ortamı yaratalım.",
     "values_title": "Temel Değerler",
-    "values": {
-      "0": {
-        "title": "Karşılıklı Saygı",
-        "desc": "İster yorum bırakın, ister yapıcı eleştiri yapın, kibar bir şekilde iletişim kurun."
-      },
-      "1": {
-        "title": "Eğitici ve Olumlu",
-        "desc": "Bilgiyi yaymaya ve diğer öğrenci arkadaşlarınızı desteklemeye odaklanın."
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "Ciddi İhlaller",
     "rules_desc": "Aşağıdaki eylemler hesabın silinmesine veya alt sıralamasının düşürülmesine neden olabilir:",
-    "rules": {
-      "0": "İntihal notları yükleniyor.",
-      "1": "Nefret söylemi, ayrımcılık veya SARA.",
-      "2": "Spam, yasa dışı tanıtımlar veya sahtekarlık.",
-      "3": "Başkalarının kişisel bilgilerinin paylaşılması (doxxing)."
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 Ba-Yu Platformu.<br/>Tüm Hakları Saklıdır."
   },
   "help_page": {
@@ -1359,24 +1268,7 @@
     "search_placeholder": "Soruları ara...",
     "no_results": "\"{query}\" için sonuç yok",
     "faq_title": "Sıkça Sorulan Sorular (SSS)",
-    "faqs": {
-      "0": {
-        "q": "Nasıl Ba-Yu Uzmanı olabilirim?",
-        "a": "Uzman olmak için sık sık kaliteli notlar paylaşmalısınız. Notlarınız sıklıkla 'Popüler' kategorisine giriyorsa ve çok sayıda beğeni alıyorsa Yönetici ekibimiz bunları inceleyecek ve Uzman statüsü verecektir."
-      },
-      "1": {
-        "q": "Notları PDF olarak indirebilir miyim?",
-        "a": "Elbette! Her not detay sayfasında, içeriğin sağ üst köşesinde veya alt kısmında bulunan İndir düğmesine basarak PDF formatında kaydedebilirsiniz."
-      },
-      "2": {
-        "q": "Hesabım neden giriş yapamıyor?",
-        "a": "Girdiğiniz e-posta ve şifrenin doğru olduğundan emin olun. Hesabınızı yakın zamanda sildiyseniz, hesabınız Hareketsiz durumda olabilir. Etkinleştirmek için tekrar giriş yapmayı deneyin."
-      },
-      "3": {
-        "q": "Matematik formüllerini nasıl yazarım?",
-        "a": "Not yazma sayfasında formül düzenleyiciyi açmak için yan araç çubuğundaki hesap makinesi simgesini tıklayın. KaTeX formatını kullanarak formül yazabilirsiniz."
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "Hala Yardıma mı İhtiyacınız Var?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Hızlı yanıt",

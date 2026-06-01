@@ -262,7 +262,7 @@
     "video_placeholder": "Voer de YouTube- of Vimeo-URL in...",
     "video_caption": "Typ hier het videobijschrift...",
     "image": "Afbeelding",
-    "video": "Video",
+    "video": "Video's",
     "code": "Code",
     "formula": "Formule",
     "divider": "Verdeler",
@@ -428,43 +428,9 @@
     "wait_draft": "Een ogenblik geduld a.u.b...."
   },
   "calendar": {
-    "days": {
-      "0": "Zon",
-      "1": "ma",
-      "2": "di",
-      "3": "wo",
-      "4": "Do",
-      "5": "Vr",
-      "6": "Zat"
-    },
-    "months": {
-      "0": "jan",
-      "1": "februari",
-      "2": "Maart",
-      "3": "april",
-      "4": "Kunnen",
-      "5": "jun",
-      "6": "juli",
-      "7": "augustus",
-      "8": "september",
-      "9": "okt",
-      "10": "nov",
-      "11": "dec"
-    },
-    "full_months": {
-      "0": "Januari",
-      "1": "Februari",
-      "2": "Maart",
-      "3": "april",
-      "4": "Kunnen",
-      "5": "juni",
-      "6": "juli",
-      "7": "augustus",
-      "8": "september",
-      "9": "oktober",
-      "10": "November",
-      "11": "December"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "Sorry, de pagina die u zoekt bestaat niet.",
@@ -585,7 +551,6 @@
     "report_note": "Rapport Opmerking",
     "report_comment": "Rapporteer reactie",
     "report_report": "Rapport",
-    "report_laporkan": "Rapport",
     "suka_count": "({{count}})",
     "share_cta": "Verspreid deze waardevolle kennis onder je vrienden.",
     "copy_link_copied": "Link gekopieerd!",
@@ -870,7 +835,7 @@
     "notes_db_title": "Notities-database",
     "notes_db_desc": "Beheer de openbare directory met educatieve inhoud.",
     "empty_notes": "Geen aantekeningen in de database.",
-    "notes_detail": "Detail",
+    "notes_detail": "Details",
     "notes_delete": "Permanent verwijderen",
     "load_more": "Laad meer",
     "reports_title": "Rapportresolutie",
@@ -948,7 +913,7 @@
     "Kuliah": "Middelbare school",
     "Umum": "Algemeen",
     "class_format": "Klasse {{num}}",
-    "semester_format": "Semester {{num}}"
+    "semester_format": "Semester{{num}}"
   },
   "subject_categories": {
     "Umum & Wajib": "Algemeen & Verplicht",
@@ -1105,7 +1070,7 @@
     "desc": "Gestructureerd platform voor studienotities voor studenten",
     "product": "Product",
     "explore_notes": "Ontdek notities",
-    "dashboard": "Dashboard",
+    "dashboard": "Dashboards",
     "features": "Functies",
     "resources": "Bronnen",
     "guide": "Gids",
@@ -1258,42 +1223,12 @@
     "title": "Privacybeleid",
     "hero_title": "Uw privacy",
     "hero_desc": "Uw gegevens zijn veilig bij Ba-Yu. Wij handhaven transparantie en gegevensbescherming als onze topprioriteit.",
-    "principles": {
-      "0": {
-        "label": "Zeker",
-        "desc": "Gegevens zijn gecodeerd."
-      },
-      "1": {
-        "label": "Transparant",
-        "desc": "Open over data."
-      },
-      "2": {
-        "label": "Gecontroleerd",
-        "desc": "Jij hebt de controle."
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. Gegevens die we verzamelen",
     "collection_desc": "We verzamelen slechts minimale informatie die nodig is om uw leerproces te ondersteunen:",
-    "collections": {
-      "0": {
-        "title": "Profielinformatie",
-        "text": "Naam, e-mailadres en opleidingsniveau."
-      },
-      "1": {
-        "title": "Leerinhoud",
-        "text": "Notities, afbeeldingen en opmerkingen."
-      },
-      "2": {
-        "title": "Technische gegevens",
-        "text": "Activiteitenlogboeken voor verbetering."
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. Gegevensgebruik",
-    "usages": {
-      "0": "Het delen van notities inschakelen.",
-      "1": "Het verstrekken van belangrijke meldingen.",
-      "2": "Platformfuncties verbeteren."
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 Ba-Yu-platform. Uw privacy is ons vertrouwen."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "Door toegang te krijgen tot en gebruik te maken van het Ba-Yu-platform, wordt u geacht deze Algemene Voorwaarden te hebben gelezen, begrepen en ermee akkoord te gaan. Als u het er niet mee eens bent, verzoeken wij u onze diensten niet langer te gebruiken voor de wederzijdse veiligheid.",
     "section2_title": "2. Accountregistratie",
     "section2_desc": "Om de functie voor het delen van notities te gebruiken, moet u zich met nauwkeurige informatie registreren. Je bent volledig verantwoordelijk voor:",
-    "section2_items": {
-      "0": "Het vertrouwelijk houden van uw accountwachtwoord.",
-      "1": "Alle activiteiten die plaatsvinden onder uw account.",
-      "2": "Het verstrekken van waarheidsgetrouwe en nauwkeurige informatie."
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. Intellectuele eigendomsrechten",
     "section3_quote": "\"Alle aantekeningen die u naar Ba-Yu uploadt, blijven van u. Door ze te uploaden, verleent u Ba-Yu echter een licentie om die inhoud binnen ons platform-ecosysteem voor educatieve doeleinden weer te geven, te distribueren en te promoten.\"",
     "section4_title": "4. Gebruiksregels",
     "allowed_title": "Wat is toegestaan",
-    "allowed_items": {
-      "0": "Origineel studiemateriaal delen.",
-      "1": "Positief commentaar geven.",
-      "2": "Downloaden voor persoonlijke referentie."
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "Wat is verboden",
-    "prohibited_items": {
-      "0": "Geplagieerde inhoud uploaden.",
-      "1": "Het verspreiden van haatzaaiende uitlatingen.",
-      "2": "Beschadiging van het platformsysteem."
-    },
+    "prohibited_items": "[object Object]",
     "contact": "Heeft u vragen? Neem contact op met <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "© 2026 Ba-Yu Platform.<br/>Alle rechten voorbehouden."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "Gemeenschapsrichtlijnen",
     "hero_desc": "Laten we een veilige, positieve en ondersteunende leeromgeving creëren op Ba-Yu.",
     "values_title": "Kernwaarden",
-    "values": {
-      "0": {
-        "title": "Wederzijds respect",
-        "desc": "Communiceer beleefd, of u nu opmerkingen achterlaat of constructieve kritiek geeft."
-      },
-      "1": {
-        "title": "Educatief en positief",
-        "desc": "Focus op het verspreiden van kennis en het ondersteunen van andere medeleerlingen."
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "Ernstige overtredingen",
     "rules_desc": "De volgende acties kunnen resulteren in het verwijderen of degraderen van een account:",
-    "rules": {
-      "0": "Geplagieerde notities uploaden.",
-      "1": "Aanzetten tot haat, discriminatie of SARA.",
-      "2": "Spam, illegale promoties of fraude.",
-      "3": "Het delen van persoonlijke gegevens van anderen (doxxing)."
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform.<br/>Alle rechten voorbehouden."
   },
   "help_page": {
@@ -1359,24 +1268,7 @@
     "search_placeholder": "Zoek vragen...",
     "no_results": "Geen resultaten voor \"{query}\"",
     "faq_title": "Veelgestelde vragen (FAQ)",
-    "faqs": {
-      "0": {
-        "q": "Hoe word ik een expert op het gebied van Ba-Yu?",
-        "a": "Om Expert te worden, moet u regelmatig kwaliteitsnotities delen. Als uw aantekeningen vaak in de categorie 'Populair' terechtkomen en veel likes krijgen, zal ons beheerdersteam ze beoordelen en de status Expert toekennen."
-      },
-      "1": {
-        "q": "Kan ik notities downloaden als PDF?",
-        "a": "Natuurlijk! Op elke notitiedetailpagina kunt u op de knop Downloaden in de rechterbovenhoek of onderaan de inhoud drukken om deze in PDF-indeling op te slaan."
-      },
-      "2": {
-        "q": "Waarom kan mijn account niet inloggen?",
-        "a": "Zorg ervoor dat het e-mailadres en het wachtwoord dat u heeft ingevoerd correct zijn. Als u uw account onlangs heeft verwijderd, bevindt deze zich mogelijk in de slapende status. Probeer opnieuw in te loggen om het te activeren."
-      },
-      "3": {
-        "q": "Hoe schrijf ik wiskundige formules?",
-        "a": "Klik op de notitiepagina op het rekenmachinepictogram in de zijwerkbalk om de formule-editor te openen. U kunt formules schrijven in het KaTeX-formaat."
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "Nog steeds hulp nodig?",
     "contact_wa_title": "WhatsAppen",
     "contact_wa_desc": "Snelle reactie",

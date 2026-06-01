@@ -428,43 +428,9 @@
     "wait_draft": "Tafadhali subiri kidogo..."
   },
   "calendar": {
-    "days": {
-      "0": "Jua",
-      "1": "Mon",
-      "2": "Jumanne",
-      "3": "Jumatano",
-      "4": "Alhamisi",
-      "5": "Ijumaa",
-      "6": "Sat"
-    },
-    "months": {
-      "0": "Jan",
-      "1": "Feb",
-      "2": "Machi",
-      "3": "Apr",
-      "4": "Mei",
-      "5": "Juni",
-      "6": "Julai",
-      "7": "Aug",
-      "8": "Sep",
-      "9": "Okt",
-      "10": "Nov",
-      "11": "Des"
-    },
-    "full_months": {
-      "0": "Januari",
-      "1": "Februari",
-      "2": "Machi",
-      "3": "Aprili",
-      "4": "Mei",
-      "5": "Juni",
-      "6": "Julai",
-      "7": "Agosti",
-      "8": "Septemba",
-      "9": "Oktoba",
-      "10": "Novemba",
-      "11": "Desemba"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "Samahani, ukurasa unaotafuta haupo.",
@@ -585,7 +551,6 @@
     "report_note": "Ripoti Kumbuka",
     "report_comment": "Ripoti Maoni",
     "report_report": "Ripoti",
-    "report_laporkan": "Ripoti",
     "suka_count": "({{count}})",
     "share_cta": "Sambaza maarifa haya muhimu kwa marafiki zako.",
     "copy_link_copied": "Kiungo kimenakiliwa!",
@@ -1117,7 +1082,7 @@
     "contact": "Wasiliana",
     "privacy": "Sera ya Faragha",
     "terms": "Sheria na Masharti",
-    "status": "Status"
+    "status": "Hali"
   },
   "apply_pakar": {
     "title": "Udhibitisho wa Mtaalam",
@@ -1258,42 +1223,12 @@
     "title": "Sera ya Faragha",
     "hero_title": "Faragha Yako",
     "hero_desc": "Data yako iko salama kwa Ba-Yu. Tunadumisha uwazi na ulinzi wa data kama kipaumbele chetu kikuu.",
-    "principles": {
-      "0": {
-        "label": "Salama",
-        "desc": "Data imesimbwa kwa njia fiche."
-      },
-      "1": {
-        "label": "Uwazi",
-        "desc": "Fungua kuhusu data."
-      },
-      "2": {
-        "label": "Imedhibitiwa",
-        "desc": "Wewe ni katika udhibiti."
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. Takwimu Tunazokusanya",
     "collection_desc": "Tunakusanya tu taarifa ndogo zinazohitajika ili kusaidia mchakato wako wa kujifunza:",
-    "collections": {
-      "0": {
-        "title": "Maelezo ya Wasifu",
-        "text": "Jina, barua pepe na kiwango cha elimu."
-      },
-      "1": {
-        "title": "Maudhui ya Kujifunza",
-        "text": "Vidokezo, picha na maoni."
-      },
-      "2": {
-        "title": "Data ya Kiufundi",
-        "text": "Kumbukumbu za shughuli za kuboresha."
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. Matumizi ya Data",
-    "usages": {
-      "0": "Inawezesha kushiriki madokezo.",
-      "1": "Inatoa arifa muhimu.",
-      "2": "Kuboresha vipengele vya jukwaa."
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 Ba-Yu Jukwaa. Faragha Yako ni Tumaini Letu."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "Kwa kufikia na kutumia jukwaa la Ba-Yu, unachukuliwa kuwa umesoma, umeelewa, na umekubali kuwa chini ya Sheria na Masharti haya. Ikiwa hukubaliani, tafadhali usiendelee kutumia huduma zetu kwa usalama wa pande zote.",
     "section2_title": "2. Usajili wa Akaunti",
     "section2_desc": "Ili kutumia kipengele cha kushiriki madokezo, unatakiwa kujisajili kwa taarifa sahihi. Unawajibika kikamilifu kwa:",
-    "section2_items": {
-      "0": "Kudumisha usiri wa nenosiri la akaunti yako.",
-      "1": "Shughuli zote zinazotokea chini ya akaunti yako.",
-      "2": "Kutoa taarifa za kweli na sahihi."
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. Haki Miliki",
     "section3_quote": "\"Madokezo yoyote unayopakia kwa Ba-Yu yanaendelea kuwa yako. Hata hivyo, kwa kuyapakia, unaipa Ba-Yu leseni ya kuonyesha, kusambaza na kutangaza maudhui hayo ndani ya mfumo ikolojia wa jukwaa kwa madhumuni ya elimu.\"",
     "section4_title": "4. Kanuni za Matumizi",
     "allowed_title": "Nini Inaruhusiwa",
-    "allowed_items": {
-      "0": "Kushiriki nyenzo asili za masomo.",
-      "1": "Kutoa maoni mazuri.",
-      "2": "Inapakua kwa marejeleo ya kibinafsi."
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "Nini Kimekatazwa",
-    "prohibited_items": {
-      "0": "Inapakia maudhui yaliyoigizwa.",
-      "1": "Kueneza matamshi ya chuki.",
-      "2": "Kuharibu mfumo wa jukwaa."
-    },
+    "prohibited_items": "[object Object]",
     "contact": "Una maswali? Wasiliana na <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "© 2026 Ba-Yu Platform.<br/>Haki Zote Zimehifadhiwa."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "Miongozo ya Jumuiya",
     "hero_desc": "Hebu tuunde mazingira salama, chanya, na ya kuunga mkono ya kujifunza kwenye Ba-Yu.",
     "values_title": "Maadili ya Msingi",
-    "values": {
-      "0": {
-        "title": "Kuheshimiana",
-        "desc": "Wasiliana kwa upole, iwe ukiacha maoni au kutoa ukosoaji unaojenga."
-      },
-      "1": {
-        "title": "Kielimu na Chanya",
-        "desc": "Zingatia kueneza maarifa na kusaidia wanafunzi wenzako."
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "Ukiukaji Mkali",
     "rules_desc": "Vitendo vifuatavyo vinaweza kusababisha kufutwa au kushushwa kwa akaunti:",
-    "rules": {
-      "0": "Inapakia madokezo yaliyoigizwa.",
-      "1": "Matamshi ya chuki, ubaguzi, au SARA.",
-      "2": "Barua taka, matangazo haramu au ulaghai.",
-      "3": "Kushiriki taarifa za kibinafsi za watu wengine (doxxing)."
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform.<br/>Haki Zote Zimehifadhiwa."
   },
   "help_page": {
@@ -1359,24 +1268,7 @@
     "search_placeholder": "Tafuta maswali...",
     "no_results": "Hakuna matokeo ya \"{query}\"",
     "faq_title": "Maswali Yanayoulizwa Mara Kwa Mara (FAQ)",
-    "faqs": {
-      "0": {
-        "q": "Ninawezaje kuwa Mtaalam wa Ba-Yu?",
-        "a": "Ili kuwa Mtaalamu, lazima ushiriki vidokezo vya ubora mara kwa mara. Iwapo madokezo yako mara nyingi yanaingia katika kitengo cha 'Maarufu' na kupata kupendwa mara nyingi, timu yetu ya Wasimamizi itayahakiki na kukupa hadhi ya Mtaalamu."
-      },
-      "1": {
-        "q": "Je, ninaweza kupakua maelezo kama PDF?",
-        "a": "Bila shaka! Katika kila ukurasa wa maelezo ya dokezo, unaweza kubofya kitufe cha Pakua kwenye kona ya juu kulia au chini ya maudhui ili kuyahifadhi katika umbizo la PDF."
-      },
-      "2": {
-        "q": "Kwa nini akaunti yangu haiwezi kuingia?",
-        "a": "Hakikisha barua pepe na nenosiri uliloweka ni sahihi. Ikiwa ulifuta akaunti yako hivi majuzi, inaweza kuwa katika hali ya Dormant. Jaribu kuingia tena ili kuiwasha."
-      },
-      "3": {
-        "q": "Ninawezaje kuandika fomula za hesabu?",
-        "a": "Kwenye ukurasa wa kuandika madokezo, bofya ikoni ya kikokotoo kwenye upau wa vidhibiti ili kufungua kihariri cha fomula. Unaweza kuandika fomula kwa kutumia umbizo la KaTeX."
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "Bado Unahitaji Msaada?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Jibu la haraka",

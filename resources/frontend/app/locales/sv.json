@@ -262,7 +262,7 @@
     "video_placeholder": "Ange YouTube eller Vimeo URL...",
     "video_caption": "Skriv videotext här...",
     "image": "Bild",
-    "video": "Video",
+    "video": "Videor",
     "code": "Koda",
     "formula": "Formel",
     "divider": "Delare",
@@ -428,43 +428,9 @@
     "wait_draft": "Vänta ett ögonblick..."
   },
   "calendar": {
-    "days": {
-      "0": "Sol",
-      "1": "mån",
-      "2": "tis",
-      "3": "ons",
-      "4": "tors",
-      "5": "fre",
-      "6": "lö"
-    },
-    "months": {
-      "0": "Jan",
-      "1": "feb",
-      "2": "Mar",
-      "3": "apr",
-      "4": "maj",
-      "5": "jun",
-      "6": "jul",
-      "7": "aug",
-      "8": "sep",
-      "9": "okt",
-      "10": "nov",
-      "11": "dec"
-    },
-    "full_months": {
-      "0": "januari",
-      "1": "februari",
-      "2": "mars",
-      "3": "april",
-      "4": "maj",
-      "5": "juni",
-      "6": "juli",
-      "7": "augusti",
-      "8": "september",
-      "9": "oktober",
-      "10": "november",
-      "11": "december"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "Tyvärr, sidan du letar efter finns inte.",
@@ -585,7 +551,6 @@
     "report_note": "Rapportanmärkning",
     "report_comment": "Rapportera kommentar",
     "report_report": "Rapportera",
-    "report_laporkan": "Rapportera",
     "suka_count": "({{count}})",
     "share_cta": "Sprid denna värdefulla kunskap till dina vänner.",
     "copy_link_copied": "Länken kopierad!",
@@ -1258,42 +1223,12 @@
     "title": "Sekretesspolicy",
     "hero_title": "Din integritet",
     "hero_desc": "Din data är säker med Ba-Yu. Vi upprätthåller transparens och dataskydd som vår högsta prioritet.",
-    "principles": {
-      "0": {
-        "label": "Säkra",
-        "desc": "Data är krypterad."
-      },
-      "1": {
-        "label": "Transparent",
-        "desc": "Öppna om data."
-      },
-      "2": {
-        "label": "Kontrollerade",
-        "desc": "Du har kontroll."
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. Data vi samlar in",
     "collection_desc": "Vi samlar bara in minimal information som behövs för att stödja din inlärningsprocess:",
-    "collections": {
-      "0": {
-        "title": "Profilinformation",
-        "text": "Namn, e-postadress och utbildningsnivå."
-      },
-      "1": {
-        "title": "Lärande innehåll",
-        "text": "Anteckningar, bilder och kommentarer."
-      },
-      "2": {
-        "title": "Tekniska data",
-        "text": "Aktivitetsloggar för förbättring."
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. Dataanvändning",
-    "usages": {
-      "0": "Aktiverar anteckningsdelning.",
-      "1": "Ge viktiga meddelanden.",
-      "2": "Förbättra plattformsfunktioner."
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 Ba-Yu-plattformen. Din integritet är vårt förtroende."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "Genom att komma åt och använda Ba-Yu-plattformen anses du ha läst, förstått och samtyckt till att vara bunden av dessa villkor. Om du inte accepterar, vänligen fortsätt inte använda våra tjänster för ömsesidig säkerhet.",
     "section2_title": "2. Kontoregistrering",
     "section2_desc": "För att använda anteckningsdelningsfunktionen måste du registrera dig med korrekt information. Du ansvarar fullt ut för:",
-    "section2_items": {
-      "0": "Upprätthålla sekretessen för ditt kontolösenord.",
-      "1": "Alla aktiviteter som sker under ditt konto.",
-      "2": "Tillhandahåller sann och korrekt information."
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. Immateriella rättigheter",
     "section3_quote": "\"Alla anteckningar du laddar upp till Ba-Yu förblir dina. Men genom att ladda upp dem ger du Ba-Yu en licens att visa, distribuera och marknadsföra innehållet inom vårt plattformekosystem för utbildningsändamål.\"",
     "section4_title": "4. Regler för användning",
     "allowed_title": "Vad är tillåtet",
-    "allowed_items": {
-      "0": "Dela originalstudiematerial.",
-      "1": "Att ge positiva kommentarer.",
-      "2": "Laddar ner för personlig referens."
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "Vad är förbjudet",
-    "prohibited_items": {
-      "0": "Ladda upp plagierat innehåll.",
-      "1": "Sprider hatretorik.",
-      "2": "Skada plattformssystemet."
-    },
+    "prohibited_items": "[object Object]",
     "contact": "Har du frågor? Kontakta <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "© 2026 Ba-Yu Platform.<br/>Alla rättigheter reserverade."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "Riktlinjer för communityn",
     "hero_desc": "Låt oss skapa en säker, positiv och stödjande lärmiljö på Ba-Yu.",
     "values_title": "Kärnvärden",
-    "values": {
-      "0": {
-        "title": "Ömsesidig respekt",
-        "desc": "Kommunicera artigt, oavsett om du lämnar kommentarer eller ger konstruktiv kritik."
-      },
-      "1": {
-        "title": "Pedagogisk & positiv",
-        "desc": "Fokusera på att sprida kunskap och stödja andra medstudenter."
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "Allvarliga kränkningar",
     "rules_desc": "Följande åtgärder kan leda till att kontot raderas eller degraderas:",
-    "rules": {
-      "0": "Ladda upp plagierade anteckningar.",
-      "1": "Hatretorik, diskriminering eller SARA.",
-      "2": "Spam, olagliga kampanjer eller bedrägerier.",
-      "3": "Dela andras personliga information (doxxing)."
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform.<br/>Alla rättigheter reserverade."
   },
   "help_page": {
@@ -1359,24 +1268,7 @@
     "search_placeholder": "Sök frågor...",
     "no_results": "Inga resultat för \"{query}\"",
     "faq_title": "Vanliga frågor (FAQ)",
-    "faqs": {
-      "0": {
-        "q": "Hur blir jag expert på Ba-Yu?",
-        "a": "För att bli expert måste du ofta dela kvalitetsanteckningar. Om dina anteckningar ofta går in i kategorin \"Populär\" och får många likes, kommer vårt adminteam att granska dem och ge expertstatus."
-      },
-      "1": {
-        "q": "Kan jag ladda ner anteckningar som PDF?",
-        "a": "Naturligtvis! På varje anteckningsdetaljsida kan du trycka på knappen Ladda ner i det övre högra hörnet eller längst ner i innehållet för att spara det i PDF-format."
-      },
-      "2": {
-        "q": "Varför kan mitt konto inte logga in?",
-        "a": "Se till att e-postadressen och lösenordet du angav är korrekta. Om du nyligen har tagit bort ditt konto kan det vara i viloläge. Försök att logga in igen för att aktivera den."
-      },
-      "3": {
-        "q": "Hur skriver jag matematiska formler?",
-        "a": "På sidan för att skriva anteckningar klickar du på kalkylatorikonen i sidoverktygsfältet för att öppna formelredigeraren. Du kan skriva formler med KaTeX-format."
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "Behöver du fortfarande hjälp?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Snabb respons",

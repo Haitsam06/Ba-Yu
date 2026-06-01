@@ -13,7 +13,7 @@
     "settings": "Einstellungen",
     "pakar_choice": "EXPERTENWAHL",
     "no_pakar_choice": "Noch keine Expertenwahl",
-    "dashboard": "DASHBOARD",
+    "dashboard": "ARMATURENBRETT",
     "insights": "EINBLICKE"
   },
   "settings": {
@@ -186,7 +186,7 @@
     "time_days": "vor Tagen",
     "no_unread": "Keine neuen Updates",
     "view_all_notifications": "Alle Benachrichtigungen anzeigen",
-    "time_short_m": "m",
+    "time_short_m": "M",
     "time_short_h": "Std"
   },
   "profile": {
@@ -250,7 +250,7 @@
     "help_center": "Hilfezentrum",
     "logout": "Abmelden",
     "about": "Über uns",
-    "blog": "Blog",
+    "blog": "Blogs",
     "terms": "Bedingungen",
     "privacy": "Datenschutz"
   },
@@ -262,7 +262,7 @@
     "video_placeholder": "YouTube- oder Vimeo-URL eingeben...",
     "video_caption": "Videobeschreibung hier eingeben...",
     "image": "Bild",
-    "video": "Video",
+    "video": "Videos",
     "code": "Code",
     "formula": "Formel",
     "divider": "Trennlinie",
@@ -428,43 +428,9 @@
     "wait_draft": "Bitte warten Sie einen Moment..."
   },
   "calendar": {
-    "days": [
-      "So",
-      "Mo",
-      "Di",
-      "Mi",
-      "Do",
-      "Fr",
-      "Sa"
-    ],
-    "months": [
-      "Jan",
-      "Feb",
-      "Mär",
-      "Apr",
-      "Mai",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Okt",
-      "Nov",
-      "Dez"
-    ],
-    "full_months": [
-      "Januar",
-      "Februar",
-      "März",
-      "April",
-      "Mai",
-      "Juni",
-      "Juli",
-      "August",
-      "September",
-      "Oktober",
-      "November",
-      "Dezember"
-    ]
+    "days": "So,Mo,Di,Mi,Do,Fr,Sa",
+    "months": "Jan,Feb,Mär,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez",
+    "full_months": "Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember"
   },
   "not_found": {
     "message": "Entschuldigung, die gesuchte Seite existiert nicht.",
@@ -490,6 +456,7 @@
     "following": "Folge ich",
     "pending": "Ausstehend",
     "minutes_read": "Min. Lesezeit",
+    "read_time": "Min. Lesezeit",
     "expert_review": "Expertenbewertung",
     "restricted_access": "Eingeschränkter Zugriff",
     "restricted_desc": "Der Autor hat den vollen Zugriff auf diese Notiz eingeschränkt. Folge dem Autor, um das gesamte Material freizuschalten.",
@@ -598,7 +565,6 @@
     "unverify_desc": "Möchten Sie den Verifizierungsstatus dieser Notiz wirklich aufheben?",
     "verify_title": "Notiz verifizieren",
     "verify_desc": "Diese Notiz als genaues und qualitativ hochwertiges Material verifizieren?",
-    "read_time": "Min. Lesezeit",
     "respond_btn": "ANTWORTEN",
     "downloaded_at": "Heruntergeladen:",
     "pdf_restricted_title": "Geschütztes Material",
@@ -804,7 +770,7 @@
     "humas": "Öffentlichkeitsarbeit",
     "hi": "Internationale Beziehungen",
     "jurnalistik": "Journalismus",
-    "-": " ",
+    "-": "",
     "pendidikan-kewarganegaraan": "Bürgerkunde",
     "ilmu-pengetahuan-alam": "Naturwissenschaften",
     "ilmu-pengetahuan-sosial": "Sozialwissenschaften",
@@ -869,7 +835,7 @@
     "notes_db_title": "Notizendatenbank",
     "notes_db_desc": "Öffentliches Bildungsverzeichnis verwalten.",
     "empty_notes": "Keine Notizen in der Datenbank.",
-    "notes_detail": "Detail",
+    "notes_detail": "Einzelheiten",
     "notes_delete": "Dauerhaft löschen",
     "load_more": "Mehr laden",
     "reports_title": "Berichtsauflösung",
@@ -880,7 +846,7 @@
     "reports_desc_label": "Beschreibung:",
     "reports_reporter": "Melder:",
     "reports_ignore": "Ignorieren",
-    "reports_takedown": "Takedown",
+    "reports_takedown": "Notieren",
     "reports_ban": "Konto sperren",
     "users_db_title": "Benutzerdatenbank",
     "users_db_desc": "Registrierte Benutzerkonten verwalten.",
@@ -1091,6 +1057,11 @@
     "pdf_protected_title": "Geschütztes Material",
     "pdf_protected_desc": "Dieses PDF enthält nur einen Teil des Materials. Folgen Sie dem Autor <b>@{{author}}</b> in der Ba-Yu App, um die vollständige Version herunterzuladen.",
     "pdf_footer": "Dieses Dokument wurde von <span class=\"footer-brand\">Ba-Yu</span> heruntergeladen - Die Lernplattform der Zukunft",
+    "draft_badge": "undefined",
+    "draft_label": "undefined",
+    "last_edit": "undefined",
+    "untitled_draft": "undefined",
+    "untitled": "undefined",
     "submit_to_expert": "Dem Experten vorlegen",
     "submit_to_expert_success": "Notiz erfolgreich dem Experten vorgelegt!",
     "submit_to_expert_error": "Fehler beim Vorlegen an den Experten"
@@ -1099,11 +1070,11 @@
     "desc": "Strukturierte Studiennotiz-Plattform für Studenten",
     "product": "Produkt",
     "explore_notes": "Notizen entdecken",
-    "dashboard": "Dashboard",
+    "dashboard": "Dashboards",
     "features": "Eigenschaften",
     "resources": "Ressourcen",
     "guide": "Handbuch",
-    "blog": "Blog",
+    "blog": "Blogs",
     "help": "Hilfe",
     "company": "Unternehmen",
     "about_us": "Über uns",
@@ -1112,6 +1083,22 @@
     "privacy": "Datenschutz",
     "terms": "Nutzungsbedingungen",
     "status": "Status"
+  },
+  "apply_pakar": {
+    "title": "undefined",
+    "description": "undefined",
+    "full_name": "undefined",
+    "education_expertise": "undefined",
+    "education_placeholder": "undefined",
+    "upload_document": "undefined",
+    "choose_file": "undefined",
+    "max_size": "undefined",
+    "submit": "undefined",
+    "success_title": "undefined",
+    "success_desc": "undefined",
+    "file_too_large": "undefined",
+    "require_file": "undefined",
+    "error_submit": "undefined"
   },
   "edit_profile": {
     "title": "Profil Bearbeiten",
@@ -1236,42 +1223,12 @@
     "title": "Datenschutzrichtlinie",
     "hero_title": "Ihre Privatsphäre",
     "hero_desc": "Ihre Daten sind bei Ba-Yu sicher. Transparenz und Datenschutz haben für uns oberste Priorität.",
-    "principles": [
-      {
-        "label": "Sicher",
-        "desc": "Daten werden verschlüsselt."
-      },
-      {
-        "label": "Transparent",
-        "desc": "Offen im Umgang mit Daten."
-      },
-      {
-        "label": "Kontrolliert",
-        "desc": "Sie haben die Kontrolle."
-      }
-    ],
+    "principles": "[Objekt Objekt],[Objekt Objekt],[Objekt Objekt]",
     "collection_title": "1. Daten, die wir sammeln",
     "collection_desc": "Wir sammeln nur minimale Informationen, die zur Unterstützung Ihres Lernprozesses erforderlich sind:",
-    "collections": [
-      {
-        "title": "Profilinfo",
-        "text": "Name, E-Mail und Bildungsniveau."
-      },
-      {
-        "title": "Lerninhalte",
-        "text": "Notizen, Bilder und Kommentare."
-      },
-      {
-        "title": "Technische Daten",
-        "text": "Aktivitätsprotokolle zur Verbesserung."
-      }
-    ],
+    "collections": "[Objekt Objekt],[Objekt Objekt],[Objekt Objekt]",
     "usage_title": "2. Datennutzung",
-    "usages": [
-      "Ermöglicht das Teilen von Notizen.",
-      "Bereitstellung wichtiger Benachrichtigungen.",
-      "Verbesserung der Plattformfunktionen."
-    ],
+    "usages": "Ermöglicht das Teilen von Notizen.,Bereitstellung wichtiger Benachrichtigungen.,Verbesserung der Plattformfunktionen.",
     "footer": "© 2026 Ba-Yu-Plattform. Ihre Privatsphäre ist unser Vertrauen."
   },
   "terms_page": {
@@ -1282,26 +1239,14 @@
     "section1_desc": "Durch den Zugriff auf und die Nutzung der Ba-Yu-Plattform gelten diese Bedingungen als gelesen, verstanden und akzeptiert.",
     "section2_title": "2. Accountregistrierung",
     "section2_desc": "Um die Notizfreigabe zu nutzen, müssen Sie sich mit genauen Informationen registrieren. Sie sind voll verantwortlich für:",
-    "section2_items": [
-      "Geheimhaltung Ihres Accountpassworts.",
-      "Alle Aktivitäten unter Ihrem Account.",
-      "Bereitstellung wahrer und genauer Informationen."
-    ],
+    "section2_items": "Geheimhaltung Ihres Accountpassworts.,Alle Aktivitäten unter Ihrem Account.,Bereitstellung wahrer und genauer Informationen.",
     "section3_title": "3. Geistige Eigentumsrechte",
     "section3_quote": "\"Alle Notizen, die Sie hochladen, bleiben Ihr Eigentum. Sie gewähren Ba-Yu jedoch die Lizenz zur Anzeige und Verteilung.\"",
     "section4_title": "4. Nutzungsregeln",
     "allowed_title": "Erlaubt",
-    "allowed_items": [
-      "Originalmaterial teilen.",
-      "Positive Kommentare.",
-      "Für den persönlichen Gebrauch herunterladen."
-    ],
+    "allowed_items": "Originalmaterial teilen.,Positive Kommentare.,Für den persönlichen Gebrauch herunterladen.",
     "prohibited_title": "Verboten",
-    "prohibited_items": [
-      "Plagiate hochladen.",
-      "Hassreden verbreiten.",
-      "System beschädigen."
-    ],
+    "prohibited_items": "Plagiate hochladen.,Hassreden verbreiten.,System beschädigen.",
     "contact": "Fragen? Kontakt <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "&copy; 2026 Ba-Yu-Plattform.<br/>Alle Rechte vorbehalten."
   },
@@ -1310,24 +1255,10 @@
     "hero_title": "Community-Richtlinien",
     "hero_desc": "Lassen Sie uns auf Ba-Yu eine sichere, positive und unterstützende Lernumgebung schaffen.",
     "values_title": "Grundwerte",
-    "values": [
-      {
-        "title": "Gegenseitiger Respekt",
-        "desc": "Kommunizieren Sie höflich, egal ob Sie Kommentare hinterlassen oder konstruktive Kritik üben."
-      },
-      {
-        "title": "Lehrreich & Positiv",
-        "desc": "Konzentrieren Sie sich auf die Verbreitung von Wissen und die Unterstützung anderer Lernender."
-      }
-    ],
+    "values": "[Objekt Objekt],[Objekt Objekt]",
     "rules_title": "Schwere Verstöße",
     "rules_desc": "Die folgenden Aktionen können zur Löschung oder Herabstufung des Accounts führen:",
-    "rules": [
-      "Hochladen plagiierter Notizen.",
-      "Hassreden, Diskriminierung oder SARA.",
-      "Spam, illegale Werbung oder Betrug.",
-      "Teilen von persönlichen Informationen anderer (Doxxing)."
-    ],
+    "rules": "Hochladen plagiierter Notizen.,Hassreden, Diskriminierung oder SARA.,Spam, illegale Werbung oder Betrug.,Teilen von persönlichen Informationen anderer (Doxxing).",
     "footer": "&copy; 2026 Ba-Yu-Plattform.<br/>Alle Rechte vorbehalten."
   },
   "help_page": {
@@ -1337,24 +1268,7 @@
     "search_placeholder": "Fragen suchen...",
     "no_results": "Keine Ergebnisse für \"{query}\"",
     "faq_title": "Häufig gestellte Fragen (FAQ)",
-    "faqs": [
-      {
-        "q": "Wie werde ich Experte bei Ba-Yu?",
-        "a": "Um Experte zu werden, müssen Sie häufig hochwertige Notizen teilen. Wenn Ihre Notizen oft in die Kategorie 'Beliebt' fallen und viele Likes erhalten, wird unser Admin-Team sie überprüfen und den Expertenstatus verleihen."
-      },
-      {
-        "q": "Kann ich Notizen als PDF herunterladen?",
-        "a": "Natürlich! Auf jeder Notizdetailseite können Sie oben rechts oder unten im Inhalt auf die Schaltfläche 'Herunterladen' klicken, um sie im PDF-Format zu speichern."
-      },
-      {
-        "q": "Warum kann sich mein Account nicht anmelden?",
-        "a": "Stellen Sie sicher, dass die eingegebene E-Mail-Adresse und das Passwort korrekt sind. Wenn Sie Ihr Account kürzlich gelöscht haben, befindet es sich möglicherweise im Ruhezustand. Melden Sie sich erneut an, um es zu aktivieren."
-      },
-      {
-        "q": "Wie schreibe ich mathematische Formeln?",
-        "a": "Klicken Sie auf der Seite zum Schreiben von Notizen auf das Taschenrechnersymbol in der seitlichen Symbolleiste, um den Formeleditor zu öffnen. Sie können Formeln im KaTeX-Format schreiben."
-      }
-    ],
+    "faqs": "[Objekt Objekt],[Objekt Objekt],[Objekt Objekt],[Objekt Objekt]",
     "contact_title": "Brauchen Sie noch Hilfe?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Schnelle Antwort",

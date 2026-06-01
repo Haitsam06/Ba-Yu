@@ -428,43 +428,9 @@
     "wait_draft": "Sicela ulinde isikhashana..."
   },
   "calendar": {
-    "days": {
-      "0": "Ilanga",
-      "1": "Msombuluko",
-      "2": "ULwesibili",
-      "3": "NgoLwesithathu",
-      "4": "ULwesine",
-      "5": "NgoLwesihlanu",
-      "6": "NgoMgqibelo"
-    },
-    "months": {
-      "0": "Jan",
-      "1": "Feb",
-      "2": "Mar",
-      "3": "Apr",
-      "4": "Meyi",
-      "5": "Jun",
-      "6": "Jul",
-      "7": "Aug",
-      "8": "Sep",
-      "9": "Oct",
-      "10": "Nov",
-      "11": "Dec"
-    },
-    "full_months": {
-      "0": "January",
-      "1": "February",
-      "2": "Mashi",
-      "3": "April",
-      "4": "Meyi",
-      "5": "Juni",
-      "6": "July",
-      "7": "Agasti",
-      "8": "September",
-      "9": "Okthoba",
-      "10": "Novemba",
-      "11": "Disemba"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "Uxolo, ikhasi olifunayo alikho.",
@@ -585,7 +551,6 @@
     "report_note": "Bika Inothi",
     "report_comment": "Bika Amazwana",
     "report_report": "Bika",
-    "report_laporkan": "Bika",
     "suka_count": "({{count}})",
     "share_cta": "Sabalalisa lolu lwazi olubalulekile kubangani bakho.",
     "copy_link_copied": "Isixhumanisi sikopishiwe!",
@@ -1117,7 +1082,7 @@
     "contact": "Oxhumana naye",
     "privacy": "Inqubomgomo yobumfihlo",
     "terms": "Imigomo Nemibandela",
-    "status": "Status"
+    "status": "Isimo"
   },
   "apply_pakar": {
     "title": "Isitifiketi Sochwepheshe",
@@ -1258,42 +1223,12 @@
     "title": "Inqubomgomo yobumfihlo",
     "hero_title": "Ubumfihlo Bakho",
     "hero_desc": "Idatha yakho iphephile nge-Ba-Yu. Sigcina ukubeka izinto obala nokuvikelwa kwedatha njengokubaluleke kakhulu kwethu.",
-    "principles": {
-      "0": {
-        "label": "Kuvikelekile",
-        "desc": "Idatha ibethelwe."
-      },
-      "1": {
-        "label": "Okusobala",
-        "desc": "Vula mayelana nedatha."
-      },
-      "2": {
-        "label": "Kulawulwa",
-        "desc": "Uwena olawulayo."
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. Idatha Esiyiqoqayo",
     "collection_desc": "Siqoqa kuphela ulwazi oluncane oludingekayo ukuze sisekele inqubo yakho yokufunda:",
-    "collections": {
-      "0": {
-        "title": "Ulwazi Lwephrofayela",
-        "text": "Igama, i-imeyili, nezinga lemfundo."
-      },
-      "1": {
-        "title": "Okuqukethwe Ukufunda",
-        "text": "Amanothi, izithombe, namazwana."
-      },
-      "2": {
-        "title": "Idatha Yezobuchwepheshe",
-        "text": "Amalogi omsebenzi azothuthukiswa."
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. Ukusetshenziswa kwedatha",
-    "usages": {
-      "0": "Ivumela ukwabelana ngamanothi.",
-      "1": "Inikeza izaziso ezibalulekile.",
-      "2": "Ukuthuthukisa izici zenkundla."
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform. Ubumfihlo Bakho buyisethenjwa Sethu."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "Ngokufinyelela nokusebenzisa inkundla ye-Ba-Yu, uthathwa njengofundile, waqonda, futhi wavuma ukuboshwa yile Migomo Nemibandela. Uma ungavumelani, sicela ungaqhubeki usebenzise izinsiza zethu ukuze uvikeleke ngokufanayo.",
     "section2_title": "2. Ukubhaliswa Kwe-akhawunti",
     "section2_desc": "Ukuze usebenzise isici sokwabelana ngamanothi, kudingeka ubhalise ngolwazi olunembile. Ubophezelekile ngokugcwele kulokhu:",
-    "section2_items": {
-      "0": "Ukugcina ubumfihlo bephasiwedi ye-akhawunti yakho.",
-      "1": "Yonke imisebenzi eyenzekayo ngaphansi kwe-akhawunti yakho.",
-      "2": "Ukunikeza ulwazi oluyiqiniso nolunembile."
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. Amalungelo Empahla Yengqondo",
     "section3_quote": "\"Noma yimaphi amanothi owalayishayo ku-Ba-Yu ahlala engawakho. Nokho, ngokuwalayisha, unikeza u-Ba-Yu ilayisense yokubonisa, ukusabalalisa, nokukhuthaza lokho okuqukethwe ngaphakathi kwengxenyekazi ye-ecosystem yethu ngezinjongo zemfundo.\"",
     "section4_title": "4. Imithetho Yokusebenzisa",
     "allowed_title": "Yini Okuvunyelwe",
-    "allowed_items": {
-      "0": "Ukwabelana ngezinto zokuqala zokufunda.",
-      "1": "Ukunikeza imibono eyakhayo.",
-      "2": "Ilanda ukuze uthole ireferensi yomuntu siqu."
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "Yini Enqatshelwe",
-    "prohibited_items": {
-      "0": "Ilayisha okuqukethwe okotshiwe.",
-      "1": "Ukusabalalisa inkulumo enenzondo.",
-      "2": "Ukulimaza isistimu yesikhulumi."
-    },
+    "prohibited_items": "[object Object]",
     "contact": "Unemibuzo? Xhumana <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "© 2026 Ba-Yu Platform.<br/>Wonke Amalungelo Agodliwe."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "Izinkombandlela Zomphakathi",
     "hero_desc": "Masidale indawo yokufunda ephephile, enhle, futhi esekelayo ku-Ba-Yu.",
     "values_title": "Amanani Abalulekile",
-    "values": {
-      "0": {
-        "title": "Ukuhloniphana",
-        "desc": "Khulumisana ngesizotha, kungakhathaliseki ukuthi ushiya imibono noma unikeza ukugxeka okwakhayo."
-      },
-      "1": {
-        "title": "Ezemfundo & Okuhle",
-        "desc": "Gxila ekusabalaliseni ulwazi nokweseka abanye ofunda nabo."
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "Ukwephulwa Okukhulu",
     "rules_desc": "Izenzo ezilandelayo zingase zibangele ukususwa noma ukwehlisa i-akhawunti:",
-    "rules": {
-      "0": "Ilayisha amanothi akopishiwe.",
-      "1": "Inkulumo enenzondo, ukucwasa, noma i-SARA.",
-      "2": "Ugaxekile, izinyuso ezingekho emthethweni, noma ukukhwabanisa.",
-      "3": "Ukwabelana ngolwazi lwabanye abantu (doxxing)."
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform.<br/>Wonke Amalungelo Agodliwe."
   },
   "help_page": {
@@ -1359,24 +1268,7 @@
     "search_placeholder": "Sesha imibuzo...",
     "no_results": "Ayikho imiphumela ye-\"{query}\"",
     "faq_title": "Imibuzo Evame Ukubuzwa (FAQ)",
-    "faqs": {
-      "0": {
-        "q": "Ngingaba kanjani Uchwepheshe ku-Ba-Yu?",
-        "a": "Ukuze ube Uchwepheshe, kufanele wabelane njalo ngamanothi ekhwalithi. Uma amanothi akho evamise ukungena esigabeni 'Okudumile' futhi athole ukuthandwa okuningi, ithimba lethu labaqondisi lizowabuyekeza futhi linikeze isimo Sobungcweti."
-      },
-      "1": {
-        "q": "Ngingakwazi ukulanda amanothi njenge-PDF?",
-        "a": "Kunjalo! Ekhasini ngalinye lemininingwane yenothi, ungacindezela inkinobho ethi Landa ekhoneni eliphezulu kwesokudla noma ezansi kokuqukethwe ukuze ukugcine ngefomethi ye-PDF."
-      },
-      "2": {
-        "q": "Kungani i-akhawunti yami ingakwazi ukungena ngemvume?",
-        "a": "Qiniseka ukuthi i-imeyili nephasiwedi oyifakile kulungile. Uma usanda kususa i-akhawunti yakho, kungenzeka ukuthi isesimweni sokungalali. Zama ukungena futhi ukuze uyisebenzise."
-      },
-      "3": {
-        "q": "Ngiwabhala kanjani amafomula ezibalo?",
-        "a": "Ekhasini lokubhala inothi, chofoza isithonjana sesibali kubha yamathuluzi eseceleni ukuze uvule umhleli wefomula. Ungabhala amafomula usebenzisa ifomethi ye-KaTeX."
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "Usadinga Usizo?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Ukusabela okusheshayo",

@@ -250,7 +250,7 @@
     "help_center": "Help Center",
     "logout": "Log Out",
     "about": "Tungkol sa Amin",
-    "blog": "Blog",
+    "blog": "Mga Blog",
     "terms": "Mga tuntunin",
     "privacy": "Pagkapribado"
   },
@@ -262,7 +262,7 @@
     "video_placeholder": "Ilagay ang YouTube o Vimeo URL...",
     "video_caption": "I-type ang caption ng video dito...",
     "image": "Imahe",
-    "video": "Video",
+    "video": "Mga video",
     "code": "Code",
     "formula": "Formula",
     "divider": "Divider",
@@ -428,43 +428,9 @@
     "wait_draft": "Mangyaring maghintay ng ilang sandali..."
   },
   "calendar": {
-    "days": {
-      "0": "Araw",
-      "1": "Mon",
-      "2": "Tue",
-      "3": "Wed",
-      "4": "Huwebes",
-      "5": "Biyernes",
-      "6": "Sab"
-    },
-    "months": {
-      "0": "Jan",
-      "1": "Feb",
-      "2": "Mar",
-      "3": "Apr",
-      "4": "May",
-      "5": "Si Jun",
-      "6": "Hul",
-      "7": "Aug",
-      "8": "Sep",
-      "9": "Oct",
-      "10": "Nob",
-      "11": "Dec"
-    },
-    "full_months": {
-      "0": "Enero",
-      "1": "Pebrero",
-      "2": "Marso",
-      "3": "Abril",
-      "4": "May",
-      "5": "Hunyo",
-      "6": "Hulyo",
-      "7": "Agosto",
-      "8": "Setyembre",
-      "9": "Oktubre",
-      "10": "Nobyembre",
-      "11": "Disyembre"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "Paumanhin, ang pahina na iyong hinahanap ay wala.",
@@ -585,7 +551,6 @@
     "report_note": "Tala ng Ulat",
     "report_comment": "Iulat ang Komento",
     "report_report": "Ulat",
-    "report_laporkan": "Ulat",
     "suka_count": "({{count}})",
     "share_cta": "Ipagkalat ang mahalagang kaalaman na ito sa iyong mga kaibigan.",
     "copy_link_copied": "Nakopya ang link!",
@@ -1093,7 +1058,7 @@
     "pdf_protected_desc": "Ang PDF na ito ay naglalaman lamang ng bahagyang materyal. Sundin ang may-akda <b>@{{author}}</b> sa Ba-Yu app para i-download ang buong bersyon.",
     "pdf_footer": "Ang dokumentong ito ay na-download mula sa <span class=\"footer-brand\">Ba-Yu</span> - The Future Learning Platform",
     "draft_badge": "DRAFT",
-    "draft_label": "Draft",
+    "draft_label": "Mga draft",
     "last_edit": "Huling pag-edit:",
     "untitled_draft": "Walang Pamagat na Draft",
     "untitled": "Walang pamagat",
@@ -1105,11 +1070,11 @@
     "desc": "Structured study notes platform para sa mga mag-aaral",
     "product": "produkto",
     "explore_notes": "Galugarin ang Mga Tala",
-    "dashboard": "Dashboard",
+    "dashboard": "Mga dashboard",
     "features": "Mga tampok",
     "resources": "Mga mapagkukunan",
     "guide": "Patnubay",
-    "blog": "Blog",
+    "blog": "Mga Blog",
     "help": "Tulong",
     "company": "kumpanya",
     "about_us": "Tungkol sa Amin",
@@ -1117,7 +1082,7 @@
     "contact": "Makipag-ugnayan",
     "privacy": "Patakaran sa Privacy",
     "terms": "Mga Tuntunin at Kundisyon",
-    "status": "Status"
+    "status": "Katayuan"
   },
   "apply_pakar": {
     "title": "Sertipikasyon ng Dalubhasa",
@@ -1258,42 +1223,12 @@
     "title": "Patakaran sa Privacy",
     "hero_title": "Ang iyong Privacy",
     "hero_desc": "Ligtas ang iyong data sa Ba-Yu. Pinapanatili namin ang transparency at proteksyon ng data bilang aming pangunahing priyoridad.",
-    "principles": {
-      "0": {
-        "label": "Secure",
-        "desc": "Naka-encrypt ang data."
-      },
-      "1": {
-        "label": "Transparent",
-        "desc": "Buksan ang tungkol sa data."
-      },
-      "2": {
-        "label": "Kinokontrol",
-        "desc": "Ikaw ang may kontrol."
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. Data na Kinokolekta Namin",
     "collection_desc": "Kinokolekta lamang namin ang kaunting impormasyong kinakailangan upang suportahan ang iyong proseso ng pag-aaral:",
-    "collections": {
-      "0": {
-        "title": "Impormasyon sa Profile",
-        "text": "Pangalan, email, at antas ng edukasyon."
-      },
-      "1": {
-        "title": "Nilalaman ng Pag-aaral",
-        "text": "Mga tala, larawan, at komento."
-      },
-      "2": {
-        "title": "Teknikal na Data",
-        "text": "Mga tala ng aktibidad para sa pagpapabuti."
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. Paggamit ng Data",
-    "usages": {
-      "0": "Pinapagana ang pagbabahagi ng tala.",
-      "1": "Nagbibigay ng mahahalagang abiso.",
-      "2": "Pagpapabuti ng mga tampok ng platform."
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform. Ang iyong Privacy ay Aming Pagtitiwala."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "Sa pamamagitan ng pag-access at paggamit sa Ba-Yu platform, ikaw ay itinuring na nabasa, naunawaan, at sumang-ayon na sumailalim sa Mga Tuntunin at Kundisyon na ito. Kung hindi ka sumasang-ayon, mangyaring huwag ipagpatuloy ang paggamit ng aming mga serbisyo para sa kapwa seguridad.",
     "section2_title": "2. Pagpaparehistro ng Account",
     "section2_desc": "Upang magamit ang tampok na pagbabahagi ng tala, kailangan mong magparehistro nang may tumpak na impormasyon. Ikaw ay ganap na responsable para sa:",
-    "section2_items": {
-      "0": "Pagpapanatili ng pagiging kumpidensyal ng password ng iyong account.",
-      "1": "Lahat ng aktibidad na nangyayari sa ilalim ng iyong account.",
-      "2": "Pagbibigay ng totoo at tumpak na impormasyon."
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. Mga Karapatan sa Intelektwal na Ari-arian",
     "section3_quote": "\"Anumang mga tala na ia-upload mo sa Ba-Yu ay mananatiling iyo. Gayunpaman, sa pamamagitan ng pag-upload ng mga ito, binibigyan mo si Ba-Yu ng lisensya upang ipakita, ipamahagi, at i-promote ang nilalamang iyon sa loob ng aming platform ecosystem para sa mga layuning pang-edukasyon.\"",
     "section4_title": "4. Mga Panuntunan sa Paggamit",
     "allowed_title": "Ano ang Pinahihintulutan",
-    "allowed_items": {
-      "0": "Pagbabahagi ng mga orihinal na materyales sa pag-aaral.",
-      "1": "Pagbibigay ng mga positibong komento.",
-      "2": "Nagda-download para sa personal na sanggunian."
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "Ano ang Ipinagbabawal",
-    "prohibited_items": {
-      "0": "Pag-upload ng plagiarized na nilalaman.",
-      "1": "Pagpapalaganap ng mapoot na salita.",
-      "2": "Sinisira ang sistema ng platform."
-    },
+    "prohibited_items": "[object Object]",
     "contact": "May mga katanungan? Makipag-ugnayan sa <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "© 2026 Ba-Yu Platform.<br/>Lahat ng Karapatan."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "Mga Alituntunin ng Komunidad",
     "hero_desc": "Gumawa tayo ng ligtas, positibo, at sumusuporta sa kapaligiran ng pag-aaral sa Ba-Yu.",
     "values_title": "Mga Pangunahing Halaga",
-    "values": {
-      "0": {
-        "title": "Paggalang sa kapwa",
-        "desc": "Magalang na makipag-usap, nag-iiwan man ng mga komento o nagbibigay ng nakabubuo na pagpuna."
-      },
-      "1": {
-        "title": "Pang-edukasyon at Positibo",
-        "desc": "Tumutok sa pagpapalaganap ng kaalaman at pagsuporta sa iba pang kapwa mag-aaral."
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "Matinding Paglabag",
     "rules_desc": "Ang mga sumusunod na aksyon ay maaaring magresulta sa pagtanggal o pagbabawas ng posisyon sa account:",
-    "rules": {
-      "0": "Pag-upload ng mga plagiarized na tala.",
-      "1": "Mapoot na pananalita, diskriminasyon, o SARA.",
-      "2": "Spam, ilegal na promosyon, o panloloko.",
-      "3": "Pagbabahagi ng personal na impormasyon ng ibang tao (doxxing)."
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform.<br/>Lahat ng Karapatan."
   },
   "help_page": {
@@ -1359,28 +1268,11 @@
     "search_placeholder": "Mga tanong sa paghahanap...",
     "no_results": "Walang mga resulta para sa \"{query}\"",
     "faq_title": "Mga Madalas Itanong (FAQ)",
-    "faqs": {
-      "0": {
-        "q": "Paano ako magiging Expert sa Ba-Yu?",
-        "a": "Upang maging isang Eksperto, dapat kang madalas na magbahagi ng mga tala ng kalidad. Kung madalas na pumapasok ang iyong mga tala sa kategoryang 'Popular' at nakakakuha ng maraming like, susuriin ng aming Admin team ang mga ito at magbibigay ng status na Expert."
-      },
-      "1": {
-        "q": "Maaari ba akong mag-download ng mga tala bilang PDF?",
-        "a": "Syempre! Sa bawat pahina ng detalye ng tala, maaari mong pindutin ang button na I-download sa kanang sulok sa itaas o sa ibaba ng nilalaman upang i-save ito sa format na PDF."
-      },
-      "2": {
-        "q": "Bakit hindi maka-log in ang aking account?",
-        "a": "Tiyaking tama ang email at password na iyong inilagay. Kung tinanggal mo kamakailan ang iyong account, maaaring nasa Dormant status ito. Subukang mag-log in muli para i-activate ito."
-      },
-      "3": {
-        "q": "Paano ako magsusulat ng mga formula sa matematika?",
-        "a": "Sa pahina ng pagsusulat ng tala, i-click ang icon ng calculator sa toolbar sa gilid upang buksan ang editor ng formula. Maaari kang magsulat ng mga formula gamit ang KaTeX format."
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "Kailangan pa rin ng tulong?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Mabilis na tugon",
-    "contact_email_title": "Email",
+    "contact_email_title": "E-mail",
     "contact_email_desc": "Mga detalye at attachment",
     "guidelines_title": "Mga Alituntunin ng Komunidad",
     "guidelines_desc": "Basahin ang mga patakaran at etika ng pagbabahagi ng mga tala sa Ba-Yu."
@@ -1431,7 +1323,7 @@
     "username_hint": "Mga maliliit na titik, numero, at salungguhit lamang (_)",
     "email_or_username": "Email o Username",
     "email": "Email Address",
-    "password": "Password",
+    "password": "Mga password",
     "role": "Propesyon / Tungkulin",
     "role_pelajar": "Estudyante",
     "role_mahasiswa": "College Student",
@@ -1522,7 +1414,7 @@
     "col_field": "Larangan ng Dalubhasa",
     "col_reject_reason": "Dahilan ng Pagtanggi",
     "col_name": "Pangalan",
-    "col_email": "Email",
+    "col_email": "E-mail",
     "col_role": "Tungkulin",
     "col_reg_date": "Petsa ng Pagpaparehistro"
   },

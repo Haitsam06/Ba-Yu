@@ -428,43 +428,9 @@
     "wait_draft": "しばらくお待ちください..."
   },
   "calendar": {
-    "days": [
-      "日",
-      "月",
-      "火",
-      "水",
-      "木",
-      "金",
-      "土"
-    ],
-    "months": [
-      "1月",
-      "2月",
-      "3月",
-      "4月",
-      "5月",
-      "6月",
-      "7月",
-      "8月",
-      "9月",
-      "10月",
-      "11月",
-      "12月"
-    ],
-    "full_months": [
-      "1月",
-      "2月",
-      "3月",
-      "4月",
-      "5月",
-      "6月",
-      "7月",
-      "8月",
-      "9月",
-      "10月",
-      "11月",
-      "12月"
-    ]
+    "days": "日,月,火,水,木,金,土",
+    "months": "1月,2月,3月,4月,5月,6月,7月,8月,9月,10月,11月,12月",
+    "full_months": "1月,2月,3月,4月,5月,6月,7月,8月,9月,10月,11月,12月"
   },
   "not_found": {
     "message": "お探しのページは存在しません。",
@@ -490,6 +456,7 @@
     "following": "フォロー中",
     "pending": "保留中",
     "minutes_read": "分で読めます",
+    "read_time": "分で読める",
     "expert_review": "専門家のレビュー",
     "restricted_access": "アクセス制限",
     "restricted_desc": "作者はこのノートへの完全なアクセスを制限しています。作者をフォローして全資料のロックを解除してください。",
@@ -598,7 +565,6 @@
     "unverify_desc": "このノートの認証ステータスをキャンセルしてもよろしいですか？",
     "verify_title": "ノートを認証",
     "verify_desc": "このノートを正確で高品質な資料として認証しますか？",
-    "read_time": "分で読める",
     "respond_btn": "返信する",
     "downloaded_at": "ダウンロード：",
     "pdf_restricted_title": "保護された資料",
@@ -804,7 +770,7 @@
     "humas": "広報",
     "hi": "国際関係",
     "jurnalistik": "ジャーナリズム",
-    "-": " ",
+    "-": "",
     "pendidikan-kewarganegaraan": "公民",
     "ilmu-pengetahuan-alam": "自然科学",
     "ilmu-pengetahuan-sosial": "社会科学",
@@ -936,7 +902,9 @@
     "view_cert_download": "ファイルをダウンロード",
     "btn_view_cert": "ファイルを見る",
     "tab_pending": "アクションが必要",
-    "tab_history": "履歴"
+    "tab_history": "履歴",
+    "system_server": "undefined",
+    "recent_activity": "undefined"
   },
   "edu_levels": {
     "SD": "小学校",
@@ -1089,6 +1057,11 @@
     "pdf_protected_title": "保護された資料",
     "pdf_protected_desc": "このPDFには一部の資料のみが含まれています。完全版をダウンロードするには、Ba-Yuアプリで著者 <b>@{{author}}</b> をフォローしてください。",
     "pdf_footer": "このドキュメントは <span class=\"footer-brand\">Ba-Yu</span> からダウンロードされました - 未来の学習プラットフォーム",
+    "draft_badge": "undefined",
+    "draft_label": "undefined",
+    "last_edit": "undefined",
+    "untitled_draft": "undefined",
+    "untitled": "undefined",
     "submit_to_expert": "専門家に提出",
     "submit_to_expert_success": "ノートが専門家に提出されました！",
     "submit_to_expert_error": "専門家への提出に失敗しました"
@@ -1109,7 +1082,23 @@
     "contact": "連絡先",
     "privacy": "プライバシーポリシー",
     "terms": "利用規約",
-    "status": "Status"
+    "status": "状態"
+  },
+  "apply_pakar": {
+    "title": "undefined",
+    "description": "undefined",
+    "full_name": "undefined",
+    "education_expertise": "undefined",
+    "education_placeholder": "undefined",
+    "upload_document": "undefined",
+    "choose_file": "undefined",
+    "max_size": "undefined",
+    "submit": "undefined",
+    "success_title": "undefined",
+    "success_desc": "undefined",
+    "file_too_large": "undefined",
+    "require_file": "undefined",
+    "error_submit": "undefined"
   },
   "edit_profile": {
     "title": "プロフィール編集",
@@ -1234,42 +1223,12 @@
     "title": "プライバシーポリシー",
     "hero_title": "あなたのプライバシー",
     "hero_desc": "あなたのデータはBa-Yuで安全に守られています。私たちは透明性とデータ保護を最優先事項としています。",
-    "principles": [
-      {
-        "label": "安全",
-        "desc": "データは暗号化されます。"
-      },
-      {
-        "label": "透明",
-        "desc": "データについてオープンです。"
-      },
-      {
-        "label": "コントロール",
-        "desc": "あなたが管理できます。"
-      }
-    ],
+    "principles": "[オブジェクト オブジェクト]、[オブジェクト オブジェクト]、[オブジェクト オブジェクト]",
     "collection_title": "1. 収集するデータ",
     "collection_desc": "学習プロセスをサポートするために必要な最小限の情報のみを収集します：",
-    "collections": [
-      {
-        "title": "プロフィール情報",
-        "text": "名前、メール、教育レベル。"
-      },
-      {
-        "title": "学習コンテンツ",
-        "text": "ノート、画像、コメント。"
-      },
-      {
-        "title": "技術データ",
-        "text": "改善のための活動ログ。"
-      }
-    ],
+    "collections": "[オブジェクト オブジェクト]、[オブジェクト オブジェクト]、[オブジェクト オブジェクト]",
     "usage_title": "2. データの使用",
-    "usages": [
-      "ノートの共有を可能にする。",
-      "重要な通知を提供する。",
-      "プラットフォームの機能を改善する。"
-    ],
+    "usages": "ノートの共有を可能にする。,重要な通知を提供する。,プラットフォームの機能を改善する。",
     "footer": "© 2026 Ba-Yuプラットフォーム。あなたのプライバシーは私たちの信頼です。"
   },
   "terms_page": {
@@ -1280,26 +1239,14 @@
     "section1_desc": "Ba-Yuプラットフォームにアクセスすることで、これらの規約に同意したものとみなされます。",
     "section2_title": "2. アカウント登録",
     "section2_desc": "正確な情報で登録する必要があります。以下の責任を負います：",
-    "section2_items": [
-      "パスワードの機密保持。",
-      "アカウント下での活動。",
-      "正確な情報の提供。"
-    ],
+    "section2_items": "パスワードの機密保持。,アカウント下での活動。,正確な情報の提供。",
     "section3_title": "3. 知的財産権",
     "section3_quote": "「アップロードしたノートはあなたのものですが、Ba-Yuに表示・配布のライセンスを付与します。」",
     "section4_title": "4. 利用ルール",
     "allowed_title": "許可されること",
-    "allowed_items": [
-      "オリジナル資料の共有。",
-      "肯定的なコメント。",
-      "個人用ダウンロード。"
-    ],
+    "allowed_items": "オリジナル資料の共有。,肯定的なコメント。,個人用ダウンロード。",
     "prohibited_title": "禁止事項",
-    "prohibited_items": [
-      "盗作のアップロード。",
-      "ヘイトスピーチ。",
-      "システムの破壊。"
-    ],
+    "prohibited_items": "盗作のアップロード。,ヘイトスピーチ。,システムの破壊。",
     "contact": "質問は <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "&copy; 2026 Ba-Yu プラットフォーム。<br/>全著作権所有。"
   },
@@ -1308,24 +1255,10 @@
     "hero_title": "コミュニティガイドライン",
     "hero_desc": "Ba-Yuで安全で、ポジティブで、支え合う学習環境を作りましょう。",
     "values_title": "コアバリュー",
-    "values": [
-      {
-        "title": "相互尊重",
-        "desc": "コメントを残す場合でも建設的な批判をする場合でも、丁寧にコミュニケーションをとりましょう。"
-      },
-      {
-        "title": "教育的かつポジティブ",
-        "desc": "知識の普及と他の学習者のサポートに焦点を当てます。"
-      }
-    ],
+    "values": "[オブジェクト オブジェクト]、[オブジェクト オブジェクト]",
     "rules_title": "重大な違反",
     "rules_desc": "以下のアクションは、アカウントの削除または降格につながる可能性があります：",
-    "rules": [
-      "盗作されたノートのアップロード。",
-      "ヘイトスピーチ、差別、またはSARA。",
-      "スパム、違法なプロモーション、または詐欺。",
-      "他人の個人情報の共有（ドキシング）。"
-    ],
+    "rules": "盗作されたノートのアップロード。,ヘイトスピーチ、差別、またはSARA。,スパム、違法なプロモーション、または詐欺。,他人の個人情報の共有（ドキシング）。",
     "footer": "&copy; 2026 Ba-Yu プラットフォーム。<br/>全著作権所有。"
   },
   "help_page": {
@@ -1335,26 +1268,9 @@
     "search_placeholder": "質問を検索...",
     "no_results": "「{query}」の検索結果はありません",
     "faq_title": "よくある質問 (FAQ)",
-    "faqs": [
-      {
-        "q": "Ba-Yuの専門家になるにはどうすればよいですか？",
-        "a": "専門家になるには、頻繁に質の高いノートを共有する必要があります。あなたのノートが頻繁に「人気」カテゴリに入り、多くの「いいね」を獲得した場合、管理チームがそれを確認し、専門家ステータスを付与します。"
-      },
-      {
-        "q": "ノートをPDFとしてダウンロードできますか？",
-        "a": "もちろんです！各ノートの詳細ページで、右上の角またはコンテンツの下部にある[ダウンロード]ボタンを押してPDF形式で保存できます。"
-      },
-      {
-        "q": "アカウントにログインできないのはなぜですか？",
-        "a": "入力したメールアドレスとパスワードが正しいことを確認してください。最近アカウントを削除した場合、休眠状態にある可能性があります。再度ログインして有効化してみてください。"
-      },
-      {
-        "q": "数式を書くにはどうすればよいですか？",
-        "a": "ノート作成ページで、サイドツールバーの電卓アイコンをクリックして数式エディターを開きます。KaTeX形式で数式を書くことができます。"
-      }
-    ],
+    "faqs": "[オブジェクト オブジェクト]、[オブジェクト オブジェクト]、[オブジェクト オブジェクト]、[オブジェクト オブジェクト]",
     "contact_title": "まだ助けが必要ですか？",
-    "contact_wa_title": "WhatsApp",
+    "contact_wa_title": "ワッツアップ",
     "contact_wa_desc": "迅速な対応",
     "contact_email_title": "Eメール",
     "contact_email_desc": "詳細と添付ファイル",

@@ -71,7 +71,7 @@
     "faq_title": "Ofte stillede spørgsmål",
     "contact_title": "Kontakt os",
     "contact_desc": "Har du brug for mere hjælp? Kontakt vores team.",
-    "whatsapp": "Chat WhatsApp",
+    "whatsapp": "WhatsApp chat",
     "email": "Send e-mail",
     "community_guidelines": "Fællesskabsretningslinjer",
     "community_guidelines_desc": "Læs reglerne og etikken for at dele noter om Ba-Yu."
@@ -250,7 +250,7 @@
     "help_center": "Hjælpecenter",
     "logout": "Log ud",
     "about": "Om os",
-    "blog": "Blog",
+    "blog": "Blogs",
     "terms": "Vilkår",
     "privacy": "Privatliv"
   },
@@ -262,7 +262,7 @@
     "video_placeholder": "Indtast YouTube eller Vimeo URL...",
     "video_caption": "Skriv videotekst her...",
     "image": "Billede",
-    "video": "Video",
+    "video": "Videoer",
     "code": "Kode",
     "formula": "Formel",
     "divider": "Afdeler",
@@ -428,43 +428,9 @@
     "wait_draft": "Vent venligst et øjeblik..."
   },
   "calendar": {
-    "days": {
-      "0": "Sol",
-      "1": "man",
-      "2": "tir",
-      "3": "ons",
-      "4": "tor",
-      "5": "fre",
-      "6": "Lør"
-    },
-    "months": {
-      "0": "Jan",
-      "1": "feb",
-      "2": "Mar",
-      "3": "apr",
-      "4": "maj",
-      "5": "jun",
-      "6": "jul",
-      "7": "aug",
-      "8": "sep",
-      "9": "okt",
-      "10": "nov",
-      "11": "dec"
-    },
-    "full_months": {
-      "0": "januar",
-      "1": "februar",
-      "2": "marts",
-      "3": "april",
-      "4": "maj",
-      "5": "juni",
-      "6": "juli",
-      "7": "august",
-      "8": "september",
-      "9": "oktober",
-      "10": "november",
-      "11": "december"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "Beklager, siden du leder efter eksisterer ikke.",
@@ -585,7 +551,6 @@
     "report_note": "Rapport Bemærk",
     "report_comment": "Rapport kommentar",
     "report_report": "Rapport",
-    "report_laporkan": "Rapport",
     "suka_count": "({{count}})",
     "share_cta": "Spred denne værdifulde viden til dine venner.",
     "copy_link_copied": "Linket er kopieret!",
@@ -1105,11 +1070,11 @@
     "desc": "Struktureret studienotesplatform for studerende",
     "product": "Produkt",
     "explore_notes": "Udforsk noter",
-    "dashboard": "Dashboard",
+    "dashboard": "Dashboards",
     "features": "Funktioner",
     "resources": "Ressourcer",
     "guide": "Guide",
-    "blog": "Blog",
+    "blog": "Blogs",
     "help": "Hjælp",
     "company": "Selskab",
     "about_us": "Om os",
@@ -1258,42 +1223,12 @@
     "title": "Privatlivspolitik",
     "hero_title": "Dit privatliv",
     "hero_desc": "Dine data er sikre hos Ba-Yu. Vi opretholder gennemsigtighed og databeskyttelse som vores topprioritet.",
-    "principles": {
-      "0": {
-        "label": "Sikker",
-        "desc": "Data er krypteret."
-      },
-      "1": {
-        "label": "Gennemsigtig",
-        "desc": "Åben om data."
-      },
-      "2": {
-        "label": "Kontrolleret",
-        "desc": "Du er i kontrol."
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. Data vi indsamler",
     "collection_desc": "Vi indsamler kun minimal information, der er nødvendig for at understøtte din læringsproces:",
-    "collections": {
-      "0": {
-        "title": "Profil info",
-        "text": "Navn, e-mail og uddannelsesniveau."
-      },
-      "1": {
-        "title": "Læringsindhold",
-        "text": "Noter, billeder og kommentarer."
-      },
-      "2": {
-        "title": "Tekniske data",
-        "text": "Aktivitetslogfiler til forbedring."
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. Dataforbrug",
-    "usages": {
-      "0": "Aktiverer notedeling.",
-      "1": "Giver vigtige meddelelser.",
-      "2": "Forbedring af platformsfunktioner."
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform. Dit privatliv er vores tillid."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "Ved at tilgå og bruge Ba-Yu-platformen anses du for at have læst, forstået og accepteret at være bundet af disse vilkår og betingelser. Hvis du ikke er enig, skal du ikke fortsætte med at bruge vores tjenester af hensyn til gensidig sikkerhed.",
     "section2_title": "2. Kontoregistrering",
     "section2_desc": "For at bruge notedelingsfunktionen skal du registrere dig med nøjagtige oplysninger. Du har det fulde ansvar for:",
-    "section2_items": {
-      "0": "Bevarelse af fortroligheden af ​​din kontoadgangskode.",
-      "1": "Alle aktiviteter, der finder sted under din konto.",
-      "2": "Giver sand og nøjagtig information."
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. Immaterielle rettigheder",
     "section3_quote": "\"Alle noter, du uploader til Ba-Yu, forbliver dine. Men ved at uploade dem giver du Ba-Yu en licens til at vise, distribuere og promovere dette indhold i vores platformsøkosystem til uddannelsesformål.\"",
     "section4_title": "4. Regler for brug",
     "allowed_title": "Hvad er tilladt",
-    "allowed_items": {
-      "0": "Deling af originalt studiemateriale.",
-      "1": "At give positive kommentarer.",
-      "2": "Downloader til personlig reference."
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "Hvad er forbudt",
-    "prohibited_items": {
-      "0": "Upload af plagieret indhold.",
-      "1": "Spredning af hadefulde ytringer.",
-      "2": "Beskadigelse af platformsystemet."
-    },
+    "prohibited_items": "[object Object]",
     "contact": "Har du spørgsmål? Kontakt <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "© 2026 Ba-Yu Platform.<br/>Alle rettigheder forbeholdes."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "Fællesskabsretningslinjer",
     "hero_desc": "Lad os skabe et sikkert, positivt og støttende læringsmiljø på Ba-Yu.",
     "values_title": "Kerneværdier",
-    "values": {
-      "0": {
-        "title": "Gensidig respekt",
-        "desc": "Kommuniker høfligt, uanset om du efterlader kommentarer eller giver konstruktiv kritik."
-      },
-      "1": {
-        "title": "Pædagogisk og positiv",
-        "desc": "Fokuser på at udbrede viden og støtte andre medstuderende."
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "Alvorlige overtrædelser",
     "rules_desc": "Følgende handlinger kan resultere i sletning eller degradering af kontoen:",
-    "rules": {
-      "0": "Upload af plagierede noter.",
-      "1": "Hadefulde ytringer, diskrimination eller SARA.",
-      "2": "Spam, ulovlige kampagner eller svindel.",
-      "3": "Deling af andres personlige oplysninger (doxxing)."
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform.<br/>Alle rettigheder forbeholdes."
   },
   "help_page": {
@@ -1359,24 +1268,7 @@
     "search_placeholder": "Søg spørgsmål...",
     "no_results": "Ingen resultater for \"{query}\"",
     "faq_title": "Ofte stillede spørgsmål (FAQ)",
-    "faqs": {
-      "0": {
-        "q": "Hvordan bliver jeg ekspert i Ba-Yu?",
-        "a": "For at blive ekspert skal du ofte dele kvalitetsnotater. Hvis dine noter ofte går ind i kategorien 'Populær' og får mange likes, vil vores administratorteam gennemgå dem og give ekspertstatus."
-      },
-      "1": {
-        "q": "Kan jeg downloade noter som PDF?",
-        "a": "Selvfølgelig! På hver note-detaljeside kan du trykke på knappen Download i øverste højre hjørne eller nederst i indholdet for at gemme det i PDF-format."
-      },
-      "2": {
-        "q": "Hvorfor kan min konto ikke logge ind?",
-        "a": "Sørg for, at den e-mail og adgangskode, du har indtastet, er korrekte. Hvis du for nylig har slettet din konto, er den muligvis i dvalestatus. Prøv at logge ind igen for at aktivere den."
-      },
-      "3": {
-        "q": "Hvordan skriver jeg matematiske formler?",
-        "a": "På noteskrivesiden skal du klikke på lommeregnerikonet på sideværktøjslinjen for at åbne formeleditoren. Du kan skrive formler ved hjælp af KaTeX-format."
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "Har du stadig brug for hjælp?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Hurtig respons",

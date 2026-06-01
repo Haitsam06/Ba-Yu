@@ -428,43 +428,9 @@
     "wait_draft": "Per favore aspetta un attimo..."
   },
   "calendar": {
-    "days": {
-      "0": "Sole",
-      "1": "Lun",
-      "2": "Mar",
-      "3": "Mercoledì",
-      "4": "Gio",
-      "5": "Ven",
-      "6": "Sab"
-    },
-    "months": {
-      "0": "Gen",
-      "1": "Febbraio",
-      "2": "Mar",
-      "3": "aprile",
-      "4": "Maggio",
-      "5": "giugno",
-      "6": "Lug",
-      "7": "Agosto",
-      "8": "Settembre",
-      "9": "ottobre",
-      "10": "novembre",
-      "11": "dicembre"
-    },
-    "full_months": {
-      "0": "Gennaio",
-      "1": "Febbraio",
-      "2": "Marzo",
-      "3": "aprile",
-      "4": "Maggio",
-      "5": "Giugno",
-      "6": "Luglio",
-      "7": "agosto",
-      "8": "settembre",
-      "9": "ottobre",
-      "10": "novembre",
-      "11": "Dicembre"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "Siamo spiacenti, la pagina che stai cercando non esiste.",
@@ -585,7 +551,6 @@
     "report_note": "Nota sul rapporto",
     "report_comment": "Segnala commento",
     "report_report": "Rapporto",
-    "report_laporkan": "Rapporto",
     "suka_count": "({{count}})",
     "share_cta": "Diffondi questa preziosa conoscenza ai tuoi amici.",
     "copy_link_copied": "Link copiato!",
@@ -1117,7 +1082,7 @@
     "contact": "Contatto",
     "privacy": "politica sulla riservatezza",
     "terms": "Termini e condizioni",
-    "status": "Status"
+    "status": "Stato"
   },
   "apply_pakar": {
     "title": "Certificazione di esperti",
@@ -1258,42 +1223,12 @@
     "title": "politica sulla riservatezza",
     "hero_title": "La tua privacy",
     "hero_desc": "I tuoi dati sono al sicuro con Ba-Yu. Manteniamo la trasparenza e la protezione dei dati come la nostra massima priorità.",
-    "principles": {
-      "0": {
-        "label": "Sicuro",
-        "desc": "I dati sono crittografati."
-      },
-      "1": {
-        "label": "Trasparente",
-        "desc": "Apri sui dati."
-      },
-      "2": {
-        "label": "Controllato",
-        "desc": "Hai il controllo."
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. Dati che raccogliamo",
     "collection_desc": "Raccogliamo solo le informazioni minime necessarie per supportare il tuo processo di apprendimento:",
-    "collections": {
-      "0": {
-        "title": "Informazioni sul profilo",
-        "text": "Nome, email e livello di istruzione."
-      },
-      "1": {
-        "title": "Contenuto didattico",
-        "text": "Note, immagini e commenti."
-      },
-      "2": {
-        "title": "Dati tecnici",
-        "text": "Registri delle attività per il miglioramento."
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. Utilizzo dei dati",
-    "usages": {
-      "0": "Abilitazione della condivisione delle note.",
-      "1": "Fornire notifiche importanti.",
-      "2": "Miglioramento delle funzionalità della piattaforma."
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 Piattaforma Ba-Yu. La tua privacy è la nostra fiducia."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "Accedendo e utilizzando la piattaforma Ba-Yu, si ritiene che tu abbia letto, compreso e accettato di essere vincolato dai presenti Termini e Condizioni. Se non sei d'accordo, ti preghiamo di non continuare a utilizzare i nostri servizi per la sicurezza reciproca.",
     "section2_title": "2. Registrazione dell'account",
     "section2_desc": "Per utilizzare la funzione di condivisione delle note, è necessario registrarsi con informazioni accurate. Sei pienamente responsabile di:",
-    "section2_items": {
-      "0": "Mantenere la riservatezza della password del tuo account.",
-      "1": "Tutte le attività che si verificano sotto il tuo account.",
-      "2": "Fornire informazioni vere e accurate."
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. Diritti di proprietà intellettuale",
     "section3_quote": "\"Tutte le note che carichi su Ba-Yu rimangono tue. Tuttavia, caricandole, concedi a Ba-Yu una licenza per visualizzare, distribuire e promuovere tali contenuti all'interno del nostro ecosistema di piattaforme per scopi educativi.\"",
     "section4_title": "4. Regole d'uso",
     "allowed_title": "Cosa è consentito",
-    "allowed_items": {
-      "0": "Condivisione di materiali di studio originali.",
-      "1": "Fornire commenti positivi.",
-      "2": "Download per riferimento personale."
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "Cosa è proibito",
-    "prohibited_items": {
-      "0": "Caricamento di contenuti plagiati.",
-      "1": "Diffondere discorsi di odio.",
-      "2": "Danneggiare il sistema della piattaforma."
-    },
+    "prohibited_items": "[object Object]",
     "contact": "Hai domande? Contatta <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "© 2026 Piattaforma Ba-Yu.<br/>Tutti i diritti riservati."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "Linee guida della comunità",
     "hero_desc": "Creiamo un ambiente di apprendimento sicuro, positivo e di supporto su Ba-Yu.",
     "values_title": "Valori fondamentali",
-    "values": {
-      "0": {
-        "title": "Rispetto reciproco",
-        "desc": "Comunica in modo educato, lasciando commenti o facendo critiche costruttive."
-      },
-      "1": {
-        "title": "Educativo e positivo",
-        "desc": "Concentrarsi sulla diffusione della conoscenza e sul sostegno agli altri studenti."
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "Violazioni gravi",
     "rules_desc": "Le seguenti azioni possono comportare la cancellazione o la retrocessione dell'account:",
-    "rules": {
-      "0": "Caricamento di note plagiate.",
-      "1": "Incitamento all'odio, discriminazione o SARA.",
-      "2": "Spam, promozioni illegali o frodi.",
-      "3": "Condivisione delle informazioni personali di altre persone (doxxing)."
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 Piattaforma Ba-Yu.<br/>Tutti i diritti riservati."
   },
   "help_page": {
@@ -1359,24 +1268,7 @@
     "search_placeholder": "Cerca domande...",
     "no_results": "Nessun risultato per \"{query}\"",
     "faq_title": "Domande frequenti (FAQ)",
-    "faqs": {
-      "0": {
-        "q": "Come posso diventare un esperto di Ba-Yu?",
-        "a": "Per diventare un Esperto, devi condividere frequentemente note di qualità. Se le tue note entrano spesso nella categoria \"Popolari\" e ricevono molti Mi piace, il nostro team di amministratori le esaminerà e garantirà lo stato di Esperto."
-      },
-      "1": {
-        "q": "Posso scaricare le note in formato PDF?",
-        "a": "Ovviamente! Nella pagina dei dettagli di ogni nota puoi premere il pulsante Download nell'angolo in alto a destra o nella parte inferiore del contenuto per salvarlo in formato PDF."
-      },
-      "2": {
-        "q": "Perché il mio account non riesce ad accedere?",
-        "a": "Assicurati che l'email e la password che hai inserito siano corrette. Se hai eliminato di recente il tuo account, potrebbe essere in stato dormiente. Prova ad accedere nuovamente per attivarlo."
-      },
-      "3": {
-        "q": "Come scrivo le formule matematiche?",
-        "a": "Nella pagina di scrittura delle note, fai clic sull'icona della calcolatrice nella barra degli strumenti laterale per aprire l'editor delle formule. Puoi scrivere formule utilizzando il formato KaTeX."
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "Hai ancora bisogno di aiuto?",
     "contact_wa_title": "Whatsapp",
     "contact_wa_desc": "Risposta rapida",

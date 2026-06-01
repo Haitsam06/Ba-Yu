@@ -250,7 +250,7 @@
     "help_center": "Centrum pomocy",
     "logout": "Wyloguj się",
     "about": "O nas",
-    "blog": "Blog",
+    "blog": "Blogi",
     "terms": "Warunki",
     "privacy": "Prywatność"
   },
@@ -428,43 +428,9 @@
     "wait_draft": "Proszę poczekać chwilę..."
   },
   "calendar": {
-    "days": {
-      "0": "Słoneczny",
-      "1": "pon",
-      "2": "wt",
-      "3": "Poślubić",
-      "4": "czw",
-      "5": "piątek",
-      "6": "sob"
-    },
-    "months": {
-      "0": "styczeń",
-      "1": "luty",
-      "2": "Zniszczyć",
-      "3": "kwiecień",
-      "4": "Móc",
-      "5": "czerwca",
-      "6": "lipiec",
-      "7": "sierpień",
-      "8": "wrzesień",
-      "9": "paź",
-      "10": "listopad",
-      "11": "grudzień"
-    },
-    "full_months": {
-      "0": "Styczeń",
-      "1": "Luty",
-      "2": "marzec",
-      "3": "Kwiecień",
-      "4": "Móc",
-      "5": "Czerwiec",
-      "6": "Lipiec",
-      "7": "Sierpień",
-      "8": "Wrzesień",
-      "9": "Październik",
-      "10": "Listopad",
-      "11": "Grudzień"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "Przepraszamy, strona, której szukasz, nie istnieje.",
@@ -585,7 +551,6 @@
     "report_note": "Notatka do raportu",
     "report_comment": "Zgłoś komentarz",
     "report_report": "Raport",
-    "report_laporkan": "Raport",
     "suka_count": "({{count}})",
     "share_cta": "Przekaż tę cenną wiedzę swoim znajomym.",
     "copy_link_copied": "Link skopiowany!",
@@ -1109,7 +1074,7 @@
     "features": "Cechy",
     "resources": "Zasoby",
     "guide": "Przewodnik",
-    "blog": "Blog",
+    "blog": "Blogi",
     "help": "Pomoc",
     "company": "Firma",
     "about_us": "O nas",
@@ -1258,42 +1223,12 @@
     "title": "Polityka prywatności",
     "hero_title": "Twoja prywatność",
     "hero_desc": "Twoje dane są bezpieczne z Ba-Yu. Naszym najwyższym priorytetem jest przejrzystość i ochrona danych.",
-    "principles": {
-      "0": {
-        "label": "Bezpieczny",
-        "desc": "Dane są szyfrowane."
-      },
-      "1": {
-        "label": "Przezroczysty",
-        "desc": "Otwórz się na dane."
-      },
-      "2": {
-        "label": "Kontrolowane",
-        "desc": "Masz kontrolę."
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. Dane, które zbieramy",
     "collection_desc": "Gromadzimy jedynie minimalną ilość informacji niezbędnych do wsparcia Twojego procesu uczenia się:",
-    "collections": {
-      "0": {
-        "title": "Informacje o profilu",
-        "text": "Imię i nazwisko, adres e-mail i poziom wykształcenia."
-      },
-      "1": {
-        "title": "Treści edukacyjne",
-        "text": "Notatki, obrazy i komentarze."
-      },
-      "2": {
-        "title": "Dane techniczne",
-        "text": "Dzienniki aktywności do poprawy."
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. Wykorzystanie danych",
-    "usages": {
-      "0": "Włączanie udostępniania notatek.",
-      "1": "Dostarczanie ważnych powiadomień.",
-      "2": "Ulepszanie funkcji platformy."
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 Platforma Ba-Yu. Twoja prywatność jest naszym zaufaniem."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "Uzyskując dostęp do platformy Ba-Yu i korzystając z niej, uznaje się, że przeczytałeś, zrozumiałeś i zgodziłeś się na przestrzeganie niniejszych Warunków. Jeżeli nie wyrażasz zgody, prosimy o zaprzestanie korzystania z naszych usług ze względu na wzajemne bezpieczeństwo.",
     "section2_title": "2. Rejestracja Konta",
     "section2_desc": "Aby móc korzystać z funkcji udostępniania notatek, musisz się zarejestrować i podać dokładne informacje. Ponosisz pełną odpowiedzialność za:",
-    "section2_items": {
-      "0": "Zachowanie poufności hasła do konta.",
-      "1": "Wszystkie działania, które mają miejsce na Twoim koncie.",
-      "2": "Udzielanie prawdziwych i dokładnych informacji."
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. Prawa własności intelektualnej",
     "section3_quote": "„Wszelkie notatki, które prześlesz do Ba-Yu, pozostają Twoje. Przesyłając je, udzielasz Ba-Yu licencji na wyświetlanie, rozpowszechnianie i promowanie tych treści w ekosystemie naszej platformy w celach edukacyjnych”.",
     "section4_title": "4. Zasady użytkowania",
     "allowed_title": "Co jest dozwolone",
-    "allowed_items": {
-      "0": "Udostępnianie oryginalnych materiałów do nauki.",
-      "1": "Przekazywanie pozytywnych komentarzy.",
-      "2": "Pobieranie do celów osobistych."
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "Co jest zabronione",
-    "prohibited_items": {
-      "0": "Przesyłanie plagiatowanych treści.",
-      "1": "Szerzenie mowy nienawiści.",
-      "2": "Uszkodzenie systemu platformy."
-    },
+    "prohibited_items": "[object Object]",
     "contact": "Masz pytania? Skontaktuj się z <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 Font-bold\">support@ba-yu.id</a>",
     "footer": "© 2026 Platforma Ba-Yu.<br/>Wszelkie prawa zastrzeżone."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "Wytyczne społeczności",
     "hero_desc": "Stwórzmy bezpieczne, pozytywne i wspierające środowisko uczenia się na Ba-Yu.",
     "values_title": "Podstawowe wartości",
-    "values": {
-      "0": {
-        "title": "Wzajemny szacunek",
-        "desc": "Komunikuj się grzecznie, zostawiając komentarze lub udzielając konstruktywnej krytyki."
-      },
-      "1": {
-        "title": "Edukacyjne i pozytywne",
-        "desc": "Skoncentruj się na szerzeniu wiedzy i wspieraniu innych uczniów."
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "Poważne naruszenia",
     "rules_desc": "Następujące działania mogą skutkować usunięciem lub degradacją konta:",
-    "rules": {
-      "0": "Przesyłanie plagiatowych notatek.",
-      "1": "Mowa nienawiści, dyskryminacja, czyli SARA.",
-      "2": "Spam, nielegalne promocje lub oszustwa.",
-      "3": "Udostępnianie danych osobowych innych osób (doxxing)."
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 Platforma Ba-Yu.<br/>Wszelkie prawa zastrzeżone."
   },
   "help_page": {
@@ -1359,24 +1268,7 @@
     "search_placeholder": "Szukaj pytań...",
     "no_results": "Brak wyników dla „{query}”",
     "faq_title": "Często zadawane pytania (FAQ)",
-    "faqs": {
-      "0": {
-        "q": "Jak zostać ekspertem w Ba-Yu?",
-        "a": "Aby zostać Ekspertem, musisz często udostępniać notatki dotyczące jakości. Jeśli Twoje notatki często trafiają do kategorii „Popularne” i uzyskują wiele polubień, nasz zespół administracyjny sprawdzi je i przyzna status Eksperta."
-      },
-      "1": {
-        "q": "Czy mogę pobrać notatki w formacie PDF?",
-        "a": "Oczywiście! Na każdej stronie szczegółów notatki możesz nacisnąć przycisk Pobierz w prawym górnym rogu lub na dole treści, aby zapisać ją w formacie PDF."
-      },
-      "2": {
-        "q": "Dlaczego nie mogę się zalogować na moje konto?",
-        "a": "Upewnij się, że wpisany adres e-mail i hasło są prawidłowe. Jeśli niedawno usunąłeś swoje konto, mogło ono mieć status Uśpiony. Spróbuj zalogować się ponownie, aby go aktywować."
-      },
-      "3": {
-        "q": "Jak pisać formuły matematyczne?",
-        "a": "Na stronie pisania notatki kliknij ikonę kalkulatora na bocznym pasku narzędzi, aby otworzyć edytor formuł. Formuły można pisać w formacie KaTeX."
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "Nadal potrzebujesz pomocy?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Szybka reakcja",

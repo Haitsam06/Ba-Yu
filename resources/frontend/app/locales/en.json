@@ -71,7 +71,7 @@
     "faq_title": "Frequently Asked Questions",
     "contact_title": "Contact Us",
     "contact_desc": "Need more help? Contact our team.",
-    "whatsapp": "Chat WhatsApp",
+    "whatsapp": "WhatsApp chat",
     "email": "Send Email",
     "community_guidelines": "Community Guidelines",
     "community_guidelines_desc": "Read the rules and ethics for sharing notes on Ba-Yu."
@@ -80,7 +80,7 @@
     "title": "Learning Statistics",
     "progress": "Progress",
     "summary_today": "Today's Summary",
-    "set_target": "Set Target",
+    "set_target": "Set Targets",
     "daily_target": "Daily target",
     "notes": "Notes",
     "materials": "Materials",
@@ -250,7 +250,7 @@
     "help_center": "Help Center",
     "logout": "Log Out",
     "about": "About Us",
-    "blog": "Blog",
+    "blog": "Blogs",
     "terms": "Terms",
     "privacy": "Privacy"
   },
@@ -262,7 +262,7 @@
     "video_placeholder": "Enter YouTube or Vimeo URL...",
     "video_caption": "Type video caption here...",
     "image": "Image",
-    "video": "Video",
+    "video": "Videos",
     "code": "Code",
     "formula": "Formula",
     "divider": "Divider",
@@ -428,43 +428,9 @@
     "wait_draft": "Please wait a moment..."
   },
   "calendar": {
-    "days": [
-      "Sun",
-      "Mon",
-      "Tue",
-      "Wed",
-      "Thu",
-      "Fri",
-      "Sat"
-    ],
-    "months": [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
-    ],
-    "full_months": [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December"
-    ]
+    "days": "Sun,Mon,Tue,Wed,Thu,Fri,Sat",
+    "months": "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec",
+    "full_months": "January,February,March,April,May,June,July,August,September,October,November,December"
   },
   "not_found": {
     "message": "Sorry, the page you are looking for does not exist.",
@@ -585,7 +551,6 @@
     "report_note": "Report Note",
     "report_comment": "Report Comment",
     "report_report": "Report",
-    "report_laporkan": "Report",
     "suka_count": "({{count}})",
     "share_cta": "Spread this valuable knowledge to your friends.",
     "copy_link_copied": "Link copied!",
@@ -805,7 +770,7 @@
     "humas": "Public Relations",
     "hi": "International Relations",
     "jurnalistik": "Journalism",
-    "-": " ",
+    "-": "",
     "pendidikan-kewarganegaraan": "Civics",
     "ilmu-pengetahuan-alam": "Natural Sciences",
     "ilmu-pengetahuan-sosial": "Social Sciences",
@@ -870,7 +835,7 @@
     "notes_db_title": "Notes Database",
     "notes_db_desc": "Manage the public educational content directory.",
     "empty_notes": "No notes in the database.",
-    "notes_detail": "Detail",
+    "notes_detail": "Details",
     "notes_delete": "Delete Permanently",
     "load_more": "Load More",
     "reports_title": "Report Resolution",
@@ -1093,7 +1058,7 @@
     "pdf_protected_desc": "This PDF contains only partial material. Follow the author <b>@{{author}}</b> on the Ba-Yu app to download the full version.",
     "pdf_footer": "This document was downloaded from <span class=\"footer-brand\">Ba-Yu</span> - The Future Learning Platform",
     "draft_badge": "DRAFT",
-    "draft_label": "Draft",
+    "draft_label": "Drafts",
     "last_edit": "Last edit:",
     "untitled_draft": "Untitled Draft",
     "untitled": "Untitled",
@@ -1105,11 +1070,11 @@
     "desc": "Structured study notes platform for students",
     "product": "Product",
     "explore_notes": "Explore Notes",
-    "dashboard": "Dashboard",
+    "dashboard": "Dashboards",
     "features": "Features",
     "resources": "Resources",
     "guide": "Guide",
-    "blog": "Blog",
+    "blog": "Blogs",
     "help": "Help",
     "company": "Company",
     "about_us": "About Us",
@@ -1258,42 +1223,12 @@
     "title": "Privacy Policy",
     "hero_title": "Your Privacy",
     "hero_desc": "Your data is safe with Ba-Yu. We maintain transparency and data protection as our top priority.",
-    "principles": [
-      {
-        "label": "Secure",
-        "desc": "Data is encrypted."
-      },
-      {
-        "label": "Transparent",
-        "desc": "Open about data."
-      },
-      {
-        "label": "Controlled",
-        "desc": "You are in control."
-      }
-    ],
+    "principles": "[object Object],[object Object],[object Object]",
     "collection_title": "1. Data We Collect",
     "collection_desc": "We only collect minimal information necessary to support your learning process:",
-    "collections": [
-      {
-        "title": "Profile Info",
-        "text": "Name, email, and education level."
-      },
-      {
-        "title": "Learning Content",
-        "text": "Notes, images, and comments."
-      },
-      {
-        "title": "Technical Data",
-        "text": "Activity logs for improvement."
-      }
-    ],
+    "collections": "[object Object],[object Object],[object Object]",
     "usage_title": "2. Data Usage",
-    "usages": [
-      "Enabling note sharing.",
-      "Providing important notifications.",
-      "Improving platform features."
-    ],
+    "usages": "Enabling note sharing.,Providing important notifications.,Improving platform features.",
     "footer": "© 2026 Ba-Yu Platform. Your Privacy is Our Trust."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "By accessing and using the Ba-Yu platform, you are deemed to have read, understood, and agreed to be bound by these Terms and Conditions. If you do not agree, please do not continue using our services for mutual security.",
     "section2_title": "2. Account Registration",
     "section2_desc": "To use the note-sharing feature, you are required to register with accurate information. You are fully responsible for:",
-    "section2_items": [
-      "Maintaining the confidentiality of your account password.",
-      "All activities that occur under your account.",
-      "Providing true and accurate information."
-    ],
+    "section2_items": "Maintaining the confidentiality of your account password.,All activities that occur under your account.,Providing true and accurate information.",
     "section3_title": "3. Intellectual Property Rights",
     "section3_quote": "\"Any notes you upload to Ba-Yu remain yours. However, by uploading them, you grant Ba-Yu a license to display, distribute, and promote that content within our platform ecosystem for educational purposes.\"",
     "section4_title": "4. Rules of Use",
     "allowed_title": "What is Allowed",
-    "allowed_items": [
-      "Sharing original study materials.",
-      "Providing positive comments.",
-      "Downloading for personal reference."
-    ],
+    "allowed_items": "Sharing original study materials.,Providing positive comments.,Downloading for personal reference.",
     "prohibited_title": "What is Prohibited",
-    "prohibited_items": [
-      "Uploading plagiarized content.",
-      "Spreading hate speech.",
-      "Damaging the platform system."
-    ],
+    "prohibited_items": "Uploading plagiarized content.,Spreading hate speech.,Damaging the platform system.",
     "contact": "Have questions? Contact <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "&copy; 2026 Ba-Yu Platform.<br/>All Rights Reserved."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "Community Guidelines",
     "hero_desc": "Let's create a safe, positive, and supportive learning environment on Ba-Yu.",
     "values_title": "Core Values",
-    "values": [
-      {
-        "title": "Mutual Respect",
-        "desc": "Communicate politely, whether leaving comments or giving constructive criticism."
-      },
-      {
-        "title": "Educational & Positive",
-        "desc": "Focus on spreading knowledge and supporting other fellow learners."
-      }
-    ],
+    "values": "[object Object],[object Object]",
     "rules_title": "Severe Violations",
     "rules_desc": "The following actions may result in account deletion or demotion:",
-    "rules": [
-      "Uploading plagiarized notes.",
-      "Hate speech, discrimination, or SARA.",
-      "Spam, illegal promotions, or fraud.",
-      "Sharing other people's personal information (doxxing)."
-    ],
+    "rules": "Uploading plagiarized notes.,Hate speech, discrimination, or SARA.,Spam, illegal promotions, or fraud.,Sharing other people's personal information (doxxing).",
     "footer": "&copy; 2026 Ba-Yu Platform.<br/>All Rights Reserved."
   },
   "help_page": {
@@ -1359,28 +1268,11 @@
     "search_placeholder": "Search questions...",
     "no_results": "No results for \"{query}\"",
     "faq_title": "Frequently Asked Questions (FAQ)",
-    "faqs": [
-      {
-        "q": "How do I become an Expert on Ba-Yu?",
-        "a": "To become an Expert, you must frequently share quality notes. If your notes often enter the 'Popular' category and get many likes, our Admin team will review them and grant Expert status."
-      },
-      {
-        "q": "Can I download notes as PDF?",
-        "a": "Of course! On each note detail page, you can press the Download button in the top right corner or at the bottom of the content to save it in PDF format."
-      },
-      {
-        "q": "Why can't my account log in?",
-        "a": "Make sure the email and password you entered are correct. If you recently deleted your account, it might be in Dormant status. Try logging in again to activate it."
-      },
-      {
-        "q": "How do I write math formulas?",
-        "a": "On the note writing page, click the calculator icon in the side toolbar to open the formula editor. You can write formulas using KaTeX format."
-      }
-    ],
+    "faqs": "[object Object],[object Object],[object Object],[object Object]",
     "contact_title": "Still Need Help?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Fast response",
-    "contact_email_title": "Email",
+    "contact_email_title": "E-mail",
     "contact_email_desc": "Details & attachments",
     "guidelines_title": "Community Guidelines",
     "guidelines_desc": "Read the rules and ethics of sharing notes on Ba-Yu."
@@ -1431,7 +1323,7 @@
     "username_hint": "Only lowercase letters, numbers, and underscores (_)",
     "email_or_username": "Email or Username",
     "email": "Email Address",
-    "password": "Password",
+    "password": "Passwords",
     "role": "Profession / Role",
     "role_pelajar": "Student",
     "role_mahasiswa": "College Student",
@@ -1522,8 +1414,8 @@
     "col_field": "Field of Expertise",
     "col_reject_reason": "Rejection Reason",
     "col_name": "Name",
-    "col_email": "Email",
-    "col_role": "Role",
+    "col_email": "E-mail",
+    "col_role": "Roles",
     "col_reg_date": "Registration Date"
   },
   "navbar": {

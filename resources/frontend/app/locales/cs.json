@@ -71,7 +71,7 @@
     "faq_title": "Často kladené otázky",
     "contact_title": "Kontaktujte nás",
     "contact_desc": "Potřebujete další pomoc? Kontaktujte náš tým.",
-    "whatsapp": "Chat WhatsApp",
+    "whatsapp": "WhatsApp chat",
     "email": "Odeslat e-mail",
     "community_guidelines": "Pokyny pro komunitu",
     "community_guidelines_desc": "Přečtěte si pravidla a etiku pro sdílení poznámek na Ba-Yu."
@@ -250,7 +250,7 @@
     "help_center": "Centrum nápovědy",
     "logout": "Odhlásit se",
     "about": "O nás",
-    "blog": "Blog",
+    "blog": "Blogy",
     "terms": "Podmínky",
     "privacy": "Soukromí"
   },
@@ -262,7 +262,7 @@
     "video_placeholder": "Zadejte URL YouTube nebo Vimeo...",
     "video_caption": "Sem napište popisek videa...",
     "image": "Obraz",
-    "video": "Video",
+    "video": "videa",
     "code": "Kód",
     "formula": "Vzorec",
     "divider": "Dělič",
@@ -428,43 +428,9 @@
     "wait_draft": "Počkejte prosím chvíli..."
   },
   "calendar": {
-    "days": {
-      "0": "Slunce",
-      "1": "Po",
-      "2": "út",
-      "3": "St",
-      "4": "Čt",
-      "5": "pá",
-      "6": "So"
-    },
-    "months": {
-      "0": "Jan",
-      "1": "února",
-      "2": "Mar",
-      "3": "dubna",
-      "4": "květen",
-      "5": "června",
-      "6": "července",
-      "7": "Aug",
-      "8": "září",
-      "9": "Oct",
-      "10": "listopad",
-      "11": "prosinec"
-    },
-    "full_months": {
-      "0": "leden",
-      "1": "únor",
-      "2": "Pochod",
-      "3": "duben",
-      "4": "květen",
-      "5": "červen",
-      "6": "červenec",
-      "7": "srpen",
-      "8": "září",
-      "9": "říjen",
-      "10": "listopad",
-      "11": "prosinec"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "Omlouváme se, stránka, kterou hledáte, neexistuje.",
@@ -585,7 +551,6 @@
     "report_note": "Zpráva Poznámka",
     "report_comment": "Nahlásit komentář",
     "report_report": "Zpráva",
-    "report_laporkan": "Zpráva",
     "suka_count": "({{count}})",
     "share_cta": "Šiřte tyto cenné znalosti svým přátelům.",
     "copy_link_copied": "Odkaz zkopírován!",
@@ -870,7 +835,7 @@
     "notes_db_title": "Databáze poznámek",
     "notes_db_desc": "Spravujte adresář veřejného vzdělávacího obsahu.",
     "empty_notes": "Žádné poznámky v databázi.",
-    "notes_detail": "Detail",
+    "notes_detail": "Podrobnosti",
     "notes_delete": "Trvale smazat",
     "load_more": "Načíst více",
     "reports_title": "Rozlišení zprávy",
@@ -1105,11 +1070,11 @@
     "desc": "Platforma strukturovaných studijních poznámek pro studenty",
     "product": "Produkt",
     "explore_notes": "Prozkoumat poznámky",
-    "dashboard": "Dashboard",
+    "dashboard": "Řídicí panely",
     "features": "Vlastnosti",
     "resources": "Zdroje",
     "guide": "Průvodce",
-    "blog": "Blog",
+    "blog": "Blogy",
     "help": "Pomoc",
     "company": "Společnost",
     "about_us": "O nás",
@@ -1117,7 +1082,7 @@
     "contact": "Kontakt",
     "privacy": "Zásady ochrany osobních údajů",
     "terms": "Smluvní podmínky",
-    "status": "Status"
+    "status": "Postavení"
   },
   "apply_pakar": {
     "title": "Odborná certifikace",
@@ -1258,42 +1223,12 @@
     "title": "Zásady ochrany osobních údajů",
     "hero_title": "Vaše soukromí",
     "hero_desc": "Vaše data jsou s Ba-Yu v bezpečí. Naší nejvyšší prioritou je transparentnost a ochrana údajů.",
-    "principles": {
-      "0": {
-        "label": "Zajistit",
-        "desc": "Data jsou šifrována."
-      },
-      "1": {
-        "label": "Průhledný",
-        "desc": "Otevřít informace o datech."
-      },
-      "2": {
-        "label": "Kontrolováno",
-        "desc": "Máte to pod kontrolou."
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. Údaje, které shromažďujeme",
     "collection_desc": "Shromažďujeme pouze minimum informací nezbytných pro podporu vašeho procesu učení:",
-    "collections": {
-      "0": {
-        "title": "Informace o profilu",
-        "text": "Jméno, email a úroveň vzdělání."
-      },
-      "1": {
-        "title": "Výukový obsah",
-        "text": "Poznámky, obrázky a komentáře."
-      },
-      "2": {
-        "title": "Technická data",
-        "text": "Protokoly aktivit pro zlepšení."
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. Využití dat",
-    "usages": {
-      "0": "Povolení sdílení poznámek.",
-      "1": "Poskytování důležitých upozornění.",
-      "2": "Zlepšení funkcí platformy."
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 platforma Ba-Yu. Vaše soukromí je naší důvěrou."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "Vstupem a používáním platformy Ba-Yu se má za to, že jste si přečetli, porozuměli a souhlasíte s tím, že budete vázáni těmito podmínkami. Pokud nesouhlasíte, nepokračujte v používání našich služeb pro vzájemnou bezpečnost.",
     "section2_title": "2. Registrace účtu",
     "section2_desc": "Chcete-li používat funkci sdílení poznámek, musíte se zaregistrovat s přesnými informacemi. Jste plně zodpovědní za:",
-    "section2_items": {
-      "0": "Zachování důvěrnosti hesla k vašemu účtu.",
-      "1": "Všechny aktivity, ke kterým dochází pod vaším účtem.",
-      "2": "Poskytování pravdivých a přesných informací."
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. Práva duševního vlastnictví",
     "section3_quote": "\"Všechny poznámky, které nahrajete do Ba-Yu, zůstávají vaše. Jejich nahráním však Ba-Yu udělujete licenci k zobrazování, distribuci a propagaci tohoto obsahu v rámci ekosystému naší platformy pro vzdělávací účely.\"",
     "section4_title": "4. Pravidla používání",
     "allowed_title": "Co je povoleno",
-    "allowed_items": {
-      "0": "Sdílení originálních studijních materiálů.",
-      "1": "Poskytování pozitivních komentářů.",
-      "2": "Stahování pro osobní potřebu."
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "Co je zakázáno",
-    "prohibited_items": {
-      "0": "Nahrávání plagiátu.",
-      "1": "Šíření nenávistných projevů.",
-      "2": "Poškození systému platformy."
-    },
+    "prohibited_items": "[object Object]",
     "contact": "Máte otázky? Kontaktujte <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "© 2026 Ba-Yu Platform.<br/>Všechna práva vyhrazena."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "Pokyny pro komunitu",
     "hero_desc": "Vytvořme bezpečné, pozitivní a podpůrné vzdělávací prostředí na Ba-Yu.",
     "values_title": "Základní hodnoty",
-    "values": {
-      "0": {
-        "title": "Vzájemný respekt",
-        "desc": "Komunikujte zdvořile, ať už zanecháte komentáře nebo konstruktivní kritiku."
-      },
-      "1": {
-        "title": "Vzdělávací a pozitivní",
-        "desc": "Zaměřte se na šíření znalostí a podporu ostatních spolužáků."
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "Závažná porušení",
     "rules_desc": "Následující akce mohou vést ke smazání nebo snížení úrovně účtu:",
-    "rules": {
-      "0": "Nahrávání plagiátů.",
-      "1": "Nenávistné projevy, diskriminace nebo SARA.",
-      "2": "Spam, nelegální propagace nebo podvody.",
-      "3": "Sdílení osobních údajů jiných lidí (doxxing)."
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform.<br/>Všechna práva vyhrazena."
   },
   "help_page": {
@@ -1359,24 +1268,7 @@
     "search_placeholder": "Hledat otázky...",
     "no_results": "Žádné výsledky pro dotaz „{query}“",
     "faq_title": "Často kladené otázky (FAQ)",
-    "faqs": {
-      "0": {
-        "q": "Jak se mohu stát expertem na Ba-Yu?",
-        "a": "Chcete-li se stát odborníkem, musíte často sdílet poznámky o kvalitě. Pokud vaše poznámky často vstupují do kategorie „Populární“ a získávají mnoho lajků, náš administrátorský tým je zkontroluje a udělí status experta."
-      },
-      "1": {
-        "q": "Mohu si stáhnout poznámky jako PDF?",
-        "a": "Samozřejmě! Na každé stránce podrobností poznámky můžete stisknout tlačítko Stáhnout v pravém horním rohu nebo v dolní části obsahu a uložit ji ve formátu PDF."
-      },
-      "2": {
-        "q": "Proč se můj účet nemůže přihlásit?",
-        "a": "Ujistěte se, že zadaný e-mail a heslo jsou správné. Pokud jste svůj účet nedávno smazali, může být ve stavu Spící. Zkuste se znovu přihlásit, abyste jej aktivovali."
-      },
-      "3": {
-        "q": "Jak napíšu matematické vzorce?",
-        "a": "Na stránce pro psaní poznámek kliknutím na ikonu kalkulačky na bočním panelu nástrojů otevřete editor vzorců. Vzorce můžete psát ve formátu KaTeX."
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "Stále potřebujete pomoc?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Rychlá odezva",
@@ -1680,7 +1572,7 @@
     "subj_history_tag1": "Časová osa civilizací",
     "subj_history_tag2": "Historické archivy",
     "subj_history_tag3": "Starověké relikvie",
-    "cockpit_latex_title": "LaTeX Rich Editor",
+    "cockpit_latex_title": "Bohatý editor LaTeX",
     "cockpit_latex_badge": "Chytrý vzorec",
     "cockpit_latex_desc": "Pište matematické a vědecké vzorce stejně krásně jako profesionální akademické časopisy pomocí vysokorychlostního renderovacího jádra KaTeX.",
     "cockpit_verif_title": "Ověřeno odborníkem",
@@ -1711,7 +1603,7 @@
     "feature_title": "Technologie Ba-Yu.",
     "feature_desc": "Navrhli jsme inteligentní ekosystém pro psaní poznámek, který vám pomůže efektivně organizovat, ověřovat a ovládat každý materiál kurzu.",
     "feat1_badge": "BOHATÝ REDAKTOR",
-    "feat1_title": "LaTeX Rich Editor",
+    "feat1_title": "Bohatý editor LaTeX",
     "feat1_desc": "Pište matematické, matematické a vědecké vzorce stejně krásně jako profesionální akademické časopisy pomocí vysokorychlostního renderovacího jádra KaTeX.",
     "mockup_latex_title": "ENGINE EDITORU LaTeX",
     "mockup_latex_status": "AKTIVNÍ VYKRESLOVÁNÍ",

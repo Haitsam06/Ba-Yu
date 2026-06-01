@@ -8,7 +8,7 @@
     "bookmarks": "Salvos",
     "profile": "Meu Perfil",
     "profile_short": "Perfil",
-    "workspace": "Workspace",
+    "workspace": "Espaço de trabalho",
     "statistics": "Estatísticas",
     "settings": "Configurações",
     "pakar_choice": "ESCOLHA DO ESPECIALISTA",
@@ -38,7 +38,7 @@
     "privacy_policy": "Política de Privacidade",
     "app_status": "Status do App",
     "active": "Ativo",
-    "login_section": "Login",
+    "login_section": "Conecte-se",
     "logout": "Sair",
     "deactivate": "Desativar Conta",
     "version": "Versão",
@@ -71,7 +71,7 @@
     "faq_title": "Perguntas Frequentes",
     "contact_title": "Fale Conosco",
     "contact_desc": "Precisa de mais ajuda? Entre em contato com nossa equipe.",
-    "whatsapp": "Chat WhatsApp",
+    "whatsapp": "Bate-papo do WhatsApp",
     "email": "Enviar Email",
     "community_guidelines": "Diretrizes da Comunidade",
     "community_guidelines_desc": "Leia as regras e a ética para compartilhar notas no Ba-Yu."
@@ -105,7 +105,7 @@
     "set_goal_title": "Meta Diária",
     "set_goal_desc": "Defina sua meta de duração diária.",
     "hours": "Horas",
-    "mins": "Mins",
+    "mins": "Minutos",
     "save_target": "Salvar Meta",
     "cancel": "Cancelar",
     "share_title": "Compartilhar",
@@ -186,7 +186,7 @@
     "time_days": "dias atrás",
     "no_unread": "Nenhuma novidade",
     "view_all_notifications": "Ver Todas as Notificações",
-    "time_short_m": "m",
+    "time_short_m": "eu",
     "time_short_h": "h"
   },
   "profile": {
@@ -238,7 +238,7 @@
     "processing": "Processando...",
     "confirm_unfollow": "Sim, deixar de seguir",
     "cancel": "Não",
-    "admin_badge": "Admin",
+    "admin_badge": "Administrador",
     "follows_you": "Segue você"
   },
   "topnav": {
@@ -250,7 +250,7 @@
     "help_center": "Central de Ajuda",
     "logout": "Sair",
     "about": "Sobre nós",
-    "blog": "Blog",
+    "blog": "Blogues",
     "terms": "Termos",
     "privacy": "Privacidade"
   },
@@ -428,43 +428,9 @@
     "wait_draft": "Por favor, espere um momento..."
   },
   "calendar": {
-    "days": [
-      "Dom",
-      "Seg",
-      "Ter",
-      "Qua",
-      "Qui",
-      "Sex",
-      "Sáb"
-    ],
-    "months": [
-      "Jan",
-      "Fev",
-      "Mar",
-      "Abr",
-      "Mai",
-      "Jun",
-      "Jul",
-      "Ago",
-      "Set",
-      "Out",
-      "Nov",
-      "Dez"
-    ],
-    "full_months": [
-      "Janeiro",
-      "Fevereiro",
-      "Março",
-      "Abril",
-      "Maio",
-      "Junho",
-      "Julho",
-      "Agosto",
-      "Setembro",
-      "Outubro",
-      "Novembro",
-      "Dezembro"
-    ]
+    "days": "Dom,Seg,Ter,Qua,Qui,Sex,Sáb",
+    "months": "Jan,Fev,Mar,Abr,Mai,Jun,Jul,Ago,Set,Out,Nov,Dez",
+    "full_months": "Janeiro,Fevereiro,Março,Abril,Maio,Junho,Julho,Agosto,Setembro,Outubro,Novembro,Dezembro"
   },
   "not_found": {
     "message": "Desculpe, a página que você procura não existe.",
@@ -490,6 +456,7 @@
     "following": "Seguindo",
     "pending": "Pendente",
     "minutes_read": "min de leitura",
+    "read_time": "min de leitura",
     "expert_review": "Revisão de Especialista",
     "restricted_access": "Acesso Restrito",
     "restricted_desc": "O autor restringiu o acesso total a esta nota. Siga o autor para desbloquear o material completo.",
@@ -598,7 +565,6 @@
     "unverify_desc": "Tem certeza de que deseja cancelar o status de verificação desta nota?",
     "verify_title": "Verificar Nota",
     "verify_desc": "Verificar esta nota como material preciso e de alta qualidade?",
-    "read_time": "min de leitura",
     "respond_btn": "RESPONDER",
     "downloaded_at": "Baixado:",
     "pdf_restricted_title": "Material Protegido",
@@ -804,7 +770,7 @@
     "humas": "Relações Públicas",
     "hi": "Relações Internacionais",
     "jurnalistik": "Jornalismo",
-    "-": " ",
+    "-": "",
     "pendidikan-kewarganegaraan": "Educação Cívica",
     "ilmu-pengetahuan-alam": "Ciências Naturais",
     "ilmu-pengetahuan-sosial": "Ciências Sociais",
@@ -837,7 +803,7 @@
     "lainnya": "Others"
   },
   "admin_dashboard": {
-    "title": "Admin",
+    "title": "Administrador",
     "subtitle": "Gerencie a plataforma e monitore o desempenho.",
     "export_data": "Exportar Dados",
     "platform_summary": "Resumo da Plataforma",
@@ -916,7 +882,7 @@
     "at": "em",
     "tech_support": "Sistema e Servidor",
     "tech_support_desc": "Estado da infraestrutura",
-    "role_admin": "Admin",
+    "role_admin": "Administrador",
     "role_expert": "Especialista",
     "role_student": "Estudante",
     "notes": "Notas",
@@ -936,7 +902,9 @@
     "view_cert_download": "Baixar Arquivo",
     "btn_view_cert": "Ver Arquivo",
     "tab_pending": "Ação necessária",
-    "tab_history": "Histórico"
+    "tab_history": "Histórico",
+    "system_server": "undefined",
+    "recent_activity": "undefined"
   },
   "edu_levels": {
     "SD": "Ensino Fundamental I",
@@ -1089,6 +1057,11 @@
     "pdf_protected_title": "Material Protegido",
     "pdf_protected_desc": "Este PDF contém apenas material parcial. Siga o autor <b>@{{author}}</b> no aplicativo Ba-Yu para baixar a versão completa.",
     "pdf_footer": "Este documento foi baixado do <span class=\"footer-brand\">Ba-Yu</span> - A Plataforma de Aprendizado do Futuro",
+    "draft_badge": "undefined",
+    "draft_label": "undefined",
+    "last_edit": "undefined",
+    "untitled_draft": "undefined",
+    "untitled": "undefined",
     "submit_to_expert": "Enviar ao Especialista",
     "submit_to_expert_success": "Nota enviada com sucesso ao Especialista!",
     "submit_to_expert_error": "Falha ao enviar ao Especialista"
@@ -1101,7 +1074,7 @@
     "features": "Recursos",
     "resources": "Recursos",
     "guide": "Guia",
-    "blog": "Blog",
+    "blog": "Blogues",
     "help": "Ajuda",
     "company": "Empresa",
     "about_us": "Sobre Nós",
@@ -1110,6 +1083,22 @@
     "privacy": "Privacidade",
     "terms": "Termos",
     "status": "Status"
+  },
+  "apply_pakar": {
+    "title": "undefined",
+    "description": "undefined",
+    "full_name": "undefined",
+    "education_expertise": "undefined",
+    "education_placeholder": "undefined",
+    "upload_document": "undefined",
+    "choose_file": "undefined",
+    "max_size": "undefined",
+    "submit": "undefined",
+    "success_title": "undefined",
+    "success_desc": "undefined",
+    "file_too_large": "undefined",
+    "require_file": "undefined",
+    "error_submit": "undefined"
   },
   "edit_profile": {
     "title": "Editar Perfil",
@@ -1234,42 +1223,12 @@
     "title": "Política de Privacidade",
     "hero_title": "Sua Privacidade",
     "hero_desc": "Seus dados estão seguros com a Ba-Yu. Mantemos a transparência e a proteção de dados como nossa principal prioridade.",
-    "principles": [
-      {
-        "label": "Seguro",
-        "desc": "Os dados são criptografados."
-      },
-      {
-        "label": "Transparente",
-        "desc": "Aberto sobre os dados."
-      },
-      {
-        "label": "Controlado",
-        "desc": "Você está no controle."
-      }
-    ],
+    "principles": "[objeto Objeto],[objeto Objeto],[objeto Objeto]",
     "collection_title": "1. Dados que Coletamos",
     "collection_desc": "Coletamos apenas as informações mínimas necessárias para apoiar seu processo de aprendizado:",
-    "collections": [
-      {
-        "title": "Informações do Perfil",
-        "text": "Nome, e-mail e nível de escolaridade."
-      },
-      {
-        "title": "Conteúdo de Aprendizado",
-        "text": "Notas, imagens e comentários."
-      },
-      {
-        "title": "Dados Técnicos",
-        "text": "Logs de atividade para melhoria."
-      }
-    ],
+    "collections": "[objeto Objeto],[objeto Objeto],[objeto Objeto]",
     "usage_title": "2. Uso de Dados",
-    "usages": [
-      "Permitir o compartilhamento de notas.",
-      "Fornecer notificações importantes.",
-      "Melhorar os recursos da plataforma."
-    ],
+    "usages": "Permitir o compartilhamento de notas.,Fornecer notificações importantes.,Melhorar os recursos da plataforma.",
     "footer": "© 2026 Plataforma Ba-Yu. Sua Privacidade é a nossa Confiança."
   },
   "terms_page": {
@@ -1280,26 +1239,14 @@
     "section1_desc": "Ao acessar e usar a plataforma Ba-Yu, você concorda em ficar vinculado a estes Termos.",
     "section2_title": "2. Registro de Conta",
     "section2_desc": "Você deve se registrar com informações precisas. Você é responsável por:",
-    "section2_items": [
-      "Manter o sigilo da senha.",
-      "Atividades em sua conta.",
-      "Fornecer informações exatas."
-    ],
+    "section2_items": "Manter o sigilo da senha.,Atividades em sua conta.,Fornecer informações exatas.",
     "section3_title": "3. Direitos de Propriedade Intelectual",
     "section3_quote": "\"As notas que você envia permanecem suas, mas você concede à Ba-Yu licença para exibi-las.\"",
     "section4_title": "4. Regras de Uso",
     "allowed_title": "Permitido",
-    "allowed_items": [
-      "Compartilhar materiais originais.",
-      "Comentários positivos.",
-      "Download pessoal."
-    ],
+    "allowed_items": "Compartilhar materiais originais.,Comentários positivos.,Download pessoal.",
     "prohibited_title": "Proibido",
-    "prohibited_items": [
-      "Plágio.",
-      "Discurso de ódio.",
-      "Danificar o sistema."
-    ],
+    "prohibited_items": "Plágio.,Discurso de ódio.,Danificar o sistema.",
     "contact": "Dúvidas? <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "&copy; 2026 Plataforma Ba-Yu.<br/>Todos os Direitos Reservados."
   },
@@ -1308,24 +1255,10 @@
     "hero_title": "Diretrizes da Comunidade",
     "hero_desc": "Vamos criar um ambiente de aprendizado seguro, positivo e de apoio na Ba-Yu.",
     "values_title": "Valores Fundamentais",
-    "values": [
-      {
-        "title": "Respeito Mútuo",
-        "desc": "Comunique-se educadamente, seja deixando comentários ou críticas construtivas."
-      },
-      {
-        "title": "Educativo e Positivo",
-        "desc": "Concentre-se em espalhar o conhecimento e apoiar outros alunos."
-      }
-    ],
+    "values": "[objeto Objeto],[objeto Objeto]",
     "rules_title": "Violações Graves",
     "rules_desc": "As seguintes ações podem resultar em exclusão ou rebaixamento da conta:",
-    "rules": [
-      "Fazer upload de notas plagiadas.",
-      "Discurso de ódio, discriminação ou SARA.",
-      "Spam, promoções ilegais ou fraude.",
-      "Compartilhar informações pessoais de outras pessoas (doxxing)."
-    ],
+    "rules": "Fazer upload de notas plagiadas.,Discurso de ódio, discriminação ou SARA.,Spam, promoções ilegais ou fraude.,Compartilhar informações pessoais de outras pessoas (doxxing).",
     "footer": "&copy; 2026 Plataforma Ba-Yu.<br/>Todos os Direitos Reservados."
   },
   "help_page": {
@@ -1335,24 +1268,7 @@
     "search_placeholder": "Pesquisar perguntas...",
     "no_results": "Nenhum resultado para \"{query}\"",
     "faq_title": "Perguntas Frequentes (FAQ)",
-    "faqs": [
-      {
-        "q": "Como me torno um Especialista no Ba-Yu?",
-        "a": "Para se tornar um Especialista, você deve compartilhar com frequência notas de qualidade. Se suas notas entrarem frequentemente na categoria 'Populares' e receberem muitas curtidas, nossa equipe de administração as revisará e concederá o status de Especialista."
-      },
-      {
-        "q": "Posso baixar notas como PDF?",
-        "a": "Claro! Em cada página de detalhes de nota, você pode pressionar o botão de Download no canto superior direito ou na parte inferior do conteúdo para salvá-lo no formato PDF."
-      },
-      {
-        "q": "Por que minha conta não consegue fazer login?",
-        "a": "Certifique-se de que o e-mail e a senha que você digitou estão corretos. Se você excluiu sua conta recentemente, ela pode estar no status Inativa. Tente fazer o login novamente para ativá-la."
-      },
-      {
-        "q": "Como escrevo fórmulas matemáticas?",
-        "a": "Na página de redação de notas, clique no ícone da calculadora na barra de ferramentas lateral para abrir o editor de fórmulas. Você pode escrever fórmulas usando o formato KaTeX."
-      }
-    ],
+    "faqs": "[objeto Objeto],[objeto Objeto],[objeto Objeto],[objeto Objeto]",
     "contact_title": "Ainda precisa de ajuda?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Resposta rápida",

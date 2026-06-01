@@ -71,7 +71,7 @@
     "faq_title": "Gereelde Vrae",
     "contact_title": "Kontak ons",
     "contact_desc": "Het jy meer hulp nodig? Kontak ons ​​span.",
-    "whatsapp": "Chat WhatsApp",
+    "whatsapp": "WhatsApp-klets",
     "email": "Stuur e-pos",
     "community_guidelines": "Gemeenskapsriglyne",
     "community_guidelines_desc": "Lees die reëls en etiek vir die deel van notas oor Ba-Yu."
@@ -250,7 +250,7 @@
     "help_center": "Hulpsentrum",
     "logout": "Teken uit",
     "about": "Oor ons",
-    "blog": "Blog",
+    "blog": "Blogs",
     "terms": "Bepalings",
     "privacy": "Privaatheid"
   },
@@ -262,7 +262,7 @@
     "video_placeholder": "Voer YouTube of Vimeo URL in...",
     "video_caption": "Tik video-onderskrif hier...",
     "image": "Beeld",
-    "video": "Video",
+    "video": "Video's",
     "code": "Kode",
     "formula": "Formule",
     "divider": "Verdeler",
@@ -428,43 +428,9 @@
     "wait_draft": "Wag asseblief 'n oomblik..."
   },
   "calendar": {
-    "days": {
-      "0": "Son",
-      "1": "Ma",
-      "2": "Di",
-      "3": "Wo",
-      "4": "Do",
-      "5": "Vr",
-      "6": "Sat"
-    },
-    "months": {
-      "0": "Jan",
-      "1": "Feb",
-      "2": "Mrt",
-      "3": "Apr",
-      "4": "Mei",
-      "5": "Jun",
-      "6": "Jul",
-      "7": "Aug",
-      "8": "Sep",
-      "9": "Okt",
-      "10": "Nov",
-      "11": "Des"
-    },
-    "full_months": {
-      "0": "Januarie",
-      "1": "Februarie",
-      "2": "Maart",
-      "3": "April",
-      "4": "Mei",
-      "5": "Junie",
-      "6": "Julie",
-      "7": "Augustus",
-      "8": "September",
-      "9": "Oktober",
-      "10": "November",
-      "11": "Desember"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "Jammer, die bladsy waarna jy soek bestaan ​​nie.",
@@ -585,7 +551,6 @@
     "report_note": "Verslag Nota",
     "report_comment": "Verslag Kommentaar",
     "report_report": "Rapporteer",
-    "report_laporkan": "Rapporteer",
     "suka_count": "({{count}})",
     "share_cta": "Versprei hierdie waardevolle kennis aan jou vriende.",
     "copy_link_copied": "Skakel gekopieer!",
@@ -870,7 +835,7 @@
     "notes_db_title": "Notas Databasis",
     "notes_db_desc": "Bestuur die openbare opvoedkundige inhoudgids.",
     "empty_notes": "Geen notas in die databasis nie.",
-    "notes_detail": "Detail",
+    "notes_detail": "Besonderhede",
     "notes_delete": "Vee Permanent uit",
     "load_more": "Laai meer",
     "reports_title": "Rapporteer besluit",
@@ -1105,11 +1070,11 @@
     "desc": "Gestruktureerde studienotasplatform vir studente",
     "product": "Produk",
     "explore_notes": "Verken Notas",
-    "dashboard": "Dashboard",
+    "dashboard": "Dashboards",
     "features": "Kenmerke",
     "resources": "Hulpbronne",
     "guide": "Gids",
-    "blog": "Blog",
+    "blog": "Blogs",
     "help": "Help",
     "company": "Maatskappy",
     "about_us": "Oor ons",
@@ -1258,42 +1223,12 @@
     "title": "Privaatheidsbeleid",
     "hero_title": "Jou privaatheid",
     "hero_desc": "Jou data is veilig by Ba-Yu. Ons handhaaf deursigtigheid en databeskerming as ons topprioriteit.",
-    "principles": {
-      "0": {
-        "label": "Veilig",
-        "desc": "Data is geïnkripteer."
-      },
-      "1": {
-        "label": "Deursigtig",
-        "desc": "Maak oop oor data."
-      },
-      "2": {
-        "label": "Beheer",
-        "desc": "Jy is in beheer."
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. Data wat ons versamel",
     "collection_desc": "Ons samel slegs minimale inligting in wat nodig is om jou leerproses te ondersteun:",
-    "collections": {
-      "0": {
-        "title": "Profielinligting",
-        "text": "Naam, e-posadres en opvoedingsvlak."
-      },
-      "1": {
-        "title": "Leerinhoud",
-        "text": "Notas, beelde en opmerkings."
-      },
-      "2": {
-        "title": "Tegniese data",
-        "text": "Aktiwiteit logs vir verbetering."
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. Datagebruik",
-    "usages": {
-      "0": "Aktiveer tans notadeling.",
-      "1": "Verskaf belangrike kennisgewings.",
-      "2": "Verbetering van platformkenmerke."
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 Ba-Yu-platform. Jou privaatheid is ons vertroue."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "Deur toegang tot en gebruik van die Ba-Yu-platform word geag dat jy gelees het, verstaan ​​en ingestem het om gebind te wees deur hierdie Bepalings en Voorwaardes. As jy nie saamstem nie, moet asseblief nie voortgaan om ons dienste te gebruik vir wedersydse sekuriteit nie.",
     "section2_title": "2. Rekeningregistrasie",
     "section2_desc": "Om die nota-deelfunksie te gebruik, moet jy registreer met akkurate inligting. Jy is ten volle verantwoordelik vir:",
-    "section2_items": {
-      "0": "Handhawing van die vertroulikheid van jou rekeningwagwoord.",
-      "1": "Alle aktiwiteite wat onder jou rekening plaasvind.",
-      "2": "Die verskaffing van ware en akkurate inligting."
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. Intellektuele Eiendomsregte",
     "section3_quote": "\"Enige notas wat jy na Ba-Yu oplaai, bly joune. Deur dit op te laai, gee jy egter aan Ba-Yu 'n lisensie om daardie inhoud binne ons platform-ekosisteem vir opvoedkundige doeleindes te vertoon, te versprei en te bevorder.\"",
     "section4_title": "4. Gebruiksreëls",
     "allowed_title": "Wat word toegelaat",
-    "allowed_items": {
-      "0": "Deel oorspronklike studiemateriaal.",
-      "1": "Die verskaffing van positiewe kommentaar.",
-      "2": "Laai af vir persoonlike verwysing."
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "Wat is verbode",
-    "prohibited_items": {
-      "0": "Laai geplagieerde inhoud op.",
-      "1": "Verspreiding van haatspraak.",
-      "2": "Beskadig die platformstelsel."
-    },
+    "prohibited_items": "[object Object]",
     "contact": "Het u vrae? Kontak <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "© 2026 Ba-Yu Platform.<br/>Alle Regte Voorbehou."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "Gemeenskapsriglyne",
     "hero_desc": "Kom ons skep 'n veilige, positiewe en ondersteunende leeromgewing op Ba-Yu.",
     "values_title": "Kernwaardes",
-    "values": {
-      "0": {
-        "title": "Wedersydse respek",
-        "desc": "Kommunikeer beleefd, of jy kommentaar lewer of opbouende kritiek lewer."
-      },
-      "1": {
-        "title": "Opvoedkundig & Positief",
-        "desc": "Fokus op die verspreiding van kennis en die ondersteuning van ander mede-leerders."
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "Ernstige oortredings",
     "rules_desc": "Die volgende handelinge kan lei tot die verwydering van die rekening of degradering:",
-    "rules": {
-      "0": "Laai geplagieerde notas op.",
-      "1": "Haatspraak, diskriminasie of SARA.",
-      "2": "Strooipos, onwettige promosies of bedrog.",
-      "3": "Deel ander mense se persoonlike inligting (doxxing)."
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform.<br/>Alle Regte Voorbehou."
   },
   "help_page": {
@@ -1359,24 +1268,7 @@
     "search_placeholder": "Soek vrae...",
     "no_results": "Geen resultate vir \"{query}\" nie",
     "faq_title": "Gereelde Vrae (Gereelde Vrae)",
-    "faqs": {
-      "0": {
-        "q": "Hoe word ek 'n kenner van Ba-Yu?",
-        "a": "Om 'n Deskundige te word, moet jy gereeld kwaliteit notas deel. As jou notas dikwels die 'Gewilde'-kategorie betree en baie laaiks kry, sal ons Admin-span dit hersien en Deskundige-status toeken."
-      },
-      "1": {
-        "q": "Kan ek notas as PDF aflaai?",
-        "a": "Natuurlik! Op elke notabesonderhedebladsy kan jy die Aflaai-knoppie in die regter boonste hoek of onderaan die inhoud druk om dit in PDF-formaat te stoor."
-      },
-      "2": {
-        "q": "Hoekom kan my rekening nie aanmeld nie?",
-        "a": "Maak seker dat die e-posadres en wagwoord wat jy ingevoer het korrek is. As jy onlangs jou rekening uitgevee het, is dit dalk in dormante status. Probeer weer aanmeld om dit te aktiveer."
-      },
-      "3": {
-        "q": "Hoe skryf ek wiskundeformules?",
-        "a": "Op die notaskryfbladsy, klik die sakrekenaarikoon in die synutsbalk om die formuleredigeerder oop te maak. Jy kan formules skryf met behulp van KaTeX-formaat."
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "Het jy steeds hulp nodig?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Vinnige reaksie",

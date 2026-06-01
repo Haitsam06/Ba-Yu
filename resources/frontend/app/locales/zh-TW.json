@@ -428,43 +428,9 @@
     "wait_draft": "請稍等..."
   },
   "calendar": {
-    "days": {
-      "0": "太陽",
-      "1": "週一",
-      "2": "星期二",
-      "3": "週三",
-      "4": "星期四",
-      "5": "週五",
-      "6": "星期六"
-    },
-    "months": {
-      "0": "揚",
-      "1": "二月",
-      "2": "三月",
-      "3": "四月",
-      "4": "可能",
-      "5": "君",
-      "6": "七月",
-      "7": "八月",
-      "8": "九月",
-      "9": "十月",
-      "10": "十一月",
-      "11": "十二月"
-    },
-    "full_months": {
-      "0": "一月",
-      "1": "二月",
-      "2": "行進",
-      "3": "四月",
-      "4": "可能",
-      "5": "六月",
-      "6": "七月",
-      "7": "八月",
-      "8": "九月",
-      "9": "十月",
-      "10": "十一月",
-      "11": "十二月"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "抱歉，您要尋找的頁面不存在。",
@@ -585,7 +551,6 @@
     "report_note": "報告備註",
     "report_comment": "檢舉評論",
     "report_report": "報告",
-    "report_laporkan": "報告",
     "suka_count": "({{count}})",
     "share_cta": "將這些寶貴的知識傳播給您的朋友。",
     "copy_link_copied": "連結已複製！",
@@ -1117,7 +1082,7 @@
     "contact": "接觸",
     "privacy": "隱私權政策",
     "terms": "條款及條件",
-    "status": "Status"
+    "status": "地位"
   },
   "apply_pakar": {
     "title": "專家認證",
@@ -1258,42 +1223,12 @@
     "title": "隱私權政策",
     "hero_title": "您的隱私",
     "hero_desc": "Ba-Yu 保證您的資料安全。我們將透明度和資料保護作為我們的首要任務。",
-    "principles": {
-      "0": {
-        "label": "安全的",
-        "desc": "資料已加密。"
-      },
-      "1": {
-        "label": "透明的",
-        "desc": "開啟有關數據。"
-      },
-      "2": {
-        "label": "受控",
-        "desc": "你一切盡在掌握。"
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. 我們收集的數據",
     "collection_desc": "我們僅收集支持您的學習過程所需的最少資訊：",
-    "collections": {
-      "0": {
-        "title": "簡介資訊",
-        "text": "姓名、電子郵件和教育程度。"
-      },
-      "1": {
-        "title": "學習內容",
-        "text": "註釋、圖像和評論。"
-      },
-      "2": {
-        "title": "科技數據",
-        "text": "用於改進的活動日誌。"
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. 數據使用",
-    "usages": {
-      "0": "啟用筆記共享。",
-      "1": "提供重要通知。",
-      "2": "完善平台功能。"
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 巴渝平台。您的隱私是我們的信任。"
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "您造訪和使用巴渝平台，即視為您已閱讀、瞭解並同意受本條款與條件的約束。如果您不同意，為了共同安全，請不要繼續使用我們的服務。",
     "section2_title": "2. 帳戶註冊",
     "section2_desc": "要使用筆記共享功能，您需要註冊並提供準確的資訊。您對以下事項負全部責任：",
-    "section2_items": {
-      "0": "維護您的帳戶密碼的機密性。",
-      "1": "您的帳戶下發生的所有活動。",
-      "2": "提供真實、準確的資訊。"
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. 智慧財產權",
     "section3_quote": "「您上傳到 Ba-Yu 的任何筆記仍然屬於您。但是，透過上傳它們，您授予 Ba-Yu 許可，可以出於教育目的在我們的平台生態系統中展示、分發和推廣該內容。”",
     "section4_title": "4. 使用規則",
     "allowed_title": "允許什麼",
-    "allowed_items": {
-      "0": "分享原創學習資料。",
-      "1": "提供積極的評論。",
-      "2": "下載供個人參考。"
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "禁止什麼",
-    "prohibited_items": {
-      "0": "上傳抄襲內容。",
-      "1": "散播仇恨言論。",
-      "2": "損壞平台系統。"
-    },
+    "prohibited_items": "[object Object]",
     "contact": "有疑問嗎？聯絡<a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "© 2026 巴渝平台。 <br/>保留所有權利。"
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "社區準則",
     "hero_desc": "讓我們在 Ba-Yu 上創造一個安全、積極、支持性的學習環境。",
     "values_title": "核心價值",
-    "values": {
-      "0": {
-        "title": "相互尊重",
-        "desc": "禮貌地溝通，無論是發表評論還是提出建設性批評。"
-      },
-      "1": {
-        "title": "教育性和積極性",
-        "desc": "專注於傳播知識和支持其他學習者。"
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "嚴重違規",
     "rules_desc": "以下操作可能會導致帳戶被刪除或降級：",
-    "rules": {
-      "0": "上傳抄襲筆記。",
-      "1": "仇恨言論、歧視或 SARA。",
-      "2": "垃圾郵件、非法促銷或詐欺。",
-      "3": "分享他人的個人資訊（人肉搜尋）。"
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 巴渝平台。 <br/>保留所有權利。"
   },
   "help_page": {
@@ -1359,24 +1268,7 @@
     "search_placeholder": "搜尋問題...",
     "no_results": "“{query}”沒有結果",
     "faq_title": "常見問題 (FAQ)",
-    "faqs": {
-      "0": {
-        "q": "如何成為巴渝專家？",
-        "a": "要成為專家，您必須經常分享高品質的筆記。如果您的筆記經常進入「熱門」類別並獲得很多贊，我們的管理團隊將對其進行審核並授予專家身份。"
-      },
-      "1": {
-        "q": "我可以下載 PDF 格式的筆記嗎？",
-        "a": "當然！在每個筆記詳細資料頁面上，您可以按內容右上角或底部的「下載」按鈕將其儲存為 PDF 格式。"
-      },
-      "2": {
-        "q": "為什麼我的帳號無法登入？",
-        "a": "確保您輸入的電子郵件和密碼正確。如果您最近刪除了帳戶，則該帳戶可能處於休眠狀態。嘗試再次登入以啟動它。"
-      },
-      "3": {
-        "q": "如何寫數學公式？",
-        "a": "在筆記書寫頁面上，點擊側面工具列中的計算器圖示以開啟公式編輯器。您可以使用 KaTeX 格式編寫公式。"
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "還需要幫忙嗎？",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "快速回應",
@@ -1781,5 +1673,41 @@
     "demote_success": "已成功從 {{oldRole}} 降級為普通用戶。",
     "privacy_updated": "隱私設定更新成功",
     "account_deactivated": "該帳戶已成功停用並進入休眠狀態。"
+  },
+  "titles": {
+    "home": "undefined",
+    "explore": "undefined",
+    "write_note": "undefined",
+    "saved_notes": "undefined",
+    "profile": "undefined",
+    "learning_statistics": "undefined",
+    "settings": "undefined",
+    "about_us": "undefined",
+    "admin_dashboard": "undefined",
+    "blog": "undefined",
+    "careers": "undefined",
+    "community_guidelines": "undefined",
+    "complete_profile": "undefined",
+    "edit_profile": "undefined",
+    "follow_requests": "undefined",
+    "help_center": "undefined",
+    "language": "undefined",
+    "login": "undefined",
+    "note_detail": "undefined",
+    "page_not_found": "undefined",
+    "notification_detail": "undefined",
+    "notifications": "undefined",
+    "onboarding": "undefined",
+    "expert_dashboard": "undefined",
+    "privacy_policy": "undefined",
+    "privacy_settings": "undefined",
+    "public_explore": "undefined",
+    "public_profile": "undefined",
+    "reset_password": "undefined",
+    "security": "undefined",
+    "app_status": "undefined",
+    "terms_of_service": "undefined",
+    "appearance": "undefined",
+    "welcome": "undefined"
   }
 }

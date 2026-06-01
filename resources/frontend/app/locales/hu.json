@@ -71,7 +71,7 @@
     "faq_title": "Gyakran Ismételt Kérdések",
     "contact_title": "Lépjen kapcsolatba velünk",
     "contact_desc": "További segítségre van szüksége? Vegye fel a kapcsolatot csapatunkkal.",
-    "whatsapp": "Chat WhatsApp",
+    "whatsapp": "WhatsApp chat",
     "email": "E-mail küldése",
     "community_guidelines": "közösségi irányelvek",
     "community_guidelines_desc": "Olvassa el a Ba-Yu-val kapcsolatos megjegyzések megosztásának szabályait és etikáját."
@@ -250,7 +250,7 @@
     "help_center": "Súgó",
     "logout": "Jelentkezzen ki",
     "about": "Rólunk",
-    "blog": "Blog",
+    "blog": "Blogok",
     "terms": "Feltételek",
     "privacy": "Magánélet"
   },
@@ -428,43 +428,9 @@
     "wait_draft": "Kérem, várjon egy kicsit..."
   },
   "calendar": {
-    "days": {
-      "0": "Nap",
-      "1": "Hétfő",
-      "2": "kedd",
-      "3": "Házasodik",
-      "4": "cs",
-      "5": "Péntek",
-      "6": "Ült"
-    },
-    "months": {
-      "0": "jan",
-      "1": "Február",
-      "2": "márc",
-      "3": "Április",
-      "4": "május",
-      "5": "Június",
-      "6": "Július",
-      "7": "Augusztus",
-      "8": "szept",
-      "9": "Október",
-      "10": "November",
-      "11": "December"
-    },
-    "full_months": {
-      "0": "január",
-      "1": "február",
-      "2": "március",
-      "3": "április",
-      "4": "május",
-      "5": "június",
-      "6": "július",
-      "7": "augusztus",
-      "8": "szeptember",
-      "9": "október",
-      "10": "november",
-      "11": "december"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "Sajnos a keresett oldal nem létezik.",
@@ -585,7 +551,6 @@
     "report_note": "Jelentés Megjegyzés",
     "report_comment": "Jelentés Megjegyzés",
     "report_report": "Jelentés",
-    "report_laporkan": "Jelentés",
     "suka_count": "({{count}})",
     "share_cta": "Ossza meg ezt az értékes tudást barátaival.",
     "copy_link_copied": "Link másolva!",
@@ -1109,7 +1074,7 @@
     "features": "Jellemzők",
     "resources": "Erőforrás",
     "guide": "Útmutató",
-    "blog": "Blog",
+    "blog": "Blogok",
     "help": "Segítség",
     "company": "Vállalat",
     "about_us": "Rólunk",
@@ -1117,7 +1082,7 @@
     "contact": "Érintkezés",
     "privacy": "Adatvédelmi szabályzat",
     "terms": "Általános Szerződési Feltételek",
-    "status": "Status"
+    "status": "Állapot"
   },
   "apply_pakar": {
     "title": "Szakértői minősítés",
@@ -1258,42 +1223,12 @@
     "title": "Adatvédelmi szabályzat",
     "hero_title": "Az Ön adatvédelme",
     "hero_desc": "Adatai biztonságban vannak a Ba-Yu-val. Az átláthatóságot és az adatvédelmet kiemelten kezeljük.",
-    "principles": {
-      "0": {
-        "label": "Biztonságos",
-        "desc": "Az adatok titkosítva vannak."
-      },
-      "1": {
-        "label": "Átlátszó",
-        "desc": "Nyissa meg az adatokkal kapcsolatban."
-      },
-      "2": {
-        "label": "Ellenőrzött",
-        "desc": "Te irányítod."
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. Az általunk gyűjtött adatok",
     "collection_desc": "Csak minimális információt gyűjtünk, amely a tanulási folyamat támogatásához szükséges:",
-    "collections": {
-      "0": {
-        "title": "Profil információ",
-        "text": "Név, email cím és iskolai végzettség."
-      },
-      "1": {
-        "title": "Tanulási tartalom",
-        "text": "Megjegyzések, képek és megjegyzések."
-      },
-      "2": {
-        "title": "Műszaki adatok",
-        "text": "Tevékenységnaplók a fejlesztés érdekében."
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. Adathasználat",
-    "usages": {
-      "0": "Jegyzetmegosztás engedélyezése.",
-      "1": "Fontos értesítések biztosítása.",
-      "2": "A platform jellemzőinek fejlesztése."
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform. Az Ön személyes adatai a mi bizalmunk."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "A Ba-Yu platform elérésével és használatával úgy tekintjük, hogy elolvasta, megértette és magára nézve kötelezőnek ismeri el ezeket a feltételeket. Ha nem ért egyet, kérjük, ne használja tovább szolgáltatásainkat a kölcsönös biztonság érdekében.",
     "section2_title": "2. Számla regisztráció",
     "section2_desc": "A jegyzetmegosztó funkció használatához pontos adatokkal kell regisztrálnia. Ön teljes mértékben felelős:",
-    "section2_items": {
-      "0": "Fiókja jelszavának titkosságának megőrzése.",
-      "1": "Minden tevékenység, amely a fiókja alatt történik.",
-      "2": "Valós és pontos információszolgáltatás."
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. Szellemi tulajdonjogok",
     "section3_quote": "\"A Ba-Yu-ra feltöltött összes jegyzet a tiéd marad. Feltöltésükkel azonban engedélyt ad a Ba-Yu-nak arra, hogy oktatási célból megjelenítse, terjessze és népszerűsítse ezt a tartalmat platform-ökoszisztémánkon belül.\"",
     "section4_title": "4. Használati szabályok",
     "allowed_title": "Mi megengedett",
-    "allowed_items": {
-      "0": "Eredeti tananyagok megosztása.",
-      "1": "Pozitív megjegyzések biztosítása.",
-      "2": "Letöltés személyes hivatkozásra."
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "Mi a tilos",
-    "prohibited_items": {
-      "0": "Plagizált tartalom feltöltése.",
-      "1": "Gyűlöletbeszéd terjesztése.",
-      "2": "A platformrendszer károsodása."
-    },
+    "prohibited_items": "[object Object]",
     "contact": "Kérdései vannak? Lépjen kapcsolatba a következővel: <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "© 2026 Ba-Yu Platform.<br/>Minden jog fenntartva."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "közösségi irányelvek",
     "hero_desc": "Teremtsünk biztonságos, pozitív és támogató tanulási környezetet a Ba-Yu-n.",
     "values_title": "Alapvető értékek",
-    "values": {
-      "0": {
-        "title": "Kölcsönös Tisztelet",
-        "desc": "Udvariasan kommunikáljon, akár megjegyzéseket fűz, akár építő kritikát ad."
-      },
-      "1": {
-        "title": "Oktatási és pozitív",
-        "desc": "Fókuszáljon a tudás terjesztésére és a többi tanulótárs támogatására."
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "Súlyos jogsértések",
     "rules_desc": "A következő műveletek fiók törlését vagy visszaminősítését eredményezhetik:",
-    "rules": {
-      "0": "Plagizált jegyzetek feltöltése.",
-      "1": "Gyűlöletbeszéd, diszkrimináció vagy SARA.",
-      "2": "Spam, illegális promóciók vagy csalás.",
-      "3": "Mások személyes adatainak megosztása (doxxing)."
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform.<br/>Minden jog fenntartva."
   },
   "help_page": {
@@ -1359,24 +1268,7 @@
     "search_placeholder": "Kérdések keresése...",
     "no_results": "Nincs találat a \"{query}\" kifejezésre",
     "faq_title": "Gyakran Ismételt Kérdések (GYIK)",
-    "faqs": {
-      "0": {
-        "q": "Hogyan legyek a Ba-Yu szakértője?",
-        "a": "Ahhoz, hogy Szakértő lehessen, gyakran meg kell osztania minőségi megjegyzéseket. Ha jegyzetei gyakran bekerülnek a „Népszerű” kategóriába, és sok tetszésnyilvánítást kapnak, adminisztrátori csapatunk felülvizsgálja őket, és szakértői státuszt biztosít."
-      },
-      "1": {
-        "q": "Letölthetem a jegyzeteket PDF formátumban?",
-        "a": "Természetesen! Az egyes jegyzetek részletező oldalán a jobb felső sarokban vagy a tartalom alján található Letöltés gombra kattintva mentheti el PDF formátumban."
-      },
-      "2": {
-        "q": "Miért nem tudok bejelentkezni a fiókomba?",
-        "a": "Győződjön meg arról, hogy a megadott e-mail cím és jelszó helyes. Ha nemrégiben törölte fiókját, akkor lehet, hogy alvó állapotban van. Az aktiváláshoz próbáljon meg újra bejelentkezni."
-      },
-      "3": {
-        "q": "Hogyan írjak matematikai képleteket?",
-        "a": "A jegyzetíró oldalon kattintson a számológép ikonra az oldalsó eszköztáron a képletszerkesztő megnyitásához. Képleteket írhat KaTeX formátumban."
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "Még mindig segítségre van szüksége?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Gyors válasz",

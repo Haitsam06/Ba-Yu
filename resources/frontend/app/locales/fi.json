@@ -71,7 +71,7 @@
     "faq_title": "Usein kysytyt kysymykset",
     "contact_title": "Ota yhteyttä",
     "contact_desc": "Tarvitsetko lisää apua? Ota yhteyttä tiimiimme.",
-    "whatsapp": "Chat WhatsApp",
+    "whatsapp": "WhatsApp chat",
     "email": "Lähetä Sähköposti",
     "community_guidelines": "yhteisön säännöt",
     "community_guidelines_desc": "Lue säännöt ja etiikka muistiinpanojen jakamisesta Ba-Yussa."
@@ -105,7 +105,7 @@
     "set_goal_title": "Set Daily Goal",
     "set_goal_desc": "Aseta päivittäinen oppimiskestotavoitteesi digitaalisella tarkkuudella.",
     "hours": "Tuntia",
-    "mins": "Mins",
+    "mins": "Min",
     "save_target": "Save Target",
     "cancel": "Peruuttaa",
     "share_title": "Jaa tilastosi",
@@ -262,7 +262,7 @@
     "video_placeholder": "Anna YouTuben tai Vimeon URL-osoite...",
     "video_caption": "Kirjoita videon kuvateksti tähän...",
     "image": "Kuva",
-    "video": "Video",
+    "video": "Videot",
     "code": "Koodi",
     "formula": "Kaava",
     "divider": "Jakaja",
@@ -428,43 +428,9 @@
     "wait_draft": "Odota hetki..."
   },
   "calendar": {
-    "days": {
-      "0": "Aurinko",
-      "1": "ma",
-      "2": "ti",
-      "3": "ke",
-      "4": "to",
-      "5": "pe",
-      "6": "la"
-    },
-    "months": {
-      "0": "tammikuu",
-      "1": "helmikuuta",
-      "2": "maaliskuu",
-      "3": "huhtikuu",
-      "4": "toukokuuta",
-      "5": "kesäkuuta",
-      "6": "heinäkuuta",
-      "7": "elokuu",
-      "8": "syyskuu",
-      "9": "lokakuu",
-      "10": "marraskuu",
-      "11": "joulukuuta"
-    },
-    "full_months": {
-      "0": "tammikuu",
-      "1": "helmikuu",
-      "2": "maaliskuuta",
-      "3": "huhtikuu",
-      "4": "toukokuuta",
-      "5": "kesäkuuta",
-      "6": "heinäkuu",
-      "7": "elokuu",
-      "8": "syyskuu",
-      "9": "lokakuu",
-      "10": "marraskuu",
-      "11": "joulukuu"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "Valitettavasti etsimääsi sivua ei ole olemassa.",
@@ -585,7 +551,6 @@
     "report_note": "Raportti Huomautus",
     "report_comment": "Ilmoita kommentti",
     "report_report": "Raportoi",
-    "report_laporkan": "Raportoi",
     "suka_count": "({{count}})",
     "share_cta": "Levitä tätä arvokasta tietoa ystävillesi.",
     "copy_link_copied": "Linkki kopioitu!",
@@ -1258,42 +1223,12 @@
     "title": "Tietosuojakäytäntö",
     "hero_title": "Yksityisyytesi",
     "hero_desc": "Tietosi ovat turvassa Ba-Yulla. Pidämme läpinäkyvyyttä ja tietosuojaa ensisijaisena prioriteettinamme.",
-    "principles": {
-      "0": {
-        "label": "Turvallinen",
-        "desc": "Tiedot on salattu."
-      },
-      "1": {
-        "label": "Läpinäkyvä",
-        "desc": "Avoinna tiedoista."
-      },
-      "2": {
-        "label": "Hallittu",
-        "desc": "Sinä hallitset."
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. Keräämämme tiedot",
     "collection_desc": "Keräämme vain vähimmäistietoja, jotka ovat tarpeen oppimisprosessisi tukemiseksi:",
-    "collections": {
-      "0": {
-        "title": "Profiilin tiedot",
-        "text": "Nimi, sähköpostiosoite ja koulutustaso."
-      },
-      "1": {
-        "title": "Oppimissisältö",
-        "text": "Huomautuksia, kuvia ja kommentteja."
-      },
-      "2": {
-        "title": "Tekniset tiedot",
-        "text": "Toimintalokit parantamista varten."
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. Datan käyttö",
-    "usages": {
-      "0": "Otetaan muistiinpanojen jakaminen käyttöön.",
-      "1": "Tärkeiden ilmoitusten antaminen.",
-      "2": "Alustan ominaisuuksien parantaminen."
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 Ba-Yu-alusta. Yksityisyytesi on luottamuksemme."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "Kun avaat ja käytät Ba-Yu-alustaa, sinun katsotaan lukeneen, ymmärtäneen ja sitoutuneen noudattamaan näitä käyttöehtoja. Jos et ole samaa mieltä, älä jatka palveluidemme käyttöä molemminpuolisen turvallisuuden vuoksi.",
     "section2_title": "2. Tilin rekisteröinti",
     "section2_desc": "Muistiinpanojen jakamisominaisuuden käyttäminen edellyttää rekisteröitymistä oikeilla tiedoilla. Olet täysin vastuussa:",
-    "section2_items": {
-      "0": "Säilytä tilisi salasanan luottamuksellisuus.",
-      "1": "Kaikki tililläsi tapahtuvat toiminnot.",
-      "2": "Oikeiden ja täsmällisten tietojen tarjoaminen."
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. Immateriaalioikeudet",
     "section3_quote": "\"Kaikki Ba-Yuhun lataamasi muistiinpanot pysyvät sinun. Lähettämällä ne kuitenkin annat Ba-Yulle luvan näyttää, jakaa ja mainostaa tätä sisältöä alustaekosysteemissämme koulutustarkoituksiin.\"",
     "section4_title": "4. Käyttösäännöt",
     "allowed_title": "Mikä on sallittua",
-    "allowed_items": {
-      "0": "Alkuperäisten oppimateriaalien jakaminen.",
-      "1": "Tarjoa positiivisia kommentteja.",
-      "2": "Lataaminen henkilökohtaiseen käyttöön."
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "Mikä on kiellettyä",
-    "prohibited_items": {
-      "0": "Ladataan plagioitua sisältöä.",
-      "1": "Vihapuheen levittäminen.",
-      "2": "Alustajärjestelmän vaurioituminen."
-    },
+    "prohibited_items": "[object Object]",
     "contact": "Onko sinulla kysyttävää? Ota yhteyttä <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "© 2026 Ba-Yu Platform.<br/>Kaikki oikeudet pidätetään."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "yhteisön säännöt",
     "hero_desc": "Luodaan turvallinen, positiivinen ja tukeva oppimisympäristö Ba-Yulle.",
     "values_title": "Perusarvot",
-    "values": {
-      "0": {
-        "title": "Keskinäinen kunnioitus",
-        "desc": "Kommunikoi kohteliaasti, kommentoitpa tai rakentavaa kritiikkiä."
-      },
-      "1": {
-        "title": "Koulutus ja positiivinen",
-        "desc": "Keskity tiedon levittämiseen ja muiden oppimistovereiden tukemiseen."
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "Vakavia rikkomuksia",
     "rules_desc": "Seuraavat toimet voivat johtaa tilin poistamiseen tai alentamiseen:",
-    "rules": {
-      "0": "Ladataan plagioituja muistiinpanoja.",
-      "1": "Vihapuhe, syrjintä tai SARA.",
-      "2": "Roskaposti, laittomat tarjoukset tai petokset.",
-      "3": "Muiden henkilökohtaisten tietojen jakaminen (doxxing)."
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform.<br/>Kaikki oikeudet pidätetään."
   },
   "help_page": {
@@ -1359,24 +1268,7 @@
     "search_placeholder": "Hae kysymyksiä...",
     "no_results": "Ei tuloksia haulle \"{query}\"",
     "faq_title": "Usein kysytyt kysymykset (FAQ)",
-    "faqs": {
-      "0": {
-        "q": "Kuinka minusta tulee Ba-Yu-asiantuntija?",
-        "a": "Jotta voit tulla asiantuntijaksi, sinun on usein jaettava laatuhuomautuksia. Jos muistiinpanosi menevät usein \"Suosittu\"-luokkaan ja saavat paljon tykkäyksiä, järjestelmänvalvojatiimimme tarkistaa ne ja myöntää Asiantuntija-tilan."
-      },
-      "1": {
-        "q": "Voinko ladata muistiinpanoja PDF-muodossa?",
-        "a": "Tietenkin! Voit tallentaa sisällön PDF-muotoon painamalla kunkin muistiinpanon tietosivun oikeassa yläkulmassa tai alareunassa olevaa Lataa-painiketta."
-      },
-      "2": {
-        "q": "Miksi tililleni ei voi kirjautua sisään?",
-        "a": "Varmista, että antamasi sähköpostiosoite ja salasana ovat oikein. Jos olet äskettäin poistanut tilisi, se saattaa olla lepotilassa. Yritä kirjautua sisään uudelleen aktivoidaksesi sen."
-      },
-      "3": {
-        "q": "Kuinka kirjoitan matemaattisia kaavoja?",
-        "a": "Avaa kaavaeditori napsauttamalla muistiinpanosivun sivutyökalupalkin laskinkuvaketta. Voit kirjoittaa kaavoja KaTeX-muodossa."
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "Tarvitsetko edelleen apua?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Nopea vastaus",

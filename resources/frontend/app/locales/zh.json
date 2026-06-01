@@ -428,43 +428,9 @@
     "wait_draft": "请稍等..."
   },
   "calendar": {
-    "days": [
-      "日",
-      "一",
-      "二",
-      "三",
-      "四",
-      "五",
-      "六"
-    ],
-    "months": [
-      "1月",
-      "2月",
-      "3月",
-      "4月",
-      "5月",
-      "6月",
-      "7月",
-      "8月",
-      "9月",
-      "10月",
-      "11月",
-      "12月"
-    ],
-    "full_months": [
-      "一月",
-      "二月",
-      "三月",
-      "四月",
-      "五月",
-      "六月",
-      "七月",
-      "八月",
-      "九月",
-      "十月",
-      "十一月",
-      "十二月"
-    ]
+    "days": "日,一,二,三,四,五,六",
+    "months": "1月,2月,3月,4月,5月,6月,7月,8月,9月,10月,11月,12月",
+    "full_months": "一月,二月,三月,四月,五月,六月,七月,八月,九月,十月,十一月,十二月"
   },
   "not_found": {
     "message": "抱歉，您要查找的页面不存在。",
@@ -490,6 +456,7 @@
     "following": "已关注",
     "pending": "待定",
     "minutes_read": "分钟阅读",
+    "read_time": "分钟阅读",
     "expert_review": "专家审查",
     "restricted_access": "受限访问",
     "restricted_desc": "作者限制了对本笔记的完整访问权限。关注作者即可解锁完整材料。",
@@ -598,7 +565,6 @@
     "unverify_desc": "您确定要取消此笔记的认证状态吗？",
     "verify_title": "认证笔记",
     "verify_desc": "将此笔记认证为准确且高质量的资料？",
-    "read_time": "分钟阅读",
     "respond_btn": "回复",
     "downloaded_at": "下载：",
     "pdf_restricted_title": "受保护材料",
@@ -804,7 +770,7 @@
     "humas": "公共关系",
     "hi": "国际关系",
     "jurnalistik": "新闻学",
-    "-": " ",
+    "-": "",
     "pendidikan-kewarganegaraan": "公民",
     "ilmu-pengetahuan-alam": "自然科学",
     "ilmu-pengetahuan-sosial": "社会科学",
@@ -936,7 +902,9 @@
     "view_cert_download": "下载文件",
     "btn_view_cert": "查看文件",
     "tab_pending": "需要行动",
-    "tab_history": "历史记录"
+    "tab_history": "历史记录",
+    "system_server": "undefined",
+    "recent_activity": "undefined"
   },
   "edu_levels": {
     "SD": "小学",
@@ -1114,7 +1082,7 @@
     "contact": "联系",
     "privacy": "隐私",
     "terms": "条款",
-    "status": "Status"
+    "status": "地位"
   },
   "apply_pakar": {
     "title": "专家认证",
@@ -1255,42 +1223,12 @@
     "title": "隐私政策",
     "hero_title": "您的隐私",
     "hero_desc": "您的数据在 Ba-Yu 是安全的。我们将透明度和数据保护作为我们的首要任务。",
-    "principles": [
-      {
-        "label": "安全",
-        "desc": "数据经过加密。"
-      },
-      {
-        "label": "透明",
-        "desc": "数据公开透明。"
-      },
-      {
-        "label": "可控",
-        "desc": "尽在您的掌控。"
-      }
-    ],
+    "principles": "[对象对象],[对象对象],[对象对象]",
     "collection_title": "1. 我们收集的数据",
     "collection_desc": "我们仅收集支持您学习过程所需的最低限度信息：",
-    "collections": [
-      {
-        "title": "个人资料信息",
-        "text": "姓名、电子邮件和教育水平。"
-      },
-      {
-        "title": "学习内容",
-        "text": "笔记、图像和评论。"
-      },
-      {
-        "title": "技术数据",
-        "text": "用于改进的活动日志。"
-      }
-    ],
+    "collections": "[对象对象],[对象对象],[对象对象]",
     "usage_title": "2. 数据使用",
-    "usages": [
-      "实现笔记共享。",
-      "提供重要通知。",
-      "改进平台功能。"
-    ],
+    "usages": "实现笔记共享。,提供重要通知。,改进平台功能。",
     "footer": "© 2026 Ba-Yu 平台。您的隐私是我们的信任。"
   },
   "terms_page": {
@@ -1301,26 +1239,14 @@
     "section1_desc": "通过访问和使用 Ba-Yu 平台，即表示您同意受这些条款的约束。",
     "section2_title": "2. 帐户注册",
     "section2_desc": "您需要提供准确信息。您完全负责：",
-    "section2_items": [
-      "维护密码机密。",
-      "帐户下的所有活动。",
-      "提供准确信息。"
-    ],
+    "section2_items": "维护密码机密。,帐户下的所有活动。,提供准确信息。",
     "section3_title": "3. 知识产权",
     "section3_quote": "“您上传的笔记仍属于您，但您授权 Ba-Yu 展示和分发。”",
     "section4_title": "4. 使用规则",
     "allowed_title": "允许",
-    "allowed_items": [
-      "分享原创材料。",
-      "积极评论。",
-      "个人下载。"
-    ],
+    "allowed_items": "分享原创材料。,积极评论。,个人下载。",
     "prohibited_title": "禁止",
-    "prohibited_items": [
-      "抄袭。",
-      "仇恨言论。",
-      "破坏系统。"
-    ],
+    "prohibited_items": "抄袭。,仇恨言论。,破坏系统。",
     "contact": "有疑问？<a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "&copy; 2026 Ba-Yu 平台。<br/>版权所有。"
   },
@@ -1329,24 +1255,10 @@
     "hero_title": "社区准则",
     "hero_desc": "让我们在 Ba-Yu 上创造一个安全、积极和支持性的学习环境。",
     "values_title": "核心价值观",
-    "values": [
-      {
-        "title": "相互尊重",
-        "desc": "无论是留言还是提出建设性批评，请礼貌沟通。"
-      },
-      {
-        "title": "教育性和积极性",
-        "desc": "专注于传播知识和支持其他学习者。"
-      }
-    ],
+    "values": "[对象对象],[对象对象]",
     "rules_title": "严重违规行为",
     "rules_desc": "以下行为可能导致帐户被删除或降级：",
-    "rules": [
-      "上传抄袭笔记。",
-      "仇恨言论、歧视或 SARA。",
-      "垃圾邮件、非法促销或欺诈。",
-      "共享他人的个人信息 (doxxing)。"
-    ],
+    "rules": "上传抄袭笔记。,仇恨言论、歧视或 SARA。,垃圾邮件、非法促销或欺诈。,共享他人的个人信息 (doxxing)。",
     "footer": "&copy; 2026 Ba-Yu 平台。<br/>版权所有。"
   },
   "help_page": {
@@ -1356,24 +1268,7 @@
     "search_placeholder": "搜索问题...",
     "no_results": "没有关于 \"{query}\" 的结果",
     "faq_title": "常见问题 (FAQ)",
-    "faqs": [
-      {
-        "q": "如何在 Ba-Yu 上成为专家？",
-        "a": "要成为专家，您必须经常分享高质量的笔记。如果您的笔记经常进入“热门”类别并获得很多喜欢，我们的管理团队将审查它们并授予专家状态。"
-      },
-      {
-        "q": "我可以将笔记下载为 PDF 吗？",
-        "a": "当然可以！在每个笔记详情页，您可以点击右上角或内容底部的下载按钮，将其保存为 PDF 格式。"
-      },
-      {
-        "q": "为什么我的帐户无法登录？",
-        "a": "请确保您输入的电子邮件和密码正确。如果您最近删除了帐户，它可能处于休眠状态。请尝试重新登录以激活它。"
-      },
-      {
-        "q": "如何编写数学公式？",
-        "a": "在笔记编写页面，单击侧边工具栏中的计算器图标以打开公式编辑器。您可以使用 KaTeX 格式编写公式。"
-      }
-    ],
+    "faqs": "[对象对象],[对象对象],[对象对象],[对象对象]",
     "contact_title": "仍然需要帮助？",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "快速响应",

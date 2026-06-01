@@ -12,9 +12,9 @@
     "statistics": "Statistik Kajian",
     "settings": "tetapan",
     "pakar_choice": "PILIHAN PAKAR",
-    "no_pakar_choice": "Belum ada pilihan pakar",
+    "no_pakar_choice": "Tiada pilihan pakar lagi",
     "dashboard": "PAPAN PEmuka",
-    "insights": "WAWASAN"
+    "insights": "PANDANGAN"
   },
   "settings": {
     "title": "tetapan",
@@ -69,7 +69,7 @@
     "title": "Pusat Bantuan",
     "subtitle": "Cari jawapan dan hubungi kami",
     "faq_title": "Soalan Lazim",
-    "contact_title": "Hubungi Kami",
+    "contact_title": "Hubungi kami",
     "contact_desc": "Perlukan bantuan lagi? Hubungi pasukan kami.",
     "whatsapp": "Sembang WhatsApp",
     "email": "Hantar E-mel",
@@ -114,11 +114,11 @@
     "copy": "salin",
     "close_modal": "Tutup Modal",
     "activity_analysis": "Analisis Aktiviti",
-    "week": "Minggu"
+    "week": "Ahad"
   },
   "auth": {
     "login": "Log masuk",
-    "register": "Daftar",
+    "register": "Senaraikan",
     "logout": "Log Keluar",
     "forgot_password": "Lupa kata laluan?",
     "reset_password": "Tetapkan Semula Kata Laluan",
@@ -157,7 +157,7 @@
   },
   "common": {
     "save": "Jimat",
-    "cancel": "Batal",
+    "cancel": "Dibatalkan",
     "delete": "Padam",
     "edit": "Sunting",
     "close": "tutup",
@@ -194,11 +194,11 @@
     "expert_badge": "pakar",
     "joined": "Menyertai",
     "recently": "Baru-baru ini",
-    "following_count": "Mengikuti",
+    "following_count": "Ikut",
     "followers_count": "Pengikut",
     "register_expert": "Menjadi Pakar",
     "register_expert_sub": "Jadi penyumbang yang disahkan pada Ba-Yu",
-    "register": "Daftar",
+    "register": "Senaraikan",
     "tab_notes": "Nota",
     "tab_drafts": "Draf",
     "tab_saved": "Disimpan",
@@ -220,15 +220,15 @@
     "delete": "Padam",
     "delete_comment_soon": "Padam ciri ulasan akan datang tidak lama lagi",
     "followers_modal": "Pengikut",
-    "following_modal": "Mengikuti",
+    "following_modal": "Ikut",
     "follow_requests": "Ikuti Permintaan",
-    "people_waiting": "orang menunggu",
+    "people_waiting": "orang tunggu",
     "no_followers": "Tiada pengikut lagi",
     "no_followers_sub": "Teruskan mencipta dan berkongsi nota anda!",
     "empty_following": "Masih Kosong",
     "empty_following_sub": "Cari pencipta kegemaran anda pada halaman Teroka.",
     "find_creator": "Cari Pencipta",
-    "following": "Mengikuti",
+    "following": "Ikut",
     "requested": "Diminta",
     "follow": "Ikut",
     "unfollow_title": "nyahikut",
@@ -239,7 +239,7 @@
     "confirm_unfollow": "Ya, Berhenti",
     "cancel": "Tidak",
     "admin_badge": "Admin",
-    "follows_you": "Mengikuti Anda"
+    "follows_you": "Mengikuti awak"
   },
   "topnav": {
     "search_placeholder": "Pilihan carian...",
@@ -283,14 +283,14 @@
     "add_collection": "Tambahkan pada Koleksi",
     "report": "Laporan",
     "saved": "Disimpan",
-    "view": "Lihat",
-    "cancel": "Batal",
+    "view": "Tengok",
+    "cancel": "Dibatalkan",
     "read_time_badge": "m"
   },
   "home": {
     "login_to_like": "Sila log masuk dahulu untuk menyukai siaran.",
     "no_description": "Tiada penerangan",
-    "for_you": "✨ Untuk Anda",
+    "for_you": "✨ Untuk anda",
     "main_focus": "Fokus Utama",
     "notes": "Nota",
     "view_all": "Lihat Semua",
@@ -302,7 +302,7 @@
     "title": "Teroka",
     "expert_education": "Pakar Pendidikan",
     "followers": "pengikut",
-    "following": "Mengikuti",
+    "following": "Ikut",
     "requested": "Diminta",
     "follow": "Ikut",
     "no_experts": "Tiada pakar berdaftar lagi.",
@@ -314,15 +314,15 @@
     "search_placeholder": "Cari nota, topik atau pencipta...",
     "for_you": "Untuk Awak",
     "popular": "Popular",
-    "newest": "Terbaru",
-    "users": "Pengguna",
+    "newest": "Terkini",
+    "users": "pengguna",
     "subtitle": "Cari bahan, topik dan inspirasi pembelajaran dari seluruh negara.",
     "filter_ref": "Penapis Rujukan",
     "search_type": "Jenis Carian",
     "all": "Semua",
     "verified_notes": "Nota Disahkan",
     "verified_people": "Orang Yang Disahkan",
-    "selected": "Dipilih",
+    "selected": "Terpilih",
     "edu_level": "Tahap Pendidikan",
     "grade_level": "Peringkat Gred",
     "all_grades": "Semua Darjah",
@@ -363,7 +363,7 @@
     "title_placeholder": "Tajuk Nota...",
     "write_placeholder": "Tulis bahan atau penjelasan anda di sini...",
     "save_draft": "Simpan Draf",
-    "saving": "Menyimpan...",
+    "saving": "Simpan...",
     "publish": "Terbitkan",
     "last_saved": "Terakhir disimpan",
     "back": "belakang",
@@ -381,7 +381,7 @@
     "short_desc": "Penerangan Ringkas (Maks 150 Aksara)",
     "tags": "Label / Tag",
     "add_tag": "Tambah tag dan tekan Enter...",
-    "cancel": "Batal",
+    "cancel": "Dibatalkan",
     "publishing": "Menerbitkan...",
     "formula_modal": "Masukkan Formula",
     "formula_desc": "Gunakan format LaTeX atau KaTeX untuk formula matematik.",
@@ -414,7 +414,7 @@
     "choose_cover": "Pilih Cover",
     "title_placeholder_preview": "Tajuk Nota...",
     "desc_placeholder": "Penerangan ringkas...",
-    "saving_draft": "Menyimpan...",
+    "saving_draft": "Simpan...",
     "editor_placeholder": "Tulis bahan atau penjelasan anda di sini...",
     "confirm": "sahkan",
     "alt_text_title": "Teks Alternatif",
@@ -428,43 +428,9 @@
     "wait_draft": "Sila tunggu sebentar..."
   },
   "calendar": {
-    "days": {
-      "0": "Matahari",
-      "1": "isn",
-      "2": "Tue",
-      "3": "Rabu",
-      "4": "Kha",
-      "5": "Jum",
-      "6": "Sab"
-    },
-    "months": {
-      "0": "Jan",
-      "1": "Feb",
-      "2": "Mac",
-      "3": "Apr",
-      "4": "Mei",
-      "5": "Jun",
-      "6": "Jul",
-      "7": "Ogos",
-      "8": "Sep",
-      "9": "Okt",
-      "10": "Nov",
-      "11": "Dis"
-    },
-    "full_months": {
-      "0": "Januari",
-      "1": "Februari",
-      "2": "Mac",
-      "3": "April",
-      "4": "Mei",
-      "5": "Jun",
-      "6": "Julai",
-      "7": "Ogos",
-      "8": "September",
-      "9": "Oktober",
-      "10": "November",
-      "11": "Disember"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "Maaf, halaman yang anda cari tidak wujud.",
@@ -479,7 +445,7 @@
     "daily_avg": "Purata Harian",
     "current_streak": "Streak Semasa",
     "days": "hari-hari",
-    "hours": "jam",
+    "hours": "pukul",
     "mins": "min"
   },
   "note_detail": {
@@ -487,7 +453,7 @@
     "cancel_verification": "Batalkan Pengesahan",
     "verify": "Sahkan",
     "follow": "Ikut",
-    "following": "Mengikuti",
+    "following": "Ikut",
     "pending": "Belum selesai",
     "minutes_read": "min baca",
     "read_time": "min baca",
@@ -532,13 +498,13 @@
     "more_from_author": "Lagi dari penulis ini",
     "recommended_notes": "Nota Disyorkan",
     "view_all": "Lihat Semua",
-    "cancel": "Batal",
+    "cancel": "Dibatalkan",
     "edit": "Sunting",
     "delete": "Padam",
     "save": "Jimat",
     "reply": "Balas",
     "hide_replies": "Sembunyikan Balasan",
-    "view_replies": "Lihat Balasan",
+    "view_replies": "Lihat Balas",
     "highlight_success": "Teks berjaya diserlahkan!",
     "highlight_failed": "Gagal menyimpan sorotan",
     "highlight_delete_success": "Sorotan berjaya dipadamkan",
@@ -548,7 +514,7 @@
     "edit_comment": "Edit Komen",
     "delete_comment_title": "Padamkan Ulasan?",
     "delete_comment_desc": "Ulasan yang dipadamkan tidak boleh dipulihkan.",
-    "write_reply": "Tulis balasan...",
+    "write_reply": "Tulis jawapan...",
     "write_discussion_short": "Tulis perbincangan...",
     "comment_success": "Komen berjaya disiarkan!",
     "comment_failed": "Gagal menyiarkan ulasan",
@@ -562,7 +528,7 @@
     "report_reason_placeholder": "Pilih sebab...",
     "report_desc_placeholder": "Terangkan secara ringkas sebab anda melaporkan kandungan ini...",
     "report_submit": "Laporan",
-    "report_submitting": "Melaporkan...",
+    "report_submitting": "lapor...",
     "report_reason_spam": "Spam / Promosi",
     "report_reason_inappropriate": "Kandungan Tidak Sesuai",
     "report_reason_harassment": "Gangguan / Ucapan Kebencian",
@@ -575,7 +541,7 @@
     "load_more_comments": "Muatkan Lagi ({{count}})",
     "recommendation_title": "Disyorkan",
     "recommendation_subtitle": "Nota Lain",
-    "author_following": "Mengikuti",
+    "author_following": "Ikut",
     "author_pending": "Belum selesai",
     "author_follow": "Ikut",
     "verified_expert": "Pakar Disahkan",
@@ -585,7 +551,6 @@
     "report_note": "Nota Laporan",
     "report_comment": "Laporkan Ulasan",
     "report_report": "Laporan",
-    "report_laporkan": "Laporan",
     "suka_count": "({{count}})",
     "share_cta": "Sebarkan ilmu berharga ini kepada rakan-rakan anda.",
     "copy_link_copied": "Pautan disalin!",
@@ -605,7 +570,7 @@
     "pdf_restricted_title": "Bahan Terlindung",
     "pdf_restricted_desc": "Versi PDF ini hanya mengandungi sebahagian bahan. Ikuti pengarang <b>@{author}</b> pada apl Ba-Yu untuk memuat turun versi penuh.",
     "pdf_footer": "Dokumen ini dimuat turun daripada <span class=\"footer-brand\">Ba-Yu</span> - The Future Learning Platform",
-    "sort_newest": "Terbaru",
+    "sort_newest": "Terkini",
     "sort_oldest": "Tertua",
     "sort_top": "Komen Teratas"
   },
@@ -615,7 +580,7 @@
     "expert": "pakar",
     "joined": "Menyertai",
     "followers": "Pengikut",
-    "following": "Mengikuti",
+    "following": "Ikut",
     "views": "Pandangan",
     "follow": "Ikut",
     "unfollow": "nyahikut",
@@ -626,10 +591,10 @@
     "tab_notes": "Nota",
     "no_notes": "Tiada nota dikongsi lagi.",
     "no_notes_desc": "Pengguna ini belum berkongsi sebarang nota awam.",
-    "about_me": "Tentang Saya",
+    "about_me": "Tentang saya",
     "no_bio": "Tiada bio lagi.",
     "education": "Pendidikan",
-    "social_media": "Media Sosial",
+    "social_media": "media sosial",
     "report_user": "Laporkan Pengguna",
     "report_reason": "Laporkan Sebab",
     "report_reason_placeholder": "Pilih sebab untuk melaporkan...",
@@ -639,13 +604,13 @@
     "report_other": "Lain-lain",
     "report_detail": "Butiran Tambahan (Pilihan)",
     "report_detail_placeholder": "Terangkan secara ringkas sebab anda melaporkan pengguna ini...",
-    "cancel": "Batal",
+    "cancel": "Dibatalkan",
     "submit_report": "Hantar Laporan",
     "tab_activity": "Aktiviti",
     "no_history": "Belum Ada Aktiviti",
     "no_history_sub": "belum mengulas sebarang nota lagi.",
     "followers_modal": "Pengikut daripada",
-    "following_modal": "Mengikuti",
+    "following_modal": "Ikut",
     "activity_reply": "Membalas komen pada",
     "activity_discuss": "Mengulas mengenai",
     "activity_note": "Nota",
@@ -669,7 +634,7 @@
     "title": "pakar",
     "subtitle": "Menyumbang kepada pengesahan ketepatan bahan.",
     "explore": "Teroka",
-    "stats_title": "Statistik Kurasi Anda",
+    "stats_title": "Statistik Susun Anda",
     "waiting_validation": "Menunggu Pengesahan",
     "approved": "Disahkan",
     "total_control": "Kawalan Menyeluruh",
@@ -708,7 +673,7 @@
     "placeholder_approve": "Tulis komen positif atau cadangan ringkas...",
     "placeholder_reject": "Tulis mengapa nota ini ditolak...",
     "placeholder_cancel": "Tulis sebab pengesahan nota ini dibatalkan...",
-    "cancel_btn": "Batal",
+    "cancel_btn": "Dibatalkan",
     "confirm_validate": "sahkan",
     "confirm_reject": "Nota Tolak",
     "confirm_cancel": "Batalkan Pengesahan",
@@ -719,13 +684,13 @@
     "rejected_stats": "ditolak"
   },
   "subjects": {
-    "pendidikan-agama": "Pendidikan Agama",
+    "pendidikan-agama": "Pendidikan agama",
     "pendidikan-pancasila": "Pendidikan Pancasila",
     "pkn": "Sivik",
     "bahasa-indonesia": "Indonesia",
     "bahasa-inggris": "Inggeris",
     "bahasa-daerah": "Bahasa Tempatan",
-    "bahasa-asing": "Bahasa Asing",
+    "bahasa-asing": "bahasa asing",
     "muatan-lokal": "Kandungan Tempatan",
     "bimbingan-konseling": "Kaunseling",
     "ipa": "Sains Semula Jadi",
@@ -748,14 +713,14 @@
     "filsafat-ilmu": "Falsafah Sains",
     "linguistik": "Linguistik Am",
     "ilmu-hukum": "Undang-undang",
-    "penjas": "Pendidikan Jasmani",
+    "penjas": "pendidikan jasmani",
     "seni-budaya": "Seni & Budaya",
     "seni-rupa": "Seni Halus",
     "seni-musik": "Muzik",
     "seni-tari": "menari",
     "seni-teater": "Teater",
     "desain-grafis": "Reka Bentuk Grafik",
-    "fotografi": "Fotografi",
+    "fotografi": "fotografi",
     "sinematografi": "Sinematografi",
     "arsitektur": "Seni bina",
     "informatika": "Informatik",
@@ -765,9 +730,9 @@
     "web": "Pengaturcaraan Web",
     "mobile": "Pengaturcaraan Mudah Alih",
     "jaringan": "Rangkaian Komputer",
-    "os": "Sistem Operasi",
+    "os": "Sistem pengendalian",
     "cyber": "Keselamatan Siber",
-    "ai": "Kecerdasan Buatan",
+    "ai": "Kecerdasan buatan",
     "ui-ux": "Reka Bentuk UI/UX",
     "data-science": "Sains Data",
     "anatomi": "Anatomi",
@@ -810,16 +775,16 @@
     "ilmu-pengetahuan-alam": "Sains Semula Jadi",
     "ilmu-pengetahuan-sosial": "Sains Sosial",
     "linguistik-umum": "Linguistik Am",
-    "pendidikan-jasmani": "Pendidikan Jasmani",
+    "pendidikan-jasmani": "pendidikan jasmani",
     "algoritma-pemrograman": "Algoritma & Pengaturcaraan",
     "rekayasa-perangkat-lunak": "Kejuruteraan Perisian",
     "sistem-basis-data": "Sistem Pangkalan Data",
     "pemrograman-web": "Pengaturcaraan Web",
     "pemrograman-mobile": "Pengaturcaraan Mudah Alih",
     "jaringan-komputer": "Rangkaian Komputer",
-    "sistem-operasi": "Sistem Operasi",
+    "sistem-operasi": "Sistem pengendalian",
     "keamanan-siber": "Keselamatan Siber",
-    "kecerdasan-buatan": "Kecerdasan Buatan",
+    "kecerdasan-buatan": "Kecerdasan buatan",
     "desain-ui-ux": "Reka Bentuk UI/UX",
     "ilmu-data": "Sains Data",
     "ilmu-keperawatan": "Kejururawatan",
@@ -852,12 +817,12 @@
     "filter_verified": "Disahkan",
     "filter_unverified": "Tidak disahkan",
     "sort_by": "Isih Mengikut",
-    "sort_newest": "Terbaru",
+    "sort_newest": "Terkini",
     "sort_oldest": "Tertua",
     "tab_verification": "Pensijilan",
     "tab_notes": "Nota",
     "tab_reports": "Laporan",
-    "tab_users": "Pengguna",
+    "tab_users": "pengguna",
     "verify_title": "Pengesahan Pakar",
     "verify_desc": "Semak permintaan akaun pakar.",
     "all_done": "Semua Selesai!",
@@ -1045,7 +1010,7 @@
     "lbl_xor": "Logik Boolean (XOR)",
     "lbl_big_o": "Kerumitan Masa (O Besar)",
     "lbl_shannon": "Teorem Shannon-Hartley",
-    "lbl_pecahan": "Pecahan",
+    "lbl_pecahan": "pecahan",
     "lbl_pangkat": "Eksponen",
     "lbl_subskrip": "Subskrip",
     "lbl_panah": "anak panah",
@@ -1159,7 +1124,7 @@
     "phone": "Nombor Telefon (Pilihan)",
     "phone_placeholder": "Cth.: +1 555 xxx xxxx",
     "save_button": "Simpan Perubahan Profil",
-    "saving": "Menyimpan...",
+    "saving": "Simpan...",
     "save_success": "Profil berjaya dikemas kini!",
     "save_error": "Gagal menyimpan perubahan. Sila cuba lagi.",
     "photo_modal_title": "Tukar Foto Profil",
@@ -1171,7 +1136,7 @@
     "camera_back": "belakang",
     "camera_error": "Gagal mengakses kamera. Pastikan penyemak imbas mempunyai kebenaran kamera.",
     "crop_title": "Laraskan Foto",
-    "crop_cancel": "Batal",
+    "crop_cancel": "Dibatalkan",
     "crop_use": "guna",
     "crop_drag_hint": "Seret untuk melaraskan kedudukan",
     "crop_reset": "Tetapkan semula",
@@ -1193,7 +1158,7 @@
     "new_password": "Kata Laluan Baharu",
     "confirm_new_password": "Sahkan Kata Laluan Baharu",
     "btn_save_password": "Simpan Kata Laluan",
-    "btn_saving": "Menyimpan...",
+    "btn_saving": "Simpan...",
     "two_factor_title": "Pengesahan Dua Faktor (2FA)",
     "two_factor_desc": "Lindungi akaun anda dengan lapisan keselamatan tambahan. Kami akan meminta kod pengesahan apabila anda log masuk dari peranti baharu.",
     "two_factor_status_on": "Aktif",
@@ -1209,7 +1174,7 @@
     "new_password_placeholder": "Taip kata laluan baharu",
     "confirm_new_password_placeholder": "Taip semula kata laluan baharu",
     "update_password": "Kemas kini Kata Laluan",
-    "saving": "Menyimpan...",
+    "saving": "Simpan...",
     "two_factor_auth": "Pengesahan Dua Faktor",
     "extra_protection": "Perlindungan tambahan untuk akaun anda",
     "feature_in_development": "Ciri dalam pembangunan",
@@ -1235,7 +1200,7 @@
     "dialog_desc": "Akaun anda akan disembunyikan daripada orang ramai dan memasuki keadaan Dorman selama 30 hari. Anda boleh mengaktifkannya semula dengan log masuk sebelum 30 hari tamat. Adakah anda pasti mahu meneruskan?",
     "processing": "Memproses...",
     "yes_deactivate": "Ya, Nyahaktifkan Akaun Saya",
-    "cancel": "Batal"
+    "cancel": "Dibatalkan"
   },
   "follow_requests": {
     "title": "Ikuti Permintaan",
@@ -1256,44 +1221,14 @@
   },
   "privacy_page": {
     "title": "Dasar Privasi",
-    "hero_title": "Privasi Anda",
+    "hero_title": "Privasi anda",
     "hero_desc": "Data anda selamat dengan Ba-Yu. Kami mengekalkan ketelusan dan perlindungan data sebagai keutamaan kami.",
-    "principles": {
-      "0": {
-        "label": "selamat",
-        "desc": "Data disulitkan."
-      },
-      "1": {
-        "label": "Telus",
-        "desc": "Buka tentang data."
-      },
-      "2": {
-        "label": "Terkawal",
-        "desc": "Anda berada dalam kawalan."
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. Data yang Kami Kumpul",
     "collection_desc": "Kami hanya mengumpul maklumat minimum yang diperlukan untuk menyokong proses pembelajaran anda:",
-    "collections": {
-      "0": {
-        "title": "Maklumat Profil",
-        "text": "Nama, e-mel dan tahap pendidikan."
-      },
-      "1": {
-        "title": "Kandungan Pembelajaran",
-        "text": "Nota, imej dan komen."
-      },
-      "2": {
-        "title": "Data Teknikal",
-        "text": "Log aktiviti untuk penambahbaikan."
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. Penggunaan Data",
-    "usages": {
-      "0": "Mendayakan perkongsian nota.",
-      "1": "Menyediakan pemberitahuan penting.",
-      "2": "Memperbaiki ciri platform."
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform. Privasi Anda adalah Amanah Kami."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "Dengan mengakses dan menggunakan platform Ba-Yu, anda dianggap telah membaca, memahami, dan bersetuju untuk terikat dengan Terma dan Syarat ini. Jika anda tidak bersetuju, sila jangan terus menggunakan perkhidmatan kami untuk keselamatan bersama.",
     "section2_title": "2. Pendaftaran Akaun",
     "section2_desc": "Untuk menggunakan ciri perkongsian nota, anda dikehendaki mendaftar dengan maklumat yang tepat. Anda bertanggungjawab sepenuhnya untuk:",
-    "section2_items": {
-      "0": "Menjaga kerahsiaan kata laluan akaun anda.",
-      "1": "Semua aktiviti yang berlaku di bawah akaun anda.",
-      "2": "Memberi maklumat yang benar dan tepat."
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. Hak Harta Intelek",
     "section3_quote": "\"Sebarang nota yang anda muat naik ke Ba-Yu kekal milik anda. Walau bagaimanapun, dengan memuat naiknya, anda memberikan Ba-Yu lesen untuk memaparkan, mengedar dan mempromosikan kandungan tersebut dalam ekosistem platform kami untuk tujuan pendidikan.\"",
     "section4_title": "4. Peraturan Penggunaan",
     "allowed_title": "Apa yang Dibenarkan",
-    "allowed_items": {
-      "0": "Berkongsi bahan kajian asli.",
-      "1": "Memberi komen yang positif.",
-      "2": "Memuat turun untuk rujukan peribadi."
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "Apa yang Dilarang",
-    "prohibited_items": {
-      "0": "Memuat naik kandungan yang diciplak.",
-      "1": "Menyebarkan ucapan kebencian.",
-      "2": "Merosakkan sistem platform."
-    },
+    "prohibited_items": "[object Object]",
     "contact": "Ada soalan? Hubungi <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "© 2026 Ba-Yu Platform.<br/>Hak Cipta Terpelihara."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "Garis Panduan Komuniti",
     "hero_desc": "Mari wujudkan persekitaran pembelajaran yang selamat, positif dan menyokong di Ba-Yu.",
     "values_title": "Nilai Teras",
-    "values": {
-      "0": {
-        "title": "Saling Menghormati",
-        "desc": "Berkomunikasi secara sopan, sama ada meninggalkan komen atau memberi kritikan yang membina."
-      },
-      "1": {
-        "title": "Pendidikan & Positif",
-        "desc": "Fokus untuk menyebarkan pengetahuan dan menyokong rakan pelajar yang lain."
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "Pelanggaran Teruk",
     "rules_desc": "Tindakan berikut boleh mengakibatkan pemadaman atau penurunan pangkat akaun:",
-    "rules": {
-      "0": "Memuat naik nota plagiat.",
-      "1": "Ucapan kebencian, diskriminasi atau SARA.",
-      "2": "Spam, promosi haram atau penipuan.",
-      "3": "Berkongsi maklumat peribadi orang lain (doxxing)."
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform.<br/>Hak Cipta Terpelihara."
   },
   "help_page": {
@@ -1359,24 +1268,7 @@
     "search_placeholder": "Soalan carian...",
     "no_results": "Tiada hasil untuk \"{query}\"",
     "faq_title": "Soalan Lazim (FAQ)",
-    "faqs": {
-      "0": {
-        "q": "Bagaimanakah saya boleh menjadi Pakar Ba-Yu?",
-        "a": "Untuk menjadi Pakar, anda mesti kerap berkongsi nota berkualiti. Jika nota anda sering memasuki kategori 'Popular' dan mendapat banyak suka, pasukan Pentadbir kami akan menyemaknya dan memberikan status Pakar."
-      },
-      "1": {
-        "q": "Bolehkah saya memuat turun nota sebagai PDF?",
-        "a": "Sudah tentu! Pada setiap halaman butiran nota, anda boleh menekan butang Muat turun di penjuru kanan sebelah atas atau di bahagian bawah kandungan untuk menyimpannya dalam format PDF."
-      },
-      "2": {
-        "q": "Mengapa akaun saya tidak boleh log masuk?",
-        "a": "Pastikan e-mel dan kata laluan yang anda masukkan adalah betul. Jika anda baru-baru ini memadamkan akaun anda, ia mungkin dalam status Dorman. Cuba log masuk semula untuk mengaktifkannya."
-      },
-      "3": {
-        "q": "Bagaimanakah saya menulis formula matematik?",
-        "a": "Pada halaman penulisan nota, klik ikon kalkulator dalam bar alat sisi untuk membuka editor formula. Anda boleh menulis formula menggunakan format KaTeX."
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "Masih Perlukan Bantuan?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Respon cepat",
@@ -1389,7 +1281,7 @@
     "title": "Tentang Kami",
     "hero_title": "Kenali Ba-Yu",
     "hero_desc": "Lebih dekat dengan perjalanan, misi dan pasukan di belakang Platform Ba-Yu.",
-    "vision_title": "Visi & Misi",
+    "vision_title": "Visi dan misi",
     "vision_desc": "Kami percaya setiap pelajar berhak mendapat akses yang sama kepada bahan berkualiti. Ba-Yu dibina untuk memudahkan pertukaran nota yang adil, selamat dan mudah diakses untuk pelajar di seluruh Indonesia.",
     "community_title": "Komuniti Kami",
     "community_desc": "Beribu-ribu pelajar dan pakar dari pelbagai institusi pendidikan telah menyertainya. Dengan sistem pengesahan dan pelaporan yang ketat, kami memastikan ekosistem ini positif dan membina.",
@@ -1401,7 +1293,7 @@
     "hero_desc": "Sertai kami dalam membina ekosistem pendidikan masa depan.",
     "no_vacancies_title": "Belum Ada Jawatan Kosong",
     "no_vacancies_desc": "Kami tidak membuka jawatan baru pada masa ini, tetapi kami sentiasa berminat dengan individu yang berbakat.",
-    "contact_btn": "Hubungi Kami",
+    "contact_btn": "Hubungi kami",
     "footer": "© 2026 Ba-Yu Platform.<br/>Hak Cipta Terpelihara."
   },
   "blog_page": {
@@ -1468,7 +1360,7 @@
     "cat_all": "Semua Data",
     "cat_notes": "Nota",
     "cat_reports": "Laporan",
-    "cat_users": "Pengguna",
+    "cat_users": "pengguna",
     "verify_status": "Status Pengesahan",
     "status_all": "Semua Status",
     "status_verified": "Disahkan Sahaja",
@@ -1479,7 +1371,7 @@
     "limit_100": "Maks. 100 Baris",
     "limit_500": "Maks. 500 Baris",
     "format": "Format Fail Output",
-    "cancel": "Batal",
+    "cancel": "Dibatalkan",
     "export_now": "Eksport Sekarang",
     "no_data": "Tiada data.",
     "no_data_filter": "Tiada data yang sepadan dengan penapis untuk eksport.",
@@ -1544,7 +1436,7 @@
     "school_label": "Institusi / Sekolah",
     "school_placeholder": "Contoh: Universiti Harvard",
     "submit_button": "Simpan & Teruskan",
-    "submitting": "Menyimpan...",
+    "submitting": "Simpan...",
     "username_error": "Nama pengguna hanya boleh mengandungi huruf, nombor dan garis bawah (_)",
     "success_msg": "Profil berjaya dilengkapkan! Selamat datang ke Ba-Yu",
     "error_msg": "Ralat berlaku semasa menyimpan profil",
@@ -1567,7 +1459,7 @@
     "new_password_placeholder": "Minimum 8 aksara",
     "confirm_password_label": "Sahkan Kata Laluan",
     "confirm_password_placeholder": "Taip semula kata laluan baharu",
-    "submit_loading": "Menyimpan...",
+    "submit_loading": "Simpan...",
     "submit_button": "Simpan Kata Laluan Baharu",
     "error_token": "Pautan tetapan semula tidak sah atau telah tamat tempoh.",
     "error_user": "Pengguna dengan e-mel ini tidak ditemui."
@@ -1783,7 +1675,7 @@
     "account_deactivated": "Akaun telah berjaya dinyahaktifkan dan memasuki Dormant."
   },
   "titles": {
-    "home": "Rumah",
+    "home": "rumah",
     "explore": "Teroka",
     "write_note": "Tulis Nota",
     "saved_notes": "Nota Disimpan",
@@ -1797,14 +1689,14 @@
     "community_guidelines": "Garis Panduan Komuniti",
     "complete_profile": "Profil Lengkap",
     "edit_profile": "Edit Profil",
-    "follow_requests": "Ikuti Permintaan",
+    "follow_requests": "Ikut Permintaan",
     "help_center": "Pusat Bantuan",
     "language": "Bahasa",
     "login": "Log masuk",
     "note_detail": "Nota Butiran",
     "page_not_found": "Halaman Tidak Ditemui",
     "notification_detail": "Butiran Pemberitahuan",
-    "notifications": "Pemberitahuan",
+    "notifications": "Pengumuman",
     "onboarding": "Onboarding",
     "expert_dashboard": "Papan Pemuka Pakar",
     "privacy_policy": "Dasar Privasi",
@@ -1816,6 +1708,6 @@
     "app_status": "Status Apl",
     "terms_of_service": "Syarat Perkhidmatan",
     "appearance": "Penampilan",
-    "welcome": "Selamat datang"
+    "welcome": "SELAMAT DATANG"
   }
 }

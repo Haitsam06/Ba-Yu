@@ -250,7 +250,7 @@
     "help_center": "Centrul de ajutor",
     "logout": "Deconectați-vă",
     "about": "Despre noi",
-    "blog": "Blog",
+    "blog": "Bloguri",
     "terms": "Termeni",
     "privacy": "Confidențialitate"
   },
@@ -262,7 +262,7 @@
     "video_placeholder": "Introduceți adresa URL YouTube sau Vimeo...",
     "video_caption": "Introduceți subtitrarea videoclipului aici...",
     "image": "Imagine",
-    "video": "Video",
+    "video": "Videoclipuri",
     "code": "Cod",
     "formula": "Formula",
     "divider": "Divizor",
@@ -428,43 +428,9 @@
     "wait_draft": "Vă rog să așteptați un moment..."
   },
   "calendar": {
-    "days": {
-      "0": "Soare",
-      "1": "Lun",
-      "2": "mar",
-      "3": "mier",
-      "4": "joi",
-      "5": "vineri",
-      "6": "sat"
-    },
-    "months": {
-      "0": "ian",
-      "1": "feb",
-      "2": "Mar",
-      "3": "Aprilie",
-      "4": "mai",
-      "5": "Iunie",
-      "6": "iul",
-      "7": "aug",
-      "8": "sept",
-      "9": "oct",
-      "10": "nov",
-      "11": "Dec"
-    },
-    "full_months": {
-      "0": "ianuarie",
-      "1": "februarie",
-      "2": "martie",
-      "3": "aprilie",
-      "4": "mai",
-      "5": "iunie",
-      "6": "iulie",
-      "7": "august",
-      "8": "septembrie",
-      "9": "octombrie",
-      "10": "noiembrie",
-      "11": "decembrie"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "Ne pare rău, pagina pe care o căutați nu există.",
@@ -585,7 +551,6 @@
     "report_note": "Notă de raport",
     "report_comment": "Raportează comentariu",
     "report_report": "Raport",
-    "report_laporkan": "Raport",
     "suka_count": "({{count}})",
     "share_cta": "Răspândește aceste cunoștințe valoroase prietenilor tăi.",
     "copy_link_copied": "Link copiat!",
@@ -1109,7 +1074,7 @@
     "features": "Caracteristici",
     "resources": "Resurse",
     "guide": "Ghid",
-    "blog": "Blog",
+    "blog": "Bloguri",
     "help": "Ajutor",
     "company": "Companie",
     "about_us": "Despre noi",
@@ -1117,7 +1082,7 @@
     "contact": "Contact",
     "privacy": "Politica de confidențialitate",
     "terms": "Termeni și condiții",
-    "status": "Status"
+    "status": "Stare"
   },
   "apply_pakar": {
     "title": "Certificare expert",
@@ -1258,42 +1223,12 @@
     "title": "Politica de confidențialitate",
     "hero_title": "Confidențialitatea ta",
     "hero_desc": "Datele dvs. sunt în siguranță cu Ba-Yu. Menținem transparența și protecția datelor ca prioritate principală.",
-    "principles": {
-      "0": {
-        "label": "Asigura",
-        "desc": "Datele sunt criptate."
-      },
-      "1": {
-        "label": "Transparent",
-        "desc": "Deschideți despre date."
-      },
-      "2": {
-        "label": "Controlat",
-        "desc": "Ești în control."
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. Datele pe care le colectăm",
     "collection_desc": "Colectăm doar informații minime necesare pentru a vă sprijini procesul de învățare:",
-    "collections": {
-      "0": {
-        "title": "Informații de profil",
-        "text": "Nume, e-mail și nivel de educație."
-      },
-      "1": {
-        "title": "Conținut de învățare",
-        "text": "Note, imagini și comentarii."
-      },
-      "2": {
-        "title": "Date tehnice",
-        "text": "Jurnalele de activitate pentru îmbunătățire."
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. Utilizarea datelor",
-    "usages": {
-      "0": "Se activează partajarea notelor.",
-      "1": "Furnizarea de notificări importante.",
-      "2": "Îmbunătățirea caracteristicilor platformei."
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 Platforma Ba-Yu. Confidențialitatea ta este încrederea noastră."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "Prin accesarea și utilizarea platformei Ba-Yu, se consideră că ați citit, înțeles și sunteți de acord să respectați acești Termeni și Condiții. Dacă nu sunteți de acord, vă rugăm să nu continuați să utilizați serviciile noastre pentru securitatea reciprocă.",
     "section2_title": "2. Înregistrarea contului",
     "section2_desc": "Pentru a utiliza funcția de partajare a notelor, trebuie să vă înregistrați cu informații exacte. Sunteți pe deplin responsabil pentru:",
-    "section2_items": {
-      "0": "Menținerea confidențialității parolei contului dvs.",
-      "1": "Toate activitățile care au loc în contul dvs.",
-      "2": "Furnizarea de informații adevărate și corecte."
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. Drepturi de proprietate intelectuală",
     "section3_quote": "„Orice notițe pe care le încărcați pe Ba-Yu rămân ale dvs. Cu toate acestea, încărcându-le, îi acordați lui Ba-Yu o licență de a afișa, distribui și promova acel conținut în ecosistemul platformei noastre în scopuri educaționale.”",
     "section4_title": "4. Reguli de utilizare",
     "allowed_title": "Ce este Permis",
-    "allowed_items": {
-      "0": "Partajarea materialelor de studiu originale.",
-      "1": "Oferirea de comentarii pozitive.",
-      "2": "Descărcare pentru referință personală."
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "Ce este interzis",
-    "prohibited_items": {
-      "0": "Încărcarea conținutului plagiat.",
-      "1": "Răspândirea discursului instigator la ură.",
-      "2": "Deteriorarea sistemului platformei."
-    },
+    "prohibited_items": "[object Object]",
     "contact": "Ai întrebări? Contactați <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "© 2026 Ba-Yu Platform.<br/>Toate drepturile rezervate."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "Regulile comunității",
     "hero_desc": "Să creăm un mediu de învățare sigur, pozitiv și de sprijin pe Ba-Yu.",
     "values_title": "Valorile de bază",
-    "values": {
-      "0": {
-        "title": "Respect reciproc",
-        "desc": "Comunicați politicos, fie că lăsați comentarii sau critici constructive."
-      },
-      "1": {
-        "title": "Educațional și pozitiv",
-        "desc": "Concentrați-vă pe răspândirea cunoștințelor și pe sprijinirea altor colegi."
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "Încălcări severe",
     "rules_desc": "Următoarele acțiuni pot duce la ștergerea sau retrogradarea contului:",
-    "rules": {
-      "0": "Încărcarea notelor plagiate.",
-      "1": "Discurs instigator la ură, discriminare sau SARA.",
-      "2": "Spam, promoții ilegale sau fraudă.",
-      "3": "Partajarea informațiilor personale ale altor persoane (doxxing)."
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 Ba-Yu Platform.<br/>Toate drepturile rezervate."
   },
   "help_page": {
@@ -1359,24 +1268,7 @@
     "search_placeholder": "Întrebări de căutare...",
     "no_results": "Niciun rezultat pentru „{query}”",
     "faq_title": "Întrebări frecvente (FAQ)",
-    "faqs": {
-      "0": {
-        "q": "Cum devin expert pe Ba-Yu?",
-        "a": "Pentru a deveni Expert, trebuie să distribuiți frecvent note de calitate. Dacă notele dvs. intră adesea în categoria „Popular” și primesc multe aprecieri, echipa noastră de administrator le va examina și va acorda statutul de Expert."
-      },
-      "1": {
-        "q": "Pot descărca note ca PDF?",
-        "a": "Desigur! Pe fiecare pagină cu detalii de notă, puteți apăsa butonul Descărcare din colțul din dreapta sus sau din partea de jos a conținutului pentru a-l salva în format PDF."
-      },
-      "2": {
-        "q": "De ce nu se poate conecta contul meu?",
-        "a": "Asigurați-vă că adresa de e-mail și parola pe care le-ați introdus sunt corecte. Dacă v-ați șters recent contul, este posibil să fie în starea Inactiv. Încercați să vă conectați din nou pentru a-l activa."
-      },
-      "3": {
-        "q": "Cum scriu formule matematice?",
-        "a": "Pe pagina de scriere a notelor, faceți clic pe pictograma calculatorului din bara de instrumente laterală pentru a deschide editorul de formule. Puteți scrie formule folosind formatul KaTeX."
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "Mai aveți nevoie de ajutor?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Răspuns rapid",

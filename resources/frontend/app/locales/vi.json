@@ -428,43 +428,9 @@
     "wait_draft": "Xin vui lòng chờ một chút..."
   },
   "calendar": {
-    "days": {
-      "0": "Mặt trời",
-      "1": "Thứ hai",
-      "2": "thứ ba",
-      "3": "Thứ tư",
-      "4": "Thứ năm",
-      "5": "Thứ sáu",
-      "6": "Đã ngồi"
-    },
-    "months": {
-      "0": "Tháng một",
-      "1": "Tháng Hai",
-      "2": "tháng 3",
-      "3": "tháng tư",
-      "4": "Có thể",
-      "5": "tháng sáu",
-      "6": "tháng 7",
-      "7": "tháng 8",
-      "8": "tháng 9",
-      "9": "Tháng 10",
-      "10": "tháng 11",
-      "11": "Tháng mười hai"
-    },
-    "full_months": {
-      "0": "Tháng Một",
-      "1": "Tháng hai",
-      "2": "Bước đều",
-      "3": "Tháng tư",
-      "4": "Có thể",
-      "5": "Tháng sáu",
-      "6": "Tháng bảy",
-      "7": "Tháng tám",
-      "8": "Tháng 9",
-      "9": "tháng mười",
-      "10": "Tháng mười một",
-      "11": "Tháng 12"
-    }
+    "days": "[object Object]",
+    "months": "[object Object]",
+    "full_months": "[object Object]"
   },
   "not_found": {
     "message": "Xin lỗi, trang bạn đang tìm kiếm không tồn tại.",
@@ -585,7 +551,6 @@
     "report_note": "Ghi chú báo cáo",
     "report_comment": "Báo cáo bình luận",
     "report_report": "Báo cáo",
-    "report_laporkan": "Báo cáo",
     "suka_count": "({{count}})",
     "share_cta": "Hãy truyền bá kiến ​​thức quý giá này đến bạn bè của bạn.",
     "copy_link_copied": "Đã sao chép liên kết!",
@@ -1117,7 +1082,7 @@
     "contact": "Liên hệ",
     "privacy": "Chính sách bảo mật",
     "terms": "Điều khoản & Điều kiện",
-    "status": "Status"
+    "status": "Trạng thái"
   },
   "apply_pakar": {
     "title": "Chứng nhận chuyên gia",
@@ -1258,42 +1223,12 @@
     "title": "Chính sách bảo mật",
     "hero_title": "Quyền riêng tư của bạn",
     "hero_desc": "Dữ liệu của bạn được an toàn với Ba-Yu. Chúng tôi duy trì tính minh bạch và bảo vệ dữ liệu là ưu tiên hàng đầu của mình.",
-    "principles": {
-      "0": {
-        "label": "Chắc chắn",
-        "desc": "Dữ liệu được mã hóa."
-      },
-      "1": {
-        "label": "Minh bạch",
-        "desc": "Mở về dữ liệu."
-      },
-      "2": {
-        "label": "Kiểm soát",
-        "desc": "Bạn đang kiểm soát."
-      }
-    },
+    "principles": "[object Object]",
     "collection_title": "1. Dữ liệu chúng tôi thu thập",
     "collection_desc": "Chúng tôi chỉ thu thập thông tin tối thiểu cần thiết để hỗ trợ quá trình học tập của bạn:",
-    "collections": {
-      "0": {
-        "title": "Thông tin hồ sơ",
-        "text": "Tên, email và trình độ học vấn."
-      },
-      "1": {
-        "title": "Nội dung học tập",
-        "text": "Ghi chú, hình ảnh và bình luận."
-      },
-      "2": {
-        "title": "Dữ liệu kỹ thuật",
-        "text": "Nhật ký hoạt động để cải thiện."
-      }
-    },
+    "collections": "[object Object]",
     "usage_title": "2. Sử dụng dữ liệu",
-    "usages": {
-      "0": "Kích hoạt tính năng chia sẻ ghi chú.",
-      "1": "Cung cấp các thông báo quan trọng.",
-      "2": "Cải thiện các tính năng của nền tảng."
-    },
+    "usages": "[object Object]",
     "footer": "© 2026 Nền tảng Ba-Yu. Quyền riêng tư của bạn là niềm tin của chúng tôi."
   },
   "terms_page": {
@@ -1304,26 +1239,14 @@
     "section1_desc": "Bằng cách truy cập và sử dụng nền tảng Ba-Yu, bạn được coi là đã đọc, hiểu và đồng ý bị ràng buộc bởi các Điều khoản và Điều kiện này. Nếu bạn không đồng ý, vui lòng không tiếp tục sử dụng dịch vụ của chúng tôi vì lợi ích chung.",
     "section2_title": "2. Đăng ký tài khoản",
     "section2_desc": "Để sử dụng tính năng chia sẻ ghi chú, bạn bắt buộc phải đăng ký với thông tin chính xác. Bạn hoàn toàn chịu trách nhiệm về:",
-    "section2_items": {
-      "0": "Duy trì tính bảo mật của mật khẩu tài khoản của bạn.",
-      "1": "Tất cả các hoạt động diễn ra trong tài khoản của bạn.",
-      "2": "Cung cấp thông tin trung thực và chính xác."
-    },
+    "section2_items": "[object Object]",
     "section3_title": "3. Quyền sở hữu trí tuệ",
     "section3_quote": "\"Mọi ghi chú bạn tải lên Ba-Yu vẫn là của bạn. Tuy nhiên, bằng cách tải chúng lên, bạn cấp cho Ba-Yu giấy phép hiển thị, phân phối và quảng bá nội dung đó trong hệ sinh thái nền tảng của chúng tôi cho mục đích giáo dục.\"",
     "section4_title": "4. Quy tắc sử dụng",
     "allowed_title": "Những gì được phép",
-    "allowed_items": {
-      "0": "Chia sẻ tài liệu học tập ban đầu.",
-      "1": "Cung cấp ý kiến ​​​​tích cực.",
-      "2": "Tải về để tham khảo cá nhân."
-    },
+    "allowed_items": "[object Object]",
     "prohibited_title": "Những gì bị cấm",
-    "prohibited_items": {
-      "0": "Tải lên nội dung đạo văn.",
-      "1": "Truyền bá lời nói căm thù.",
-      "2": "Làm hỏng hệ thống nền tảng."
-    },
+    "prohibited_items": "[object Object]",
     "contact": "Bạn có câu hỏi? Liên hệ <a href=\"mailto:support@ba-yu.id\" className=\"text-indigo-600 dark:text-indigo-400 font-bold\">support@ba-yu.id</a>",
     "footer": "© 2026 Nền tảng Ba-Yu.<br/>Mọi quyền được bảo lưu."
   },
@@ -1332,24 +1255,10 @@
     "hero_title": "Nguyên tắc cộng đồng",
     "hero_desc": "Hãy cùng tạo ra một môi trường học tập an toàn, tích cực và hỗ trợ trên Ba-Yu.",
     "values_title": "Giá trị cốt lõi",
-    "values": {
-      "0": {
-        "title": "Tôn trọng lẫn nhau",
-        "desc": "Giao tiếp một cách lịch sự, dù là để lại bình luận hay đưa ra những lời chỉ trích mang tính xây dựng."
-      },
-      "1": {
-        "title": "Giáo dục & Tích cực",
-        "desc": "Tập trung vào việc truyền bá kiến ​​thức và hỗ trợ những người học khác."
-      }
-    },
+    "values": "[object Object]",
     "rules_title": "Vi phạm nghiêm trọng",
     "rules_desc": "Các hành động sau có thể dẫn đến việc xóa hoặc hạ cấp tài khoản:",
-    "rules": {
-      "0": "Tải lên các ghi chú đạo văn.",
-      "1": "Lời nói căm thù, phân biệt đối xử hoặc SARA.",
-      "2": "Thư rác, quảng cáo bất hợp pháp hoặc lừa đảo.",
-      "3": "Chia sẻ thông tin cá nhân của người khác (doxxing)."
-    },
+    "rules": "[object Object]",
     "footer": "© 2026 Nền tảng Ba-Yu.<br/>Mọi quyền được bảo lưu."
   },
   "help_page": {
@@ -1359,24 +1268,7 @@
     "search_placeholder": "Tìm kiếm câu hỏi...",
     "no_results": "Không có kết quả cho \"{query}\"",
     "faq_title": "Câu hỏi thường gặp (FAQ)",
-    "faqs": {
-      "0": {
-        "q": "Làm cách nào để trở thành Chuyên gia về Ba-Yu?",
-        "a": "Để trở thành Chuyên gia, bạn phải thường xuyên chia sẻ những ghi chú chất lượng. Nếu ghi chú của bạn thường lọt vào danh mục 'Phổ biến' và nhận được nhiều lượt thích, nhóm Quản trị viên của chúng tôi sẽ xem xét chúng và cấp trạng thái Chuyên gia."
-      },
-      "1": {
-        "q": "Tôi có thể tải xuống ghi chú dưới dạng PDF không?",
-        "a": "Tất nhiên rồi! Ở mỗi trang chi tiết ghi chú, bạn có thể nhấn nút Tải xuống ở góc trên bên phải hoặc cuối nội dung để lưu dưới dạng PDF."
-      },
-      "2": {
-        "q": "Tại sao tài khoản của tôi không thể đăng nhập?",
-        "a": "Đảm bảo email và mật khẩu bạn đã nhập là chính xác. Nếu gần đây bạn đã xóa tài khoản của mình thì tài khoản đó có thể ở trạng thái Không hoạt động. Hãy thử đăng nhập lại để kích hoạt nó."
-      },
-      "3": {
-        "q": "Làm thế nào để viết các công thức toán học?",
-        "a": "Trên trang viết ghi chú, hãy nhấp vào biểu tượng máy tính trên thanh công cụ bên cạnh để mở trình chỉnh sửa công thức. Bạn có thể viết công thức bằng định dạng KaTeX."
-      }
-    },
+    "faqs": "[object Object]",
     "contact_title": "Vẫn cần trợ giúp?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Phản hồi nhanh",
