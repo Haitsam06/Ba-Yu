@@ -134,6 +134,11 @@ class PostController extends Controller
             }
 
             $post->is_liked = $post->likes ? $post->likes->where('user_id', Auth::id())->isNotEmpty() : false;
+
+            // Listing tidak butuh body artikel penuh (bisa berisi gambar base64 belasan MB).
+            // Kartu feed hanya pakai description/plain_content/thumbnail. Body lengkap
+            // tetap tersedia lewat endpoint detail GET /v1/posts/{id} (method show()).
+            $post->makeHidden(['content']);
         });
 
         return response()->json([
@@ -300,6 +305,9 @@ class PostController extends Controller
             ->where('visibility', 'draft')
             ->orderBy('created_at', 'desc')
             ->get();
+
+        // Sama seperti index(): listing draf tidak perlu body penuh (base64 berat).
+        $drafts->each(fn (Post $draft) => $draft->makeHidden(['content']));
 
         return response()->json([
             'message' => 'Berhasil mengambil daftar draf',
