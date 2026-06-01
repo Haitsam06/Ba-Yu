@@ -1268,14 +1268,58 @@
     "search_placeholder": "Hledat otázky...",
     "no_results": "Žádné výsledky pro dotaz „{query}“",
     "faq_title": "Často kladené otázky (FAQ)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "Jak se stát expertem na Ba-Yu?",
+        "a": "Chcete-li se stát odborníkem, musíte často sdílet poznámky o kvalitě. Pokud jsou vaše poznámky často v kategorii „Populární“ a získávají mnoho lajků, náš tým administrátorů je zkontroluje a udělí vám status experta."
+      },
+      {
+        "q": "Mohu si stáhnout poznámky do PDF?",
+        "a": "Samozřejmě! Na každé stránce podrobností poznámky můžete stisknout tlačítko Stáhnout v pravém horním rohu nebo v dolní části obsahu a uložit ji ve formátu PDF."
+      },
+      {
+        "q": "Proč se nemohu přihlásit ke svému účtu?",
+        "a": "Ujistěte se, že zadaný e-mail a heslo jsou správné. Pokud jste nedávno smazali svůj účet, může být váš účet ve stavu nečinnosti. Chcete-li jej aktivovat, zkuste se znovu přihlásit."
+      },
+      {
+        "q": "Jak se píše matematický vzorec?",
+        "a": "Na stránce pro psaní poznámek kliknutím na ikonu kalkulačky na bočním panelu nástrojů otevřete editor vzorců. Vzorce můžete psát pomocí formátu KaTeX."
+      },
+      {
+        "q": "Jak uložit poznámky jiných lidí?",
+        "a": "Poznámky, které se vám líbí, si můžete uložit kliknutím na ikonu 'Záložka' v pravém horním rohu karty poznámky nebo stránky s podrobnostmi poznámky. Uložené poznámky se zobrazí na kartě 'Uložené' ve vašem profilu."
+      },
+      {
+        "q": "Lze mé poznámky omezit tak, aby je mohli prohlížet pouze sledující?",
+        "a": "Ano, samozřejmě! Svůj účet můžete nastavit jako soukromý v nabídce Nastavení > Soukromí a účet. Se soukromým účtem mohou celý obsah vašich poznámek číst pouze uživatelé, které schválíte jako sledující."
+      },
+      {
+        "q": "Jak nahlásím záznamy, které porušují pravidla?",
+        "a": "Pokud najdete poznámku, která obsahuje plagiát, projevy nenávisti nebo jiné porušování pravidel, můžete kliknout na ikonu se třemi tečkami (Možnosti) v pravém horním rohu poznámky a vybrat možnost Nahlásit. Náš tým to brzy zkontroluje."
+      },
+      {
+        "q": "Jaké jsou výhody statusu „expert“?",
+        "a": "Uživatelé se statusem Expert získají na svém profilu fialový odznak ověření šeku. Poznámky, které sdílejí, také získají značku 'Ověřeno', což zvyšuje důvěryhodnost materiálu a také právo vytvářet poznámky ostatních studentů."
+      },
+      {
+        "q": "Proč byla moje poznámka expertem zamítnuta?",
+        "a": "Poznámky předložené expertovi mohou být odmítnuty, pokud je zjištěno plagiátorství, mají špatné rozlišení obrazu nebo obsahují nepřesné vzorce/teorie. Chcete-li ji zlepšit, můžete si v podrobnostech poznámky přečíst recenze odborné zpětné vazby."
+      },
+      {
+        "q": "Je platforma Ba-Yu placená?",
+        "a": "Ne, Ba-Yu je zcela zdarma pro všechny studenty a učitele v celé Indonésii, aby jej mohli používat ke sdílení znalostí a strukturovaných studijních poznámek!"
+      }
+    ],
     "contact_title": "Stále potřebujete pomoc?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Rychlá odezva",
     "contact_email_title": "E-mail",
     "contact_email_desc": "Podrobnosti a přílohy",
     "guidelines_title": "Pokyny pro komunitu",
-    "guidelines_desc": "Přečtěte si pravidla a etiku sdílení poznámek na Ba-Yu."
+    "guidelines_desc": "Přečtěte si pravidla a etiku sdílení poznámek na Ba-Yu.",
+    "wa_template": "Dobrý den, tým podpory Ba-Yu, jmenuji se {{name}}. Potřebuji pomoc s problémem: ... dne {{day}}.",
+    "email_subject": "Nápověda k problému s aplikací Ba-Yu - {{name}}",
+    "email_body": "Dobrý den, tým podpory Ba-Yu,\n\nJsem {{name}}. Potřebuji pomoc s problémem:\n...\n\nTéto překážce jsem čelil dne {{day}}.\n\nProsím o pomoc, děkuji!"
   },
   "about_page": {
     "title": "O nás",

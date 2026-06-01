@@ -903,8 +903,8 @@
     "btn_view_cert": "Voir le Fichier",
     "tab_pending": "Action requise",
     "tab_history": "Historique",
-    "system_server": "undefined",
-    "recent_activity": "undefined"
+    "system_server": "Système & Serveur",
+    "recent_activity": "Activité récente"
   },
   "edu_levels": {
     "SD": "École Primaire",
@@ -1057,11 +1057,11 @@
     "pdf_protected_title": "Matériel protégé",
     "pdf_protected_desc": "Ce PDF ne contient qu'une partie du matériel. Suivez l'auteur <b>@{{author}}</b> sur l'application Ba-Yu pour télécharger la version complète.",
     "pdf_footer": "Ce document a été téléchargé depuis <span class=\"footer-brand\">Ba-Yu</span> - La Plateforme d'Apprentissage du Futur",
-    "draft_badge": "undefined",
-    "draft_label": "undefined",
-    "last_edit": "undefined",
-    "untitled_draft": "undefined",
-    "untitled": "undefined",
+    "draft_badge": "BROUILLON",
+    "draft_label": "Brouillon",
+    "last_edit": "Dernière modification",
+    "untitled_draft": "Brouillon sans titre",
+    "untitled": "Sans titre",
     "submit_to_expert": "Soumettre à l'Expert",
     "submit_to_expert_success": "Note soumise à l'Expert avec succès !",
     "submit_to_expert_error": "Échec de la soumission à l'Expert"
@@ -1085,20 +1085,20 @@
     "status": "Statut"
   },
   "apply_pakar": {
-    "title": "undefined",
-    "description": "undefined",
-    "full_name": "undefined",
-    "education_expertise": "undefined",
-    "education_placeholder": "undefined",
-    "upload_document": "undefined",
-    "choose_file": "undefined",
-    "max_size": "undefined",
-    "submit": "undefined",
-    "success_title": "undefined",
-    "success_desc": "undefined",
-    "file_too_large": "undefined",
-    "require_file": "undefined",
-    "error_submit": "undefined"
+    "title": "Demander le statut d'expert",
+    "description": "Remplissez les détails ci-dessous pour devenir un expert vérifié sur la plateforme.",
+    "full_name": "Nom complet",
+    "education_expertise": "Éducation / Expertise",
+    "education_placeholder": "ex. Doctorat en Informatique",
+    "upload_document": "Télécharger un document (CV, Certificat)",
+    "choose_file": "Choisir un fichier",
+    "max_size": "Taille max : 5 Mo (PDF, JPG, PNG)",
+    "submit": "Soumettre la demande",
+    "success_title": "Demande soumise !",
+    "success_desc": "Nous examinerons votre demande et vous informerons bientôt.",
+    "file_too_large": "La taille du fichier dépasse la limite de 5 Mo.",
+    "require_file": "Veuillez télécharger un document.",
+    "error_submit": "Échec de la soumission. Veuillez réessayer."
   },
   "edit_profile": {
     "title": "Modifier le Profil",
@@ -1268,14 +1268,58 @@
     "search_placeholder": "Rechercher des questions...",
     "no_results": "Aucun résultat pour \"{query}\"",
     "faq_title": "Foire Aux Questions (FAQ)",
-    "faqs": "[objet Objet],[objet Objet],[objet Objet],[objet Objet]",
+    "faqs": [
+      {
+        "q": "Comment devenir Expert chez Ba-Yu ?",
+        "a": "Pour devenir un expert, vous devez partager fréquemment des notes de qualité. Si vos notes sont souvent dans la catégorie « Populaire » et reçoivent de nombreux likes, notre équipe d'administration les examinera et vous attribuera le statut d'expert."
+      },
+      {
+        "q": "Puis-je télécharger des notes au format PDF ?",
+        "a": "Bien sûr ! Sur chaque page de détail de note, vous pouvez appuyer sur le bouton Télécharger dans le coin supérieur droit ou en bas du contenu pour l'enregistrer au format PDF."
+      },
+      {
+        "q": "Pourquoi ne puis-je pas me connecter à mon compte ?",
+        "a": "Assurez-vous que l'e-mail et le mot de passe que vous avez saisis sont corrects. Si vous avez récemment supprimé votre compte, votre compte est peut-être en statut Dormant. Essayez de vous reconnecter pour l'activer."
+      },
+      {
+        "q": "Comment écrivez-vous une formule mathématique ?",
+        "a": "Sur la page de prise de notes, cliquez sur l'icône de la calculatrice dans la barre d'outils latérale pour ouvrir l'éditeur de formule. Vous pouvez écrire des formules en utilisant le format KaTeX."
+      },
+      {
+        "q": "Comment sauvegarder les notes des autres ?",
+        "a": "Vous pouvez enregistrer les notes que vous aimez en cliquant sur l'icône « Signet » dans le coin supérieur droit de la fiche de note ou de la page de détail de la note. Les notes enregistrées apparaîtront dans l'onglet « Enregistrées » de votre profil."
+      },
+      {
+        "q": "Mes notes peuvent-elles être restreintes afin que seuls les abonnés puissent les consulter ?",
+        "a": "Oui, bien sûr ! Vous pouvez définir votre compte comme privé via le menu Paramètres > Confidentialité et compte. Avec un compte privé, seuls les utilisateurs que vous approuvez comme abonnés peuvent lire l'intégralité du contenu de vos notes."
+      },
+      {
+        "q": "Comment puis-je signaler les enregistrements qui enfreignent les règles ?",
+        "a": "Si vous trouvez une note contenant du plagiat, des discours de haine ou d'autres violations, vous pouvez cliquer sur l'icône à trois points (Options) dans le coin supérieur droit de la note, puis sélectionner « Signaler ». Notre équipe l'examinera bientôt."
+      },
+      {
+        "q": "Quels sont les avantages d'avoir le statut « Expert » ?",
+        "a": "Les utilisateurs ayant le statut d'Expert recevront un badge de vérification de chèque violet sur leur profil. Les notes qu'ils partagent recevront également une balise « Vérifié » qui augmente la crédibilité du matériel, ainsi que le droit de gérer les notes des autres étudiants."
+      },
+      {
+        "q": "Pourquoi ma note a-t-elle été rejetée par l'Expert ?",
+        "a": "Les notes soumises à l'expert peuvent être rejetées si un plagiat est détecté, si la résolution de l'image est mauvaise ou si elle contient des formules/théories inexactes. Vous pouvez lire les commentaires d'experts dans les détails de votre note pour l'améliorer."
+      },
+      {
+        "q": "La plateforme Ba-Yu est-elle payante ?",
+        "a": "Non, Ba-Yu est entièrement gratuit et permet à tous les étudiants et enseignants de toute l'Indonésie de partager des connaissances et des notes d'étude structurées !"
+      }
+    ],
     "contact_title": "Encore besoin d'aide ?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Réponse rapide",
     "contact_email_title": "E-mail",
     "contact_email_desc": "Détails et pièces jointes",
     "guidelines_title": "Directives Communautaires",
-    "guidelines_desc": "Lisez les règles et l'éthique du partage de notes sur Ba-Yu."
+    "guidelines_desc": "Lisez les règles et l'éthique du partage de notes sur Ba-Yu.",
+    "wa_template": "Bonjour l'équipe d'assistance Ba-Yu, je m'appelle {{name}}. J'ai besoin d'aide pour résoudre le problème : ... le {{jour}}.",
+    "email_subject": "Aide sur les problèmes d'application Ba-Yu - {{name}}",
+    "email_body": "Bonjour l'équipe d'assistance Ba-Yu,\n\nJe m'appelle {{name}}. J'ai besoin d'aide pour un problème :\n...\n\nJ'ai rencontré cet obstacle le {{jour}}.\n\nS'il vous plaît, aidez-moi, merci !"
   },
   "about_page": {
     "title": "À propos de nous",

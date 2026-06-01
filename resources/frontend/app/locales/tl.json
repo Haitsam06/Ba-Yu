@@ -1268,14 +1268,58 @@
     "search_placeholder": "Mga tanong sa paghahanap...",
     "no_results": "Walang mga resulta para sa \"{query}\"",
     "faq_title": "Mga Madalas Itanong (FAQ)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "Paano maging Expert sa Ba-Yu?",
+        "a": "Upang maging isang Eksperto, kailangan mong madalas na magbahagi ng mga tala ng kalidad. Kung ang iyong mga tala ay madalas na nasa kategoryang 'Popular' at nakakakuha ng maraming like, susuriin ng aming Admin team ang mga ito at bibigyan ka ng Expert status."
+      },
+      {
+        "q": "Maaari ba akong mag-download ng mga tala sa PDF?",
+        "a": "Syempre! Sa bawat pahina ng detalye ng tala, maaari mong pindutin ang button na I-download sa kanang sulok sa itaas o sa ibaba ng nilalaman upang i-save ito sa format na PDF."
+      },
+      {
+        "q": "Bakit hindi ako makapag-log in sa aking account?",
+        "a": "Siguraduhing tama ang email at password na iyong inilagay. Kung tinanggal mo kamakailan ang iyong account, maaaring nasa Dormant status ang iyong account. Subukang mag-log in muli para i-activate ito."
+      },
+      {
+        "q": "Paano mo isusulat ang isang mathematical formula?",
+        "a": "Sa pahina ng pagkuha ng tala, i-click ang icon ng calculator sa side toolbar upang buksan ang editor ng formula. Maaari kang magsulat ng mga formula gamit ang KaTeX format."
+      },
+      {
+        "q": "Paano i-save ang mga tala ng ibang tao?",
+        "a": "Maaari mong i-save ang mga tala na gusto mo sa pamamagitan ng pag-click sa icon na 'Bookmark' sa kanang sulok sa itaas ng note card o page ng detalye ng tala. Lalabas ang mga naka-save na tala sa tab na 'Nai-save' ng iyong profile."
+      },
+      {
+        "q": "Maaari bang paghigpitan ang aking mga tala upang ang mga tagasubaybay lamang ang makakakita?",
+        "a": "Oo, siyempre! Maaari mong itakda ang iyong account sa pribado sa pamamagitan ng menu ng Mga Setting > Privacy at Account. Sa isang pribadong account, ang mga user lang na inaprubahan mo bilang mga tagasunod ang makakabasa ng buong nilalaman ng iyong mga tala."
+      },
+      {
+        "q": "Paano ako mag-uulat ng mga talaan na lumalabag sa mga patakaran?",
+        "a": "Kung makakita ka ng tala na naglalaman ng plagiarism, mapoot na salita, o iba pang mga paglabag, maaari mong i-click ang icon na tatlong tuldok (Mga Opsyon) sa kanang sulok sa itaas ng tala, pagkatapos ay piliin ang 'Iulat.' Susuriin ito ng aming koponan sa lalong madaling panahon."
+      },
+      {
+        "q": "Ano ang mga pakinabang ng pagkakaroon ng katayuang 'Expert'?",
+        "a": "Ang mga user na may status na Expert ay makakakuha ng purple check verification badge sa kanilang profile. Ang mga tala na kanilang ibinabahagi ay magkakaroon din ng tag na 'Na-verify' na nagpapataas sa kredibilidad ng materyal, pati na rin ang karapatang mag-curate ng mga tala ng ibang mga mag-aaral."
+      },
+      {
+        "q": "Bakit tinanggihan ng Eksperto ang aking tala?",
+        "a": "Maaaring tanggihan ang mga tala na isinumite sa Eksperto kung may nakitang plagiarism, mahina ang resolution ng imahe, o naglalaman ng mga hindi tumpak na formula/teorya. Maaari mong basahin ang mga review ng feedback ng eksperto sa mga detalye ng iyong tala para mapahusay ito."
+      },
+      {
+        "q": "May bayad ba ang platform ng Ba-Yu?",
+        "a": "Hindi, ang Ba-Yu ay ganap na libre para sa lahat ng mga mag-aaral at guro sa buong Indonesia upang magamit upang magbahagi ng kaalaman at mga nakabalangkas na tala sa pag-aaral!"
+      }
+    ],
     "contact_title": "Kailangan pa rin ng tulong?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Mabilis na tugon",
     "contact_email_title": "E-mail",
     "contact_email_desc": "Mga detalye at attachment",
     "guidelines_title": "Mga Alituntunin ng Komunidad",
-    "guidelines_desc": "Basahin ang mga patakaran at etika ng pagbabahagi ng mga tala sa Ba-Yu."
+    "guidelines_desc": "Basahin ang mga patakaran at etika ng pagbabahagi ng mga tala sa Ba-Yu.",
+    "wa_template": "Kamusta Ba-Yu Support Team, ako si {{name}}. Kailangan ko ng tulong sa problema: ... sa {{araw}}.",
+    "email_subject": "Tulong sa Problema sa Application ng Ba-Yu - {{name}}",
+    "email_body": "Hello Ba-Yu Support Team,\n\nAko si {{name}}. Kailangan ko ng tulong sa isang problema:\n...\n\nHinarap ko ang balakid na ito noong {{araw}}.\n\nMangyaring tulong, salamat!"
   },
   "about_page": {
     "title": "Tungkol sa Amin",

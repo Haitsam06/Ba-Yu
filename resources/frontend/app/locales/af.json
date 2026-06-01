@@ -1268,14 +1268,58 @@
     "search_placeholder": "Soek vrae...",
     "no_results": "Geen resultate vir \"{query}\" nie",
     "faq_title": "Gereelde Vrae (Gereelde Vrae)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "Hoe om 'n kenner by Ba-Yu te word?",
+        "a": "Om 'n Deskundige te word, moet jy gereeld kwaliteit notas deel. As jou notas dikwels in die 'Gewilde'-kategorie is en baie laaiks kry, sal ons Admin-span dit hersien en vir jou Deskundige-status gee."
+      },
+      {
+        "q": "Kan ek notas na PDF aflaai?",
+        "a": "Natuurlik! Op elke notabesonderhedebladsy kan jy die Aflaai-knoppie in die regter boonste hoek of onderaan die inhoud druk om dit in PDF-formaat te stoor."
+      },
+      {
+        "q": "Hoekom kan ek nie by my rekening aanmeld nie?",
+        "a": "Maak seker dat die e-posadres en wagwoord wat jy ingevoer het korrek is. As jy onlangs jou rekening uitgevee het, kan jou rekening in dormante status wees. Probeer weer aanmeld om dit te aktiveer."
+      },
+      {
+        "q": "Hoe skryf jy 'n wiskundige formule?",
+        "a": "Op die aantekeninge-bladsy, klik die sakrekenaarikoon in die synutsbalk om die formuleredigeerder oop te maak. Jy kan formules skryf deur die KaTeX-formaat te gebruik."
+      },
+      {
+        "q": "Hoe om ander mense se notas te stoor?",
+        "a": "Jy kan notas stoor waarvan jy hou deur op die 'Boekmerk'-ikoon in die regter boonste hoek van die notakaart of notabesonderhedebladsy te klik. Gestoorde notas sal in die 'Gestoord'-oortjie van jou profiel verskyn."
+      },
+      {
+        "q": "Kan my notas beperk word sodat slegs volgelinge kan kyk?",
+        "a": "Ja, natuurlik! Jy kan jou rekening op privaat stel via die Instellings > Privaatheid en Rekening-kieslys. Met 'n privaat rekening kan slegs gebruikers wat jy as volgelinge goedkeur die volle inhoud van jou notas lees."
+      },
+      {
+        "q": "Hoe rapporteer ek rekords wat die reëls oortree?",
+        "a": "As jy 'n nota kry wat plagiaat, haatspraak of ander oortredings bevat, kan jy op die drie-kolletjie-ikoon (Opsies) in die regter boonste hoek van die nota klik, en dan 'Rapporteer' kies. Ons span sal dit binnekort hersien."
+      },
+      {
+        "q": "Wat is die voordele daarvan om 'Deskundige'-status te hê?",
+        "a": "Gebruikers met Deskundige-status sal 'n pers tjek-verifikasiekenteken op hul profiel kry. Die notas wat hulle deel sal ook 'n 'Geverifieerde' merker kry wat die geloofwaardigheid van die materiaal verhoog, sowel as die reg om ander studente se notas saam te stel."
+      },
+      {
+        "q": "Waarom is my nota deur die Deskundige verwerp?",
+        "a": "Notas wat aan die Deskundige ingedien word, kan verwerp word indien plagiaat bespeur word, swak beeldresolusie het, of onakkurate formules/teorieë bevat. Jy kan resensies van kundiges in jou notabesonderhede lees om dit te verbeter."
+      },
+      {
+        "q": "Word die Ba-Yu-platform betaal?",
+        "a": "Nee, Ba-Yu is heeltemal gratis vir alle studente en onderwysers regdeur Indonesië om te gebruik om kennis en gestruktureerde studienotas te deel!"
+      }
+    ],
     "contact_title": "Het jy steeds hulp nodig?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Vinnige reaksie",
     "contact_email_title": "E-pos",
     "contact_email_desc": "Besonderhede en aanhangsels",
     "guidelines_title": "Gemeenskapsriglyne",
-    "guidelines_desc": "Lees die reëls en etiek van die deel van notas op Ba-Yu."
+    "guidelines_desc": "Lees die reëls en etiek van die deel van notas op Ba-Yu.",
+    "wa_template": "Hallo Ba-Yu Ondersteuningspan, ek is {{name}}. Ek het hulp nodig met die probleem: ... op {{dag}}.",
+    "email_subject": "Ba-Yu-toepassingsprobleemhulp - {{name}}",
+    "email_body": "Hallo Ba-Yu Ondersteuningspan,\n\nEk is {{name}}. Ek het hulp nodig met 'n probleem:\n...\n\nEk het hierdie struikelblok op {{dag}} in die gesig gestaar.\n\nHelp asseblief, dankie!"
   },
   "about_page": {
     "title": "Oor ons",

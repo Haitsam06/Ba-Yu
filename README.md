@@ -39,8 +39,8 @@ Berawal dari prototipe sederhana, kini Ba-Yu telah berkembang menjadi aplikasi s
 ## 🛠️ Tech Stack
 
 ### Backend
-- **Framework**: Laravel 11
-- **Database**: MongoDB (via `mongodb/laravel-mongodb`)
+- **Framework**: Laravel v12.55.1 plugin v2.1.0
+- **Database**: MongoDB & Cloudinary
 - **API Security**: Laravel Sanctum
 
 ### Frontend

@@ -903,8 +903,8 @@
     "btn_view_cert": "ファイルを見る",
     "tab_pending": "アクションが必要",
     "tab_history": "履歴",
-    "system_server": "undefined",
-    "recent_activity": "undefined"
+    "system_server": "システムとサーバー",
+    "recent_activity": "最近の活動"
   },
   "edu_levels": {
     "SD": "小学校",
@@ -1057,11 +1057,11 @@
     "pdf_protected_title": "保護された資料",
     "pdf_protected_desc": "このPDFには一部の資料のみが含まれています。完全版をダウンロードするには、Ba-Yuアプリで著者 <b>@{{author}}</b> をフォローしてください。",
     "pdf_footer": "このドキュメントは <span class=\"footer-brand\">Ba-Yu</span> からダウンロードされました - 未来の学習プラットフォーム",
-    "draft_badge": "undefined",
-    "draft_label": "undefined",
-    "last_edit": "undefined",
-    "untitled_draft": "undefined",
-    "untitled": "undefined",
+    "draft_badge": "下書き",
+    "draft_label": "下書き",
+    "last_edit": "最終更新",
+    "untitled_draft": "無題の下書き",
+    "untitled": "無題",
     "submit_to_expert": "専門家に提出",
     "submit_to_expert_success": "ノートが専門家に提出されました！",
     "submit_to_expert_error": "専門家への提出に失敗しました"
@@ -1085,20 +1085,20 @@
     "status": "状態"
   },
   "apply_pakar": {
-    "title": "undefined",
-    "description": "undefined",
-    "full_name": "undefined",
-    "education_expertise": "undefined",
-    "education_placeholder": "undefined",
-    "upload_document": "undefined",
-    "choose_file": "undefined",
-    "max_size": "undefined",
-    "submit": "undefined",
-    "success_title": "undefined",
-    "success_desc": "undefined",
-    "file_too_large": "undefined",
-    "require_file": "undefined",
-    "error_submit": "undefined"
+    "title": "エキスパートステータスの申請",
+    "description": "プラットフォームで認証されたエキスパートになるには、以下の詳細を入力してください。",
+    "full_name": "氏名",
+    "education_expertise": "学歴 / 専門知識",
+    "education_placeholder": "例：計算機科学の博士号",
+    "upload_document": "証明書類のアップロード（履歴書、証明書など）",
+    "choose_file": "ファイルを選択",
+    "max_size": "最大サイズ: 5MB (PDF, JPG, PNG)",
+    "submit": "申請を送信",
+    "success_title": "申請が送信されました！",
+    "success_desc": "申請を審査し、間もなく結果をお知らせします。",
+    "file_too_large": "ファイルサイズが5MBの制限を超えています。",
+    "require_file": "証明書類をアップロードしてください。",
+    "error_submit": "申請の送信に失敗しました。もう一度お試しください。"
   },
   "edit_profile": {
     "title": "プロフィール編集",
@@ -1268,14 +1268,58 @@
     "search_placeholder": "質問を検索...",
     "no_results": "「{query}」の検索結果はありません",
     "faq_title": "よくある質問 (FAQ)",
-    "faqs": "[オブジェクト オブジェクト]、[オブジェクト オブジェクト]、[オブジェクト オブジェクト]、[オブジェクト オブジェクト]",
+    "faqs": [
+      {
+        "q": "Ba-Yu のエキスパートになるにはどうすればよいですか?",
+        "a": "エキスパートになるには、質の高いメモを頻繁に共有する必要があります。あなたのノートが「人気」カテゴリに頻繁に含まれ、多くの「いいね！」を獲得した場合、管理チームがノートを確認し、エキスパート ステータスを与えます。"
+      },
+      {
+        "q": "メモを PDF にダウンロードできますか?",
+        "a": "もちろんです！各ノートの詳細ページで、右上隅またはコンテンツの下部にある [ダウンロード] ボタンを押して、PDF 形式で保存できます。"
+      },
+      {
+        "q": "アカウントにログインできないのはなぜですか?",
+        "a": "入力した電子メールとパスワードが正しいことを確認してください。最近アカウントを削除した場合、アカウントは休止状態になっている可能性があります。再度ログインして有効化してください。"
+      },
+      {
+        "q": "数式はどのように書きますか?",
+        "a": "メモ取りページで、サイド ツールバーの電卓アイコンをクリックして数式エディタを開きます。 KaTeX 形式を使用して数式を記述することができます。"
+      },
+      {
+        "q": "他の人のメモを保存するにはどうすればよいですか?",
+        "a": "ノート カードまたはノートの詳細ページの右上隅にある [ブックマーク] アイコンをクリックして、気に入ったノートを保存できます。保存されたメモは、プロフィールの「保存済み」タブに表示されます。"
+      },
+      {
+        "q": "フォロワーのみが閲覧できるようにメモを制限できますか?",
+        "a": "はい、もちろんです！ [設定] > [プライバシーとアカウント] メニューからアカウントを非公開に設定できます。非公開アカウントでは、フォロワーとして承認したユーザーのみがメモの全内容を読むことができます。"
+      },
+      {
+        "q": "ルールに違反した記録を報告するにはどうすればよいですか?",
+        "a": "盗作、ヘイトスピーチ、またはその他の違反を含むメモを見つけた場合は、メモの右上隅にある三点アイコン (オプション) をクリックし、[報告] を選択します。私たちのチームがすぐにレビューします。"
+      },
+      {
+        "q": "「エキスパート」ステータスを持つメリットは何ですか?",
+        "a": "エキスパート ステータスを持つユーザーには、プロフィールに紫色のチェック確認バッジが表示されます。共有するノートには、資料の信頼性を高める「検証済み」タグも付けられるほか、他の生徒のノートを厳選する権利も与えられます。"
+      },
+      {
+        "q": "私のメモがエキスパートによって拒否されたのはなぜですか?",
+        "a": "専門家に提出されたメモは、盗作が検出された場合、画像解像度が低い場合、または不正確な公式/理論が含まれている場合、拒否される場合があります。ノートの詳細で専門家のフィードバックレビューを読んで改善することができます。"
+      },
+      {
+        "q": "Ba-Yu プラットフォームは有料ですか?",
+        "a": "いいえ、Ba-Yu はインドネシア全土のすべての生徒と教師が完全に無料で、知識や構造化された学習ノートを共有するために使用できます。"
+      }
+    ],
     "contact_title": "まだ助けが必要ですか？",
     "contact_wa_title": "ワッツアップ",
     "contact_wa_desc": "迅速な対応",
     "contact_email_title": "Eメール",
     "contact_email_desc": "詳細と添付ファイル",
     "guidelines_title": "コミュニティガイドライン",
-    "guidelines_desc": "Ba-Yuでのノート共有のルールと倫理を読んでください。"
+    "guidelines_desc": "Ba-Yuでのノート共有のルールと倫理を読んでください。",
+    "wa_template": "こんにちは、Ba-Yu サポートチーム、私は {{name}} です。問題について助けが必要です: ... 日: {{day}}。",
+    "email_subject": "Ba-Yu アプリケーションの問題のヘルプ - {{name}}",
+    "email_body": "Ba-Yu サポートチーム、こんにちは。\n\n私は{{名前}}です。問題について助けが必要です:\n...\n\n私は {{day}} にこの障害に直面しました。\n\n助けてください、ありがとう！"
   },
   "about_page": {
     "title": "私たちについて",

@@ -1268,14 +1268,58 @@
     "search_placeholder": "搜尋問題...",
     "no_results": "“{query}”沒有結果",
     "faq_title": "常見問題 (FAQ)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "如何成為巴渝專家？",
+        "a": "要成為專家，您必須經常分享高品質的筆記。如果您的筆記經常屬於「熱門」類別並獲得很多讚，我們的管理團隊將對其進行審核並給予您專家身份。"
+      },
+      {
+        "q": "我可以將筆記下載為PDF嗎？",
+        "a": "當然！在每個筆記詳細資料頁面上，您可以按內容右上角或底部的「下載」按鈕將其儲存為 PDF 格式。"
+      },
+      {
+        "q": "為什麼我無法登入我的帳戶？",
+        "a": "確保您輸入的電子郵件和密碼正確。如果您最近刪除了帳戶，則您的帳戶可能處於休眠狀態。嘗試再次登入以啟動它。"
+      },
+      {
+        "q": "如何寫出數學公式？",
+        "a": "在筆記頁面，點選側邊工具列中的計算器圖標，開啟公式編輯器。您可以使用 KaTeX 格式編寫公式。"
+      },
+      {
+        "q": "如何保存別人的筆記？",
+        "a": "您可以透過點擊筆記卡或筆記詳細資料頁面右上角的「書籤」圖示來儲存您喜歡的筆記。已儲存的筆記將顯示在您個人資料的「已儲存」標籤中。"
+      },
+      {
+        "q": "我的筆記可以限制為只有追蹤者才能查看嗎？",
+        "a": "是的，當然！您可以透過「設定」>「隱私權和帳戶」選單將您的帳戶設定為私人帳戶。使用私人帳戶，只有您批准為追蹤者的使用者才能閱讀您筆記的完整內容。"
+      },
+      {
+        "q": "如何檢舉違規紀錄？",
+        "a": "如果您發現包含抄襲、仇恨言論或其他違規行為的註釋，您可以點擊該註釋右上角的三點圖示（選項），然後選擇「舉報」。我們的團隊將很快對其進行審核。"
+      },
+      {
+        "q": "擁有「專家」身分有哪些好處？",
+        "a": "具有專家狀態的使用者將在其個人資料上獲得紫色檢查驗證徽章。他們分享的筆記還將獲得「已驗證」標籤，這會增加材料的可信度，以及整理其他學生筆記的權利。"
+      },
+      {
+        "q": "為什麼我的註解被專家拒絕？",
+        "a": "如果發現抄襲、影像解析度差或包含不準確的公式/理論，提交給專家的註釋可能會被拒絕。您可以在筆記詳細資訊中閱讀專家回饋評論來改進它。"
+      },
+      {
+        "q": "巴渝平台是付費的嗎？",
+        "a": "不，Ba-Yu 對印尼所有學生和教師完全免費，用於分享知識和結構化學習筆記！"
+      }
+    ],
     "contact_title": "還需要幫忙嗎？",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "快速回應",
     "contact_email_title": "電子郵件",
     "contact_email_desc": "詳情及附件",
     "guidelines_title": "社區準則",
-    "guidelines_desc": "閱讀 Ba-Yu 上分享筆記的規則和道德規範。"
+    "guidelines_desc": "閱讀 Ba-Yu 上分享筆記的規則和道德規範。",
+    "wa_template": "大家好，Ba-Yu 支援團隊，我是 {{name}}。我需要幫助解決這個問題：...{{day}}。",
+    "email_subject": "Ba-Yu 應用程式問題幫助 - {{name}}",
+    "email_body": "您好，Ba-Yu 支援團隊，\n\n我是{{name}}。我需要協助解決一個問題：\n……\n\n我在 {{day}} 遇到了這個障礙。\n\n請幫忙，謝謝！"
   },
   "about_page": {
     "title": "關於我們",
@@ -1675,39 +1719,39 @@
     "account_deactivated": "該帳戶已成功停用並進入休眠狀態。"
   },
   "titles": {
-    "home": "undefined",
-    "explore": "undefined",
-    "write_note": "undefined",
-    "saved_notes": "undefined",
-    "profile": "undefined",
-    "learning_statistics": "undefined",
-    "settings": "undefined",
-    "about_us": "undefined",
-    "admin_dashboard": "undefined",
-    "blog": "undefined",
-    "careers": "undefined",
-    "community_guidelines": "undefined",
-    "complete_profile": "undefined",
-    "edit_profile": "undefined",
-    "follow_requests": "undefined",
-    "help_center": "undefined",
-    "language": "undefined",
-    "login": "undefined",
-    "note_detail": "undefined",
-    "page_not_found": "undefined",
-    "notification_detail": "undefined",
-    "notifications": "undefined",
-    "onboarding": "undefined",
-    "expert_dashboard": "undefined",
-    "privacy_policy": "undefined",
-    "privacy_settings": "undefined",
-    "public_explore": "undefined",
-    "public_profile": "undefined",
-    "reset_password": "undefined",
-    "security": "undefined",
-    "app_status": "undefined",
-    "terms_of_service": "undefined",
-    "appearance": "undefined",
-    "welcome": "undefined"
+    "home": "首頁",
+    "explore": "探索",
+    "write_note": "寫筆記",
+    "saved_notes": "已儲存的筆記",
+    "profile": "個人檔案",
+    "learning_statistics": "學習統計",
+    "settings": "設定",
+    "about_us": "關於我們",
+    "admin_dashboard": "管理儀表板",
+    "blog": "部落格",
+    "careers": "職業機會",
+    "community_guidelines": "社區準則",
+    "complete_profile": "完善個人資料",
+    "edit_profile": "編輯個人資料",
+    "follow_requests": "追蹤請求",
+    "help_center": "說明中心",
+    "language": "語言",
+    "login": "登入",
+    "note_detail": "筆記詳情",
+    "page_not_found": "找不到頁面",
+    "notification_detail": "通知詳情",
+    "notifications": "通知",
+    "onboarding": "開始使用",
+    "expert_dashboard": "專家儀表板",
+    "privacy_policy": "隱私權政策",
+    "privacy_settings": "隱私設定",
+    "public_explore": "公開探索",
+    "public_profile": "公開個人檔案",
+    "reset_password": "重設密碼",
+    "security": "安全性",
+    "app_status": "應用程式狀態",
+    "terms_of_service": "服務條款",
+    "appearance": "外觀",
+    "welcome": "歡迎"
   }
 }

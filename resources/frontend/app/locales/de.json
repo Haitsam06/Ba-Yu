@@ -1057,11 +1057,11 @@
     "pdf_protected_title": "Geschütztes Material",
     "pdf_protected_desc": "Dieses PDF enthält nur einen Teil des Materials. Folgen Sie dem Autor <b>@{{author}}</b> in der Ba-Yu App, um die vollständige Version herunterzuladen.",
     "pdf_footer": "Dieses Dokument wurde von <span class=\"footer-brand\">Ba-Yu</span> heruntergeladen - Die Lernplattform der Zukunft",
-    "draft_badge": "undefined",
-    "draft_label": "undefined",
-    "last_edit": "undefined",
-    "untitled_draft": "undefined",
-    "untitled": "undefined",
+    "draft_badge": "ENTWURF",
+    "draft_label": "Entwurf",
+    "last_edit": "Letzte Änderung",
+    "untitled_draft": "Unbenannter Entwurf",
+    "untitled": "Unbenannt",
     "submit_to_expert": "Dem Experten vorlegen",
     "submit_to_expert_success": "Notiz erfolgreich dem Experten vorgelegt!",
     "submit_to_expert_error": "Fehler beim Vorlegen an den Experten"
@@ -1085,20 +1085,20 @@
     "status": "Status"
   },
   "apply_pakar": {
-    "title": "undefined",
-    "description": "undefined",
-    "full_name": "undefined",
-    "education_expertise": "undefined",
-    "education_placeholder": "undefined",
-    "upload_document": "undefined",
-    "choose_file": "undefined",
-    "max_size": "undefined",
-    "submit": "undefined",
-    "success_title": "undefined",
-    "success_desc": "undefined",
-    "file_too_large": "undefined",
-    "require_file": "undefined",
-    "error_submit": "undefined"
+    "title": "Expertenstatus beantragen",
+    "description": "Füllen Sie die folgenden Details aus, um ein verifizierter Experte auf der Plattform zu werden.",
+    "full_name": "Vollständiger Name",
+    "education_expertise": "Ausbildung / Fachwissen",
+    "education_placeholder": "z.B. Ph.D. in Informatik",
+    "upload_document": "Nachweis hochladen (Lebenslauf, Zertifikat)",
+    "choose_file": "Datei auswählen",
+    "max_size": "Max. Größe: 5MB (PDF, JPG, PNG)",
+    "submit": "Antrag einreichen",
+    "success_title": "Antrag eingereicht!",
+    "success_desc": "Wir werden Ihren Antrag prüfen und Sie bald benachrichtigen.",
+    "file_too_large": "Dateigröße überschreitet das Limit von 5MB.",
+    "require_file": "Bitte laden Sie ein Dokument hoch.",
+    "error_submit": "Antrag konnte nicht eingereicht werden. Bitte versuchen Sie es erneut."
   },
   "edit_profile": {
     "title": "Profil Bearbeiten",
@@ -1268,14 +1268,58 @@
     "search_placeholder": "Fragen suchen...",
     "no_results": "Keine Ergebnisse für \"{query}\"",
     "faq_title": "Häufig gestellte Fragen (FAQ)",
-    "faqs": "[Objekt Objekt],[Objekt Objekt],[Objekt Objekt],[Objekt Objekt]",
+    "faqs": [
+      {
+        "q": "Wie werde ich Experte bei Ba-Yu?",
+        "a": "Um ein Experte zu werden, müssen Sie regelmäßig Qualitätsnotizen teilen. Wenn Ihre Notizen häufig in der Kategorie „Beliebt“ sind und viele „Gefällt mir“-Angaben erhalten, überprüft unser Admin-Team sie und verleiht Ihnen den Expertenstatus."
+      },
+      {
+        "q": "Kann ich Notizen als PDF herunterladen?",
+        "a": "Natürlich! Auf jeder Notizdetailseite können Sie auf die Schaltfläche „Herunterladen“ in der oberen rechten Ecke oder unten im Inhalt klicken, um ihn im PDF-Format zu speichern."
+      },
+      {
+        "q": "Warum kann ich mich nicht bei meinem Konto anmelden?",
+        "a": "Stellen Sie sicher, dass die von Ihnen eingegebene E-Mail-Adresse und das Passwort korrekt sind. Wenn Sie Ihr Konto kürzlich gelöscht haben, befindet sich Ihr Konto möglicherweise im Ruhezustand. Versuchen Sie erneut, sich anzumelden, um es zu aktivieren."
+      },
+      {
+        "q": "Wie schreibt man eine mathematische Formel?",
+        "a": "Klicken Sie auf der Notizenseite auf das Taschenrechnersymbol in der seitlichen Symbolleiste, um den Formeleditor zu öffnen. Sie können Formeln im KaTeX-Format schreiben."
+      },
+      {
+        "q": "Wie speichere ich Notizen anderer Personen?",
+        "a": "Sie können Notizen, die Ihnen gefallen, speichern, indem Sie auf das Symbol „Lesezeichen“ in der oberen rechten Ecke der Notizkarte oder Notizdetailseite klicken. Gespeicherte Notizen werden auf der Registerkarte „Gespeichert“ Ihres Profils angezeigt."
+      },
+      {
+        "q": "Können meine Notizen eingeschränkt werden, sodass nur Follower sie sehen können?",
+        "a": "Ja, natürlich! Sie können Ihr Konto über das Menü „Einstellungen“ > „Datenschutz & Konto“ auf „privat“ setzen. Mit einem privaten Konto können nur Benutzer, die Sie als Follower zulassen, den gesamten Inhalt Ihrer Notizen lesen."
+      },
+      {
+        "q": "Wie melde ich Datensätze, die gegen die Regeln verstoßen?",
+        "a": "Wenn Sie eine Notiz finden, die Plagiate, Hassreden oder andere Verstöße enthält, können Sie auf das Dreipunktsymbol (Optionen) in der oberen rechten Ecke der Notiz klicken und dann „Melden“ auswählen. Unser Team wird es bald überprüfen."
+      },
+      {
+        "q": "Welche Vorteile bietet der Status „Experte“?",
+        "a": "Benutzer mit Expertenstatus erhalten in ihrem Profil ein violettes Scheck-Verifizierungsabzeichen. Die von ihnen geteilten Notizen erhalten außerdem das Tag „Verifiziert“, was die Glaubwürdigkeit des Materials erhöht und das Recht einräumt, die Notizen anderer Schüler zu kuratieren."
+      },
+      {
+        "q": "Warum wurde mein Hinweis vom Experten abgelehnt?",
+        "a": "Dem Experten vorgelegte Notizen können abgelehnt werden, wenn ein Plagiat festgestellt wird, eine schlechte Bildauflösung vorliegt oder ungenaue Formeln/Theorien enthalten. Sie können in Ihren Notizdetails Expertenbewertungen lesen, um sie zu verbessern."
+      },
+      {
+        "q": "Ist die Ba-Yu-Plattform kostenpflichtig?",
+        "a": "Nein, Ba-Yu ist für alle Schüler und Lehrer in ganz Indonesien völlig kostenlos und kann zum Wissensaustausch und strukturierten Lernnotizen genutzt werden!"
+      }
+    ],
     "contact_title": "Brauchen Sie noch Hilfe?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Schnelle Antwort",
     "contact_email_title": "E-Mail",
     "contact_email_desc": "Details & Anhänge",
     "guidelines_title": "Community-Richtlinien",
-    "guidelines_desc": "Lesen Sie die Regeln und Ethik des Teilens von Notizen auf Ba-Yu."
+    "guidelines_desc": "Lesen Sie die Regeln und Ethik des Teilens von Notizen auf Ba-Yu.",
+    "wa_template": "Hallo Ba-Yu-Support-Team, ich bin {{name}}. Ich brauche Hilfe bei dem Problem: ... am {{day}}.",
+    "email_subject": "Hilfe zu Ba-Yu-Anwendungsproblemen – {{name}}",
+    "email_body": "Hallo Ba-Yu-Support-Team,\n\nIch bin {{name}}. Ich brauche Hilfe bei einem Problem:\n...\n\nIch stand am {{day}} vor diesem Hindernis.\n\nBitte helfen Sie, danke!"
   },
   "about_page": {
     "title": "Über uns",

@@ -1268,14 +1268,58 @@
     "search_placeholder": "Tìm kiếm câu hỏi...",
     "no_results": "Không có kết quả cho \"{query}\"",
     "faq_title": "Câu hỏi thường gặp (FAQ)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "Làm thế nào để trở thành Chuyên gia tại Ba-Yu?",
+        "a": "Để trở thành Chuyên gia, bạn phải thường xuyên chia sẻ những ghi chú chất lượng. Nếu ghi chú của bạn thường nằm trong danh mục 'Phổ biến' và nhận được nhiều lượt thích, nhóm Quản trị viên của chúng tôi sẽ xem xét chúng và cấp cho bạn trạng thái Chuyên gia."
+      },
+      {
+        "q": "Tôi có thể tải ghi chú xuống PDF không?",
+        "a": "Tất nhiên! Ở mỗi trang chi tiết ghi chú, bạn có thể nhấn nút Tải xuống ở góc trên bên phải hoặc cuối nội dung để lưu dưới dạng PDF."
+      },
+      {
+        "q": "Tại sao tôi không thể đăng nhập vào tài khoản của mình?",
+        "a": "Đảm bảo email và mật khẩu bạn đã nhập là chính xác. Nếu gần đây bạn đã xóa tài khoản của mình thì tài khoản của bạn có thể ở trạng thái Không hoạt động. Hãy thử đăng nhập lại để kích hoạt nó."
+      },
+      {
+        "q": "Bạn viết một công thức toán học như thế nào?",
+        "a": "Trên trang ghi chú, hãy nhấp vào biểu tượng máy tính trên thanh công cụ bên cạnh để mở trình chỉnh sửa công thức. Bạn có thể viết công thức bằng định dạng KaTeX."
+      },
+      {
+        "q": "Làm cách nào để lưu ghi chú của người khác?",
+        "a": "Bạn có thể lưu ghi chú mà mình thích bằng cách nhấp vào biểu tượng 'Đánh dấu' ở góc trên cùng bên phải của thẻ ghi chú hoặc trang chi tiết ghi chú. Ghi chú đã lưu sẽ xuất hiện trong tab 'Đã lưu' trong hồ sơ của bạn."
+      },
+      {
+        "q": "Có thể hạn chế ghi chú của tôi để chỉ những người theo dõi mới có thể xem không?",
+        "a": "Vâng, tất nhiên rồi! Bạn có thể đặt tài khoản của mình ở chế độ riêng tư thông qua menu Cài đặt > Quyền riêng tư & Tài khoản. Với tài khoản riêng tư, chỉ những người dùng được bạn chấp thuận làm người theo dõi mới có thể đọc toàn bộ nội dung ghi chú của bạn."
+      },
+      {
+        "q": "Làm cách nào để báo cáo những hồ sơ vi phạm quy định?",
+        "a": "Nếu phát hiện ghi chú có nội dung đạo văn, lời nói căm thù hoặc các hành vi vi phạm khác, bạn có thể nhấp vào biểu tượng ba chấm (Tùy chọn) ở góc trên cùng bên phải của ghi chú, sau đó chọn 'Báo cáo'. Nhóm của chúng tôi sẽ xem xét nó sớm."
+      },
+      {
+        "q": "Lợi ích của việc có trạng thái 'Chuyên gia' là gì?",
+        "a": "Người dùng có trạng thái Chuyên gia sẽ nhận được huy hiệu xác minh séc màu tím trên hồ sơ của họ. Các ghi chú mà họ chia sẻ cũng sẽ nhận được thẻ 'Đã xác minh' để tăng độ tin cậy của tài liệu cũng như quyền quản lý ghi chú của các sinh viên khác."
+      },
+      {
+        "q": "Tại sao ghi chú của tôi bị Chuyên gia từ chối?",
+        "a": "Các ghi chú gửi cho Chuyên gia có thể bị từ chối nếu phát hiện đạo văn, hình ảnh có độ phân giải kém hoặc chứa các công thức/lý thuyết không chính xác. Bạn có thể đọc các đánh giá phản hồi của chuyên gia trong chi tiết ghi chú của mình để cải thiện nó."
+      },
+      {
+        "q": "Nền tảng Ba-Yu có trả phí không?",
+        "a": "Không, Ba-Yu hoàn toàn miễn phí cho tất cả học sinh và giáo viên trên khắp Indonesia sử dụng để chia sẻ kiến ​​thức và ghi chú học tập có cấu trúc!"
+      }
+    ],
     "contact_title": "Vẫn cần trợ giúp?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Phản hồi nhanh",
     "contact_email_title": "E-mail",
     "contact_email_desc": "Chi tiết & tệp đính kèm",
     "guidelines_title": "Nguyên tắc cộng đồng",
-    "guidelines_desc": "Đọc các quy tắc và đạo đức chia sẻ ghi chú trên Ba-Yu."
+    "guidelines_desc": "Đọc các quy tắc và đạo đức chia sẻ ghi chú trên Ba-Yu.",
+    "wa_template": "Xin chào Nhóm hỗ trợ Ba-Yu, tôi là {{name}}. Tôi cần trợ giúp về vấn đề: ... vào {{day}}.",
+    "email_subject": "Trợ giúp về vấn đề ứng dụng Ba-Yu - {{name}}",
+    "email_body": "Xin chào nhóm hỗ trợ Ba-Yu,\n\nTôi là {{name}}. Tôi cần trợ giúp một vấn đề:\n...\n\nTôi đã gặp phải trở ngại này vào {{day}}.\n\nXin hãy giúp đỡ, cảm ơn bạn!"
   },
   "about_page": {
     "title": "Về chúng tôi",

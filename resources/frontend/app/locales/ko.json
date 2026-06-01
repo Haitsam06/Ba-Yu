@@ -903,8 +903,8 @@
     "btn_view_cert": "파일 보기",
     "tab_pending": "Action Needed",
     "tab_history": "History",
-    "system_server": "undefined",
-    "recent_activity": "undefined"
+    "system_server": "시스템 및 서버",
+    "recent_activity": "최근 활동"
   },
   "edu_levels": {
     "SD": "초등학교",
@@ -1057,11 +1057,11 @@
     "pdf_protected_title": "보호된 자료",
     "pdf_protected_desc": "이 PDF는 일부 자료만 포함하고 있습니다. 전체 버전을 다운로드하려면 Ba-Yu 앱에서 저자 <b>@{{author}}</b>를 팔로우하세요.",
     "pdf_footer": "이 문서는 <span class=\"footer-brand\">Ba-Yu</span>에서 다운로드되었습니다 - 미래 학습 플랫폼",
-    "draft_badge": "undefined",
-    "draft_label": "undefined",
-    "last_edit": "undefined",
-    "untitled_draft": "undefined",
-    "untitled": "undefined",
+    "draft_badge": "초안",
+    "draft_label": "초안",
+    "last_edit": "마지막 수정",
+    "untitled_draft": "제목 없는 초안",
+    "untitled": "제목 없음",
     "submit_to_expert": "전문가에게 제출",
     "submit_to_expert_success": "노트가 전문가에게 성공적으로 제출되었습니다!",
     "submit_to_expert_error": "전문가에게 제출하지 못했습니다"
@@ -1085,20 +1085,20 @@
     "status": "상태"
   },
   "apply_pakar": {
-    "title": "undefined",
-    "description": "undefined",
-    "full_name": "undefined",
-    "education_expertise": "undefined",
-    "education_placeholder": "undefined",
-    "upload_document": "undefined",
-    "choose_file": "undefined",
-    "max_size": "undefined",
-    "submit": "undefined",
-    "success_title": "undefined",
-    "success_desc": "undefined",
-    "file_too_large": "undefined",
-    "require_file": "undefined",
-    "error_submit": "undefined"
+    "title": "전문가 상태 신청",
+    "description": "플랫폼에서 인증된 전문가가 되려면 아래 세부 정보를 작성하십시오.",
+    "full_name": "성명",
+    "education_expertise": "학력 / 전문 지식",
+    "education_placeholder": "예: 컴퓨터 공학 박사",
+    "upload_document": "증빙 서류 업로드 (이력서, 증명서)",
+    "choose_file": "파일 선택",
+    "max_size": "최대 크기: 5MB (PDF, JPG, PNG)",
+    "submit": "신청서 제출",
+    "success_title": "신청서 제출됨!",
+    "success_desc": "신청서를 검토한 후 곧 알려드리겠습니다.",
+    "file_too_large": "파일 크기가 5MB 제한을 초과합니다.",
+    "require_file": "증빙 서류를 업로드해 주세요.",
+    "error_submit": "신청서 제출에 실패했습니다. 다시 시도해 주세요."
   },
   "edit_profile": {
     "title": "프로필 편집",
@@ -1268,14 +1268,58 @@
     "search_placeholder": "질문 검색...",
     "no_results": "\"{query}\"에 대한 결과 없음",
     "faq_title": "자주 묻는 질문 (FAQ)",
-    "faqs": "[객체 객체],[객체 객체],[객체 객체],[객체 객체]",
+    "faqs": [
+      {
+        "q": "Ba-Yu에서 전문가가 되는 방법은 무엇입니까?",
+        "a": "전문가가 되려면 품질 노트를 자주 공유해야 합니다. 귀하의 노트가 종종 '인기' 카테고리에 속하고 많은 좋아요를 받는 경우, 당사 관리팀이 이를 검토하고 귀하에게 전문가 상태를 부여할 것입니다."
+      },
+      {
+        "q": "노트를 PDF로 다운로드할 수 있나요?",
+        "a": "물론이죠! 각 노트 세부정보 페이지 오른쪽 상단이나 내용 하단에 있는 다운로드 버튼을 눌러 PDF 형식으로 저장할 수 있습니다."
+      },
+      {
+        "q": "왜 내 계정에 로그인할 수 없나요?",
+        "a": "입력한 이메일과 비밀번호가 올바른지 확인하세요. 최근에 계정을 삭제했다면 계정이 휴면 상태일 수 있습니다. 활성화하려면 다시 로그인해 보세요."
+      },
+      {
+        "q": "수학 공식은 어떻게 작성하나요?",
+        "a": "메모 작성 페이지의 측면 도구 모음에 있는 계산기 아이콘을 클릭하여 수식 편집기를 엽니다. KaTeX 형식을 사용하여 수식을 작성할 수 있습니다."
+      },
+      {
+        "q": "다른 사람의 메모를 어떻게 저장하나요?",
+        "a": "노트카드 또는 노트상세페이지 우측 상단의 '북마크' 아이콘을 클릭하여 마음에 드는 노트를 저장할 수 있습니다. 저장된 메모는 프로필의 '저장됨' 탭에 표시됩니다."
+      },
+      {
+        "q": "팔로워만 볼 수 있도록 내 노트를 제한할 수 있나요?",
+        "a": "물론이죠! 설정 > 개인정보 및 계정 메뉴를 통해 계정을 비공개로 설정할 수 있습니다. 비공개 계정을 사용하면 팔로워로 승인한 사용자만 노트의 전체 내용을 읽을 수 있습니다."
+      },
+      {
+        "q": "규정을 위반한 기록을 어떻게 신고하나요?",
+        "a": "표절, 증오심 표현, 기타 위반 사항이 포함된 노트를 발견한 경우 해당 노트 오른쪽 상단에 있는 점 3개 아이콘(옵션)을 클릭한 후 '신고'를 선택하세요. 우리 팀에서 곧 검토할 것입니다."
+      },
+      {
+        "q": "'전문가' 자격을 가지면 어떤 이점이 있나요?",
+        "a": "전문가 상태의 사용자는 프로필에 보라색 체크 확인 배지를 받게 됩니다. 그들이 공유하는 노트에는 자료의 신뢰성을 높이고 다른 학생의 노트를 선별할 수 있는 권리를 높이는 '인증됨' 태그도 부여됩니다."
+      },
+      {
+        "q": "전문가가 내 메모를 거부한 이유는 무엇입니까?",
+        "a": "전문가에게 제출된 노트는 표절이 발견되거나, 이미지 해상도가 좋지 않거나, 부정확한 공식/이론이 포함되어 있는 경우 거부될 수 있습니다. 노트 세부정보에서 전문가 피드백 리뷰를 읽어 개선할 수 있습니다."
+      },
+      {
+        "q": "Ba-Yu 플랫폼은 유료인가요?",
+        "a": "아니요, Ba-Yu는 인도네시아 전역의 모든 학생과 교사가 지식과 체계적인 학습 노트를 공유하는 데 사용할 수 있는 완전 무료입니다!"
+      }
+    ],
     "contact_title": "여전히 도움이 필요하신가요?",
     "contact_wa_title": "왓츠앱",
     "contact_wa_desc": "빠른 응답",
     "contact_email_title": "이메일",
     "contact_email_desc": "세부 정보 및 첨부 파일",
     "guidelines_title": "커뮤니티 가이드라인",
-    "guidelines_desc": "Ba-Yu의 노트 공유 규칙 및 윤리를 읽어보세요."
+    "guidelines_desc": "Ba-Yu의 노트 공유 규칙 및 윤리를 읽어보세요.",
+    "wa_template": "안녕하세요 Ba-Yu 지원팀, 저는 {{name}}입니다. 문제에 대한 도움이 필요합니다: ... {{day}}에.",
+    "email_subject": "Ba-Yu 애플리케이션 문제 도움말 - {{name}}",
+    "email_body": "Ba-Yu 지원팀님, 안녕하세요.\n\n저는 {{name}}이에요. 문제에 대한 도움이 필요합니다:\n...\n\n나는 {{day}}에 이 장애물에 직면했습니다.\n\n도와주세요, 감사합니다!"
   },
   "about_page": {
     "title": "회사 소개",

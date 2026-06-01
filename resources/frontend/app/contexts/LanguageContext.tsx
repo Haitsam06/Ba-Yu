@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import idTranslations from '../locales/id.json';
 
 export type LanguageCode = 'id' | 'en' | 'en-GB' | 'ja' | 'ko' | 'zh' | 'zh-TW' | 'es' | 'fr' | 'de' | 'pt' | 'ru' | 'ur' | 'hi' | 'tr' | 'ar' | 'ms' | 'bn' | 'vi' | 'fa' | 'it' | 'th' | 'pa' | 'sw' | 'nl' | 'pl' | 'uk' | 'ro' | 'cs' | 'el' | 'hu' | 'sv' | 'fi' | 'da' | 'tl' | 'my' | 'km' | 'lo' | 'ne' | 'si' | 'he' | 'am' | 'zu' | 'af';
 export type LanguagePreference = LanguageCode | 'system';
@@ -7,6 +8,8 @@ interface LanguageContextType {
   language: LanguagePreference;
   resolvedLanguage: LanguageCode;
   setLanguage: (lang: LanguagePreference) => void;
+  translations: any;
+  loading: boolean;
 }
 
 const SUPPORTED_LANGUAGES: LanguageCode[] = ['id', 'en', 'en-GB', 'ja', 'ko', 'zh', 'zh-TW', 'es', 'fr', 'de', 'pt', 'ru', 'ur', 'hi', 'tr', 'ar', 'ms', 'bn', 'vi', 'fa', 'it', 'th', 'pa', 'sw', 'nl', 'pl', 'uk', 'ro', 'cs', 'el', 'hu', 'sv', 'fi', 'da', 'tl', 'my', 'km', 'lo', 'ne', 'si', 'he', 'am', 'zu', 'af'];
@@ -36,6 +39,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   });
 
   const [resolvedLanguage, setResolvedLanguage] = useState<LanguageCode>('id');
+  const [translations, setTranslations] = useState<any>(idTranslations);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let resolved: LanguageCode;
@@ -52,6 +57,27 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     // Text rendering and input direction will be handled by CSS/Unicode bidirectionality.
     document.documentElement.dir = 'ltr';
   }, [language]);
+
+  // Load translations dynamically when resolvedLanguage changes
+  useEffect(() => {
+    if (resolvedLanguage === 'id') {
+      setTranslations(idTranslations);
+      return;
+    }
+
+    setLoading(true);
+    import(`../locales/${resolvedLanguage}.json`)
+      .then((module) => {
+        setTranslations(module.default);
+      })
+      .catch((err) => {
+        console.error(`Failed to load translations for ${resolvedLanguage}:`, err);
+        setTranslations(idTranslations);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [resolvedLanguage]);
 
   // Listen for system language changes when set to 'system'
   useEffect(() => {
@@ -70,7 +96,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <LanguageContext.Provider value={{ language, resolvedLanguage, setLanguage }}>
+    <LanguageContext.Provider value={{ language, resolvedLanguage, setLanguage, translations, loading }}>
       {children}
     </LanguageContext.Provider>
   );

@@ -64,8 +64,9 @@ RUN npm run build
 # Step 12: Finalize composer autoload with the full source present.
 RUN composer dump-autoload --optimize --no-interaction
 
-# Step 13: Make storage and cache directories writable.
-RUN chmod -R 775 storage bootstrap/cache
+# Step 13: Make storage and cache directories writable by Apache.
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
 # Step 14: Dynamic Port Configuration for Render
 ENV PORT=8000
@@ -73,5 +74,5 @@ EXPOSE ${PORT}
 
 # Step 15: Start command — Modify Apache port dynamically, clear config cache, and start Apache
 CMD sed -i "s/80/$PORT/g" /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf \
-    && php artisan config:clear \
+    && php artisan optimize:clear \
     && docker-php-entrypoint apache2-foreground

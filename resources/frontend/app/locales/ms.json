@@ -1268,14 +1268,58 @@
     "search_placeholder": "Soalan carian...",
     "no_results": "Tiada hasil untuk \"{query}\"",
     "faq_title": "Soalan Lazim (FAQ)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "Bagaimana untuk menjadi Pakar di Ba-Yu?",
+        "a": "Untuk menjadi Pakar, anda mesti kerap berkongsi nota berkualiti. Jika nota anda selalunya dalam kategori 'Popular' dan mendapat banyak suka, pasukan Pentadbir kami akan menyemaknya dan memberi anda status Pakar."
+      },
+      {
+        "q": "Bolehkah saya memuat turun nota ke PDF?",
+        "a": "Sudah tentu! Pada setiap halaman butiran nota, anda boleh menekan butang Muat turun di penjuru kanan sebelah atas atau di bahagian bawah kandungan untuk menyimpannya dalam format PDF."
+      },
+      {
+        "q": "Mengapa saya tidak boleh log masuk ke akaun saya?",
+        "a": "Pastikan e-mel dan kata laluan yang anda masukkan adalah betul. Jika anda baru-baru ini memadamkan akaun anda, akaun anda mungkin dalam status Dorman. Cuba log masuk semula untuk mengaktifkannya."
+      },
+      {
+        "q": "Bagaimanakah anda menulis formula matematik?",
+        "a": "Pada halaman pengambilan nota, klik ikon kalkulator dalam bar alat sisi untuk membuka editor formula. Anda boleh menulis formula menggunakan format KaTeX."
+      },
+      {
+        "q": "Bagaimana untuk menyimpan nota orang lain?",
+        "a": "Anda boleh menyimpan nota yang anda suka dengan mengklik ikon 'Penanda Halaman' di penjuru kanan sebelah atas kad nota atau halaman butiran nota. Nota yang disimpan akan muncul dalam tab 'Disimpan' pada profil anda."
+      },
+      {
+        "q": "Bolehkah nota saya dihadkan supaya hanya pengikut boleh melihat?",
+        "a": "Ya, sudah tentu! Anda boleh menetapkan akaun anda kepada peribadi melalui menu Tetapan > Privasi & Akaun. Dengan akaun peribadi, hanya pengguna yang anda luluskan sebagai pengikut boleh membaca kandungan penuh nota anda."
+      },
+      {
+        "q": "Bagaimanakah cara saya melaporkan rekod yang melanggar peraturan?",
+        "a": "Jika anda menemui nota yang mengandungi plagiarisme, ucapan benci atau pelanggaran lain, anda boleh mengklik ikon tiga titik (Pilihan) di penjuru kanan sebelah atas nota, kemudian pilih 'Laporkan'. Pasukan kami akan menyemaknya tidak lama lagi."
+      },
+      {
+        "q": "Apakah faedah mempunyai status 'Pakar'?",
+        "a": "Pengguna dengan status Pakar akan mendapat lencana pengesahan cek berwarna ungu pada profil mereka. Nota yang mereka kongsikan juga akan mendapat teg 'Disahkan' yang meningkatkan kredibiliti bahan, serta hak untuk memilih nota pelajar lain."
+      },
+      {
+        "q": "Mengapakah nota saya ditolak oleh Pakar?",
+        "a": "Nota yang diserahkan kepada Pakar boleh ditolak jika plagiarisme dikesan, mempunyai resolusi imej yang lemah, atau mengandungi formula/teori yang tidak tepat. Anda boleh membaca ulasan maklum balas pakar dalam butiran nota anda untuk memperbaikinya."
+      },
+      {
+        "q": "Adakah platform Ba-Yu dibayar?",
+        "a": "Tidak, Ba-Yu adalah percuma untuk digunakan oleh semua pelajar dan guru di seluruh Indonesia untuk berkongsi pengetahuan dan nota pembelajaran berstruktur!"
+      }
+    ],
     "contact_title": "Masih Perlukan Bantuan?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Respon cepat",
     "contact_email_title": "E-mel",
     "contact_email_desc": "Butiran & lampiran",
     "guidelines_title": "Garis Panduan Komuniti",
-    "guidelines_desc": "Baca peraturan dan etika perkongsian nota tentang Ba-Yu."
+    "guidelines_desc": "Baca peraturan dan etika perkongsian nota tentang Ba-Yu.",
+    "wa_template": "Helo Pasukan Sokongan Ba-Yu, saya {{name}}. Saya memerlukan bantuan untuk masalah ini: ... pada {{hari}}.",
+    "email_subject": "Bantuan Masalah Aplikasi Ba-Yu - {{nama}}",
+    "email_body": "Hello Pasukan Sokongan Ba-Yu,\n\nSaya {{nama}}. Saya memerlukan bantuan untuk masalah:\n...\n\nSaya menghadapi halangan ini pada {{hari}}.\n\nTolong bantu, terima kasih!"
   },
   "about_page": {
     "title": "Tentang Kami",

@@ -1374,6 +1374,30 @@
       {
         "q": "Bagaimana cara menulis rumus matematika?",
         "a": "Di halaman penulisan catatan, klik ikon kalkulator di toolbar samping untuk membuka editor rumus. Kamu bisa menulis formula menggunakan format KaTeX."
+      },
+      {
+        "q": "Bagaimana cara menyimpan catatan orang lain?",
+        "a": "Kamu bisa menyimpan catatan yang kamu sukai dengan mengklik ikon 'Bookmark' di pojok kanan atas kartu catatan atau halaman detail catatan. Catatan yang disimpan akan muncul di tab 'Disimpan' pada profilmu."
+      },
+      {
+        "q": "Apakah catatan saya bisa dibatasi agar hanya pengikut yang dapat melihat?",
+        "a": "Ya, tentu saja! Kamu dapat mengatur akunmu menjadi privat melalui menu Pengaturan > Privasi & Akun. Dengan akun privat, hanya pengguna yang kamu setujui sebagai pengikut yang dapat membaca materi lengkap catatanmu."
+      },
+      {
+        "q": "Bagaimana cara melaporkan catatan yang melanggar aturan?",
+        "a": "Jika kamu menemukan catatan yang mengandung plagiasi, ujaran kebencian, atau pelanggaran lainnya, kamu bisa klik ikon titik tiga (Opsi) di pojok kanan atas catatan tersebut, lalu pilih 'Laporkan'. Tim kami akan segera meninjaunya."
+      },
+      {
+        "q": "Apa keuntungan memiliki status 'Pakar'?",
+        "a": "Pengguna dengan status Pakar akan mendapatkan lencana verifikasi centang ungu di profilnya. Catatan yang mereka bagikan juga akan mendapatkan tag 'Verified' yang meningkatkan kredibilitas materi, serta berhak melakukan kurasi pada catatan pelajar lainnya."
+      },
+      {
+        "q": "Mengapa catatan saya ditolak oleh Pakar?",
+        "a": "Catatan yang diajukan ke Pakar dapat ditolak jika terdeteksi plagiasi, memiliki resolusi gambar yang buruk, atau berisi rumus/teori yang kurang akurat. Kamu bisa membaca ulasan masukan dari Pakar di detail catatanmu untuk memperbaikinya."
+      },
+      {
+        "q": "Apakah platform Ba-Yu ini berbayar?",
+        "a": "Tidak, Ba-Yu sepenuhnya gratis untuk digunakan oleh semua pelajar dan pengajar di seluruh Indonesia untuk saling berbagi ilmu pengetahuan dan catatan belajar terstruktur!"
       }
     ],
     "contact_title": "Masih Butuh Bantuan?",
@@ -1382,7 +1406,10 @@
     "contact_email_title": "Email",
     "contact_email_desc": "Detail & lampiran",
     "guidelines_title": "Panduan Komunitas",
-    "guidelines_desc": "Baca aturan dan etika berbagi catatan di Ba-Yu."
+    "guidelines_desc": "Baca aturan dan etika berbagi catatan di Ba-Yu.",
+    "wa_template": "Halo Tim Dukungan Ba-Yu, saya {{name}}. Saya membutuhkan bantuan terkait masalah: ... pada hari {{day}}.",
+    "email_subject": "Bantuan Kendala Aplikasi Ba-Yu - {{name}}",
+    "email_body": "Halo Tim Dukungan Ba-Yu,\n\nSaya {{name}}. Saya membutuhkan bantuan terkait masalah:\n...\n\nKendala ini saya hadapi pada hari {{day}}.\n\nMohon bantuannya, terima kasih!"
   },
   "about_page": {
     "title": "Tentang Kami",

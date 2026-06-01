@@ -1268,14 +1268,58 @@
     "search_placeholder": "Søg spørgsmål...",
     "no_results": "Ingen resultater for \"{query}\"",
     "faq_title": "Ofte stillede spørgsmål (FAQ)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "Hvordan bliver man ekspert hos Ba-Yu?",
+        "a": "For at blive ekspert skal du ofte dele kvalitetsnotater. Hvis dine noter ofte er i kategorien 'Populære' og får masser af likes, vil vores administratorteam gennemgå dem og give dig ekspertstatus."
+      },
+      {
+        "q": "Kan jeg downloade noter til PDF?",
+        "a": "Selvfølgelig! På hver note-detaljeside kan du trykke på knappen Download i øverste højre hjørne eller nederst i indholdet for at gemme det i PDF-format."
+      },
+      {
+        "q": "Hvorfor kan jeg ikke logge ind på min konto?",
+        "a": "Sørg for, at den e-mail og adgangskode, du har indtastet, er korrekte. Hvis du for nylig har slettet din konto, kan din konto være i dvalestatus. Prøv at logge ind igen for at aktivere den."
+      },
+      {
+        "q": "Hvordan skriver man en matematisk formel?",
+        "a": "På notesiden skal du klikke på lommeregnerikonet på sideværktøjslinjen for at åbne formeleditoren. Du kan skrive formler ved hjælp af KaTeX-formatet."
+      },
+      {
+        "q": "Hvordan gemmer man andres noter?",
+        "a": "Du kan gemme noter, som du kan lide, ved at klikke på 'Bogmærke'-ikonet i øverste højre hjørne af notekortet eller note-detaljesiden. Gemte noter vises på fanen 'Gemt' på din profil."
+      },
+      {
+        "q": "Kan mine noter begrænses, så kun følgere kan se dem?",
+        "a": "Ja, selvfølgelig! Du kan indstille din konto til privat via menuen Indstillinger > Privatliv og konto. Med en privat konto er det kun brugere, du godkender som følgere, der kan læse det fulde indhold af dine noter."
+      },
+      {
+        "q": "Hvordan rapporterer jeg registreringer, der overtræder reglerne?",
+        "a": "Hvis du finder en note, der indeholder plagiat, hadefulde ytringer eller andre krænkelser, kan du klikke på ikonet med tre prikker (Valgmuligheder) i øverste højre hjørne af noten og derefter vælge 'Rapportér'. Vores team vil snart gennemgå det."
+      },
+      {
+        "q": "Hvad er fordelene ved at have status som \"ekspert\"?",
+        "a": "Brugere med Ekspert-status vil få et lilla check-verifikationsmærke på deres profil. De noter, de deler, får også et 'Verified'-tag, som øger materialets troværdighed, samt retten til at kurere andre elevers noter."
+      },
+      {
+        "q": "Hvorfor blev mit notat afvist af eksperten?",
+        "a": "Noter indsendt til eksperten kan blive afvist, hvis plagiat opdages, har dårlig billedopløsning eller indeholder unøjagtige formler/teorier. Du kan læse anmeldelser af ekspertfeedback i dine notedetaljer for at forbedre den."
+      },
+      {
+        "q": "Er Ba-Yu platformen betalt?",
+        "a": "Nej, Ba-Yu er helt gratis for alle studerende og lærere i hele Indonesien at bruge til at dele viden og strukturerede studienotater!"
+      }
+    ],
     "contact_title": "Har du stadig brug for hjælp?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Hurtig respons",
     "contact_email_title": "E-mail",
     "contact_email_desc": "Detaljer og bilag",
     "guidelines_title": "Fællesskabsretningslinjer",
-    "guidelines_desc": "Læs reglerne og etikken for at dele noter på Ba-Yu."
+    "guidelines_desc": "Læs reglerne og etikken for at dele noter på Ba-Yu.",
+    "wa_template": "Hej Ba-Yu Support Team, jeg hedder {{name}}. Jeg har brug for hjælp til problemet: ... den {{dag}}.",
+    "email_subject": "Hjælp til Ba-Yu-applikationsproblem - {{name}}",
+    "email_body": "Hej Ba-Yu Support Team,\n\nJeg hedder {{name}}. Jeg har brug for hjælp til et problem:\n...\n\nJeg stod over for denne forhindring {{dag}}.\n\nHjælp venligst, tak!"
   },
   "about_page": {
     "title": "Om os",

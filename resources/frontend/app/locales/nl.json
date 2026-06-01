@@ -1268,14 +1268,58 @@
     "search_placeholder": "Zoek vragen...",
     "no_results": "Geen resultaten voor \"{query}\"",
     "faq_title": "Veelgestelde vragen (FAQ)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "Hoe word je een expert bij Ba-Yu?",
+        "a": "Om Expert te worden, moet u regelmatig kwaliteitsnotities delen. Als uw aantekeningen vaak in de categorie 'Populair' vallen en veel likes krijgen, zal ons beheerdersteam ze beoordelen en u de status Expert geven."
+      },
+      {
+        "q": "Kan ik notities naar PDF downloaden?",
+        "a": "Natuurlijk! Op elke notitiedetailpagina kunt u op de knop Downloaden in de rechterbovenhoek of onderaan de inhoud drukken om deze in PDF-indeling op te slaan."
+      },
+      {
+        "q": "Waarom kan ik niet inloggen op mijn account?",
+        "a": "Zorg ervoor dat het e-mailadres en wachtwoord dat u heeft ingevoerd correct zijn. Als u uw account onlangs heeft verwijderd, bevindt uw account zich mogelijk in de slapende status. Probeer opnieuw in te loggen om het te activeren."
+      },
+      {
+        "q": "Hoe schrijf je een wiskundige formule?",
+        "a": "Klik op de notitiepagina op het rekenmachinepictogram in de zijwerkbalk om de formule-editor te openen. U kunt formules schrijven in het KaTeX-formaat."
+      },
+      {
+        "q": "Hoe kan ik de notities van anderen opslaan?",
+        "a": "U kunt notities die u leuk vindt opslaan door op het pictogram 'Bladwijzer' in de rechterbovenhoek van de notitiekaart of notitiedetailpagina te klikken. Opgeslagen notities verschijnen op het tabblad 'Opgeslagen' van uw profiel."
+      },
+      {
+        "q": "Kunnen mijn notities worden beperkt zodat alleen volgers ze kunnen bekijken?",
+        "a": "Ja, natuurlijk! U kunt uw account instellen op privé via het menu Instellingen > Privacy en account. Met een privéaccount kunnen alleen gebruikers die u als volgers goedkeurt, de volledige inhoud van uw notities lezen."
+      },
+      {
+        "q": "Hoe rapporteer ik dossiers die de regels overtreden?",
+        "a": "Als u een notitie vindt die plagiaat, aanzetten tot haat of andere overtredingen bevat, kunt u op het pictogram met de drie stippen (Opties) in de rechterbovenhoek van de notitie klikken en vervolgens 'Melden' selecteren. Ons team zal het binnenkort beoordelen."
+      },
+      {
+        "q": "Wat zijn de voordelen van het hebben van de status 'Expert'?",
+        "a": "Gebruikers met de Expert-status krijgen een paarse verificatiebadge op hun profiel. De aantekeningen die ze delen krijgen ook een 'Geverifieerd'-label, wat de geloofwaardigheid van het materiaal vergroot, evenals het recht om de aantekeningen van andere studenten te beheren."
+      },
+      {
+        "q": "Waarom is mijn nota afgewezen door de Expert?",
+        "a": "Aantekeningen ingediend bij de Deskundige kunnen worden afgewezen als plagiaat wordt gedetecteerd, een slechte beeldresolutie heeft of onnauwkeurige formules/theorieën bevat. U kunt feedback van experts lezen in de details van uw notitie om deze te verbeteren."
+      },
+      {
+        "q": "Wordt het Ba-Yu-platform betaald?",
+        "a": "Nee, Ba-Yu is volledig gratis voor alle studenten en docenten in heel Indonesië om kennis en gestructureerde studieaantekeningen te delen!"
+      }
+    ],
     "contact_title": "Nog steeds hulp nodig?",
     "contact_wa_title": "WhatsAppen",
     "contact_wa_desc": "Snelle reactie",
     "contact_email_title": "E-mail",
     "contact_email_desc": "Details & bijlagen",
     "guidelines_title": "Gemeenschapsrichtlijnen",
-    "guidelines_desc": "Lees de regels en ethiek van het delen van notities op Ba-Yu."
+    "guidelines_desc": "Lees de regels en ethiek van het delen van notities op Ba-Yu.",
+    "wa_template": "Hallo Ba-Yu-ondersteuningsteam, ik ben {{name}}. Ik heb hulp nodig bij het probleem: ... op {{day}}.",
+    "email_subject": "Hulp bij Ba-Yu-toepassingsproblemen - {{name}}",
+    "email_body": "Hallo Ba-Yu-ondersteuningsteam,\n\nIk ben {{naam}}. Ik heb hulp nodig bij een probleem:\n...\n\nIk kwam dit obstakel tegen op {{day}}.\n\nHelp alsjeblieft, bedankt!"
   },
   "about_page": {
     "title": "Over ons",

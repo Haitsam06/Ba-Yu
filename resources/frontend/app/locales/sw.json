@@ -1268,14 +1268,58 @@
     "search_placeholder": "Tafuta maswali...",
     "no_results": "Hakuna matokeo ya \"{query}\"",
     "faq_title": "Maswali Yanayoulizwa Mara Kwa Mara (FAQ)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "Jinsi ya kuwa Mtaalam katika Ba-Yu?",
+        "a": "Ili kuwa Mtaalamu, lazima ushiriki vidokezo vya ubora mara kwa mara. Ikiwa madokezo yako mara nyingi huwa katika kitengo cha 'Maarufu' na kupata kupendwa mara nyingi, timu yetu ya Wasimamizi itayahakiki na kukupa hadhi ya Mtaalamu."
+      },
+      {
+        "q": "Je, ninaweza kupakua maelezo kwa PDF?",
+        "a": "Bila shaka! Katika kila ukurasa wa maelezo ya dokezo, unaweza kubofya kitufe cha Pakua kwenye kona ya juu kulia au chini ya maudhui ili kuyahifadhi katika umbizo la PDF."
+      },
+      {
+        "q": "Kwa nini siwezi kuingia kwenye akaunti yangu?",
+        "a": "Hakikisha barua pepe na nenosiri uliloweka ni sahihi. Ikiwa ulifuta akaunti yako hivi majuzi, akaunti yako inaweza kuwa katika hali ya Dormant. Jaribu kuingia tena ili kuiwasha."
+      },
+      {
+        "q": "Je, unaandikaje fomula ya hisabati?",
+        "a": "Kwenye ukurasa wa kuandika madokezo, bofya ikoni ya kikokotoo kwenye upau wa vidhibiti ili kufungua kihariri cha fomula. Unaweza kuandika fomula kwa kutumia muundo wa KaTeX."
+      },
+      {
+        "q": "Jinsi ya kuhifadhi maelezo ya watu wengine?",
+        "a": "Unaweza kuhifadhi madokezo unayopenda kwa kubofya aikoni ya 'Alamisho' kwenye kona ya juu kulia ya kadi ya noti au ukurasa wa maelezo ya dokezo. Vidokezo vilivyohifadhiwa vitaonekana kwenye kichupo cha 'Zilizohifadhiwa' cha wasifu wako."
+      },
+      {
+        "q": "Je, madokezo yangu yanaweza kuzuiwa ili wafuasi pekee waweze kutazama?",
+        "a": "Ndiyo, bila shaka! Unaweza kuweka akaunti yako kuwa ya faragha kupitia menyu ya Mipangilio > Faragha na Akaunti. Ukiwa na akaunti ya faragha, watumiaji unaowaidhinisha tu kama wafuasi wanaweza kusoma maudhui kamili ya madokezo yako."
+      },
+      {
+        "q": "Je, ninaripotije rekodi zinazokiuka sheria?",
+        "a": "Ukipata dokezo ambalo lina wizi, matamshi ya chuki, au ukiukaji mwingine, unaweza kubofya ikoni ya vitone tatu (Chaguo) kwenye kona ya juu kulia ya dokezo, kisha uchague 'Ripoti'. Timu yetu itaikagua hivi karibuni."
+      },
+      {
+        "q": "Ni faida gani za kuwa na hadhi ya 'Mtaalam'?",
+        "a": "Watumiaji walio na hali ya Mtaalamu watapata beji ya uthibitishaji ya hundi ya zambarau kwenye wasifu wao. Madokezo wanayoshiriki pia yatapata lebo ya 'Imethibitishwa' ambayo huongeza uaminifu wa nyenzo, pamoja na haki ya kuratibu madokezo ya wanafunzi wengine."
+      },
+      {
+        "q": "Kwa nini barua yangu ilikataliwa na Mtaalamu?",
+        "a": "Madokezo yaliyowasilishwa kwa Mtaalamu yanaweza kukataliwa ikiwa wizi wa data utatambuliwa, una ubora duni wa picha, au una fomula/nadharia zisizo sahihi. Unaweza kusoma maoni ya kitaalamu katika maelezo yako ili kuyaboresha."
+      },
+      {
+        "q": "Je, jukwaa la Ba-Yu linalipwa?",
+        "a": "Hapana, Ba-Yu ni bure kabisa kwa wanafunzi na walimu wote nchini Indonesia kuitumia kubadilishana maarifa na vidokezo vya masomo vilivyopangwa!"
+      }
+    ],
     "contact_title": "Bado Unahitaji Msaada?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Jibu la haraka",
     "contact_email_title": "Barua pepe",
     "contact_email_desc": "Maelezo na viambatisho",
     "guidelines_title": "Miongozo ya Jumuiya",
-    "guidelines_desc": "Soma sheria na maadili ya kushiriki maelezo kwenye Ba-Yu."
+    "guidelines_desc": "Soma sheria na maadili ya kushiriki maelezo kwenye Ba-Yu.",
+    "wa_template": "Hujambo Timu ya Usaidizi ya Ba-Yu, mimi ni {{jina}}. Nahitaji usaidizi kuhusu tatizo: ... mnamo {{siku}}.",
+    "email_subject": "Usaidizi wa Tatizo la Ba-Yu - {{name}}",
+    "email_body": "Habari Timu ya Msaada ya Ba-Yu,\n\nMimi ni {{jina}}. Nahitaji msaada kwa tatizo:\n...\n\nNilikumbana na kikwazo hiki mnamo {{siku}}.\n\nTafadhali msaada, asante!"
   },
   "about_page": {
     "title": "Kuhusu Sisi",

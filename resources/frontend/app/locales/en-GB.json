@@ -135,25 +135,25 @@
     "remember_me": "Remember me",
     "panel_title": "Empowering Education.",
     "panel_desc": "Join thousands of students and experts to share, learn, and grow together.",
-    "loading_session": "undefined",
-    "error_login": "undefined",
-    "error_no_token": "undefined",
-    "error_oauth_expired": "undefined",
-    "error_register": "undefined",
-    "error_password_min": "undefined",
-    "error_password_max": "undefined",
-    "error_password_regex": "undefined",
-    "register_success": "undefined",
-    "invalid_credentials": "undefined",
-    "account_banned": "undefined",
-    "login_success": "undefined",
-    "email_not_registered": "undefined",
-    "reset_link_sent": "undefined",
-    "reset_link_throttled": "undefined",
-    "password_changed_success": "undefined",
-    "password_reset_failed": "undefined",
-    "provider_not_supported": "undefined",
-    "oauth_code_invalid": "undefined"
+    "loading_session": "Loading session...",
+    "error_login": "Login failed. Please check your credentials.",
+    "error_no_token": "Authentication token missing.",
+    "error_oauth_expired": "OAuth session expired. Please login again.",
+    "error_register": "Registration failed. Please try again.",
+    "error_password_min": "Password must be at least 8 characters.",
+    "error_password_max": "Password cannot exceed 32 characters.",
+    "error_password_regex": "Password must contain letters and numbers.",
+    "register_success": "Registration successful!",
+    "invalid_credentials": "Invalid email or password.",
+    "account_banned": "Your account has been banned.",
+    "login_success": "Logged in successfully!",
+    "email_not_registered": "Email is not registered.",
+    "reset_link_sent": "Password reset link sent to your email.",
+    "reset_link_throttled": "Please wait before requesting another reset link.",
+    "password_changed_success": "Password changed successfully.",
+    "password_reset_failed": "Failed to reset password.",
+    "provider_not_supported": "This login provider is not supported.",
+    "oauth_code_invalid": "Invalid OAuth code."
   },
   "common": {
     "save": "Save",
@@ -424,8 +424,8 @@
     "layout_wide": "Wide",
     "layout_full": "Full Bleed",
     "delete_block": "Delete Block",
-    "preparing_draft": "undefined",
-    "wait_draft": "undefined"
+    "preparing_draft": "Preparing draft...",
+    "wait_draft": "Please wait while we prepare your draft..."
   },
   "calendar": {
     "days": "Sun,Mon,Tue,Wed,Thu,Fri,Sat",
@@ -1268,14 +1268,58 @@
     "search_placeholder": "Search questions...",
     "no_results": "No results for \"{query}\"",
     "faq_title": "Frequently Asked Questions (FAQ)",
-    "faqs": "[object Object],[object Object],[object Object],[object Object]",
+    "faqs": [
+      {
+        "q": "How to become an Expert at Ba-Yu?",
+        "a": "To become an Expert, you must frequently share quality notes. If your notes are often in the 'Popular' category and get lots of likes, our Admin team will review them and give you Expert status."
+      },
+      {
+        "q": "Can I download notes to PDF?",
+        "a": "Of course! On each note detail page, you can press the Download button in the top right corner or at the bottom of the content to save it in PDF format."
+      },
+      {
+        "q": "Why can't I log in to my account?",
+        "a": "Make sure the email and password you entered are correct. If you recently deleted your account, your account may be in Dormant status. Try logging in again to activate it."
+      },
+      {
+        "q": "How do you write a mathematical formula?",
+        "a": "On the note-taking page, click the calculator icon in the side toolbar to open the formula editor. You can write formulas using the KaTeX format."
+      },
+      {
+        "q": "How to save other people's notes?",
+        "a": "You can save notes that you like by clicking the 'Bookmark' icon in the top right corner of the note card or note detail page. Saved notes will appear in the 'Saved' tab of your profile."
+      },
+      {
+        "q": "Can my notes be restricted so that only followers can view?",
+        "a": "Yes, of course! You can set your account to private via the Settings > Privacy & Account menu. With a private account, only users you approve as followers can read the full content of your notes."
+      },
+      {
+        "q": "How do I report records that violate the rules?",
+        "a": "If you find a note that contains plagiarism, hate speech, or other violations, you can click the three-dot icon (Options) in the top right corner of the note, then select 'Report'. Our team will review it soon."
+      },
+      {
+        "q": "What are the benefits of having 'Expert' status?",
+        "a": "Users with Expert status will get a purple check verification badge on their profile. The notes they share will also get a 'Verified' tag which increases the credibility of the material, as well as the right to curate other students' notes."
+      },
+      {
+        "q": "Why was my note rejected by the Expert?",
+        "a": "Notes submitted to the Expert may be rejected if plagiarism is detected, has poor image resolution, or contains inaccurate formulas/theories. You can read expert feedback reviews in your note details to improve it."
+      },
+      {
+        "q": "Is the Ba-Yu platform paid?",
+        "a": "No, Ba-Yu is completely free for all students and teachers throughout Indonesia to use to share knowledge and structured study notes!"
+      }
+    ],
     "contact_title": "Still Need Help?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Fast response",
     "contact_email_title": "E-mail",
     "contact_email_desc": "Details & attachments",
     "guidelines_title": "Community Guidelines",
-    "guidelines_desc": "Read the rules and ethics of sharing notes on Ba-Yu."
+    "guidelines_desc": "Read the rules and ethics of sharing notes on Ba-Yu.",
+    "wa_template": "Hello Ba-Yu Support Team, I'm {{name}}. I need help with the problem: ... on {{day}}.",
+    "email_subject": "Ba-Yu Application Problem Help - {{name}}",
+    "email_body": "Hello Ba-Yu Support Team,\n\nI'm {{name}}. I need help with a problem:\n...\n\nI faced this obstacle on {{day}}.\n\nPlease help, thank you!"
   },
   "about_page": {
     "title": "About Us",
@@ -1637,42 +1681,42 @@
     "value_free": "Free Forever",
     "value_instant": "Instant Setup",
     "value_community": "Active Community",
-    "and_many_more": "undefined",
-    "active_language": "undefined"
+    "and_many_more": "And many more",
+    "active_language": "Active Language"
   },
   "loader": {
-    "log_1": "undefined",
-    "log_2": "undefined",
-    "log_3": "undefined",
-    "log_4": "undefined",
-    "log_5": "undefined",
-    "log_6": "undefined",
-    "log_7": "undefined",
-    "log_8": "undefined",
-    "sys_load": "undefined",
-    "loading": "undefined"
+    "log_1": "Loading system modules...",
+    "log_2": "Initializing database...",
+    "log_3": "Fetching resources...",
+    "log_4": "Starting application...",
+    "log_5": "Connecting to server...",
+    "log_6": "Authenticating user...",
+    "log_7": "Optimizing assets...",
+    "log_8": "Almost ready...",
+    "sys_load": "System Loading",
+    "loading": "Loading..."
   },
   "users": {
-    "admin_only": "undefined",
-    "fetch_all_success": "undefined",
-    "search_success": "undefined",
-    "username_taken": "undefined",
-    "username_cooldown_error": "undefined",
-    "profile_updated": "undefined",
-    "current_password_wrong": "undefined",
-    "password_updated": "undefined",
-    "user_not_found": "undefined",
-    "user_dormant": "undefined",
-    "user_private": "undefined",
-    "fetch_profile_success": "undefined",
-    "fetch_activities_success": "undefined",
-    "fetch_experts_success": "undefined",
-    "target_saved": "undefined",
-    "demote_admin_only": "undefined",
-    "cannot_demote_self": "undefined",
-    "demote_success": "undefined",
-    "privacy_updated": "undefined",
-    "account_deactivated": "undefined"
+    "admin_only": "Admin access only",
+    "fetch_all_success": "Users fetched successfully",
+    "search_success": "Search completed successfully",
+    "username_taken": "Username is already taken",
+    "username_cooldown_error": "You cannot change your username right now",
+    "profile_updated": "Profile updated successfully",
+    "current_password_wrong": "Current password is incorrect",
+    "password_updated": "Password updated successfully",
+    "user_not_found": "User not found",
+    "user_dormant": "User account is dormant",
+    "user_private": "User account is private",
+    "fetch_profile_success": "Profile fetched successfully",
+    "fetch_activities_success": "Activities fetched successfully",
+    "fetch_experts_success": "Experts fetched successfully",
+    "target_saved": "Target saved successfully",
+    "demote_admin_only": "Only admins can demote users",
+    "cannot_demote_self": "You cannot demote yourself",
+    "demote_success": "User demoted successfully",
+    "privacy_updated": "Privacy settings updated successfully",
+    "account_deactivated": "Account deactivated successfully"
   },
   "titles": {
     "home": "Home",

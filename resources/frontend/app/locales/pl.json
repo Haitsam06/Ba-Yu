@@ -1268,14 +1268,58 @@
     "search_placeholder": "Szukaj pytań...",
     "no_results": "Brak wyników dla „{query}”",
     "faq_title": "Często zadawane pytania (FAQ)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "Jak zostać Ekspertem w Ba-Yu?",
+        "a": "Aby zostać Ekspertem, musisz często udostępniać notatki dotyczące jakości. Jeśli Twoje notatki często znajdują się w kategorii „Popularne” i cieszą się dużą liczbą polubień, nasz zespół administracyjny sprawdzi je i przyzna Ci status Eksperta."
+      },
+      {
+        "q": "Czy mogę pobrać notatki w formacie PDF?",
+        "a": "Oczywiście! Na każdej stronie szczegółów notatki możesz nacisnąć przycisk Pobierz w prawym górnym rogu lub na dole treści, aby zapisać ją w formacie PDF."
+      },
+      {
+        "q": "Dlaczego nie mogę zalogować się na swoje konto?",
+        "a": "Upewnij się, że wpisany adres e-mail i hasło są prawidłowe. Jeśli niedawno usunąłeś swoje konto, może ono mieć status Uśpiony. Spróbuj zalogować się ponownie, aby go aktywować."
+      },
+      {
+        "q": "Jak napisać wzór matematyczny?",
+        "a": "Na stronie robienia notatek kliknij ikonę kalkulatora na bocznym pasku narzędzi, aby otworzyć edytor formuł. Formuły można pisać w formacie KaTeX."
+      },
+      {
+        "q": "Jak zapisywać notatki innych osób?",
+        "a": "Możesz zapisać notatki, które Ci się podobają, klikając ikonę „Zakładka” w prawym górnym rogu karty notatki lub strony ze szczegółami notatki. Zapisane notatki pojawią się w zakładce „Zapisane” w Twoim profilu."
+      },
+      {
+        "q": "Czy moje notatki mogą zostać ograniczone, aby tylko obserwujący mogli je przeglądać?",
+        "a": "Tak, oczywiście! Możesz ustawić swoje konto jako prywatne w menu Ustawienia > Prywatność i konto. Dzięki kontu prywatnemu tylko użytkownicy, których zatwierdzisz jako obserwujących, będą mogli przeczytać pełną treść Twoich notatek."
+      },
+      {
+        "q": "Jak zgłosić zapisy naruszające regulamin?",
+        "a": "Jeśli znajdziesz notatkę zawierającą plagiat, mowę nienawiści lub inne naruszenia, możesz kliknąć ikonę z trzema kropkami (Opcje) w prawym górnym rogu notatki, a następnie wybrać „Zgłoś”. Nasz zespół wkrótce to sprawdzi."
+      },
+      {
+        "q": "Jakie są korzyści z posiadania statusu „Eksperta”?",
+        "a": "Użytkownicy posiadający status Eksperta otrzymają na swoim profilu fioletową plakietkę weryfikacyjną czeku. Udostępniane przez nich notatki zostaną również oznaczone tagiem „Zweryfikowane”, co zwiększa wiarygodność materiału, a także prawo do wglądu w notatki innych uczniów."
+      },
+      {
+        "q": "Dlaczego moja notatka została odrzucona przez Eksperta?",
+        "a": "Notatki przesłane Ekspertowi mogą zostać odrzucone, jeśli wykryją plagiat, mają słabą rozdzielczość obrazu lub zawierają niedokładne formuły/teorie. Możesz przeczytać opinie ekspertów w szczegółach notatki, aby ją ulepszyć."
+      },
+      {
+        "q": "Czy platforma Ba-Yu jest płatna?",
+        "a": "Nie, aplikacja Ba-Yu jest całkowicie bezpłatna dla wszystkich uczniów i nauczycieli w całej Indonezji i umożliwia dzielenie się wiedzą oraz uporządkowanymi notatkami z nauki!"
+      }
+    ],
     "contact_title": "Nadal potrzebujesz pomocy?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Szybka reakcja",
     "contact_email_title": "E-mail",
     "contact_email_desc": "Szczegóły i załączniki",
     "guidelines_title": "Wytyczne społeczności",
-    "guidelines_desc": "Przeczytaj zasady i etykę udostępniania notatek na Ba-Yu."
+    "guidelines_desc": "Przeczytaj zasady i etykę udostępniania notatek na Ba-Yu.",
+    "wa_template": "Witam zespół pomocy Ba-Yu, nazywam się {{name}}. Potrzebuję pomocy z problemem: ... w dniu {{day}}.",
+    "email_subject": "Pomoc dotycząca problemów z aplikacją Ba-Yu - {{name}}",
+    "email_body": "Witaj, zespół wsparcia Ba-Yu,\n\nJestem {{name}}. Potrzebuję pomocy z problemem:\n...\n\nNapotkałem tę przeszkodę w dniu {{day}}.\n\nProszę o pomoc, dziękuję!"
   },
   "about_page": {
     "title": "O nas",

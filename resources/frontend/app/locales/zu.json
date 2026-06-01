@@ -1268,14 +1268,58 @@
     "search_placeholder": "Sesha imibuzo...",
     "no_results": "Ayikho imiphumela ye-\"{query}\"",
     "faq_title": "Imibuzo Evame Ukubuzwa (FAQ)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "Ungaba kanjani Uchwepheshe e-Ba-Yu?",
+        "a": "Ukuze ube Uchwepheshe, kufanele wabelane njalo ngamanothi ekhwalithi. Uma amanothi akho evamise ukuba sesigabeni 'Okudumile' futhi ethola ukuthandwa okuningi, ithimba lethu lomlawuli lizowabuyekeza futhi likunikeze isimo sokuba Ungcweti."
+      },
+      {
+        "q": "Ngingakwazi ukulanda amanothi ku-PDF?",
+        "a": "Yebo! Ekhasini ngalinye lemininingwane yenothi, ungacindezela inkinobho ethi Landa ekhoneni eliphezulu kwesokudla noma ezansi kokuqukethwe ukuze ukugcine ngefomethi ye-PDF."
+      },
+      {
+        "q": "Kungani ngingakwazi ukungena ku-akhawunti yami?",
+        "a": "Qiniseka ukuthi i-imeyili nephasiwedi oyifakile kulungile. Uma usanda kususa i-akhawunti yakho, i-akhawunti yakho kungenzeka isesimweni sokungalali. Zama ukungena futhi ukuze uyisebenzise."
+      },
+      {
+        "q": "Uyibhala kanjani ifomula yezibalo?",
+        "a": "Ekhasini lokuthatha amanothi, chofoza isithonjana sesibali kubha yamathuluzi eseceleni ukuze uvule umhleli wefomula. Ungabhala amafomula usebenzisa ifomethi ye-KaTeX."
+      },
+      {
+        "q": "Ungawagcina kanjani amanothi abanye abantu?",
+        "a": "Ungagcina amanothi owathandayo ngokuchofoza isithonjana se-'Bhumaka' ekhoneni eliphezulu kwesokudla sekhadi lenothi noma ikhasi lemininingwane yenothi. Amanothi alondoloziwe azovela kuthebhu ethi 'Kulondoloziwe' yephrofayela yakho."
+      },
+      {
+        "q": "Ingabe amanothi ami angavinjelwa ukuze abalandeli kuphela bakwazi ukubuka?",
+        "a": "Yebo, kunjalo! Ungasetha i-akhawunti yakho ibe yimfihlo usebenzisa Izilungiselelo > Ubumfihlo & Imenyu ye-akhawunti. Nge-akhawunti eyimfihlo, abasebenzisi kuphela obagunyazayo njengabalandeli abangakwazi ukufunda okuqukethwe okugcwele kwamanothi akho."
+      },
+      {
+        "q": "Ngiwabika kanjani amarekhodi aphula imithetho?",
+        "a": "Uma uthola inothi eliqukethe ukukopela, inkulumo enenzondo, noma okunye ukwephulwa, ungachofoza isithonjana samachashazi amathathu (Izinketho) ekhoneni eliphezulu kwesokudla senothi, bese ukhetha u-'Bika'. Ithimba lethu lizoyibuyekeza maduze."
+      },
+      {
+        "q": "Yiziphi izinzuzo zokuba nesimo 'sobungcweti'?",
+        "a": "Abasebenzisi abanesimo Sochwepheshe bazothola ibheji yokuqinisekisa isheke elinsomi kuphrofayela yabo. Amanothi ababelana ngawo azothola umaka othi 'Kuqinisekisiwe' okwandisa ukwethembeka kokokusebenza, kanye nelungelo lokukhetha amanothi abanye abafundi."
+      },
+      {
+        "q": "Kungani inothi lami lenqatshwa Uchwepheshe?",
+        "a": "Amanothi athunyelwe Kungcweti angase enqatshwe uma ukukopela kutholwa, kunokulungiswa kwesithombe okungalungile, noma kuqukethe amafomula/imibono engalungile. Ungafunda izibuyekezo zempendulo yochwepheshe emininingwaneni yakho yamanothi ukuze uyithuthukise."
+      },
+      {
+        "q": "Ingabe inkundla ye-Ba-Yu ikhokhelwe?",
+        "a": "Cha, i-Ba-Yu imahhala ngokuphelele kubo bonke abafundi nothisha kulo lonke elase-Indonesia ukuze bayisebenzise ukwabelana ngolwazi namanothi okutadisha ahlelekile!"
+      }
+    ],
     "contact_title": "Usadinga Usizo?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Ukusabela okusheshayo",
     "contact_email_title": "I-imeyili",
     "contact_email_desc": "Imininingwane nezinanyathiselwa",
     "guidelines_title": "Izinkombandlela Zomphakathi",
-    "guidelines_desc": "Funda imithetho nezimiso zokuziphatha zokwabelana ngamanothi ku-Ba-Yu."
+    "guidelines_desc": "Funda imithetho nezimiso zokuziphatha zokwabelana ngamanothi ku-Ba-Yu.",
+    "wa_template": "Sawubona Ithimba Lokusekela u-Ba-Yu, ngingu-{{igama}}. Ngidinga usizo ngenkinga: ... ngo-{{day}}.",
+    "email_subject": "Usizo Lwenkinga Yohlelo Lokusebenza lwe-Ba-Yu - {{name}}",
+    "email_body": "Sawubona Ba-Yu Ithimba Lokusekela,\n\nNgingu-{{igama}}. Ngidinga usizo ngenkinga:\n...\n\nNgibhekane nalesi sithiyo ngo-{{day}}.\n\nNgicela usizo, ngiyabonga!"
   },
   "about_page": {
     "title": "Mayelana NATHI",

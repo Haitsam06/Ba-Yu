@@ -1268,14 +1268,58 @@
     "search_placeholder": "Soruları ara...",
     "no_results": "\"{query}\" için sonuç yok",
     "faq_title": "Sıkça Sorulan Sorular (SSS)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "Ba-Yu'da Nasıl Uzman Olunur?",
+        "a": "Uzman olmak için sık sık kaliteli notlar paylaşmalısınız. Notlarınız sıklıkla 'Popüler' kategorisindeyse ve çok sayıda beğeni alıyorsa Yönetici ekibimiz bunları inceleyecek ve size Uzman statüsü verecektir."
+      },
+      {
+        "q": "Notları PDF'ye indirebilir miyim?",
+        "a": "Elbette! Her not detay sayfasında, içeriğin sağ üst köşesinde veya alt kısmında bulunan İndir düğmesine basarak PDF formatında kaydedebilirsiniz."
+      },
+      {
+        "q": "Neden hesabıma giriş yapamıyorum?",
+        "a": "Girdiğiniz e-posta ve şifrenin doğru olduğundan emin olun. Hesabınızı yakın zamanda sildiyseniz hesabınız Hareketsiz durumda olabilir. Etkinleştirmek için tekrar giriş yapmayı deneyin."
+      },
+      {
+        "q": "Matematiksel formülü nasıl yazarsınız?",
+        "a": "Not alma sayfasında formül düzenleyiciyi açmak için yan araç çubuğundaki hesap makinesi simgesini tıklayın. KaTeX formatını kullanarak formüller yazabilirsiniz."
+      },
+      {
+        "q": "Başkalarının notları nasıl kaydedilir?",
+        "a": "Not kartının veya not detay sayfasının sağ üst köşesindeki 'Yer İşareti' simgesine tıklayarak beğendiğiniz notları kaydedebilirsiniz. Kaydedilen notlar profilinizin 'Kaydedilenler' sekmesinde görünecektir."
+      },
+      {
+        "q": "Notlarımı yalnızca takipçilerimin görebileceği şekilde kısıtlayabilir miyim?",
+        "a": "Evet, elbette! Ayarlar > Gizlilik ve Hesap menüsünden hesabınızı özel olarak ayarlayabilirsiniz. Özel bir hesapla, notlarınızın tüm içeriğini yalnızca takipçi olarak onayladığınız kullanıcılar okuyabilir."
+      },
+      {
+        "q": "Kurallara aykırı kayıtları nasıl bildirebilirim?",
+        "a": "İntihal, nefret söylemi veya başka ihlaller içeren bir not bulursanız notun sağ üst köşesindeki üç nokta simgesini (Seçenekler) tıklayıp ardından 'Bildir'i seçebilirsiniz. Ekibimiz yakında inceleyecek."
+      },
+      {
+        "q": "'Uzman' statüsüne sahip olmanın faydaları nelerdir?",
+        "a": "Uzman statüsündeki kullanıcıların profillerinde mor çek doğrulama rozeti yer alacaktır. Paylaştıkları notlar aynı zamanda materyalin güvenilirliğini artıran ve diğer öğrencilerin notlarını seçme hakkını da artıran bir 'Doğrulandı' etiketi alacak."
+      },
+      {
+        "q": "Notum Uzman tarafından neden reddedildi?",
+        "a": "Uzmana gönderilen notlar intihal tespit edilmesi, görüntü çözünürlüğünün düşük olması veya hatalı formül/teoriler içermesi durumunda reddedilebilir. İyileştirmek için not ayrıntılarınızdaki uzman geri bildirim incelemelerini okuyabilirsiniz."
+      },
+      {
+        "q": "Ba-Yu platformu ücretli mi?",
+        "a": "Hayır, Ba-Yu, Endonezya'daki tüm öğrenci ve öğretmenlerin bilgi ve yapılandırılmış çalışma notlarını paylaşmak için kullanması tamamen ücretsizdir!"
+      }
+    ],
     "contact_title": "Hala Yardıma mı İhtiyacınız Var?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Hızlı yanıt",
     "contact_email_title": "E-posta",
     "contact_email_desc": "Ayrıntılar ve ekler",
     "guidelines_title": "Topluluk Kuralları",
-    "guidelines_desc": "Ba-Yu ile ilgili notları paylaşmanın kurallarını ve etiğini okuyun."
+    "guidelines_desc": "Ba-Yu ile ilgili notları paylaşmanın kurallarını ve etiğini okuyun.",
+    "wa_template": "Merhaba Ba-Yu Destek Ekibi, ben {{name}}. Sorunla ilgili yardıma ihtiyacım var: ... {{day}} tarihinde.",
+    "email_subject": "Ba-Yu Uygulama Sorunu Yardımı - {{name}}",
+    "email_body": "Merhaba Ba-Yu Destek Ekibi,\n\nBen {{name}}. Bir sorunla ilgili yardıma ihtiyacım var:\n...\n\nBu engelle {{day}} tarihinde karşılaştım.\n\nLütfen yardım edin, teşekkür ederim!"
   },
   "about_page": {
     "title": "Hakkımızda",

@@ -1268,14 +1268,58 @@
     "search_placeholder": "Kérdések keresése...",
     "no_results": "Nincs találat a \"{query}\" kifejezésre",
     "faq_title": "Gyakran Ismételt Kérdések (GYIK)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "Hogyan lehetsz szakértő a Ba-Yu-nál?",
+        "a": "Ahhoz, hogy Szakértő lehessen, gyakran meg kell osztania minőségi megjegyzéseket. Ha jegyzetei gyakran a „Népszerű” kategóriába tartoznak, és sok kedvelést kapnak, adminisztrátori csapatunk áttekinti őket, és szakértői státuszt ad."
+      },
+      {
+        "q": "Letölthetek jegyzeteket PDF-be?",
+        "a": "Hát persze! Az egyes jegyzetrészletes oldalakon a jobb felső sarokban vagy a tartalom alján található Letöltés gombra kattintva mentheti el PDF formátumban."
+      },
+      {
+        "q": "Miért nem tudok bejelentkezni a fiókomba?",
+        "a": "Győződjön meg arról, hogy a megadott e-mail-cím és jelszó helyes. Ha nemrégiben törölte fiókját, előfordulhat, hogy fiókja alvó állapotú. Az aktiváláshoz próbáljon meg újra bejelentkezni."
+      },
+      {
+        "q": "Hogyan írsz matematikai képletet?",
+        "a": "A jegyzetkészítés oldalon kattintson a számológép ikonra az oldalsó eszköztáron a képletszerkesztő megnyitásához. Képleteket írhat a KaTeX formátum használatával."
+      },
+      {
+        "q": "Hogyan mentheti el mások jegyzeteit?",
+        "a": "A tetszőleges jegyzeteket a jegyzetkártya vagy a jegyzet részleteit tartalmazó oldal jobb felső sarkában található „Könyvjelző” ikonra kattintva mentheti. A mentett jegyzetek megjelennek profilja „Mentett” lapján."
+      },
+      {
+        "q": "Korlátozhatók a jegyzeteim úgy, hogy csak a követők lássák?",
+        "a": "Igen, természetesen! Fiókját privátra állíthatja a Beállítások > Adatvédelem és fiók menüben. Privát fiókkal csak a követőként jóváhagyott felhasználók olvashatják a jegyzetei teljes tartalmát."
+      },
+      {
+        "q": "Hogyan jelenthetem a szabályokat sértő rekordokat?",
+        "a": "Ha olyan feljegyzést talál, amely plágiumot, gyűlöletbeszédet vagy más szabálysértést tartalmaz, kattintson a hárompontos ikonra (Opciók) a jegyzet jobb felső sarkában, majd válassza a „Bejelentés” lehetőséget. Csapatunk hamarosan felülvizsgálja."
+      },
+      {
+        "q": "Milyen előnyökkel jár a „szakértői” státusz?",
+        "a": "A Szakértő státuszú felhasználók egy lila csekket igazoló jelvényt kapnak a profiljukon. Az általuk megosztott jegyzetek „ellenőrzött” címkét is kapnak, ami növeli az anyag hitelességét, valamint a jogot arra, hogy más tanulók jegyzeteit összeállítsák."
+      },
+      {
+        "q": "Miért utasította el a feljegyzésemet a szakértő?",
+        "a": "A Szakértőnek benyújtott feljegyzések elutasíthatók, ha plágiumot észlelnek, rossz képfelbontásúak, vagy pontatlan képleteket/elméleteket tartalmaznak. A megjegyzés részleteiben szakértői visszajelzéseket olvashat, hogy javítsa."
+      },
+      {
+        "q": "Fizetős a Ba-Yu platform?",
+        "a": "Nem, a Ba-Yu-t Indonézia minden diákja és tanára teljesen ingyenesen használhatja tudásmegosztásra és strukturált tanulmányi jegyzetekre!"
+      }
+    ],
     "contact_title": "Még mindig segítségre van szüksége?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Gyors válasz",
     "contact_email_title": "Email",
     "contact_email_desc": "Részletek és mellékletek",
     "guidelines_title": "közösségi irányelvek",
-    "guidelines_desc": "Olvassa el a jegyzetmegosztás szabályait és etikáját a Ba-Yu-n."
+    "guidelines_desc": "Olvassa el a jegyzetmegosztás szabályait és etikáját a Ba-Yu-n.",
+    "wa_template": "Kedves Ba-Yu ügyfélszolgálati csapat, a nevem {{name}}. Segítségre van szükségem a következő problémában: ..., {{day}}.",
+    "email_subject": "Ba-Yu alkalmazás probléma súgó – {{name}}",
+    "email_body": "Szia Ba-Yu támogató csapat!\n\n{{name}} vagyok. Segítségre lenne szükségem egy problémával kapcsolatban:\n...\n\nEzzel az akadállyal szembesültem a következő napon: {{day}}.\n\nKérlek segítsetek, köszönöm!"
   },
   "about_page": {
     "title": "Rólunk",

@@ -26,10 +26,10 @@ export default function Welcome({
         }));
         setParticles(generated);
 
-        // Trigger helper after 15 seconds
+        // Trigger helper after 5 seconds
         const timer = setTimeout(() => {
             setShowHint(true);
-        }, 15000);
+        }, 5000);
 
         return () => clearTimeout(timer);
     }, []);
@@ -203,7 +203,7 @@ export default function Welcome({
                         </div>
                     </a>
 
-                    {/* 6. Elegant Clueless Helper Indicator (Fades in after 15s) */}
+                    {/* 6. Elegant Clueless Helper Indicator (Fades in after 5s) */}
                     <div className={`absolute top-full mt-8 flex flex-col items-center gap-2.5 transition-all duration-1000 ease-out ${
                         showHint ? 'opacity-85 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
                     }`}>

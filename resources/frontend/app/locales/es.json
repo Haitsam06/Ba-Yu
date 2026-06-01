@@ -903,8 +903,8 @@
     "btn_view_cert": "Ver Archivo",
     "tab_pending": "Acción necesaria",
     "tab_history": "Historial",
-    "system_server": "undefined",
-    "recent_activity": "undefined"
+    "system_server": "Sistema y Servidor",
+    "recent_activity": "Actividad Reciente"
   },
   "edu_levels": {
     "SD": "Primaria",
@@ -1268,14 +1268,58 @@
     "search_placeholder": "Buscar preguntas...",
     "no_results": "Sin resultados para \"{query}\"",
     "faq_title": "Preguntas Frecuentes (FAQ)",
-    "faqs": "[objeto Objeto],[objeto Objeto],[objeto Objeto],[objeto Objeto]",
+    "faqs": [
+      {
+        "q": "¿Cómo convertirse en experto en Ba-Yu?",
+        "a": "Para convertirte en un experto, debes compartir notas de calidad con frecuencia. Si sus notas suelen estar en la categoría \"Popular\" y obtienen muchos Me gusta, nuestro equipo de administración las revisará y le otorgará el estado de Experto."
+      },
+      {
+        "q": "¿Puedo descargar notas a PDF?",
+        "a": "¡Por supuesto! En cada página de detalles de la nota, puede presionar el botón Descargar en la esquina superior derecha o en la parte inferior del contenido para guardarlo en formato PDF."
+      },
+      {
+        "q": "¿Por qué no puedo iniciar sesión en mi cuenta?",
+        "a": "Asegúrese de que el correo electrónico y la contraseña que ingresó sean correctos. Si eliminó su cuenta recientemente, es posible que su cuenta esté en estado inactivo. Intente iniciar sesión nuevamente para activarlo."
+      },
+      {
+        "q": "¿Cómo se escribe una fórmula matemática?",
+        "a": "En la página para tomar notas, haga clic en el icono de la calculadora en la barra de herramientas lateral para abrir el editor de fórmulas. Puede escribir fórmulas utilizando el formato KaTeX."
+      },
+      {
+        "q": "¿Cómo guardar las notas de otras personas?",
+        "a": "Puede guardar las notas que desee haciendo clic en el icono 'Marcador' en la esquina superior derecha de la tarjeta de notas o de la página de detalles de la nota. Las notas guardadas aparecerán en la pestaña \"Guardadas\" de su perfil."
+      },
+      {
+        "q": "¿Se pueden restringir mis notas para que solo los seguidores puedan verlas?",
+        "a": "¡Sí, por supuesto! Puede configurar su cuenta como privada a través del menú Configuración > Privacidad y cuenta. Con una cuenta privada, sólo los usuarios que apruebes como seguidores pueden leer el contenido completo de tus notas."
+      },
+      {
+        "q": "¿Cómo denuncio registros que violan las reglas?",
+        "a": "Si encuentra una nota que contiene plagio, incitación al odio u otras violaciones, puede hacer clic en el ícono de tres puntos (Opciones) en la esquina superior derecha de la nota y luego seleccionar \"Denunciar\". Nuestro equipo lo revisará pronto."
+      },
+      {
+        "q": "¿Cuáles son los beneficios de tener el estatus de \"Experto\"?",
+        "a": "Los usuarios con estado Experto obtendrán una insignia de verificación de color violeta en su perfil. Las notas que compartan también recibirán una etiqueta \"Verificada\" que aumenta la credibilidad del material, así como el derecho a seleccionar las notas de otros estudiantes."
+      },
+      {
+        "q": "¿Por qué mi nota fue rechazada por el Perito?",
+        "a": "Las notas enviadas al Experto podrán ser rechazadas si se detecta plagio, tienen mala resolución de imagen o contienen fórmulas/teorías inexactas. Puede leer reseñas de comentarios de expertos en los detalles de su nota para mejorarla."
+      },
+      {
+        "q": "¿La plataforma Ba-Yu es de pago?",
+        "a": "No, ¡Ba-Yu es completamente gratuito para que todos los estudiantes y profesores de Indonesia lo utilicen para compartir conocimientos y notas de estudio estructuradas!"
+      }
+    ],
     "contact_title": "¿Aún necesitas ayuda?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Respuesta rápida",
     "contact_email_title": "Correo electrónico",
     "contact_email_desc": "Detalles y archivos adjuntos",
     "guidelines_title": "Normas de la Comunidad",
-    "guidelines_desc": "Lee las reglas y la ética de compartir notas en Ba-Yu."
+    "guidelines_desc": "Lee las reglas y la ética de compartir notas en Ba-Yu.",
+    "wa_template": "Hola equipo de soporte de Ba-Yu, soy {{name}}. Necesito ayuda con el problema: ... el {{día}}.",
+    "email_subject": "Ayuda para problemas con la aplicación Ba-Yu: {{name}}",
+    "email_body": "Hola equipo de soporte de Ba-Yu:\n\nSoy {{nombre}}. Necesito ayuda con un problema:\n...\n\nMe enfrenté a este obstáculo el {{día}}.\n\nPor favor ayuda, gracias!"
   },
   "about_page": {
     "title": "Sobre nosotros",

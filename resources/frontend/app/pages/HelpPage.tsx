@@ -7,13 +7,37 @@ import { useTranslation } from "../hooks/useTranslation";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function HelpPage() {
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     useDocumentTitle(t('titles.help_center'));
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState("");
     const [openFaq, setOpenFaq] = useState<number | null>(0);
 
     const { user } = useAuth();
+
+    // Get localized day name in the active language natively
+    const getLocalizedDay = (langCode: string) => {
+        try {
+            return new Intl.DateTimeFormat(langCode, { weekday: 'long' }).format(new Date());
+        } catch (e) {
+            const indonesianDays = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            return indonesianDays[new Date().getDay()];
+        }
+    };
+
+    const currentDay = getLocalizedDay(language);
+    const userName = user?.name || "[Nama Kamu]";
+
+    // Get translated templates with dynamic interpolations
+    const waMessage = t("help_page.wa_template", { name: userName, day: currentDay }) ||
+        `Halo Tim Dukungan Ba-Yu, saya ${userName}. Saya membutuhkan bantuan terkait masalah: ... pada hari ${currentDay}.`;
+    const waUrl = `https://wa.me/6282182643377?text=${encodeURIComponent(waMessage)}`;
+
+    const emailSubject = t("help_page.email_subject", { name: userName }) ||
+        `Bantuan Kendala Aplikasi Ba-Yu - ${userName}`;
+    const emailBody = t("help_page.email_body", { name: userName, day: currentDay }) ||
+        `Halo Tim Dukungan Ba-Yu,\n\nSaya ${userName}. Saya membutuhkan bantuan terkait masalah:\n...\n\nKendala ini saya hadapi pada hari ${currentDay}.\n\nMohon bantuannya, terima kasih!`;
+    const emailUrl = `mailto:support.bayu@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
 
     const FAQS = [
         {
@@ -31,6 +55,30 @@ export default function HelpPage() {
         {
             question: t("help_page.faqs.3.q") || "Bagaimana cara menulis rumus matematika?",
             answer: t("help_page.faqs.3.a") || "Di halaman penulisan catatan, klik ikon kalkulator di toolbar samping untuk membuka editor rumus. Kamu bisa menulis formula menggunakan format KaTeX."
+        },
+        {
+            question: t("help_page.faqs.4.q") || "Bagaimana cara menyimpan catatan orang lain?",
+            answer: t("help_page.faqs.4.a") || "Kamu bisa menyimpan catatan yang kamu sukai dengan mengklik ikon 'Bookmark' di pojok kanan atas kartu catatan atau halaman detail catatan. Catatan yang disimpan akan muncul di tab 'Disimpan' pada profilmu."
+        },
+        {
+            question: t("help_page.faqs.5.q") || "Apakah catatan saya bisa dibatasi agar hanya pengikut yang dapat melihat?",
+            answer: t("help_page.faqs.5.a") || "Ya, tentu saja! Kamu dapat mengatur akunmu menjadi privat melalui menu Pengaturan > Privasi & Akun. Dengan akun privat, hanya pengguna yang kamu setujui sebagai pengikut yang dapat membaca materi lengkap catatanmu."
+        },
+        {
+            question: t("help_page.faqs.6.q") || "Bagaimana cara melaporkan catatan yang melanggar aturan?",
+            answer: t("help_page.faqs.6.a") || "Jika kamu menemukan catatan yang mengandung plagiasi, ujaran kebencian, atau pelanggaran lainnya, kamu bisa klik ikon titik tiga (Opsi) di pojok kanan atas catatan tersebut, lalu pilih 'Laporkan'. Tim kami akan segera meninjaunya."
+        },
+        {
+            question: t("help_page.faqs.7.q") || "Apa keuntungan memiliki status 'Pakar'?",
+            answer: t("help_page.faqs.7.a") || "Pengguna dengan status Pakar akan mendapatkan lencana verifikasi centang ungu di profilnya. Catatan yang mereka bagikan juga akan mendapatkan tag 'Verified' yang meningkatkan kredibilitas materi, serta berhak melakukan kurasi pada catatan pelajar lainnya."
+        },
+        {
+            question: t("help_page.faqs.8.q") || "Mengapa catatan saya ditolak oleh Pakar?",
+            answer: t("help_page.faqs.8.a") || "Catatan yang diajukan ke Pakar dapat ditolak jika terdeteksi plagiasi, memiliki resolusi gambar yang buruk, atau berisi rumus/teori yang kurang akurat. Kamu bisa membaca ulasan masukan dari Pakar di detail catatanmu untuk memperbaikinya."
+        },
+        {
+            question: t("help_page.faqs.9.q") || "Apakah platform Ba-Yu ini berbayar?",
+            answer: t("help_page.faqs.9.a") || "Tidak, Ba-Yu sepenuhnya gratis untuk digunakan oleh semua pelajar dan pengajar di seluruh Indonesia untuk saling berbagi ilmu pengetahuan dan catatan belajar terstruktur!"
         }
     ];
 
@@ -103,7 +151,7 @@ export default function HelpPage() {
                                                 />
                                             </button>
                                             <div 
-                                                className={`overflow-hidden transition-all duration-300 ease-in-out ${openFaq === index ? "max-h-40 mt-2 opacity-100" : "max-h-0 opacity-0"}`}
+                                                className={`overflow-hidden transition-all duration-300 ease-in-out ${openFaq === index ? "max-h-60 mt-2 opacity-100" : "max-h-0 opacity-0"}`}
                                             >
                                                 <p className="font-['Manrope'] text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed pr-6">
                                                     {faq.answer}
@@ -127,7 +175,7 @@ export default function HelpPage() {
                             
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <a 
-                                    href="https://wa.me/6282182643377" 
+                                    href={waUrl} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
                                     className="flex items-start gap-3 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors group"
@@ -142,7 +190,7 @@ export default function HelpPage() {
                                 </a>
 
                                 <a 
-                                    href="mailto:zeexhca@gmail.com" 
+                                    href={emailUrl} 
                                     className="flex items-start gap-3 p-4 rounded-2xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors group"
                                 >
                                     <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center shrink-0">

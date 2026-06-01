@@ -155,6 +155,21 @@ function GrainNoise() {
 /* ===================================================
    COMPONENT: Text Scroll Highlight Reveal (Motto Style)
    =================================================== */
+function Word({ word, progress, range }: { word: string; progress: any; range: [number, number] }) {
+  const opacity = useTransform(progress, range, [0.15, 1]);
+  const color = useTransform(progress, range, ['rgba(255,255,255,0.15)', '#ffffff']);
+  const scale = useTransform(progress, range, [0.98, 1]);
+
+  return (
+    <motion.span 
+      className="inline-block mr-3 md:mr-4 mb-2 origin-left transition-all"
+      style={{ opacity, color, scale }}
+    >
+      {word}
+    </motion.span>
+  );
+}
+
 function ScrollRevealText() {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -186,26 +201,14 @@ function ScrollRevealText() {
             // Highly responsive color highlight transition based on scroll position (completes at viewport center)
             const rangeStart = start * 0.22 + 0.18;
             const rangeEnd = end * 0.22 + 0.22;
-            const opacity = useTransform(scrollYProgress, [rangeStart, rangeEnd], [0.15, 1]);
-            const color = useTransform(
-              scrollYProgress, 
-              [rangeStart, rangeEnd], 
-              ['rgba(255,255,255,0.15)', '#ffffff']
-            );
-            const scale = useTransform(
-              scrollYProgress,
-              [rangeStart, rangeEnd],
-              [0.98, 1]
-            );
 
             return (
-              <motion.span 
+              <Word 
                 key={i} 
-                className="inline-block mr-3 md:mr-4 mb-2 origin-left transition-all"
-                style={{ opacity, color, scale }}
-              >
-                {word}
-              </motion.span>
+                word={word} 
+                progress={scrollYProgress} 
+                range={[rangeStart, rangeEnd]} 
+              />
             );
           })}
         </h3>

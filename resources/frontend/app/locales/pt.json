@@ -903,8 +903,8 @@
     "btn_view_cert": "Ver Arquivo",
     "tab_pending": "Ação necessária",
     "tab_history": "Histórico",
-    "system_server": "undefined",
-    "recent_activity": "undefined"
+    "system_server": "Sistema e Servidor",
+    "recent_activity": "Atividade Recente"
   },
   "edu_levels": {
     "SD": "Ensino Fundamental I",
@@ -1057,11 +1057,11 @@
     "pdf_protected_title": "Material Protegido",
     "pdf_protected_desc": "Este PDF contém apenas material parcial. Siga o autor <b>@{{author}}</b> no aplicativo Ba-Yu para baixar a versão completa.",
     "pdf_footer": "Este documento foi baixado do <span class=\"footer-brand\">Ba-Yu</span> - A Plataforma de Aprendizado do Futuro",
-    "draft_badge": "undefined",
-    "draft_label": "undefined",
-    "last_edit": "undefined",
-    "untitled_draft": "undefined",
-    "untitled": "undefined",
+    "draft_badge": "RASCUNHO",
+    "draft_label": "Rascunho",
+    "last_edit": "Última edição",
+    "untitled_draft": "Rascunho sem título",
+    "untitled": "Sem título",
     "submit_to_expert": "Enviar ao Especialista",
     "submit_to_expert_success": "Nota enviada com sucesso ao Especialista!",
     "submit_to_expert_error": "Falha ao enviar ao Especialista"
@@ -1085,20 +1085,20 @@
     "status": "Status"
   },
   "apply_pakar": {
-    "title": "undefined",
-    "description": "undefined",
-    "full_name": "undefined",
-    "education_expertise": "undefined",
-    "education_placeholder": "undefined",
-    "upload_document": "undefined",
-    "choose_file": "undefined",
-    "max_size": "undefined",
-    "submit": "undefined",
-    "success_title": "undefined",
-    "success_desc": "undefined",
-    "file_too_large": "undefined",
-    "require_file": "undefined",
-    "error_submit": "undefined"
+    "title": "Candidatar-se a Status de Especialista",
+    "description": "Preencha os detalhes abaixo para se tornar um especialista verificado na plataforma.",
+    "full_name": "Nome Completo",
+    "education_expertise": "Educação / Especialidade",
+    "education_placeholder": "ex. Ph.D. em Ciência da Computação",
+    "upload_document": "Enviar Documento Comprovativo (CV, Certificado)",
+    "choose_file": "Escolher arquivo",
+    "max_size": "Tamanho máx: 5MB (PDF, JPG, PNG)",
+    "submit": "Enviar Candidatura",
+    "success_title": "Candidatura Enviada!",
+    "success_desc": "Iremos rever a sua candidatura e notificá-lo em breve.",
+    "file_too_large": "O tamanho do arquivo excede o limite de 5MB.",
+    "require_file": "Por favor, envie um documento.",
+    "error_submit": "Falha ao enviar candidatura. Tente novamente."
   },
   "edit_profile": {
     "title": "Editar Perfil",
@@ -1268,14 +1268,58 @@
     "search_placeholder": "Pesquisar perguntas...",
     "no_results": "Nenhum resultado para \"{query}\"",
     "faq_title": "Perguntas Frequentes (FAQ)",
-    "faqs": "[objeto Objeto],[objeto Objeto],[objeto Objeto],[objeto Objeto]",
+    "faqs": [
+      {
+        "q": "Como se tornar um especialista na Ba-Yu?",
+        "a": "Para se tornar um especialista, você deve compartilhar notas de qualidade com frequência. Se suas notas estiverem frequentemente na categoria 'Popular' e receberem muitas curtidas, nossa equipe de administração irá revisá-las e dar a você o status de Especialista."
+      },
+      {
+        "q": "Posso baixar notas em PDF?",
+        "a": "Claro! Em cada página de detalhes da nota, você pode pressionar o botão Download no canto superior direito ou na parte inferior do conteúdo para salvá-lo em formato PDF."
+      },
+      {
+        "q": "Por que não consigo fazer login na minha conta?",
+        "a": "Certifique-se de que o e-mail e a senha inseridos estejam corretos. Se você excluiu sua conta recentemente, ela pode estar no status Inativo. Tente fazer login novamente para ativá-lo."
+      },
+      {
+        "q": "Como você escreve uma fórmula matemática?",
+        "a": "Na página de anotações, clique no ícone da calculadora na barra de ferramentas lateral para abrir o editor de fórmulas. Você pode escrever fórmulas usando o formato KaTeX."
+      },
+      {
+        "q": "Como salvar as anotações de outras pessoas?",
+        "a": "Você pode salvar as notas que desejar clicando no ícone 'Marcador' no canto superior direito do cartão de notas ou da página de detalhes da nota. As notas salvas aparecerão na guia ‘Salvo’ do seu perfil."
+      },
+      {
+        "q": "Minhas notas podem ser restritas para que apenas seguidores possam visualizar?",
+        "a": "Sim, claro! Você pode definir sua conta como privada no menu Configurações > Privacidade e conta. Com uma conta privada, apenas os usuários que você aprovar como seguidores poderão ler o conteúdo completo de suas notas."
+      },
+      {
+        "q": "Como faço para denunciar registros que violam as regras?",
+        "a": "Se você encontrar uma nota que contenha plágio, discurso de ódio ou outras violações, clique no ícone de três pontos (Opções) no canto superior direito da nota e selecione 'Denunciar'. Nossa equipe irá analisá-lo em breve."
+      },
+      {
+        "q": "Quais são as vantagens de ter o estatuto de 'Expert'?",
+        "a": "Os usuários com status de Especialista receberão um crachá de verificação roxo em seu perfil. As notas que compartilharem também receberão a etiqueta ‘Verificada’ que aumenta a credibilidade do material, bem como o direito de curadoria das notas de outros alunos."
+      },
+      {
+        "q": "Por que minha nota foi rejeitada pelo Perito?",
+        "a": "As notas submetidas ao Especialista poderão ser rejeitadas caso seja detectado plágio, apresentem baixa resolução de imagem ou contenham fórmulas/teorias imprecisas. Você pode ler comentários de especialistas nos detalhes da sua nota para melhorá-la."
+      },
+      {
+        "q": "A plataforma Ba-Yu é paga?",
+        "a": "Não, o Ba-Yu é totalmente gratuito para todos os alunos e professores em toda a Indonésia compartilharem conhecimento e notas de estudo estruturadas!"
+      }
+    ],
     "contact_title": "Ainda precisa de ajuda?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Resposta rápida",
     "contact_email_title": "E-mail",
     "contact_email_desc": "Detalhes e anexos",
     "guidelines_title": "Diretrizes da Comunidade",
-    "guidelines_desc": "Leia as regras e a ética do compartilhamento de notas no Ba-Yu."
+    "guidelines_desc": "Leia as regras e a ética do compartilhamento de notas no Ba-Yu.",
+    "wa_template": "Olá, equipe de suporte Ba-Yu, meu nome é {{name}}. Preciso de ajuda com o problema: ... em {{dia}}.",
+    "email_subject": "Ajuda sobre problemas do aplicativo Ba-Yu - {{name}}",
+    "email_body": "Olá equipe de suporte Ba-Yu,\n\nMeu nome é {{nome}}. Preciso de ajuda com um problema:\n...\n\nEnfrentei esse obstáculo em {{dia}}.\n\nPor favor ajude, obrigado!"
   },
   "about_page": {
     "title": "Sobre nós",

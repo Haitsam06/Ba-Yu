@@ -1268,14 +1268,58 @@
     "search_placeholder": "Sök frågor...",
     "no_results": "Inga resultat för \"{query}\"",
     "faq_title": "Vanliga frågor (FAQ)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "Hur blir man expert på Ba-Yu?",
+        "a": "För att bli expert måste du ofta dela kvalitetsanteckningar. Om dina anteckningar ofta är i kategorin \"Populära\" och får många likes, kommer vårt adminteam att granska dem och ge dig expertstatus."
+      },
+      {
+        "q": "Kan jag ladda ner anteckningar till PDF?",
+        "a": "Självklart! På varje anteckningsdetaljsida kan du trycka på knappen Ladda ner i det övre högra hörnet eller längst ner i innehållet för att spara det i PDF-format."
+      },
+      {
+        "q": "Varför kan jag inte logga in på mitt konto?",
+        "a": "Se till att e-postadressen och lösenordet du angav är korrekta. Om du nyligen har tagit bort ditt konto kan ditt konto vara i viloläge. Försök att logga in igen för att aktivera den."
+      },
+      {
+        "q": "Hur skriver man en matematisk formel?",
+        "a": "På anteckningssidan klickar du på kalkylatorikonen i sidoverktygsfältet för att öppna formelredigeraren. Du kan skriva formler med KaTeX-formatet."
+      },
+      {
+        "q": "Hur sparar man andras anteckningar?",
+        "a": "Du kan spara anteckningar som du gillar genom att klicka på \"Bokmärke\"-ikonen i det övre högra hörnet på anteckningskortet eller anteckningsdetaljsidan. Sparade anteckningar visas på fliken \"Sparat\" i din profil."
+      },
+      {
+        "q": "Kan mina anteckningar begränsas så att endast följare kan se?",
+        "a": "Ja, självklart! Du kan ställa in ditt konto till privat via menyn Inställningar > Sekretess och konto. Med ett privat konto kan endast användare som du godkänner som följare läsa hela innehållet i dina anteckningar."
+      },
+      {
+        "q": "Hur rapporterar jag poster som bryter mot reglerna?",
+        "a": "Om du hittar en anteckning som innehåller plagiat, hatretorik eller andra kränkningar kan du klicka på ikonen med tre punkter (Alternativ) i det övre högra hörnet av anteckningen och sedan välja \"Rapportera\". Vårt team kommer att granska det snart."
+      },
+      {
+        "q": "Vilka är fördelarna med att ha \"expert\"-status?",
+        "a": "Användare med expertstatus får ett lila kontrollmärke på sin profil. Anteckningarna de delar kommer också att få en \"Verified\"-tagg som ökar materialets trovärdighet, samt rätten att kurera andra elevers anteckningar."
+      },
+      {
+        "q": "Varför avvisades min anteckning av experten?",
+        "a": "Anteckningar som skickas till experten kan avvisas om plagiat upptäcks, har dålig bildupplösning eller innehåller felaktiga formler/teorier. Du kan läsa recensioner av expertfeedback i dina anteckningsdetaljer för att förbättra den."
+      },
+      {
+        "q": "Är Ba-Yu-plattformen betald?",
+        "a": "Nej, Ba-Yu är helt gratis för alla elever och lärare i hela Indonesien att använda för att dela kunskap och strukturerade studieanteckningar!"
+      }
+    ],
     "contact_title": "Behöver du fortfarande hjälp?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Snabb respons",
     "contact_email_title": "E-post",
     "contact_email_desc": "Detaljer & bilagor",
     "guidelines_title": "Riktlinjer för communityn",
-    "guidelines_desc": "Läs reglerna och etiken för att dela anteckningar på Ba-Yu."
+    "guidelines_desc": "Läs reglerna och etiken för att dela anteckningar på Ba-Yu.",
+    "wa_template": "Hej Ba-Yu supportteam, jag heter {{name}}. Jag behöver hjälp med problemet: ... den {{dag}}.",
+    "email_subject": "Hjälp med Ba-Yu Application Problem - {{name}}",
+    "email_body": "Hej Ba-Yu Support Team,\n\nJag heter {{name}}. Jag behöver hjälp med ett problem:\n...\n\nJag mötte det här hindret {{dag}}.\n\nSnälla hjälp, tack!"
   },
   "about_page": {
     "title": "Om oss",

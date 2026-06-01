@@ -1268,14 +1268,58 @@
     "search_placeholder": "Întrebări de căutare...",
     "no_results": "Niciun rezultat pentru „{query}”",
     "faq_title": "Întrebări frecvente (FAQ)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "Cum să devii Expert la Ba-Yu?",
+        "a": "Pentru a deveni Expert, trebuie să distribuiți frecvent note de calitate. Dacă notele dvs. sunt adesea în categoria „Populare” și primesc multe aprecieri, echipa noastră de administrare le va examina și vă va oferi statutul de Expert."
+      },
+      {
+        "q": "Pot descărca note în PDF?",
+        "a": "Desigur! Pe fiecare pagină cu detalii de notă, puteți apăsa butonul Descărcare din colțul din dreapta sus sau din partea de jos a conținutului pentru a-l salva în format PDF."
+      },
+      {
+        "q": "De ce nu mă pot conecta la contul meu?",
+        "a": "Asigurați-vă că adresa de e-mail și parola pe care le-ați introdus sunt corecte. Dacă v-ați șters recent contul, acesta poate fi în starea Inactiv. Încercați să vă conectați din nou pentru a-l activa."
+      },
+      {
+        "q": "Cum se scrie o formulă matematică?",
+        "a": "Pe pagina de luare de note, faceți clic pe pictograma calculatorului din bara de instrumente laterală pentru a deschide editorul de formule. Puteți scrie formule folosind formatul KaTeX."
+      },
+      {
+        "q": "Cum să salvezi notele altor persoane?",
+        "a": "Puteți salva notele care vă plac făcând clic pe pictograma „Marcaje” din colțul din dreapta sus al fișei de notițe sau a paginii cu detaliile notei. Notele salvate vor apărea în fila „Salvat” a profilului dvs."
+      },
+      {
+        "q": "Pot fi restricționate notele mele, astfel încât numai urmăritorii să poată vizualiza?",
+        "a": "Da, desigur! Vă puteți seta contul la privat prin meniul Setări > Confidențialitate și cont. Cu un cont privat, numai utilizatorii pe care îi aprobați ca urmăritori pot citi întregul conținut al notelor dvs."
+      },
+      {
+        "q": "Cum raportez înregistrările care încalcă regulile?",
+        "a": "Dacă găsiți o notă care conține plagiat, discurs instigator la ură sau alte încălcări, puteți da clic pe pictograma cu trei puncte (Opțiuni) din colțul din dreapta sus al notei, apoi selectați „Raportați”. Echipa noastră îl va revizui în curând."
+      },
+      {
+        "q": "Care sunt beneficiile de a avea statutul de „Expert”?",
+        "a": "Utilizatorii cu statut de Expert vor primi o insignă de verificare violet pe profilul lor. Notele pe care le împărtășesc vor primi, de asemenea, o etichetă „Verificată”, care crește credibilitatea materialului, precum și dreptul de a gestiona notele altor studenți."
+      },
+      {
+        "q": "De ce nota mea a fost respinsă de expert?",
+        "a": "Notele transmise expertului pot fi respinse dacă se detectează plagiat, au o rezoluție slabă a imaginii sau conțin formule/teorii inexacte. Puteți citi recenziile experților în detaliile notei pentru a o îmbunătăți."
+      },
+      {
+        "q": "Platforma Ba-Yu este plătită?",
+        "a": "Nu, Ba-Yu este complet gratuit pentru toți studenții și profesorii din Indonezia, pe care să îl folosească pentru a împărtăși cunoștințe și note structurate de studiu!"
+      }
+    ],
     "contact_title": "Mai aveți nevoie de ajutor?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Răspuns rapid",
     "contact_email_title": "E-mail",
     "contact_email_desc": "Detalii și atașamente",
     "guidelines_title": "Regulile comunității",
-    "guidelines_desc": "Citiți regulile și etica de partajare a notelor despre Ba-Yu."
+    "guidelines_desc": "Citiți regulile și etica de partajare a notelor despre Ba-Yu.",
+    "wa_template": "Bună, Echipa de asistență Ba-Yu, sunt {{name}}. Am nevoie de ajutor cu problema: ... pe {{day}}.",
+    "email_subject": "Ajutor cu probleme cu aplicația Ba-Yu - {{name}}",
+    "email_body": "Salutare Echipa de asistență Ba-Yu,\n\nSunt {{nume}}. Am nevoie de ajutor cu o problemă:\n...\n\nM-am confruntat cu acest obstacol în {{day}}.\n\nVa rog ajutati, multumesc!"
   },
   "about_page": {
     "title": "Despre noi",

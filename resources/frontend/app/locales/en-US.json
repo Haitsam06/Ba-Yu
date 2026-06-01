@@ -1268,14 +1268,58 @@
     "search_placeholder": "Search questions...",
     "no_results": "No results for \"{query}\"",
     "faq_title": "Frequently Asked Questions (FAQ)",
-    "faqs": "[object Object],[object Object],[object Object],[object Object]",
+    "faqs": [
+      {
+        "q": "How to become an Expert at Ba-Yu?",
+        "a": "To become an Expert, you must frequently share quality notes. If your notes are often in the 'Popular' category and get lots of likes, our Admin team will review them and give you Expert status."
+      },
+      {
+        "q": "Can I download notes to PDF?",
+        "a": "Of course! On each note detail page, you can press the Download button in the top right corner or at the bottom of the content to save it in PDF format."
+      },
+      {
+        "q": "Why can't I log in to my account?",
+        "a": "Make sure the email and password you entered are correct. If you recently deleted your account, your account may be in Dormant status. Try logging in again to activate it."
+      },
+      {
+        "q": "How do you write a mathematical formula?",
+        "a": "On the note-taking page, click the calculator icon in the side toolbar to open the formula editor. You can write formulas using the KaTeX format."
+      },
+      {
+        "q": "How to save other people's notes?",
+        "a": "You can save notes that you like by clicking the 'Bookmark' icon in the top right corner of the note card or note detail page. Saved notes will appear in the 'Saved' tab of your profile."
+      },
+      {
+        "q": "Can my notes be restricted so that only followers can view?",
+        "a": "Yes, of course! You can set your account to private via the Settings > Privacy & Account menu. With a private account, only users you approve as followers can read the full content of your notes."
+      },
+      {
+        "q": "How do I report records that violate the rules?",
+        "a": "If you find a note that contains plagiarism, hate speech, or other violations, you can click the three-dot icon (Options) in the top right corner of the note, then select 'Report'. Our team will review it soon."
+      },
+      {
+        "q": "What are the benefits of having 'Expert' status?",
+        "a": "Users with Expert status will get a purple check verification badge on their profile. The notes they share will also get a 'Verified' tag which increases the credibility of the material, as well as the right to curate other students' notes."
+      },
+      {
+        "q": "Why was my note rejected by the Expert?",
+        "a": "Notes submitted to the Expert may be rejected if plagiarism is detected, has poor image resolution, or contains inaccurate formulas/theories. You can read expert feedback reviews in your note details to improve it."
+      },
+      {
+        "q": "Is the Ba-Yu platform paid?",
+        "a": "No, Ba-Yu is completely free for all students and teachers throughout Indonesia to use to share knowledge and structured study notes!"
+      }
+    ],
     "contact_title": "Still Need Help?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Fast response",
     "contact_email_title": "E-mail",
     "contact_email_desc": "Details & attachments",
     "guidelines_title": "Community Guidelines",
-    "guidelines_desc": "Read the rules and ethics of sharing notes on Ba-Yu."
+    "guidelines_desc": "Read the rules and ethics of sharing notes on Ba-Yu.",
+    "wa_template": "Hello Ba-Yu Support Team, I'm {{name}}. I need help with the problem: ... on {{day}}.",
+    "email_subject": "Ba-Yu Application Problem Help - {{name}}",
+    "email_body": "Hello Ba-Yu Support Team,\n\nI'm {{name}}. I need help with a problem:\n...\n\nI faced this obstacle on {{day}}.\n\nPlease help, thank you!"
   },
   "about_page": {
     "title": "About Us",

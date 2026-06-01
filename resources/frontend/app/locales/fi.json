@@ -1268,14 +1268,58 @@
     "search_placeholder": "Hae kysymyksiä...",
     "no_results": "Ei tuloksia haulle \"{query}\"",
     "faq_title": "Usein kysytyt kysymykset (FAQ)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "Kuinka tulla asiantuntijaksi Ba-Yussa?",
+        "a": "Jotta voit tulla asiantuntijaksi, sinun on usein jaettava laatuhuomautuksia. Jos muistiinpanosi ovat usein \"Suositut\"-kategoriassa ja saavat paljon tykkäyksiä, järjestelmänvalvojatiimimme tarkistaa ne ja antaa sinulle Asiantuntija-tilan."
+      },
+      {
+        "q": "Voinko ladata muistiinpanoja PDF-muotoon?",
+        "a": "Tietenkin! Voit tallentaa sisällön PDF-muotoon painamalla kunkin muistiinpanon tietosivun oikeassa yläkulmassa tai alareunassa olevaa Lataa-painiketta."
+      },
+      {
+        "q": "Miksi en voi kirjautua tililleni?",
+        "a": "Varmista, että antamasi sähköpostiosoite ja salasana ovat oikein. Jos olet äskettäin poistanut tilisi, tilisi voi olla lepotilassa. Yritä kirjautua sisään uudelleen aktivoidaksesi sen."
+      },
+      {
+        "q": "Kuinka kirjoitat matemaattisen kaavan?",
+        "a": "Avaa kaavaeditori napsauttamalla muistiinpanosivun sivutyökalupalkin laskinkuvaketta. Voit kirjoittaa kaavoja käyttämällä KaTeX-muotoa."
+      },
+      {
+        "q": "Kuinka tallentaa muiden ihmisten muistiinpanoja?",
+        "a": "Voit tallentaa haluamasi muistiinpanot napsauttamalla muistiinpanokortin tai muistiinpanon tietosivun oikeassa yläkulmassa olevaa Kirjanmerkki-kuvaketta. Tallennetut muistiinpanot näkyvät profiilisi Tallennettu-välilehdellä."
+      },
+      {
+        "q": "Voidaanko muistiinpanojani rajoittaa niin, että vain seuraajat voivat tarkastella niitä?",
+        "a": "Kyllä, tietysti! Voit asettaa tilisi yksityiseksi Asetukset > Yksityisyys ja tili -valikon kautta. Yksityisellä tilillä vain seuraajiksi hyväksymäsi käyttäjät voivat lukea muistiinpanojesi koko sisällön."
+      },
+      {
+        "q": "Kuinka ilmoitan tietueista, jotka rikkovat sääntöjä?",
+        "a": "Jos löydät muistiinpanon, joka sisältää plagiointia, vihapuhetta tai muita loukkauksia, voit napsauttaa kolmen pisteen kuvaketta (Asetukset) huomautuksen oikeassa yläkulmassa ja valita sitten Ilmoita. Tiimimme tarkistaa sen pian."
+      },
+      {
+        "q": "Mitä etuja on \"asiantuntija\"-statuksen saamisesta?",
+        "a": "Asiantuntija-statuksen omaavat käyttäjät saavat profiilissaan violetin shekin vahvistusmerkin. Heidän jakamansa muistiinpanot saavat myös \"Verified\" -tunnisteen, joka lisää materiaalin uskottavuutta sekä oikeutta kuratoida muiden opiskelijoiden muistiinpanoja."
+      },
+      {
+        "q": "Miksi asiantuntija hylkäsi huomautukseni?",
+        "a": "Asiantuntijalle toimitetut huomautukset voidaan hylätä, jos havaitaan plagiointia, niiden kuvan resoluutio on huono tai jos ne sisältävät epätarkkoja kaavoja/teorioita. Voit lukea asiantuntijapalautteita muistiinpanosi tiedoista parantaaksesi sitä."
+      },
+      {
+        "q": "Onko Ba-Yu-alusta maksullinen?",
+        "a": "Ei, Ba-Yu on täysin ilmainen kaikille opiskelijoille ja opettajille kaikkialla Indonesiassa jakaakseen tietoa ja strukturoituja opiskelumuistiinpanoja!"
+      }
+    ],
     "contact_title": "Tarvitsetko edelleen apua?",
     "contact_wa_title": "WhatsApp",
     "contact_wa_desc": "Nopea vastaus",
     "contact_email_title": "Sähköposti",
     "contact_email_desc": "Yksityiskohdat ja liitteet",
     "guidelines_title": "yhteisön säännöt",
-    "guidelines_desc": "Lue muistiinpanojen jakamisen säännöt ja etiikka Ba-Yussa."
+    "guidelines_desc": "Lue muistiinpanojen jakamisen säännöt ja etiikka Ba-Yussa.",
+    "wa_template": "Hei Ba-Yu-tukitiimi, olen {{name}}. Tarvitsen apua ongelmaan: ... {{day}}.",
+    "email_subject": "Ba-Yu-sovellusongelma-apu - {{name}}",
+    "email_body": "Hei Ba-Yu-tukitiimi,\n\nOlen {{name}}. Tarvitsen apua ongelmaan:\n...\n\nKohtasin tämän esteen {{day}}.\n\nOle hyvä ja auta, kiitos!"
   },
   "about_page": {
     "title": "Tietoja meistä",

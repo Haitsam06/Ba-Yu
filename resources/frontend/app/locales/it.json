@@ -1268,14 +1268,58 @@
     "search_placeholder": "Cerca domande...",
     "no_results": "Nessun risultato per \"{query}\"",
     "faq_title": "Domande frequenti (FAQ)",
-    "faqs": "[object Object]",
+    "faqs": [
+      {
+        "q": "Come diventare un esperto presso Ba-Yu?",
+        "a": "Per diventare un Esperto, devi condividere frequentemente note di qualità. Se le tue note sono spesso nella categoria \"Popolari\" e ricevono molti Mi piace, il nostro team di amministratori le esaminerà e ti assegnerà lo stato di Esperto."
+      },
+      {
+        "q": "Posso scaricare le note in PDF?",
+        "a": "Naturalmente! Nella pagina dei dettagli di ogni nota puoi premere il pulsante Download nell'angolo in alto a destra o nella parte inferiore del contenuto per salvarlo in formato PDF."
+      },
+      {
+        "q": "Perché non riesco ad accedere al mio account?",
+        "a": "Assicurati che l'e-mail e la password inserite siano corrette. Se hai eliminato di recente il tuo account, il tuo account potrebbe essere in stato dormiente. Prova ad accedere nuovamente per attivarlo."
+      },
+      {
+        "q": "Come si scrive una formula matematica?",
+        "a": "Nella pagina per prendere appunti, fare clic sull'icona della calcolatrice nella barra degli strumenti laterale per aprire l'editor delle formule. Puoi scrivere formule utilizzando il formato KaTeX."
+      },
+      {
+        "q": "Come salvare le note di altre persone?",
+        "a": "Puoi salvare le note che ti piacciono facendo clic sull'icona \"Segnalibro\" nell'angolo in alto a destra della scheda o della pagina dei dettagli della nota. Le note salvate verranno visualizzate nella scheda \"Salvate\" del tuo profilo."
+      },
+      {
+        "q": "È possibile limitare le mie note in modo che solo i follower possano visualizzarle?",
+        "a": "Sì, certo! Puoi impostare il tuo account su privato tramite il menu Impostazioni > Privacy e account. Con un account privato, solo gli utenti che approvi come follower possono leggere l'intero contenuto delle tue note."
+      },
+      {
+        "q": "Come posso segnalare i record che violano le regole?",
+        "a": "Se trovi una nota che contiene plagio, incitamento all'odio o altre violazioni, puoi fare clic sull'icona a tre punti (Opzioni) nell'angolo in alto a destra della nota, quindi selezionare \"Segnala\". Il nostro team lo esaminerà presto."
+      },
+      {
+        "q": "Quali sono i vantaggi di avere lo status di \"Esperto\"?",
+        "a": "Gli utenti con lo stato Esperto riceveranno un badge di verifica viola sul proprio profilo. Le note condivise riceveranno anche un tag \"Verificato\" che aumenta la credibilità del materiale, nonché il diritto di curare le note di altri studenti."
+      },
+      {
+        "q": "Perché la mia nota è stata respinta dall'Esperto?",
+        "a": "Le note inviate all'Esperto possono essere respinte se viene rilevato plagio, hanno una scarsa risoluzione dell'immagine o contengono formule/teorie imprecise. Puoi leggere le recensioni dei feedback degli esperti nei dettagli della nota per migliorarla."
+      },
+      {
+        "q": "La piattaforma Ba-Yu è a pagamento?",
+        "a": "No, Ba-Yu è completamente gratuito per tutti gli studenti e gli insegnanti di tutta l'Indonesia da utilizzare per condividere conoscenze e appunti di studio strutturati!"
+      }
+    ],
     "contact_title": "Hai ancora bisogno di aiuto?",
     "contact_wa_title": "Whatsapp",
     "contact_wa_desc": "Risposta rapida",
     "contact_email_title": "E-mail",
     "contact_email_desc": "Dettagli e allegati",
     "guidelines_title": "Linee guida della comunità",
-    "guidelines_desc": "Leggi le regole e l'etica della condivisione di note su Ba-Yu."
+    "guidelines_desc": "Leggi le regole e l'etica della condivisione di note su Ba-Yu.",
+    "wa_template": "Salve team di supporto Ba-Yu, sono {{name}}. Ho bisogno di aiuto con il problema: ... il {{day}}.",
+    "email_subject": "Guida per problemi con l'applicazione Ba-Yu - {{name}}",
+    "email_body": "Ciao team di supporto Ba-Yu,\n\nSono {{nome}}. Ho bisogno di aiuto con un problema:\n...\n\nHo affrontato questo ostacolo il {{day}}.\n\nPer favore aiutatemi, grazie!"
   },
   "about_page": {
     "title": "Chi siamo",
