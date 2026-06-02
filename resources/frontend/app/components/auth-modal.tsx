@@ -156,6 +156,15 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
     }));
   };
 
+  const handleJenjangChange = (val: string) => {
+    let newProfesi = formData.profesi;
+    if (['SD', 'SMP', 'SMA'].includes(val)) newProfesi = 'Pelajar';
+    else if (val === 'Kuliah') newProfesi = 'Mahasiswa';
+    else if (val === 'Umum') newProfesi = 'Umum';
+    
+    setFormData(prev => ({ ...prev, jenjang: val, profesi: newProfesi }));
+  };
+
   if (!isOpen) return null;
 
   // PREMIUM INPUT STYLING (Apple / Chronicle Aesthetic)
@@ -300,7 +309,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                                   <label className={labelClass}>{t("auth_modal.level") !== "auth_modal.level" ? t("auth_modal.level") : "Jenjang"}</label>
                                   <AuthModalSelect
                                     value={formData.jenjang}
-                                    onChange={(val) => setFormData(prev => ({ ...prev, jenjang: val }))}
+                                    onChange={handleJenjangChange}
                                     icon={<GraduationCap className={`${iconClass} !w-4 !h-4 z-10 pointer-events-none`} strokeWidth={2.5} />}
                                     inputClass={inputClass}
                                     options={[

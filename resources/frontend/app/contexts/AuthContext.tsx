@@ -54,6 +54,7 @@ interface AuthContextType {
     ) => Promise<string | null>;
     logout: () => void;
     updateUserSession: (data: Partial<User>) => void;
+    refreshUser: () => Promise<User | null>;
     isAuthenticated: boolean;
 }
 
@@ -69,29 +70,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     axios.defaults.headers.common["Accept"] = "application/json";
     axios.defaults.withCredentials = true;
 
-    const loadUser = async () => {
+    const refreshUser = async (): Promise<User | null> => {
         const token =
             sessionStorage.getItem("bayu-token") ||
-            localStorage.getItem("bayu-token") ||
-            sessionStorage.getItem("bayu-token");
+            localStorage.getItem("bayu-token");
 
         if (token) {
             axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
             try {
                 const response = await axios.get("/api/user");
-                setUser({
+                const userData = {
                     ...response.data,
                     jenjang_pendidikan:
                         response.data.jenjang_pendidikan || "SMP",
-                });
+                };
+                setUser(userData);
+                return userData;
             } catch (error) {
-                console.error("Failed to load user", error);
-                localStorage.removeItem("bayu-token");
-                delete axios.defaults.headers.common["Authorization"];
-                setUser(null);
+                console.error("Failed to refresh user", error);
+                return null;
             }
         }
+        return null;
+    };
 
+    const loadUser = async () => {
+        await refreshUser();
         setIsLoading(false);
     };
 
@@ -261,6 +265,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 register,
                 logout,
                 updateUserSession,
+                refreshUser,
                 isAuthenticated: !!user,
             }}
         >

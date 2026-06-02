@@ -1718,6 +1718,21 @@
     "privacy_updated": "Privacy settings updated successfully",
     "account_deactivated": "Account deactivated successfully"
   },
+  "verify_email": {
+    "title": "Verify Your Email",
+    "description": "We have sent a verification link to your email address. Please click the link to verify your account and get full access.",
+    "check_inbox": "Check Your Inbox",
+    "spam_note": "If you don't see the email, please check your spam or junk folder.",
+    "resend_btn": "Resend Email",
+    "resend_loading": "Sending...",
+    "resend_success": "Verification email has been resent successfully!",
+    "resend_failed": "Failed to resend email.",
+    "back_to_login": "Back to Login",
+    "already_verified": "I have verified",
+    "verification_success": "Verification Successful",
+    "verification_success_desc": "Your account has been successfully verified. You can now enjoy all features.",
+    "continue": "Continue"
+  },
   "titles": {
     "home": "Home",
     "explore": "Explore",

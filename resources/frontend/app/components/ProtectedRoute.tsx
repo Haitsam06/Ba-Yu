@@ -19,8 +19,13 @@ export function ProtectedRoute() {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
-  // Force incomplete profile users to complete it
-  if (user.profile_completed === false && location.pathname !== '/complete-profile') {
+  // Force email verification
+  if (!user.email_verified_at && location.pathname !== '/verify-email') {
+    return <Navigate to="/verify-email" replace />;
+  }
+
+  // Force incomplete profile users to complete it (skip if on verify-email)
+  if (user.profile_completed === false && location.pathname !== '/complete-profile' && location.pathname !== '/verify-email') {
     return <Navigate to="/complete-profile" replace />;
   }
 

@@ -105,6 +105,7 @@ class AuthController extends Controller
                 'is_private' => $user->is_private ?? false,
                 'is_dormant' => $user->is_dormant,
                 'username_updated_at' => $user->username_updated_at,
+                'email_verified_at' => $user->email_verified_at,
             ],
         ]);
     }

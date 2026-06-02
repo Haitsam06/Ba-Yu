@@ -26,6 +26,15 @@ export default function CompleteProfilePage() {
         school: user?.school || '',
     });
     
+    const handleJenjangChange = (val: string) => {
+        let newProfesi = formData.profesi;
+        if (['SD', 'SMP', 'SMA'].includes(val)) newProfesi = 'Pelajar';
+        else if (val === 'Kuliah') newProfesi = 'Mahasiswa';
+        else if (val === 'Umum') newProfesi = 'Umum';
+        
+        setFormData({ ...formData, jenjang_pendidikan: val, profesi: newProfesi });
+    };
+
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // If profile is already completed, redirect to home
@@ -123,10 +132,10 @@ export default function CompleteProfilePage() {
                             <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 pl-1">
                                 {t('complete_profile.education_label')}
                             </label>
-                            <div className="relative group z-20">
+                            <div className="relative group z-50">
                                 <CustomSelect
                                     value={formData.jenjang_pendidikan}
-                                    onChange={(val) => setFormData({ ...formData, jenjang_pendidikan: val as string })}
+                                    onChange={(val) => handleJenjangChange(val as string)}
                                     icon={<GraduationCap className="w-[18px] h-[18px]" strokeWidth={2.5} />}
                                     buttonClassName="bg-gray-50 dark:bg-[#1C1A29] rounded-2xl pl-11 pr-4 py-3.5"
                                     options={[
@@ -144,7 +153,7 @@ export default function CompleteProfilePage() {
                             <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 pl-1">
                                 {t('complete_profile.profession_label')}
                             </label>
-                            <div className="relative group z-10">
+                            <div className="relative group z-40">
                                 <CustomSelect
                                     value={formData.profesi}
                                     onChange={(val) => setFormData({ ...formData, profesi: val as string })}
@@ -164,7 +173,7 @@ export default function CompleteProfilePage() {
                             <label className="block text-[13px] font-['Lexend_Deca'] font-bold text-slate-700 dark:text-slate-300 pl-1">
                                 {t('complete_profile.school_label')}
                             </label>
-                            <div className="relative group z-10">
+                            <div className="relative group z-30">
                                 <Building className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-slate-500 dark:text-slate-400 group-focus-within:text-gray-900 dark:group-focus-within:text-gray-100 transition-colors" strokeWidth={2.5} />
                                 <input
                                     type="text"

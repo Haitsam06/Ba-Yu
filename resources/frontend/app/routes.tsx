@@ -26,6 +26,7 @@ import PrivacySettingsPage from './pages/PrivacySettingsPage';
 import FollowRequestsPage from './pages/FollowRequestsPage';
 import HelpPage from './pages/HelpPage';
 import CompleteProfilePage from './pages/CompleteProfilePage';
+import VerifyEmailPage from './pages/auth/verify-email';
 import ThemePage from './pages/ThemePage';
 import AboutPage from './pages/AboutPage';
 import StatusPage from './pages/StatusPage';
@@ -106,6 +107,10 @@ export const router = createBrowserRouter([
           {
             path: 'complete-profile',
             element: <CompleteProfilePage />,
+          },
+          {
+            path: 'verify-email',
+            element: <VerifyEmailPage />,
           },
           {
             path: 'upload',

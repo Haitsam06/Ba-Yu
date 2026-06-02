@@ -1808,6 +1808,21 @@
     "privacy_updated": "Pengaturan privasi berhasil diperbarui",
     "account_deactivated": "Akun berhasil dinonaktifkan dan masuk ke masa Dormant."
   },
+  "verify_email": {
+    "title": "Verifikasi Email Anda",
+    "description": "Kami telah mengirimkan tautan verifikasi ke alamat email Anda. Silakan klik tautan tersebut untuk memverifikasi akun Anda dan mendapatkan akses penuh.",
+    "check_inbox": "Periksa Kotak Masuk Anda",
+    "spam_note": "Jika Anda tidak melihat email tersebut, periksa folder spam atau sampah Anda.",
+    "resend_btn": "Kirim Ulang Email",
+    "resend_loading": "Mengirim...",
+    "resend_success": "Email verifikasi berhasil dikirim ulang!",
+    "resend_failed": "Gagal mengirim ulang email.",
+    "back_to_login": "Kembali ke Login",
+    "already_verified": "Saya sudah memverifikasi",
+    "verification_success": "Verifikasi Berhasil",
+    "verification_success_desc": "Akun Anda telah berhasil diverifikasi. Anda sekarang dapat menikmati semua fitur.",
+    "continue": "Lanjutkan"
+  },
   "titles": {
     "home": "Rumah",
     "explore": "Mengeksplorasi",
