@@ -41,3 +41,10 @@ phpunit.xml
 README.md
 *.md
 docker-compose.yml
+
+# Mobile & Capacitor
+Ba-Yu-Capacitor
+*.apk
+
+# Secrets
+firebase-credentials.json

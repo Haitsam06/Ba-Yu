@@ -3,10 +3,13 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "concurrently \"php artisan serve\" \"vite\" --names=\"Laravel,Vite\" --prefix-colors=\"bgBlue.bold,bgMagenta.bold\"",
+        "dev": "concurrently \"php artisan serve --host=0.0.0.0\" \"vite --host\" --names=\"Laravel,Vite\" --prefix-colors=\"bgBlue.bold,bgMagenta.bold\"",
         "build": "tsc && vite build"
     },
     "dependencies": {
+        "@capacitor-firebase/authentication": "^8.2.0",
+        "@capacitor/core": "^8.3.4",
+        "@capacitor/push-notifications": "^8.1.1",
         "@radix-ui/react-accordion": "1.2.3",
         "@radix-ui/react-alert-dialog": "1.1.6",
         "@radix-ui/react-aspect-ratio": "1.1.2",
@@ -39,6 +42,7 @@
         "cmdk": "1.1.1",
         "date-fns": "3.6.0",
         "embla-carousel-react": "8.6.0",
+        "firebase": "^12.14.0",
         "input-otp": "1.4.2",
         "jspdf": "^4.2.1",
         "katex": "^0.16.44",

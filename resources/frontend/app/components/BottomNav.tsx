@@ -38,12 +38,12 @@ export function BottomNav() {
           <Link
             key={item.path}
             to={item.path}
-            className="flex flex-col items-center justify-center flex-1 transition-all duration-300 outline-none -mt-7 relative group"
+            className="flex flex-col items-center justify-center flex-1 transition-all duration-300 outline-none -mt-5 relative group px-0.5"
           >
-            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-500 dark:from-primary dark:to-[#A78BFA] text-white shadow-[0_8px_16px_-6px_rgba(79,70,229,0.5)] dark:shadow-[0_8px_16px_-6px_rgba(123,123,255,0.4)] transform group-hover:scale-110 active:scale-95 transition-all duration-300 ring-[6px] ring-white dark:ring-[#1C1A29]">
-               <item.icon className="w-[26px] h-[26px]" strokeWidth={2.5} />
+            <div className="flex items-center justify-center w-12 h-12 rounded-[16px] bg-indigo-600 dark:bg-primary text-white shadow-[0_4px_14px_rgba(79,70,229,0.35)] dark:shadow-[0_4px_14px_rgba(123,123,255,0.25)] transform group-hover:scale-110 active:scale-95 transition-all duration-300 ring-[5px] ring-white dark:ring-[#1C1A29]">
+               <item.icon className="w-5.5 h-5.5 transition-transform duration-500 ease-out group-hover:rotate-90" strokeWidth={2.5} />
             </div>
-            <span className="text-[10px] mt-1.5 font-['Manrope'] font-bold tracking-wide text-indigo-600 dark:text-primary opacity-100 transition-all duration-300 group-hover:-translate-y-0.5">
+            <span className="text-[10px] mt-1.5 font-['Manrope'] font-bold tracking-wide text-indigo-600 dark:text-primary opacity-100 text-center w-full block transition-all duration-300 group-hover:-translate-y-0.5">
               {item.label}
             </span>
           </Link>
@@ -55,14 +55,14 @@ export function BottomNav() {
         <Link
           key={item.path}
           to={item.path}
-          className={`flex flex-col items-center justify-center flex-1 transition-all duration-300 outline-none ${
+          className={`flex flex-col items-center justify-center flex-1 transition-all duration-300 outline-none px-0.5 ${
             active ? 'text-indigo-600 dark:text-primary' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
           }`}
         >
-          <div className={`relative flex items-center justify-center w-14 h-9 rounded-2xl transition-all duration-300 ${active ? 'bg-indigo-50/80 dark:bg-primary/10' : 'bg-transparent'}`}>
+          <div className={`relative flex items-center justify-center w-12 h-8 rounded-xl transition-all duration-300 ${active ? 'bg-indigo-50/80 dark:bg-primary/10 animate-in fade-in zoom-in-95 duration-200' : 'bg-transparent'}`}>
              <item.icon className={`w-[22px] h-[22px] transition-all duration-300 ${active ? 'scale-110' : 'scale-100'}`} strokeWidth={active ? 2.5 : 2} />
           </div>
-          <span className={`text-[10px] mt-1 font-['Manrope'] font-bold tracking-wide transition-all duration-300 ${active ? 'opacity-100 scale-100' : 'opacity-70 scale-95'}`}>
+          <span className={`text-[10px] mt-1 font-['Manrope'] font-bold tracking-wide text-center w-full block truncate px-1 transition-all duration-300 ${active ? 'opacity-100 scale-100' : 'opacity-70 scale-95'}`}>
             {item.label}
           </span>
         </Link>

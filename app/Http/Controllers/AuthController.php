@@ -338,6 +338,7 @@ class AuthController extends Controller
                     $existingUser->save();
                 }
 
+                \Illuminate\Support\Facades\Auth::login($existingUser, true);
                 $token = $existingUser->createToken('auth_token')->plainTextToken;
 
                 return response()->json([
@@ -368,6 +369,7 @@ class AuthController extends Controller
                 'profile_completed' => false,
             ]);
 
+            \Illuminate\Support\Facades\Auth::login($newUser, true);
             $token = $newUser->createToken('auth_token')->plainTextToken;
 
             return response()->json([

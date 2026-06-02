@@ -22,3 +22,11 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Secrets
+firebase-credentials.json
+
+# Mobile & Capacitor
+*.apk
+/Ba-Yu-Capacitor/android/app/build
+/Ba-Yu-Capacitor/android/.gradle

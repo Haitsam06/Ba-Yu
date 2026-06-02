@@ -156,7 +156,7 @@ export function MobileLayout({ children, showBottomNav = true, hideTopNav = fals
           initial={shouldAnimate ? { y: 80, opacity: 0 } : false}
           animate={{ y: 0, opacity: 1 }}
           transition={shouldAnimate ? { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.15 } : { duration: 0 }}
-          className="md:hidden fixed bottom-0 left-0 w-full z-40 bg-white dark:bg-[#1C1A29] border-t border-slate-200 dark:border-white/5 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] dark:shadow-none pb-safe"
+          className="md:hidden fixed bottom-0 left-0 w-full z-40 bg-white/90 dark:bg-[#1C1A29]/95 backdrop-blur-lg border-t border-slate-100 dark:border-white/5 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.4)] pb-safe"
         >
            <BottomNav />
         </motion.div>
