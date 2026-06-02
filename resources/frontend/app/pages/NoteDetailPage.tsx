@@ -1620,6 +1620,21 @@ export default function NoteDetailPage() {
                     </div>
                 </div>
 
+                {note.thumbnail && (
+                    <div className="w-full aspect-[16/9] mb-10 overflow-hidden rounded-[24px] border border-gray-150 dark:border-white/5 shadow-sm bg-gray-50 dark:bg-[#1C1A29]">
+                        <img 
+                            src={note.thumbnail} 
+                            alt={note.title} 
+                            className="w-full h-full object-cover select-none pointer-events-none" 
+                            onError={(e) => {
+                                const target = e.target as HTMLElement;
+                                const parent = target.parentElement;
+                                if (parent) parent.style.display = 'none';
+                            }}
+                        />
+                    </div>
+                )}
+
                 <div className="mb-16 relative">
                     <div
                         id="area-materi-pdf"
