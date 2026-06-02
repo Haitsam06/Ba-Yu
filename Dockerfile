@@ -30,7 +30,10 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && rm -rf /var/lib/apt/lists/*
 
 # Step 3: Install standard PHP extensions used by Laravel.
-RUN docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip intl
+# gd must be configured for JPEG/FreeType BEFORE install, otherwise it builds
+# without image-format support.
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip intl
 
 # Step 4: Install MongoDB driver via PECL (this is the critical one).
 RUN pecl install mongodb && docker-php-ext-enable mongodb

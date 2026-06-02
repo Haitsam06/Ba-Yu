@@ -1,39 +1,64 @@
 import { createBrowserRouter } from 'react-router';
+import { Suspense, lazy, LazyExoticComponent, ComponentType } from 'react';
 import { RootLayout } from './components/RootLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
+
+// --- Eager (critical path / first paint): keep these in the main bundle ---
 import { LandingPage } from './pages/landing-page';
 import LoginPage from './pages/Login';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import HomePage from './pages/HomePage';
-import ExplorePage from './pages/ExplorePage';
-import PublicExplorePage from './pages/PublicExplorePage';
-import UploadPage from './pages/UploadPage';
-import NoteDetailPage from './pages/NoteDetailPage';
-import NotificationsPage from './pages/NotificationsPage';
-import ProfilePage from './pages/ProfilePage';
-import PublicProfilePage from './pages/PublicProfilePage';
-import SettingsPage from './pages/SettingsPage';
-import EditProfilePage from './pages/EditProfilePage';
-import NotificationDetailPage from './pages/NotificationDetailPage';
-import PakarDashboard from './pages/PakarDashboard';
-import AdminDashboard from './pages/AdminDashboard';
-import LearningStatisticsPage from './pages/LearningStatisticsPage';
-import TermsPage from './pages/TermsPage';
-import PrivacyPage from './pages/PrivacyPage';
 import NotFound from './pages/NotFound';
-import SecurityPage from './pages/SecurityPage';
-import PrivacySettingsPage from './pages/PrivacySettingsPage';
-import FollowRequestsPage from './pages/FollowRequestsPage';
-import HelpPage from './pages/HelpPage';
-import CompleteProfilePage from './pages/CompleteProfilePage';
-import VerifyEmailPage from './pages/auth/verify-email';
-import ThemePage from './pages/ThemePage';
-import AboutPage from './pages/AboutPage';
-import StatusPage from './pages/StatusPage';
-import CareersPage from './pages/CareersPage';
-import BlogPage from './pages/BlogPage';
-import CommunityGuidelinesPage from './pages/CommunityGuidelinesPage';
-import LanguagePage from './pages/LanguagePage';
+
+// --- Lazy (code-split into their own chunks, downloaded on demand) ---
+// Heavy-dependency pages especially benefit: charts (recharts), editor (react-quill),
+// pdf (jspdf), math (katex), spreadsheet (xlsx), image crop (react-easy-crop).
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
+const VerifyResultPage = lazy(() => import('./pages/auth/VerifyResultPage'));
+const ExplorePage = lazy(() => import('./pages/ExplorePage'));
+const PublicExplorePage = lazy(() => import('./pages/PublicExplorePage'));
+const NoteDetailPage = lazy(() => import('./pages/NoteDetailPage'));
+const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const StatusPage = lazy(() => import('./pages/StatusPage'));
+const CareersPage = lazy(() => import('./pages/CareersPage'));
+const BlogPage = lazy(() => import('./pages/BlogPage'));
+const CommunityGuidelinesPage = lazy(() => import('./pages/CommunityGuidelinesPage'));
+
+const HomePage = lazy(() => import('./pages/HomePage'));
+const CompleteProfilePage = lazy(() => import('./pages/CompleteProfilePage'));
+const VerifyEmailPage = lazy(() => import('./pages/auth/verify-email'));
+const UploadPage = lazy(() => import('./pages/UploadPage'));
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
+const NotificationDetailPage = lazy(() => import('./pages/NotificationDetailPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const EditProfilePage = lazy(() => import('./pages/EditProfilePage'));
+const SecurityPage = lazy(() => import('./pages/SecurityPage'));
+const PrivacySettingsPage = lazy(() => import('./pages/PrivacySettingsPage'));
+const ThemePage = lazy(() => import('./pages/ThemePage'));
+const FollowRequestsPage = lazy(() => import('./pages/FollowRequestsPage'));
+const LanguagePage = lazy(() => import('./pages/LanguagePage'));
+const HelpPage = lazy(() => import('./pages/HelpPage'));
+const PakarDashboard = lazy(() => import('./pages/PakarDashboard'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const LearningStatisticsPage = lazy(() => import('./pages/LearningStatisticsPage'));
+
+// Page-level fallback shown while a route chunk downloads (theme-aware).
+function PageFallback() {
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center bg-background">
+      <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+    </div>
+  );
+}
+
+// Wrap a lazy component in a Suspense boundary so the fallback shows during load.
+const s = (Comp: LazyExoticComponent<ComponentType<any>>) => (
+  <Suspense fallback={<PageFallback />}>
+    <Comp />
+  </Suspense>
+);
 
 export const router = createBrowserRouter([
   {
@@ -50,51 +75,59 @@ export const router = createBrowserRouter([
       },
       {
         path: 'reset-password/:token',
-        element: <ResetPasswordPage />,
+        element: s(ResetPasswordPage),
+      },
+      {
+        path: 'verify-success',
+        element: s(VerifyResultPage),
+      },
+      {
+        path: 'verify-failed',
+        element: s(VerifyResultPage),
       },
       {
         path: 'explore',
-        element: <ExplorePage />,
+        element: s(ExplorePage),
       },
       {
         path: 'katalog',
-        element: <PublicExplorePage />,
+        element: s(PublicExplorePage),
       },
       {
         path: 'note/:id',
-        element: <NoteDetailPage />,
+        element: s(NoteDetailPage),
       },
       {
         path: 'profile/:id',
-        element: <PublicProfilePage />,
+        element: s(PublicProfilePage),
       },
       {
         path: 'terms',
-        element: <TermsPage />,
+        element: s(TermsPage),
       },
       {
         path: 'privacy',
-        element: <PrivacyPage />,
+        element: s(PrivacyPage),
       },
       {
         path: 'about',
-        element: <AboutPage />,
+        element: s(AboutPage),
       },
       {
         path: 'status',
-        element: <StatusPage />,
+        element: s(StatusPage),
       },
       {
         path: 'careers',
-        element: <CareersPage />,
+        element: s(CareersPage),
       },
       {
         path: 'blog',
-        element: <BlogPage />,
+        element: s(BlogPage),
       },
       {
         path: 'guidelines',
-        element: <CommunityGuidelinesPage />,
+        element: s(CommunityGuidelinesPage),
       },
       {
         // Protected Wrapper
@@ -102,75 +135,75 @@ export const router = createBrowserRouter([
         children: [
           {
             path: 'home',
-            element: <HomePage />,
+            element: s(HomePage),
           },
           {
             path: 'complete-profile',
-            element: <CompleteProfilePage />,
+            element: s(CompleteProfilePage),
           },
           {
             path: 'verify-email',
-            element: <VerifyEmailPage />,
+            element: s(VerifyEmailPage),
           },
           {
             path: 'upload',
-            element: <UploadPage />,
+            element: s(UploadPage),
           },
           {
             path: 'notifications',
-            element: <NotificationsPage />,
+            element: s(NotificationsPage),
           },
           {
             path: 'notifications/:id',
-            element: <NotificationDetailPage />,
+            element: s(NotificationDetailPage),
           },
           {
             path: 'profile',
-            element: <ProfilePage />,
+            element: s(ProfilePage),
           },
           {
             path: 'settings',
-            element: <SettingsPage />,
+            element: s(SettingsPage),
           },
           {
             path: 'edit-profile',
-            element: <EditProfilePage />,
+            element: s(EditProfilePage),
           },
           {
             path: 'settings/security',
-            element: <SecurityPage />,
+            element: s(SecurityPage),
           },
           {
             path: 'settings/privacy',
-            element: <PrivacySettingsPage />,
+            element: s(PrivacySettingsPage),
           },
           {
             path: 'settings/theme',
-            element: <ThemePage />,
+            element: s(ThemePage),
           },
           {
             path: 'settings/follow-requests',
-            element: <FollowRequestsPage />,
+            element: s(FollowRequestsPage),
           },
           {
             path: 'settings/language',
-            element: <LanguagePage />,
+            element: s(LanguagePage),
           },
           {
             path: 'settings/help',
-            element: <HelpPage />,
+            element: s(HelpPage),
           },
           {
             path: 'pakar',
-            element: <PakarDashboard />,
+            element: s(PakarDashboard),
           },
           {
             path: 'admin',
-            element: <AdminDashboard />,
+            element: s(AdminDashboard),
           },
           {
             path: 'stats',
-            element: <LearningStatisticsPage />,
+            element: s(LearningStatisticsPage),
           },
         ]
       },

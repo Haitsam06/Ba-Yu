@@ -12,37 +12,32 @@ class VerificationController extends Controller
      */
     public function verify(Request $request, $id, $hash)
     {
+        // Web SPA result pages live at {APP_URL}/app/verify-{success,failed}
+        // (see routes/web.php `/app/{any}` + frontend routes.tsx). VerifyResultPage
+        // then bridges to the bayumobile:// deep link when opened on a device.
+        // Mirrors the reset-password URL pattern in AppServiceProvider.
+        $base = rtrim(config('app.url'), '/').'/app';
+
         $user = User::find($id);
 
         if (! $user) {
-            // Arahkan ke frontend jika user tidak ditemukan (misalnya deep link)
-            $frontendUrl = config('app.frontend_url', env('EXPO_PUBLIC_API_URL', 'exp://localhost:8081')).'/verify-failed';
-
-            return redirect($frontendUrl);
+            // User tidak ditemukan (misalnya deep link kadaluwarsa)
+            return redirect($base.'/verify-failed');
         }
 
         if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
             // Token/Hash tidak cocok
-            $frontendUrl = config('app.frontend_url', env('EXPO_PUBLIC_API_URL', 'exp://localhost:8081')).'/verify-failed';
-
-            return redirect($frontendUrl);
+            return redirect($base.'/verify-failed');
         }
 
         if ($user->hasVerifiedEmail()) {
-            // Sudah terverifikasi
-            $frontendUrl = config('app.frontend_url', env('EXPO_PUBLIC_API_URL', 'exp://localhost:8081')).'/verify-success';
-
-            return redirect($frontendUrl);
+            // Sudah terverifikasi sebelumnya
+            return redirect($base.'/verify-success');
         }
 
-        if ($user->markEmailAsVerified()) {
-            // Trigger event verified jika perlu
-            // event(new Verified($user));
-        }
+        $user->markEmailAsVerified();
 
-        $frontendUrl = config('app.frontend_url', env('EXPO_PUBLIC_API_URL', 'exp://localhost:8081')).'/verify-success';
-
-        return redirect($frontendUrl);
+        return redirect($base.'/verify-success');
     }
 
     /**

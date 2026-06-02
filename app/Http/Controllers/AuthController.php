@@ -112,33 +112,33 @@ class AuthController extends Controller
 
     public function forgotPassword(Request $request)
     {
-        // 1. Validasi: Pastiin emailnya diisi dan emang ada di database lu
+        // Validasi: cukup format email. JANGAN pakai `exists` — itu membocorkan
+        // email mana yang terdaftar (user enumeration).
         $request->validate([
-            'email' => 'required|email|exists:user,email',
+            'email' => 'required|email',
             'lang' => 'nullable|string',
-        ], [
-            'email.exists' => 'auth.email_not_registered',
         ]);
 
         if ($request->has('lang')) {
             App::setLocale($request->lang);
         }
 
-        // 2. Suruh Laravel bikin token dan "ngirim" email
         $status = Password::sendResetLink(
             $request->only('email')
         );
 
-        // 3. Cek apakah berhasil dikirim
-        if ($status === Password::RESET_LINK_SENT) {
+        // SECURITY: balas identik baik email terdaftar maupun tidak, supaya endpoint
+        // ini tidak bisa dipakai menebak email mana yang punya akun.
+        if ($status === Password::RESET_LINK_SENT || $status === Password::INVALID_USER) {
             return response()->json([
                 'message' => 'passwords.sent',
             ], 200);
         }
 
+        // Terlalu banyak permintaan (throttled).
         return response()->json([
             'message' => 'passwords.throttled',
-        ], 500);
+        ], 429);
     }
 
     public function resetPassword(Request $request)
@@ -252,9 +252,10 @@ class AuthController extends Controller
             'avatar' => $socialUser->getAvatar(),
             'provider' => $provider,
             'provider_id' => $socialUser->getId(),
-            'email_verified_at' => now(),
             'profile_completed' => false, // Needs to complete profile
         ]);
+        // email_verified_at is guarded; set explicitly (OAuth email is provider-verified).
+        $newUser->forceFill(['email_verified_at' => now()])->save();
 
         $token = $newUser->createToken('auth_token')->plainTextToken;
         $code = (string) Str::uuid();
@@ -307,6 +308,26 @@ class AuthController extends Controller
             }
 
             $payload = $response->json();
+
+            // SECURITY: A valid Google token is not enough — it must have been minted
+            // for OUR OAuth clients. Without this, an ID token issued to ANY Google app
+            // could be replayed here to authenticate as its email (account takeover).
+            $allowedAudiences = array_filter(array_map('trim', explode(',', (string) config('services.google.allowed_audiences'))));
+            $aud = $payload['aud'] ?? null;
+            $iss = $payload['iss'] ?? '';
+            $emailVerified = ($payload['email_verified'] ?? null) === true
+                || ($payload['email_verified'] ?? null) === 'true';
+
+            if (empty($allowedAudiences) || ! in_array($aud, $allowedAudiences, true)) {
+                return response()->json(['message' => 'Invalid Google token audience'], 401);
+            }
+            if (! in_array($iss, ['accounts.google.com', 'https://accounts.google.com'], true)) {
+                return response()->json(['message' => 'Invalid Google token issuer'], 401);
+            }
+            if (! $emailVerified) {
+                return response()->json(['message' => 'Google email not verified'], 401);
+            }
+
             $email = $payload['email'] ?? null;
             $name = $payload['name'] ?? null;
             $googleId = $payload['sub'] ?? null;
@@ -366,9 +387,10 @@ class AuthController extends Controller
                 'avatar' => $picture,
                 'provider' => 'google',
                 'provider_id' => $googleId,
-                'email_verified_at' => now(),
                 'profile_completed' => false,
             ]);
+            // email_verified_at is guarded; set explicitly (Google email is verified).
+            $newUser->forceFill(['email_verified_at' => now()])->save();
 
             \Illuminate\Support\Facades\Auth::login($newUser, true);
             $token = $newUser->createToken('auth_token')->plainTextToken;

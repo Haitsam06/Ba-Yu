@@ -6,6 +6,51 @@ use Illuminate\Support\Facades\File;
 
 class NotificationTranslator
 {
+    /**
+     * Sanitize LaTeX math expressions for plain-text contexts (e.g. push notifications).
+     *
+     * Replaces:
+     *   $$...$$ (display math)   → [Rumus: ...]
+     *   \[...\] (display math)   → [Rumus: ...]
+     *   $...$   (inline math)    → [Rumus: ...]
+     *   \(...\) (inline math)    → [Rumus: ...]
+     *
+     * The raw LaTeX content is preserved inside the brackets so the reader
+     * still has a hint of what the formula contains, without needing a renderer.
+     */
+    public static function sanitizeLatex(string $text): string
+    {
+        // Display math:  $$...$$
+        $text = preg_replace_callback(
+            '/\$\$(.+?)\$\$/su',
+            fn($m) => '[Rumus: ' . trim($m[1]) . ']',
+            $text
+        );
+
+        // Display math:  \[...\]
+        $text = preg_replace_callback(
+            '/\\\\\[(.+?)\\\\\]/su',
+            fn($m) => '[Rumus: ' . trim($m[1]) . ']',
+            $text
+        );
+
+        // Inline math:  \(...\)
+        $text = preg_replace_callback(
+            '/\\\\\((.+?)\\\\\)/su',
+            fn($m) => '[Rumus: ' . trim($m[1]) . ']',
+            $text
+        );
+
+        // Inline math:  $...$  (must come last to avoid double-processing $$)
+        $text = preg_replace_callback(
+            '/(?<!\$)\$(?!\$)(.+?)(?<!\$)\$(?!\$)/su',
+            fn($m) => '[Rumus: ' . trim($m[1]) . ']',
+            $text
+        );
+
+        return $text;
+    }
+
     public static function translate($title, $message, $locale = 'id')
     {
         // 1. Ambil file JSON dari Frontend Web
@@ -22,6 +67,12 @@ class NotificationTranslator
         if (File::exists($jsonPath)) {
             $dictionary = json_decode(File::get($jsonPath), true)['notif'] ?? [];
         }
+
+        // 2. Sanitize any LaTeX math before translation pattern-matching.
+        //    Formulas are converted to [Rumus: <content>] so plain-text contexts
+        //    (push notifications, SMS) display a readable fallback.
+        $title   = self::sanitizeLatex((string) $title);
+        $message = self::sanitizeLatex((string) $message);
 
         // Helper untuk me-replace template {{var}}
         $t = function ($key, $replacements = []) use ($dictionary) {

@@ -1,12 +1,41 @@
 import { useTranslation } from "./useTranslation";
 
+/**
+ * Sanitize LaTeX math expressions for plain-text notification contexts.
+ *
+ * All four common LaTeX notation styles are converted to a readable fallback:
+ *   $$...$$ → [Rumus: ...]
+ *   \[...\] → [Rumus: ...]
+ *   \(...\) → [Rumus: ...]
+ *   $...$   → [Rumus: ...]
+ *
+ * Mirrors NotificationTranslator::sanitizeLatex() on the PHP backend.
+ */
+function sanitizeLatex(text: string): string {
+  if (!text) return text;
+
+  // Display math: $$...$$
+  text = text.replace(/\$\$(.+?)\$\$/gs, (_, inner) => `[Rumus: ${inner.trim()}]`);
+
+  // Display math: \[...\]
+  text = text.replace(/\\\[(.+?)\\\]/gs, (_, inner) => `[Rumus: ${inner.trim()}]`);
+
+  // Inline math: \(...\)
+  text = text.replace(/\\\((.+?)\\\)/gs, (_, inner) => `[Rumus: ${inner.trim()}]`);
+
+  // Inline math: $...$ (must be last to avoid double-processing $$)
+  text = text.replace(/(?<!\$)\$(?!\$)(.+?)(?<!\$)\$(?!\$)/gs, (_, inner) => `[Rumus: ${inner.trim()}]`);
+
+  return text;
+}
+
 export function useNotificationTranslator() {
   const { t } = useTranslation();
 
   const translateNotification = (notification: any) => {
-    let title = notification.title || "";
-    let message = notification.message || "";
-    
+    let title = sanitizeLatex(notification.title || "");
+    let message = sanitizeLatex(notification.message || "");
+
     // --- LIKES ---
     if (title === "Ada yang menyukai Catatan Anda!") title = t("notif.like_note_title");
     if (title === "Seseorang Menyukai Catatanmu") title = t("notif.like_note_title_alt");

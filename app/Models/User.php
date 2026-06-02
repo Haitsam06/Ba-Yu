@@ -70,15 +70,17 @@ class User extends Authenticatable implements HasLocalePreference, MustVerifyEma
         'locale',
         'fcm_token',
         'school',
-        'is_verified',
         'is_private',
         'is_dormant',
         'deactivated_at',
         'username_updated_at',
         'provider',
         'provider_id',
-        'email_verified_at',
         'profile_completed',
+        // Intentionally NOT mass-assignable (set explicitly via forceFill / direct
+        // assignment): 'role', 'is_verified', 'email_verified_at'. Keeping them out
+        // of $fillable prevents a careless create()/update() with raw request input
+        // from granting email verification or expert/admin status.
     ];
 
     protected $attributes = [

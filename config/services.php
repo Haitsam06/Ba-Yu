@@ -39,6 +39,10 @@ return [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI', 'http://localhost:8000/api/auth/google/callback'),
+        // Comma-separated list of accepted ID-token audiences (OAuth client IDs).
+        // Must include BOTH the web client id and the mobile (native) web client id,
+        // since native Google Sign-In mints tokens with aud = mobile web client id.
+        'allowed_audiences' => env('GOOGLE_ALLOWED_AUDIENCES', env('GOOGLE_CLIENT_ID')),
     ],
 
     'facebook' => [

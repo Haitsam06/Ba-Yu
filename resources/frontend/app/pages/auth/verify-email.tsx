@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '../../hooks/useTranslation';
 import { Mail, ArrowRight, LogOut, CheckCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 const VerifyEmailPage: React.FC = () => {
     const { t } = useTranslation();
@@ -17,17 +17,17 @@ const VerifyEmailPage: React.FC = () => {
     useEffect(() => {
         // If already verified, redirect to home
         if (user && user.email_verified_at) {
-            navigate('/app');
+            navigate('/home');
         }
     }, [user, navigate]);
 
     const handleResend = async () => {
         setIsResending(true);
         try {
-            await axios.post('/email/resend');
-            toast.success(t('verify_email.resend_success', 'Email verifikasi berhasil dikirim ulang!'));
+            await axios.post('/api/email/resend');
+            toast.success((t('verify_email.resend_success') || 'Email verifikasi berhasil dikirim ulang!'));
         } catch (error: any) {
-            toast.error(t('verify_email.resend_failed', 'Gagal mengirim ulang email.'));
+            toast.error((t('verify_email.resend_failed') || 'Gagal mengirim ulang email.'));
         } finally {
             setIsResending(false);
         }
@@ -38,10 +38,10 @@ const VerifyEmailPage: React.FC = () => {
         try {
             const updatedUser = await refreshUser();
             if (updatedUser && updatedUser.email_verified_at) {
-                toast.success(t('verify_email.verification_success', 'Verifikasi Berhasil'));
-                navigate('/app');
+                toast.success((t('verify_email.verification_success') || 'Verifikasi Berhasil'));
+                navigate('/home');
             } else {
-                toast.error(t('verify_email.not_verified_yet', 'Email belum diverifikasi. Cek inbox Anda.'));
+                toast.error((t('verify_email.not_verified_yet') || 'Email belum diverifikasi. Cek inbox Anda.'));
             }
         } catch (error) {
             console.error('Error checking verification status', error);
@@ -52,7 +52,7 @@ const VerifyEmailPage: React.FC = () => {
 
     const handleLogout = async () => {
         await logout();
-        navigate('/app/login');
+        navigate('/login');
     };
 
     return (
@@ -69,18 +69,18 @@ const VerifyEmailPage: React.FC = () => {
                 </div>
 
                 <h1 className="text-2xl font-bold text-center text-foreground mb-4 font-lexend">
-                    {t('verify_email.title', 'Verifikasi Email Anda')}
+                    {(t('verify_email.title') || 'Verifikasi Email Anda')}
                 </h1>
 
                 <p className="text-muted-foreground text-center mb-6 leading-relaxed">
-                    {t('verify_email.description', 'Kami telah mengirimkan tautan verifikasi ke alamat email Anda. Silakan klik tautan tersebut untuk memverifikasi akun Anda dan mendapatkan akses penuh.')}
+                    {(t('verify_email.description') || 'Kami telah mengirimkan tautan verifikasi ke alamat email Anda. Silakan klik tautan tersebut untuk memverifikasi akun Anda dan mendapatkan akses penuh.')}
                 </p>
 
                 <div className="bg-secondary/20 rounded-2xl p-4 mb-8 flex items-start gap-3">
                     <CheckCircle className="h-5 w-5 text-secondary mt-0.5 shrink-0" />
                     <div>
-                        <h4 className="font-semibold text-foreground text-sm mb-1">{t('verify_email.check_inbox', 'Periksa Kotak Masuk Anda')}</h4>
-                        <p className="text-xs text-muted-foreground">{t('verify_email.spam_note', 'Jika Anda tidak melihat email tersebut, periksa folder spam atau sampah Anda.')}</p>
+                        <h4 className="font-semibold text-foreground text-sm mb-1">{(t('verify_email.check_inbox') || 'Periksa Kotak Masuk Anda')}</h4>
+                        <p className="text-xs text-muted-foreground">{(t('verify_email.spam_note') || 'Jika Anda tidak melihat email tersebut, periksa folder spam atau sampah Anda.')}</p>
                     </div>
                 </div>
 
@@ -90,7 +90,7 @@ const VerifyEmailPage: React.FC = () => {
                         disabled={isChecking}
                         className="w-full h-[50px] bg-primary text-primary-foreground font-semibold rounded-xl flex items-center justify-center gap-2 transition-all hover:bg-primary/90 disabled:opacity-70"
                     >
-                        {isChecking ? t('common.loading', 'Memuat...') : t('verify_email.already_verified', 'Saya sudah memverifikasi')}
+                        {isChecking ? (t('common.loading') || 'Memuat...') : (t('verify_email.already_verified') || 'Saya sudah memverifikasi')}
                         {!isChecking && <ArrowRight className="h-5 w-5" />}
                     </button>
 
@@ -99,7 +99,7 @@ const VerifyEmailPage: React.FC = () => {
                         disabled={isResending}
                         className="w-full h-[50px] bg-card border border-border text-foreground font-semibold rounded-xl flex items-center justify-center transition-all hover:bg-accent disabled:opacity-70"
                     >
-                        {isResending ? t('verify_email.resend_loading', 'Mengirim...') : t('verify_email.resend_btn', 'Kirim Ulang Email')}
+                        {isResending ? (t('verify_email.resend_loading') || 'Mengirim...') : (t('verify_email.resend_btn') || 'Kirim Ulang Email')}
                     </button>
 
                     <button
@@ -107,7 +107,7 @@ const VerifyEmailPage: React.FC = () => {
                         className="w-full h-[50px] text-muted-foreground font-semibold rounded-xl flex items-center justify-center gap-2 transition-all hover:text-foreground"
                     >
                         <LogOut className="h-4 w-4" />
-                        {t('verify_email.back_to_login', 'Kembali ke Login')}
+                        {(t('verify_email.back_to_login') || 'Kembali ke Login')}
                     </button>
                 </div>
             </div>
