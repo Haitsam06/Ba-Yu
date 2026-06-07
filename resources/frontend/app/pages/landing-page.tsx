@@ -9,6 +9,8 @@ import { AuthModal } from '../components/auth-modal';
 import { BrutalistLoader } from '../components/brutalist-loader';
 import ApplicationLogo from '../components/ApplicationLogo';
 import { useTranslation } from '../hooks/useTranslation';
+import { useAuth } from '../contexts/AuthContext';
+import { Navigate } from 'react-router';
 import {
   BookOpen, Search, Shield, Zap, ArrowRight,
   Globe, Users, Star, CheckCircle2, Layers,
@@ -540,7 +542,12 @@ function TopicWarpSection({ openAuthModal }: { openAuthModal: (tab: 'login' | 'r
    =================================================== */
 export function LandingPage() {
     const { t } = useTranslation();
+    const { user, isLoading: isAuthLoading } = useAuth();
     useDocumentTitle(t('titles.welcome'));
+
+    if (!isAuthLoading && user) {
+      return <Navigate to="/home" replace />;
+    }
 
 
   const row1Items = [
@@ -822,12 +829,12 @@ export function LandingPage() {
 
         <div className="relative z-10 max-w-6xl mx-auto px-6 w-full flex flex-col items-center text-center">
           {/* Majestic Typography Title */}
-          <h1 className="font-display font-extrabold tracking-tight leading-[1.2] text-white flex flex-col items-center">
+          <h1 className="font-display font-extrabold tracking-tight leading-[1.2] flex flex-col items-center">
             <motion.span 
               initial={{ opacity: 0, y: 40 }}
               animate={!isLoading ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
               transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="block"
+              className="block text-transparent bg-clip-text bg-gradient-to-b from-white via-gray-200 to-gray-600 drop-shadow-[0_3px_0px_rgba(255,255,255,0.2)] drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]"
               style={{ fontSize: 'clamp(2rem, 8vw, 5rem)' }}
             >
               {t('landing.hero_title_1') || 'Belajar. Berbagi.'}
@@ -837,7 +844,7 @@ export function LandingPage() {
               initial={{ opacity: 0, y: 40 }}
               animate={!isLoading ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
               transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="block text-transparent bg-clip-text bg-gradient-to-r from-[#5D5CE6] to-[#8B5CF6]"
+              className="block text-transparent bg-clip-text bg-gradient-to-b from-[#d8b4fe] via-[#8B5CF6] to-[#4f46e5] drop-shadow-[0_3px_0px_#3730a3] drop-shadow-[0_4px_6px_rgba(93,92,230,0.5)]"
               style={{ fontSize: 'clamp(2rem, 8vw, 5rem)' }}
             >
               {t('landing.hero_title_2') || 'Berkembang.'}
@@ -863,20 +870,23 @@ export function LandingPage() {
           >
             <button
               onClick={() => openAuthModal('register')}
-              className="w-full sm:w-auto cursor-pointer relative inline-flex items-center justify-center gap-3 px-8 py-3.5 sm:px-10 sm:py-5 rounded-full font-bold text-sm sm:text-base text-white overflow-hidden group shadow-lg shadow-[#5D5CE6]/25"
-              style={{ background: 'linear-gradient(135deg, #5D5CE6, #8B5CF6)' }}
+              className="w-full sm:w-auto cursor-pointer relative inline-flex items-center justify-center gap-3 px-8 py-3.5 sm:px-10 sm:py-4 rounded-full font-extrabold text-sm sm:text-base text-white overflow-hidden group transition-all"
+              style={{ 
+                background: 'linear-gradient(135deg, #8B5CF6, #5D5CE6)',
+                boxShadow: 'inset 0 1.5px 2px rgba(255,255,255,0.4), inset 0 -4px 10px rgba(0,0,0,0.25), 0 10px 25px -4px rgba(93,92,230,0.7)'
+              }}
             >
-              <span className="relative z-10 flex items-center gap-2">
+              <span className="relative z-10 flex items-center gap-2 drop-shadow-md">
                 {t('landing.hero_btn_start') || 'Mulai Belajar'} <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </span>
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-700 ease-in-out" />
             </button>
 
             <button
               onClick={() => openAuthModal('login')}
               className="w-full sm:w-auto cursor-pointer inline-flex items-center justify-center gap-2 px-8 py-3.5 sm:px-10 sm:py-5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md font-bold text-sm sm:text-base hover:bg-white/10 hover:border-white/20 transition-all text-gray-300"
             >
-              {t('landing.hero_btn_explore') || 'Telusuri Catatan'}
+              <span className="group-hover:text-white transition-colors">{t('landing.hero_btn_explore') || 'Telusuri Catatan'}</span>
             </button>
           </motion.div>
 

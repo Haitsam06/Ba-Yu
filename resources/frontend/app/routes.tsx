@@ -24,6 +24,7 @@ const StatusPage = lazy(() => import('./pages/StatusPage'));
 const CareersPage = lazy(() => import('./pages/CareersPage'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));
 const CommunityGuidelinesPage = lazy(() => import('./pages/CommunityGuidelinesPage'));
+const DownloadAppPage = lazy(() => import('./pages/DownloadAppPage'));
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const CompleteProfilePage = lazy(() => import('./pages/CompleteProfilePage'));
@@ -128,6 +129,10 @@ export const router = createBrowserRouter([
       {
         path: 'guidelines',
         element: s(CommunityGuidelinesPage),
+      },
+      {
+        path: 'download-app',
+        element: s(DownloadAppPage),
       },
       {
         // Protected Wrapper

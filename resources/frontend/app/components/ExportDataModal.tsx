@@ -244,13 +244,7 @@ export function ExportDataModal({
             `;
         }
 
-        const printWindow = window.open("", "_blank", "width=900,height=700");
-        if (!printWindow) {
-            showToast(t("export_modal.print_failed") || "Gagal membuka jendela cetak. Pastikan pop-up diizinkan di browser kamu.", "error");
-            return;
-        }
-
-        printWindow.document.write(`
+        const htmlString = `
             <!DOCTYPE html>
             <html>
             <head>
@@ -273,15 +267,32 @@ export function ExportDataModal({
                 <div style="margin-top:40px;padding-top:16px;border-top:1px solid #e5e7eb;text-align:center;color:#aaa;font-size:11px;">
                     ${t("export_modal.footer_note") || "Ba-Yu Platform &mdash; Dokumen ini digenerate secara otomatis."}
                 </div>
-                <script>
-                    window.onload = function() {
-                        setTimeout(function() {
-                            window.print();
-                        }, 600);
-                    };
-                <\/script>
             </body>
             </html>
+        `;
+
+        if ((window as any).ReactNativeWebView) {
+            (window as any).ReactNativeWebView.postMessage(JSON.stringify({
+                type: 'DOWNLOAD_PDF',
+                html: htmlString
+            }));
+            return;
+        }
+
+        const printWindow = window.open("", "_blank", "width=900,height=700");
+        if (!printWindow) {
+            showToast(t("export_modal.print_failed") || "Gagal membuka jendela cetak. Pastikan pop-up diizinkan di browser kamu.", "error");
+            return;
+        }
+
+        printWindow.document.write(htmlString + `
+            <script>
+                window.onload = function() {
+                    setTimeout(function() {
+                        window.print();
+                    }, 600);
+                };
+            </script>
         `);
         printWindow.document.close();
     };
@@ -329,14 +340,35 @@ export function ExportDataModal({
             const ws = XLSX.utils.json_to_sheet(allData);
             const csv = XLSX.utils.sheet_to_csv(ws);
             const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `${fileName}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
+            if ((window as any).ReactNativeWebView) {
+                const reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = () => {
+                    (window as any).ReactNativeWebView.postMessage(JSON.stringify({
+                        type: 'DOWNLOAD_FILE',
+                        filename: `${fileName}.csv`,
+                        base64: reader.result
+                    }));
+                };
+            } else {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${fileName}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
         } else {
-            XLSX.writeFile(wb, `${fileName}.xlsx`);
+            if ((window as any).ReactNativeWebView) {
+                const base64 = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
+                (window as any).ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'DOWNLOAD_FILE',
+                    filename: `${fileName}.xlsx`,
+                    base64: base64
+                }));
+            } else {
+                XLSX.writeFile(wb, `${fileName}.xlsx`);
+            }
         }
     };
 
@@ -366,12 +398,24 @@ export function ExportDataModal({
         };
 
         const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Export_BaYu_${category}_${new Date().getTime()}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
+        if ((window as any).ReactNativeWebView) {
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => {
+                (window as any).ReactNativeWebView.postMessage(JSON.stringify({
+                    type: 'DOWNLOAD_FILE',
+                    filename: `Export_BaYu_${category}_${new Date().getTime()}.json`,
+                    base64: reader.result
+                }));
+            };
+        } else {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `Export_BaYu_${category}_${new Date().getTime()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
     };
 
     const handleExport = async () => {

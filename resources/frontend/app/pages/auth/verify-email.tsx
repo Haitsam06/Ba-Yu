@@ -15,11 +15,12 @@ const VerifyEmailPage: React.FC = () => {
     const [isChecking, setIsChecking] = useState(false);
 
     useEffect(() => {
-        // If already verified, redirect to home
+        // If already verified, log out and redirect to login
         if (user && user.email_verified_at) {
-            navigate('/home');
+            logout();
+            navigate('/login');
         }
-    }, [user, navigate]);
+    }, [user, navigate, logout]);
 
     const handleResend = async () => {
         setIsResending(true);
@@ -39,7 +40,8 @@ const VerifyEmailPage: React.FC = () => {
             const updatedUser = await refreshUser();
             if (updatedUser && updatedUser.email_verified_at) {
                 toast.success((t('verify_email.verification_success') || 'Verifikasi Berhasil'));
-                navigate('/home');
+                await logout();
+                navigate('/login');
             } else {
                 toast.error((t('verify_email.not_verified_yet') || 'Email belum diverifikasi. Cek inbox Anda.'));
             }

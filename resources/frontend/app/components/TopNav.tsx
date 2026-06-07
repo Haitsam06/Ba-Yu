@@ -82,10 +82,9 @@ export function TopNav({ isSidebarExpanded, toggleSidebar }: TopNavProps) {
         </form>
       </div>
 
-      {/* RIGHT SECTION */}
       <div className="flex items-center gap-4 sm:gap-5 shrink-0 relative">
         <Link 
-          to="/not-found"
+          to="/download-app"
           className="hidden lg:flex items-center justify-center h-[36px] px-[18px] rounded-full bg-primary text-white text-[13.5px] font-['Manrope'] font-semibold shadow-[0_4px_10px_rgb(93,92,230,0.15)] hover:bg-primary/90 hover:shadow-[0_6px_14px_rgb(93,92,230,0.25)] hover:-translate-y-0.5 transition-all"
         >
           {t('topnav.get_app')}

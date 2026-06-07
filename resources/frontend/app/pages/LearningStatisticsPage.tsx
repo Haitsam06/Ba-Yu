@@ -459,7 +459,7 @@ const LearningStatisticsPage = () => {
                               ...note,
                               id: note.id || note._id,
                               title: note.title,
-                              description: note.content?.replace(/<[^>]*>/g, "").substring(0, 150) || "",
+                              description: note.description || (note.plain_content ? note.plain_content.substring(0, 150) : ""),
                               thumbnail: note.thumbnail,
                               author: note.user ? {
                                 ...note.user,

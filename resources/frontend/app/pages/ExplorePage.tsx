@@ -615,9 +615,7 @@ export default function ExplorePage() {
             thumbnail: note.thumbnail || null,
             views: note.views || 0,
             rating: note.rating || 5,
-            description: note.content
-                ? note.content.replace(/<[^>]*>?/gm, "").substring(0, 150) + "..."
-                : t('home.no_description'),
+            description: note.description || (note.plain_content ? note.plain_content.substring(0, 150) + "..." : t('home.no_description')),
             mataPelajaran: note.mapel || "Lainnya",
             jenjang: note.jenjang || "-",
             kelas: note.kelas || "-",

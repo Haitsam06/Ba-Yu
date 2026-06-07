@@ -4,7 +4,8 @@ import ReactQuill from 'react-quill';
 import {
   Plus, X, Image as ImageIcon, Film, Code, Terminal, Minus, Quote,
   Bold, Italic, Underline, Highlighter, Link as LinkIcon,
-  Heading1, Heading2, Calculator, List, ListOrdered, ChevronDown
+  Heading1, Heading2, Calculator, List, ListOrdered, ChevronDown,
+  AlignLeft, AlignCenter, AlignRight, AlignJustify
 } from 'lucide-react';
 import { HIGHLIGHT_COLORS } from './editor.constants';
 import { PromptDialog } from '../ui/PromptDialog';
@@ -173,6 +174,8 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
       }
     } else if (format === 'list') {
       quill.format('list', current.list === value ? false : value);
+    } else if (format === 'align') {
+      quill.format('align', current.align === value ? false : value);
     } else {
       quill.format(format, !current[format]);
     }
@@ -357,6 +360,22 @@ export function SideToolbar({ quillRef, onFormulaClick }: SideToolbarProps) {
             </button>
             <button className={btnClass(!!formats.code)} onClick={() => toggle('code')} title="Inline Code">
               <Code className="w-[15px] h-[15px]" strokeWidth={2.5} />
+            </button>
+
+            <Divider />
+
+            {/* ── Alignment ── */}
+            <button className={btnClass(!formats.align)} onClick={() => toggle('align', false)} title="Align Left">
+              <AlignLeft className="w-[15px] h-[15px]" strokeWidth={2.5} />
+            </button>
+            <button className={btnClass(formats.align === 'center')} onClick={() => toggle('align', 'center')} title="Align Center">
+              <AlignCenter className="w-[15px] h-[15px]" strokeWidth={2.5} />
+            </button>
+            <button className={btnClass(formats.align === 'right')} onClick={() => toggle('align', 'right')} title="Align Right">
+              <AlignRight className="w-[15px] h-[15px]" strokeWidth={2.5} />
+            </button>
+            <button className={btnClass(formats.align === 'justify')} onClick={() => toggle('align', 'justify')} title="Justify">
+              <AlignJustify className="w-[15px] h-[15px]" strokeWidth={2.5} />
             </button>
 
             {/* ── Highlight ── */}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
-import { Trash2 } from 'lucide-react';
+import { Trash2, CornerDownLeft } from 'lucide-react';
 import { useTranslation } from '../../hooks/useTranslation';
 
 interface FloatingBlockToolbarProps {
@@ -152,6 +152,22 @@ export function FloatingBlockToolbar({ quillRef, onEditAlt }: FloatingBlockToolb
     setActiveBlot(null);
   };
 
+  const handleEscapeBlock = () => {
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+    const [line] = quill.getLine(activeBlot.index);
+    if (line) {
+        const index = quill.getIndex(line) + line.length();
+        quill.insertText(index, '\n', 'user');
+        // Pastikan baris baru bersih dari format block
+        quill.formatLine(index, 1, 'code-block', false);
+        quill.formatLine(index, 1, 'blockquote', false);
+        quill.setSelection(index, 0, 'user');
+    }
+    setPosition(null);
+    setActiveBlot(null);
+  };
+
   const btnClass = (active: boolean) =>
     `w-8 h-8 flex items-center justify-center rounded-lg transition-all duration-200 ${active ? 'bg-primary text-white shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10'}`;
 
@@ -181,6 +197,16 @@ export function FloatingBlockToolbar({ quillRef, onEditAlt }: FloatingBlockToolb
               {t('upload.alt_text_button') || 'Alt text'}
             </button>
 
+            <div className="w-px h-5 bg-gray-200 dark:bg-white/20 mx-1.5"></div>
+          </>
+        )}
+
+        {(activeBlot.type === 'code-block' || activeBlot.type === 'blockquote') && (
+          <>
+            <button onClick={handleEscapeBlock} className="px-3 h-8 text-[12px] font-semibold text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors flex items-center gap-1.5" title={t('upload.escape_block') || 'Baris Baru di Luar Blok'}>
+              <CornerDownLeft className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Enter Baru</span>
+            </button>
             <div className="w-px h-5 bg-gray-200 dark:bg-white/20 mx-1.5"></div>
           </>
         )}

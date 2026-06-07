@@ -204,7 +204,7 @@ export default function PakarDashboard() {
                 id: note._id || note.id,
                 author: note.user ? { ...note.user, avatar: note.user.avatar || null } : { name: "Anonim", avatar: null },
                 createdAt: note.created_at || note.createdAt,
-                description: note.content ? note.content.replace(/<[^>]*>?/gm, "").replace(/&nbsp;/g, " ").substring(0, 150) + "..." : "Tidak ada deskripsi",
+                description: note.description || (note.plain_content ? note.plain_content.substring(0, 150) + "..." : "Tidak ada deskripsi"),
                 mataPelajaran: note.mapel || "Lainnya",
                 kelas: note.kelas || "-",
                 isValidated: note.is_verified || false,

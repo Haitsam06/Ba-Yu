@@ -132,6 +132,42 @@ export default function NoteDetailPage() {
             exportHtml = rawHtmlToExport;
         }
 
+        if ((window as any).ReactNativeWebView) {
+            // Include styling for WebView PDF export
+            const styledHtml = `
+              <!DOCTYPE html>
+              <html lang="id">
+                  <head>
+                      <meta charset="UTF-8">
+                      <title>${note?.title || "Materi Catatan"} - Ba-Yu</title>
+                      <style>
+                          @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Lexend+Deca:wght@400;600;800&display=swap');
+                          body { font-family: 'Manrope', sans-serif; line-height: 1.6; color: #1f2937; padding: 2cm; }
+                          h1, h2, h3 { font-family: 'Lexend Deca', sans-serif; color: #111827; }
+                          img { display: block; margin: 0 auto; max-width: 100%; height: auto; border-radius: 8px; }
+                          pre { background: #f3f4f6; padding: 15px; border-radius: 8px; overflow-x: auto; }
+                          code { font-family: monospace; }
+                          blockquote { border-left: 4px solid #4f46e5; padding-left: 15px; color: #4b5563; font-style: italic; }
+                      </style>
+                  </head>
+                  <body>
+                      <div style="text-align: center; margin-bottom: 40px; border-bottom: 2px solid #f3f4f6; padding-bottom: 20px;">
+                          <h1 style="margin-bottom: 10px; font-size: 28px;">${note?.title || "Catatan"}</h1>
+                          <p style="color: #6b7280; font-size: 14px;">Mata Pelajaran: ${note?.mapel || "-"} | Diunggah pada: ${new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                      </div>
+                      <div style="font-size: 14px;">
+                          ${exportHtml}
+                      </div>
+                  </body>
+              </html>
+            `;
+            (window as any).ReactNativeWebView.postMessage(JSON.stringify({
+                type: 'DOWNLOAD_PDF',
+                html: styledHtml
+            }));
+            return;
+        }
+
         const printWindow = window.open('', '', 'width=900,height=800');
         if (!printWindow) {
             showToast("Gagal membuka jendela cetak. Pastikan pop-up diizinkan.", "error");
@@ -163,14 +199,22 @@ export default function NoteDetailPage() {
 
                         body { 
                             font-family: 'Manrope', sans-serif; 
+                            line-height: 1.6; 
                             color: var(--text-main); 
-                            line-height: 1.8; 
-                            background-color: var(--bg-color);
-                            margin: 0;
-                            padding: 0;
-                            font-size: 11pt;
-                            -webkit-print-color-adjust: exact !important;
-                            print-color-adjust: exact !important;
+                            background: var(--bg-color);
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                        }
+
+                        h1, h2, h3, h4 { font-family: 'Lexend Deca', sans-serif; color: #111827; }
+                        
+                        img { 
+                            display: block; 
+                            margin: 0 auto; 
+                            max-width: 100%; 
+                            height: auto; 
+                            border-radius: 12px; 
+                            page-break-inside: avoid;
                         }
 
                         .header {
@@ -372,8 +416,12 @@ export default function NoteDetailPage() {
         };
 
         document.addEventListener("mouseup", handleSelection);
+        document.addEventListener("touchend", handleSelection);
+        document.addEventListener("selectionchange", handleSelection);
         return () => {
             document.removeEventListener("mouseup", handleSelection);
+            document.removeEventListener("touchend", handleSelection);
+            document.removeEventListener("selectionchange", handleSelection);
         };
     }, [showHighlightMenu]);
 
@@ -539,7 +587,23 @@ export default function NoteDetailPage() {
 
 
     const handleShare = () => {
-        setShowShareModal(true);
+        if ((window as any).ReactNativeWebView) {
+            (window as any).ReactNativeWebView.postMessage(JSON.stringify({
+                type: 'SHARE_URL',
+                title: note?.title || "Catatan Ba-Yu",
+                url: window.location.href
+            }));
+            return;
+        }
+
+        if (navigator.share) {
+            navigator.share({
+                title: note?.title || "Catatan Ba-Yu",
+                url: window.location.href
+            }).catch(() => setShowShareModal(true));
+        } else {
+            setShowShareModal(true);
+        }
     };
 
     const handleFollowToggle = async () => {
@@ -2542,11 +2606,11 @@ export default function NoteDetailPage() {
             {/* Floating Highlight Menu */}
             {showHighlightMenu && selectionRect && (
                 <div
-                    className="fixed z-[70] transform -translate-x-1/2 -translate-y-full bg-white dark:bg-[#2D2B3F] text-gray-900 dark:text-white px-3 py-2 rounded-xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] dark:shadow-2xl flex items-center gap-1 border border-gray-100 dark:border-white/10 backdrop-blur-md"
-                    style={{
+                    className={`fixed z-[70] bg-white dark:bg-[#2D2B3F] text-gray-900 dark:text-white px-3 py-2 border border-gray-100 dark:border-white/10 backdrop-blur-md shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] flex items-center gap-1 ${(window as any).ReactNativeWebView ? 'bottom-20 left-1/2 transform -translate-x-1/2 rounded-full px-4 py-3 min-w-[max-content]' : 'transform -translate-x-1/2 -translate-y-full rounded-xl'}`}
+                    style={!(window as any).ReactNativeWebView ? {
                         top: selectionRect.top - 15,
                         left: selectionRect.left + selectionRect.width / 2,
-                    }}
+                    } : {}}
                 >
                     {!showColorPicker ? (
                         <>

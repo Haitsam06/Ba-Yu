@@ -45,7 +45,8 @@ class Notification extends Model
                     $translated = NotificationTranslator::translate($notification->title, $notification->message, $locale);
 
                     $messaging = app('firebase.messaging');
-                    $message = CloudMessage::withTarget('token', $user->fcm_token)
+                    $message = CloudMessage::new()
+                        ->withToken($user->fcm_token)
                         ->withNotification(FirebaseNotification::create($translated['title'], $translated['message']))
                         ->withData([
                             'type' => $notification->type ?? '',
@@ -54,6 +55,13 @@ class Notification extends Model
                         ]);
                     $messaging->send($message);
                 }
+            } catch (\Kreait\Firebase\Exception\Messaging\NotFound $e) {
+                // Token tidak valid/kadaluwarsa, hapus dari database agar tidak error terus
+                if (isset($user)) {
+                    $user->fcm_token = null;
+                    $user->save();
+                }
+                \Log::warning('FCM Token dihapus untuk user ' . $notification->user_id . ' karena tidak ditemukan di Firebase.');
             } catch (\Exception $e) {
                 \Log::error('FCM Error: '.$e->getMessage());
             }

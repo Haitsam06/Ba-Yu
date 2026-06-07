@@ -6,6 +6,7 @@ import { NoteCardSkeleton } from "../components/ui/skeletons";
 import { TagList } from "../components/ui/TagList";
 import { DefaultThumbnail, AvatarImage } from "../components/ui/DefaultImages";
 import { Skeleton } from "../components/ui/skeleton";
+import { ProfilePictureViewer } from "../components/ProfilePictureViewer";
 import {
     FileText,
     Eye,
@@ -102,6 +103,7 @@ export default function PublicProfilePage() {
     const [isPending, setIsPending] = useState(false);
     const [showUnfollowDialog, setShowUnfollowDialog] = useState(false);
     const [isTogglingFollow, setIsTogglingFollow] = useState(false);
+    const [isProfileViewerOpen, setIsProfileViewerOpen] = useState(false);
 
     const openParam = searchParams.get("open");
 
@@ -193,9 +195,7 @@ export default function PublicProfilePage() {
                     ...note,
                     id: note._id || note.id,
                     title: note.title,
-                    description: note.content 
-                        ? note.content.replace(/<[^>]*>?/gm, "").substring(0, 150) + "..."
-                        : String(note.description || note.plain_content || "").replace(/&nbsp;/g, ' ').substring(0, 150),
+                    description: note.description || (note.plain_content ? note.plain_content.substring(0, 150) + "..." : ""),
                     createdAt: note.created_at || "",
                     thumbnail: note.thumbnail || null,
                     mataPelajaran: note.mapel || note.mataPelajaran || note.mata_pelajaran || "Umum",
@@ -499,12 +499,18 @@ export default function PublicProfilePage() {
                     {/* Avatar & Top Actions (Twitter Layout) */}
                     <div className="flex justify-between items-start mb-3">
                         <div className="relative -mt-12 sm:-mt-16">
-                            <AvatarImage
-                                src={profileUser?.avatar}
-                                alt={profileUser?.name}
-                                size={128}
-                                className="relative border-4 border-white dark:border-[#13111C] bg-white dark:bg-[#1C1A29] w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-full shadow-sm"
-                            />
+                            <div 
+                                className="cursor-pointer group"
+                                onClick={() => setIsProfileViewerOpen(true)}
+                            >
+                                <AvatarImage
+                                    src={profileUser?.avatar}
+                                    alt={profileUser?.name}
+                                    size={128}
+                                    className="relative border-4 border-white dark:border-[#13111C] bg-white dark:bg-[#1C1A29] w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-full shadow-sm group-hover:opacity-90 transition-opacity"
+                                />
+                                <div className="absolute inset-0 bg-black/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"></div>
+                            </div>
                         </div>
 
                         <div className="pt-3 flex items-center gap-2">
