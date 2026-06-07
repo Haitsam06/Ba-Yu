@@ -19,6 +19,9 @@ export default defineConfig({
     ],
     server: {
         host: '0.0.0.0',
+        hmr: {
+            host: '192.168.0.194',
+        },
         watch: {
             ignored: ['**/vendor/**'],
         },
