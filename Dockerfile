@@ -54,7 +54,7 @@ RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-in
 
 # Step 9: Install Node dependencies (layer cache).
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 # Step 10: Copy the rest of the source.
 COPY . .
