@@ -4,7 +4,7 @@
 # Target: Render free tier (also works for Railway, Fly.io, etc.)
 # =============================================================================
 
-FROM php:8.2-apache
+FROM php:8.3-apache
 
 # Step 1: Install system tools & libraries needed by PHP extensions.
 RUN apt-get update && apt-get install -y \
