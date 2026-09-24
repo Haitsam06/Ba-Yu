@@ -68,6 +68,7 @@ RUN composer dump-autoload --optimize --no-interaction
 # Step 13: Create storage dirs & set permissions.
 RUN mkdir -p storage/framework/{sessions,views,cache} \
     && mkdir -p storage/app/public \
+    && mkdir -p storage/app/purifier \
     && mkdir -p bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
